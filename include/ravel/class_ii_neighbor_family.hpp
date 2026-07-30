@@ -2744,6 +2744,15 @@ class_ii_neighbor_affine_certificate(std::size_t neighbor) {
     // Each coefficient of det(xI-A(a)) has degree at most n in a:
     // every Leibniz product contains at most n affine entries. Equality
     // at n+1 distinct parameters is therefore a polynomial identity.
+    //
+    // charpoly_int (checked long-long) is deliberately kept here, not
+    // charpoly_PolyZ: class_ii_neighbor_expected_polynomial's nonzero
+    // coefficients are all low-degree-in-a quadratics (see its
+    // definition), so if this identity holds -- which is exactly
+    // what this loop is proving -- every true coefficient is small.
+    // A thrown overflow_error would itself be a genuine finding, not
+    // a masked one. See docs/RECOVERY_AUDIT_2026-07-29.md queue item
+    // Q4.
     result.polynomial_exact = true;
     for (long long a = 3;
          a <= static_cast<long long>(states.size()) + 3; ++a) {

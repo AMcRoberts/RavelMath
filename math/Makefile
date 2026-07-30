@@ -94,9 +94,15 @@ $(BUILDDIR)/exact_pisot.o: $(SRCDIR)/exact_pisot.c $(INCDIR)/exact_pisot.h | $(B
 $(LIB): $(OBJS)
 	$(AR) $(ARFLAGS) $@ $^
 
-# Test target: builds libmath.a and links the math_test driver against it.
-check: $(MATH_TEST_BIN)
+# Test target: builds libmath.a and links the math_test driver against
+# it. Gated by a stamp file so `check` only re-runs math_test when the
+# binary actually changed (was rebuilt from changed sources/headers),
+# not on every invocation regardless of what changed.
+check: $(BUILDDIR)/.stamp_math_test
+
+$(BUILDDIR)/.stamp_math_test: $(MATH_TEST_BIN)
 	./$(MATH_TEST_BIN)
+	touch $@
 
 $(MATH_TEST_BIN): $(MATH_TEST_SRC) $(MATH_TEST_TIER_SRCS) $(MATH_HEADERS) $(LIB) | $(BUILDDIR)
 	$(CXX) $(CXXFLAGS) -I$(INCDIR) -I$(INCDIR)/mini-gmp \

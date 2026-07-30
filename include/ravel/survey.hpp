@@ -71,6 +71,14 @@ inline PisotClassifyResult classify_matrix_spectral(
     // Irreducibility over Q: char poly coefficients are integers
     // for an integer matrix; test rational roots via the
     // Faddeev-LeVerrier + rational-root test.
+    //
+    // charpoly_int (checked long-long) is deliberately kept here,
+    // not charpoly_PolyZ: the divisor loop below is already O(|c0|)
+    // trial division, so it is impractically slow long before a
+    // long-long-sized c0 would overflow. Migrating to an unbounded
+    // BigInt constant term would only let this loop hang instead of
+    // throwing cleanly. See docs/RECOVERY_AUDIT_2026-07-29.md queue
+    // item Q4.
     auto cp = charpoly_int(M);
     long long c0 = cp.empty() ? 0 : cp.back();
     bool irred = (c0 != 0);

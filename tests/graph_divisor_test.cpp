@@ -138,6 +138,39 @@ int main() {
         }
         CHECK(coefficient_overflow_rejected,
               "legacy charpoly API rejects a true coefficient larger than long long");
+
+        // Migration path (Q4 of docs/RECOVERY_AUDIT_2026-07-29.md):
+        // charpoly_PolyZ returns mathlib::PolyZ directly with no
+        // long long intermediate.  polyZ_to_long_long_vec re-enters
+        // the legacy surface only at the boundary the caller
+        // controls.
+        auto cp_PolyZ = charpoly_PolyZ(M);
+        auto cp_PolyZ_quot = charpoly_PolyZ(Q);
+        CHECK(cp_PolyZ == cp_PolyZ_quot,
+              "charpoly_PolyZ equality agrees with charpoly_int on a "
+              "matrix whose coefficients fit in long long");
+        auto cp_legacy = polyZ_to_long_long_vec(cp_PolyZ);
+        CHECK(cp_legacy == cp_direct,
+              "polyZ_to_long_long_vec agrees with charpoly_int on a "
+              "matrix whose coefficients fit in long long");
+
+        // On a matrix whose coefficients do exceed long long,
+        // charpoly_PolyZ succeeds and polyZ_to_long_long_vec
+        // throws overflow_error.  The legacy charpoly_int path
+        // also throws, but charpoly_PolyZ preserves the exact
+        // integer polynomial in a PolyZ so callers can compare
+        // without overflow weakening.
+        const long long m = std::numeric_limits<long long>::max();
+        auto cp_overflow_PolyZ = charpoly_PolyZ({{m, 0}, {0, m}});
+        bool polyz_overflow_rejected_on_legacy = false;
+        try {
+            (void)polyZ_to_long_long_vec(cp_overflow_PolyZ);
+        } catch (const std::overflow_error&) {
+            polyz_overflow_rejected_on_legacy = true;
+        }
+        CHECK(polyz_overflow_rejected_on_legacy,
+              "polyZ_to_long_long_vec reports overflow rather than "
+              "silently wrapping, even when charpoly_PolyZ succeeds");
     }
 
     // --- 6. tarjan_scc / extract_recurrent_core: a graph with one

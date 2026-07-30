@@ -99,10 +99,65 @@ inline std::vector<long long> charpoly_int(
         } catch (const std::out_of_range&) {
             throw std::overflow_error(
                 "charpoly_int coefficient exceeds long long; "
-                "use mathlib::charpoly_faddeev_leverrier");
+                "use mathlib::charpoly_faddeev_leverrier or "
+                "charpoly_PolyZ for the unbounded result type");
         }
     }
     return cp;
+}
+
+// PolyZ-returning arbitrary-precision characteristic polynomial.
+//
+// Returns det(xI - M) as a mathlib::PolyZ: coeff(k) is the
+// coefficient of x^k (low-first/ascending -- PolyZ's own
+// convention, delegated straight from
+// mathlib::charpoly_faddeev_leverrier).  This is the OPPOSITE order
+// from charpoly_int's vector<long long>, which is high-first
+// (v[0] is the leading coefficient); see polyZ_to_long_long_vec
+// below for the reordering conversion between the two.  This is the
+// recommended call site for any consumer expected to
+// handle characteristic polynomials whose coefficients may exceed
+// the long long range (large quotients, multi-thousand node
+// boundary graphs, etc.).
+//
+// Per docs/RECOVERY_AUDIT_2026-07-29.md queue item Q4, this is the
+// intended migration target for callers that previously stored the
+// result as vector<long long> and would silently weaken the
+// comparison on overflow.
+inline mathlib::PolyZ charpoly_PolyZ(
+    const std::vector<std::vector<long long>>& M) {
+    return mathlib::charpoly_faddeev_leverrier(M);
+}
+
+// Convert a PolyZ to vector<long long>; throws on overflow.  Useful
+// for legacy API surfaces that still expect vector<long long> but
+// want to make the boundary explicit instead of catching silently.
+//
+// Returned in the same order as charpoly_int: highest-degree
+// coefficient first (so v[i] is the coefficient of x^(n - i)).
+inline std::vector<long long> polyZ_to_long_long_vec(
+    const mathlib::PolyZ& p) {
+    const std::size_t n = p.coeffs_.size();
+    std::vector<long long> out;
+    out.reserve(n);
+    for (std::size_t i = n; i-- > 0;) {
+        char* raw = mpz_get_str(nullptr, 10, p.coeff(i).get());
+        if (raw == nullptr) throw std::bad_alloc();
+        const std::string decimal(raw);
+        std::free(raw);
+        std::size_t consumed = 0;
+        try {
+            const long long value = std::stoll(decimal, &consumed, 10);
+            if (consumed != decimal.size())
+                throw std::overflow_error(
+                    "polyZ_to_long_long_vec coefficient conversion");
+            out.push_back(value);
+        } catch (const std::out_of_range&) {
+            throw std::overflow_error(
+                "polyZ_to_long_long_vec coefficient exceeds long long");
+        }
+    }
+    return out;
 }
 
 inline long long polyval_int(const std::vector<long long>& cp, long long x) {

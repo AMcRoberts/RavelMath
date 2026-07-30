@@ -409,11 +409,12 @@ top-level `Makefile`.
 | `return_substitution_test.cpp`, `return_contact_lift_test.cpp` | Return words, phase systems, and labelled product graph. |
 | `dual_test.cpp`, `dual_format_test.cpp`, `spectral_dual_test.cpp`, `spectral_general_test.cpp` | Automatic differentiation, presentation, and spectral paths. |
 | `test_qbasis.cpp`, `qbeta_eigenvalue_test.cpp`, `exact_pisot_test.cpp`, `test_12_exploded.cpp`, `validate_exploded.cpp` | Exact algebraic-number compatibility and Pisot regressions. |
-| `classify_adelic_test.cpp`, `dedekind_factorization_test.cpp`, `ideal_arithmetic_test.cpp`, `maximal_order_test.cpp`, `padic_test.cpp`, `local_field_test.cpp`, `prefix_automaton_test.cpp`, `csy_carry_automaton_test.cpp`, `coincidence_and_property_f_test.cpp` | Complete adelic stack. |
+| `classify_adelic_test.cpp`, `dedekind_factorization_test.cpp`, `ideal_arithmetic_test.cpp`, `maximal_order_test.cpp`, `padic_test.cpp`, `local_field_test.cpp`, `prefix_automaton_test.cpp`, `csy_carry_automaton_test.cpp`, `csy_finite_carry_automaton_test.cpp`, `coincidence_and_property_f_test.cpp` | Complete adelic stack. |
 | `fibonacci_selection_test.cpp`, `fibonacci_finite_test.cpp`, `packed_binary_dynamics_test.cpp` | Exact-measure and packed finite dynamics. |
 | `pisot_numeration_topology_test.cpp` | Pisot recurrence/group/topology experiment. |
-| `rauzy_fractal_test.cpp`, `rauzy_fractal_unit_distance_test.cpp`, `openai_unit_distance_test.cpp` | Rauzy generation and finite unit-distance experiments. |
+| `rauzy_fractal_test.cpp`, `openai_unit_distance_test.cpp` | Rauzy generation and finite unit-distance experiments. (`rauzy_fractal_unit_distance_test.cpp` was removed 2026-07-29: non-evidentiary and mathematically wrong on its own terms -- see git history.) |
 | `pisot_numeration_topology_test.cpp`, `survey_test.cpp` | Numeration topology and substitution surveys. |
+| `lean_class_ii_catalogue_cross_check_test.cpp` | Cross-language catalogue cross-check between lean/*.lean literal catalogues and their C++ constructions. |
 
 ## Geometry inputs
 

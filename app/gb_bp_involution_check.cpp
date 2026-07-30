@@ -97,7 +97,11 @@ std::pair<int, int> check_involution_on_core(const ContactBoundaryReport& rep) {
 // Given the equitable partition happens to be a pure pairing (every
 // class size 2 -- the free-involution signature), builds the
 // quotient's exact integer characteristic polynomial.
-std::vector<long long> gb_core_quotient_charpoly(const ContactBoundaryReport& rep, bool* is_pure_pairing) {
+// Exact, arbitrary-precision (not checked long-long): the recurrent
+// core and its quotient can be large, so this uses charpoly_PolyZ
+// rather than charpoly_int. See docs/RECOVERY_AUDIT_2026-07-29.md
+// queue item Q4.
+mathlib::PolyZ gb_core_quotient_charpoly(const ContactBoundaryReport& rep, bool* is_pure_pairing) {
     auto gb_graph = WeightedDigraph::from_dense(rep.gb_matrix);
     auto [core, orig_idx] = extract_recurrent_core(gb_graph);
     (void)orig_idx;
@@ -108,12 +112,12 @@ std::vector<long long> gb_core_quotient_charpoly(const ContactBoundaryReport& re
     for (const auto& [c, n] : class_size) {
         if (n != 2) *is_pure_pairing = false;
     }
-    if (!*is_pure_pairing) return {};
+    if (!*is_pure_pairing) return mathlib::PolyZ();
     auto Q = quotient_matrix(core, p);
-    return charpoly_int(Q);
+    return charpoly_PolyZ(Q);
 }
 
-std::vector<long long> bp_core_charpoly(const SubstitutionRule& rule) {
+mathlib::PolyZ bp_core_charpoly(const SubstitutionRule& rule) {
     auto bp = balanced_pair_transition_graph(rule);
     auto bp_graph = WeightedDigraph::from_dense(bp.matrix);
     auto [core, orig_idx] = extract_recurrent_core(bp_graph);
@@ -122,32 +126,18 @@ std::vector<long long> bp_core_charpoly(const SubstitutionRule& rule) {
     for (std::size_t u = 0; u < core.n; ++u) {
         for (const auto& e : core.out_adj[u]) dense[u][e.first] += e.second;
     }
-    return charpoly_int(dense);
-}
-
-mathlib::PolyZ from_high_first(std::vector<long long> hf) {
-    mathlib::PolyZ p;
-    std::size_t n = hf.size();
-    p.ensure_size(n);
-    for (std::size_t i = 0; i < n; ++i) mathlib::set_si(p.coeff(i), hf[n - 1 - i]);
-    return p;
+    return charpoly_PolyZ(dense);
 }
 
 // Checks whether `factor`'s polynomial (after stripping a trailing
 // x^k trivial-zero-eigenvalue factor, which the core-quotient always
 // carries whenever the quotient itself isn't fully recurrent) exactly
 // divides `whole`. Returns true/false; prints the cofactor if exact.
-bool check_exact_factor(const char* name, std::vector<long long> whole_hf,
-                         std::vector<long long> factor_hf) {
-    while (factor_hf.size() > 1 && factor_hf.back() == 0) factor_hf.pop_back();
-    if (whole_hf.empty() || factor_hf.empty()) return false;
-    auto whole = from_high_first(whole_hf);
-    auto factor = from_high_first(factor_hf);
+bool check_exact_factor(const char* name, const mathlib::PolyZ& whole,
+                         const mathlib::PolyZ& factor) {
+    if (whole.is_zero() || factor.is_zero()) return false;
     auto dm = mathlib::divmod(whole, factor);
-    bool exact = true;
-    for (std::size_t i = 0; i < dm.r.coeffs_.size(); ++i) {
-        if (mpz_sgn(dm.r.coeff(i).get()) != 0) { exact = false; break; }
-    }
+    bool exact = dm.r.is_zero();
     std::printf("  %s: G_B-quotient charpoly exactly divides BP-core charpoly? %s\n",
                 name, exact ? "YES" : "no");
     return exact;

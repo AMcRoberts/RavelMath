@@ -240,32 +240,27 @@ private:
     void ensure_exact_qbeta() const {
         if (exact_qbeta_initialized_) return;
         exact_qbeta_initialized_ = true;
-        // Compute char poly of M (high-first format from barge.hpp).
+        // Compute char poly of M exactly (arbitrary precision; the
+        // substitution incidence matrix is small in practice, but
+        // there is no reason to round-trip through the checked
+        // long-long path -- see docs/RECOVERY_AUDIT_2026-07-29.md
+        // queue item Q4).  charpoly_PolyZ already returns
+        // coefficients low-first (coeff(k) = coefficient of x^k),
+        // which is exactly R.charpoly_'s own convention, so no
+        // reordering is needed.
         std::vector<std::vector<long long>> Mll(d, std::vector<long long>(d, 0));
         for (std::size_t i = 0; i < d; ++i)
             for (std::size_t j = 0; j < d; ++j)
                 Mll[i][j] = M[i][j];
-        std::vector<long long> cp_hf = charpoly_int(Mll);
-        // Convert from high-first (cp[0]=1, cp[1] = c[d-1], ..., cp[d]=c[0])
-        // to low-first (c[0], c[1], ..., c[d-1]).
-        // c[i] = cp_hf[d - i]  (the coefficient of x^i in the char poly).
-        if (cp_hf.size() != d + 1) {
+        mathlib::PolyZ cp = charpoly_PolyZ(Mll);
+        if (cp.degree() != static_cast<long long>(d)) {
             // degenerate; fall back
             exact_qbeta_initialized_ = false;
             return;
         }
-        std::vector<long long> cp_lf(d);
-        for (std::size_t i = 0; i < d; ++i) cp_lf[i] = cp_hf[d - i];
-        // Build the Q(β) ring from low-first coeffs.
+        // Build the Q(β) ring from the exact charpoly.
         mathlib::QBetaRing R;
-        // R.from_low_first takes an initializer_list; we need to
-        // build the PolyZ directly.  We emulate by setting
-        // R.charpoly_ to a PolyZ with the right coeffs.
-        R.charpoly_ = mathlib::PolyZ();
-        R.charpoly_.ensure_size(d + 1);
-        for (std::size_t k = 0; k < d; ++k) {
-            mathlib::set_si(R.charpoly_.coeff(k), cp_lf[k]);
-        }
+        R.charpoly_ = cp;
         mathlib::set_si(R.charpoly_.coeff(d), 1);  // leading
         exact_R_ = R;
         exact_d_ = d;

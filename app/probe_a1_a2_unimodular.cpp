@@ -146,15 +146,6 @@ std::vector<std::vector<std::int8_t>> sigma2_three_letter() {
     return {{0, 0, 1}, {0, 0, 2}, {0}};
 }
 
-// Helper to convert charpoly_int output to "high-first" rep.
-// charpoly_int returns low-first (mathlib PolyZ convention);
-// check_exact_factor expects high-first (constant term last).  Trivial
-// in-place conversion.  This is the same direction as the
-// involution_helpers.hpp::from_high_first but reversed.
-std::vector<long long> reverse_low_to_high(std::vector<long long> low) {
-    std::reverse(low.begin(), low.end());
-    return low;
-}
 
 // Apply the σ_{a,b} generation to a batch, run both probes, print a
 // row per candidate, then a summary at the end.
@@ -276,23 +267,41 @@ ProbeRow run_one(const std::string& label,
 
     // Check if Q_sym_GB is exactly x^k * Q_sym_BP (the A1 claim).
     //   charpoly(Q_sym_GB) / charpoly(Q_sym_BP) == x^k
-    // charpoly_int returns low-first (mathlib PolyZ layout, constant
-    // first); check_exact_factor expects high-first (constant last).
-    // The constructions are over the rationals, so charpoly_int
-    // gives bit-exact integer polynomials (no precision loss).
-    auto charpoly_gb_qsym = charpoly_int(gb_qsym.Qsym);
-    auto charpoly_bp_qsym = charpoly_int(bp_qsym.Qsym);
-    auto charpoly_gb_qsym_hf = reverse_low_to_high(charpoly_gb_qsym);
-    auto charpoly_bp_qsym_hf = reverse_low_to_high(charpoly_bp_qsym);
+    //
+    // FIX (2026-07-29, docs/RECOVERY_AUDIT_2026-07-29.md queue item
+    // Q4 follow-up): this used to reverse charpoly_int's output
+    // before calling check_exact_factor, on the mistaken belief that
+    // charpoly_int returns low-first. It actually returns high-first
+    // (verified empirically; see include/ravel/barge.hpp), which is
+    // exactly what check_exact_factor's from_high_first expects --
+    // proof: from_high_first(hf).coeff(i) = hf[n-1-i], and
+    // charpoly_int(M)[k] = coefficient of x^(n-k), so
+    // from_high_first(charpoly_int(M)).coeff(i) = coefficient of
+    // x^i, the true polynomial, with NO reversal needed. The extra
+    // reversal computed something else -- provably NOT the same
+    // question -- that happened to agree with the correct answer on
+    // the Tribonacci control only because whole == x^k*factor
+    // exactly makes the wrongly-reversed comparison degenerate into
+    // "does this polynomial divide itself" (trivially true regardless
+    // of k). Cross-checked against the ORIGINAL Finding 4 source
+    // (app/gb_bp_matrix_equality.cpp), which computes this via
+    // mathlib::charpoly_faddeev_leverrier + mathlib::divmod directly
+    // on native (low-first) PolyZ with no high/low-first conversion
+    // at all -- i.e. exactly the direct (unreversed) path here.
+    // Migrated to charpoly_PolyZ at the same time (removes the
+    // checked-long-long overflow risk on what can be a large
+    // quotient; the reversal was the only obstacle to that migration
+    // before, since it was ambiguous which behavior to preserve).
+    auto charpoly_gb_qsym = charpoly_PolyZ(gb_qsym.Qsym);
+    auto charpoly_bp_qsym = charpoly_PolyZ(bp_qsym.Qsym);
     bool exact = check_exact_factor(
         "A1 nilpotent cofactor (Q_sym_GB / Q_sym_BP)",
-        charpoly_gb_qsym_hf, charpoly_bp_qsym_hf);
+        charpoly_gb_qsym, charpoly_bp_qsym);
     r.cofactor_is_xk = exact;
     if (exact) {
-        // The cofactor's degree k = deg(whole) - deg(factor); both
-        // charpoly_int outputs are deg+1 in length.
-        long k = static_cast<long>(charpoly_gb_qsym.size())
-                 - static_cast<long>(charpoly_bp_qsym.size());
+        // The cofactor's degree k = deg(whole) - deg(factor).
+        long k = static_cast<long>(charpoly_gb_qsym.degree())
+                 - static_cast<long>(charpoly_bp_qsym.degree());
         r.cofactor_k = k;
     } else {
         r.cofactor_k = -1;

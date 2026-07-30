@@ -51,11 +51,16 @@
 //     requires n ≫ 10⁴ and product-class c² much larger than the
 //     5·13·...·61 used here.  The c² = product of 8 small primes has
 //     r(c²) = 1024 — informative but not asymptotic.
-//   - The Pisot / cut-and-project connection is in
-//     tests/rauzy_fractal_unit_distance_test.cpp (and the docs/
-//     FAMILY_OF_FAMILIES.md "Generalization to non-cube shapes"
-//     section); this test exercises the closed-form c²-spaced grid
-//     and is independent of Pisot.
+//   - A Pisot / cut-and-project connection was attempted in
+//     tests/rauzy_fractal_unit_distance_test.cpp and removed
+//     (non-evidentiary and mathematically wrong on its own terms:
+//     an always-passing exit code, a claimed mod-5 "sublattice"
+//     that is not closed under addition, and a "2D projection"
+//     that never discarded the expanding coordinate).  See
+//     docs/FAMILY_OF_FAMILIES.md "Generalization to non-cube
+//     shapes" for the still-open connection; no executable
+//     currently tests it.  This test exercises the closed-form
+//     c²-spaced grid and is independent of Pisot.
 //   - Per the project's citation discipline: balanced-pair algorithms
 //     are classical; the c² grid construction in this exact form is
 //     the OpenAI 2025/2026 contribution; Sawin's explicit exponent
@@ -212,8 +217,10 @@ long long min_hosting_k(long long c2) {
     return best;
 }
 
-// Sawin's asymptotic sanity gate.  For any n points in the plane,
-// u(n) ≥ n^{1.014} (Sawin, arXiv:2605.20579).  For a fixed c²
+// Finite-k convergence target for THIS construction (not Sawin's
+// n^{1.014} asymptotic regime -- see docs/RECOVERY_AUDIT_2026-07-29.md
+// finding A6: that regime is a separate, unproven-here claim about
+// the maximum over all planar point sets).  For a fixed c²
 // construction with k >> min_k and "balanced" c² (every
 // representation (Δi, Δj) has |Δi|, |Δj| ≪ k), each of the
 // r(c²) signed representations contributes k² (modulo the ±
@@ -222,12 +229,11 @@ long long min_hosting_k(long long c2) {
 //   pairs ≈ r(c²) · k² / 2
 //         = 2^{kfac + 1} · k².
 //
-// Hence pairs/point → r(c²)/2 = 2^{kfac + 1}.  When the empirical
-// ratio at the largest tested k sits at this target, the c²-
-// spaced grid is in its Sawin asymptotic regime; a material gap
-// (smaller ratio) means k is not yet substantially larger than
-// min_k, the largest representation.  This function reports that
-// target.
+// Hence pairs/point → r(c²)/2 = 2^{kfac + 1} as k → ∞ for this fixed
+// c², purely from the double-counting derivation above. This
+// function reports that finite-k target so the printed ratio can be
+// read as a convergence check, not as a statement about entering
+// Sawin's asymptotic regime.
 double asymptotic_pairs_per_point_target(int kfac) {
     double target = 1.0;
     for (int i = 0; i < kfac + 1; ++i) target *= 2.0;
@@ -314,14 +320,18 @@ int main() {
     std::printf("thresholds above, c² = 5·13·17·29·37·41·53·61 ≈ 7.66e9 needs\n");
     std::printf("k in the tens of thousands to host its smallest representation.\n");
 
-    // Sawin sanity gate.  For each kfac, the empirical pairs-per-point
-    // at the largest tested k is compared to the asymptotic target
-    // r(c²)/8 = 2^{kfac-1}.  A material gap means the construction has
-    // not yet entered its asymptotic regime at the chosen k; closing
-    // the gap requires k ≫ √c².
-    std::printf("\nSawin sanity gate (empirical vs asymptotic pairs/point)\n");
+    // Convergence check (NOT a "Sawin asymptotic regime" gate -- see
+    // docs/RECOVERY_AUDIT_2026-07-29.md finding A6).  For each kfac,
+    // the empirical pairs-per-point at k = 2^16 is compared to this
+    // construction's own finite-k target r(c²)/2^{kfac+1}, derived
+    // above from exact double-counting of the r(c²) representations.
+    // That convergence (ratio -> 1 as k grows) is a property of this
+    // specific closed-form count; it is not Sawin's n^{1.014} lower
+    // bound and no fixed ratio threshold has been proved to mark
+    // entry into that asymptotic regime, so none is asserted here.
+    std::printf("\nConvergence check (empirical vs finite-k target pairs/point)\n");
     std::printf("%6s  %14s  %8s  %14s  %14s  %14s  %14s\n",
-                "kfac", "c²", "k", "pairs", "pairs/pt", "asym", "ratio");
+                "kfac", "c²", "k", "pairs", "pairs/pt", "target", "ratio");
     const long long k_sanity = 1L << 16;  // 65536
     for (int kfac = 1; kfac <= 6; ++kfac) {
         const long long c2 = c2_with_k_primes(kfac);
@@ -330,18 +340,19 @@ int main() {
                 static_cast<int>(k_sanity));
             const double ratio_at = static_cast<double>(pairs)
                                   / static_cast<double>(k_sanity * k_sanity);
-            const double asym = asymptotic_pairs_per_point_target(kfac);
-            const double ratio = (asym > 0.0) ? ratio_at / asym : 0.0;
-            std::printf("%6d  %14lld  %8ld  %14lld  %14.6f  %14.4f  %14.4f\n",
-                        kfac, c2, k_sanity, pairs, ratio_at, asym, ratio);
+            const double target = asymptotic_pairs_per_point_target(kfac);
+            const double ratio = (target > 0.0) ? ratio_at / target : 0.0;
+            std::printf("%6d  %14lld  %8lld  %14lld  %14.6f  %14.4f  %14.4f\n",
+                        kfac, c2, k_sanity, pairs, ratio_at, target, ratio);
         } else {
-            std::printf("%6d  %14lld  %8ld  (k < min_k, count is zero)\n",
+            std::printf("%6d  %14lld  %8lld  (k < min_k, count is zero)\n",
                         kfac, c2, k_sanity);
         }
     }
-    std::printf("\nRatio → 1 as k → ∞.  Below ~0.3 at k = 2^16 means the c²-\n");
-    std::printf("spaced grid is not yet in its Sawin asymptotic regime for\n");
-    std::printf("that c²; closing requires either larger k or larger c².\n");
+    std::printf("\nRatio -> 1 as k -> infinity for fixed c², by the exact\n");
+    std::printf("double-counting derivation above; the values printed are\n");
+    std::printf("the measured ratios at k = 2^16 and are not evidence for\n");
+    std::printf("or against Sawin's separate n^{1.014} asymptotic claim.\n");
 
     std::printf("\nConclusion: the O(r(c²)) algorithm reproduces the\n");
     std::printf("brute-force O(k²) count to all checked parameters; the\n");

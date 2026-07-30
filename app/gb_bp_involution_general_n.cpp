@@ -225,7 +225,10 @@ std::pair<int, int> check_involution_on_core(const ContactBoundaryReport& rep,
     return {matched, static_cast<int>(orig_idx.size())};
 }
 
-std::vector<long long> gb_core_quotient_charpoly(const ContactBoundaryReport& rep, bool* is_pure_pairing) {
+// Exact, arbitrary-precision (not checked long-long): these
+// quotients can be large. See
+// docs/RECOVERY_AUDIT_2026-07-29.md queue item Q4.
+mathlib::PolyZ gb_core_quotient_charpoly(const ContactBoundaryReport& rep, bool* is_pure_pairing) {
     auto gb_graph = WeightedDigraph::from_dense(rep.gb_matrix);
     auto [core, orig_idx] = extract_recurrent_core(gb_graph);
     (void)orig_idx;
@@ -236,9 +239,9 @@ std::vector<long long> gb_core_quotient_charpoly(const ContactBoundaryReport& re
     for (const auto& [c, cnt] : class_size) {
         if (cnt != 2) *is_pure_pairing = false;
     }
-    if (!*is_pure_pairing) return {};
+    if (!*is_pure_pairing) return mathlib::PolyZ();
     auto Q = quotient_matrix(core, p);
-    return charpoly_int(Q);
+    return charpoly_PolyZ(Q);
 }
 
 // Recurrent-core dense-matrix extraction, shared by bp_core_charpoly,
@@ -257,30 +260,16 @@ std::vector<std::vector<long long>> recurrent_core_dense_matrix(
     return dense;
 }
 
-std::vector<long long> bp_core_charpoly(const SubstitutionRule& rule) {
+mathlib::PolyZ bp_core_charpoly(const SubstitutionRule& rule) {
     auto bp = balanced_pair_transition_graph(rule);
-    return charpoly_int(recurrent_core_dense_matrix(bp.matrix));
+    return charpoly_PolyZ(recurrent_core_dense_matrix(bp.matrix));
 }
 
-mathlib::PolyZ from_high_first(std::vector<long long> hf) {
-    mathlib::PolyZ p;
-    std::size_t n = hf.size();
-    p.ensure_size(n);
-    for (std::size_t i = 0; i < n; ++i) mathlib::set_si(p.coeff(i), hf[n - 1 - i]);
-    return p;
-}
-
-bool check_exact_factor(const char* name, std::vector<long long> whole_hf,
-                         std::vector<long long> factor_hf) {
-    while (factor_hf.size() > 1 && factor_hf.back() == 0) factor_hf.pop_back();
-    if (whole_hf.empty() || factor_hf.empty()) return false;
-    auto whole = from_high_first(whole_hf);
-    auto factor = from_high_first(factor_hf);
+bool check_exact_factor(const char* name, const mathlib::PolyZ& whole,
+                         const mathlib::PolyZ& factor) {
+    if (whole.is_zero() || factor.is_zero()) return false;
     auto dm = mathlib::divmod(whole, factor);
-    bool exact = true;
-    for (std::size_t i = 0; i < dm.r.coeffs_.size(); ++i) {
-        if (mpz_sgn(dm.r.coeff(i).get()) != 0) { exact = false; break; }
-    }
+    bool exact = dm.r.is_zero();
     std::printf("  %s: G_B-quotient charpoly exactly divides BP-core charpoly? %s\n",
                 name, exact ? "YES" : "no");
     return exact;
@@ -355,7 +344,7 @@ void diagnose_dominant_scc(const char* name, const ContactBoundaryReport& rep,
         return;
     }
     auto Q = quotient_matrix(dom_core, p);
-    auto dom_quotient_charpoly = charpoly_int(Q);
+    auto dom_quotient_charpoly = charpoly_PolyZ(Q);
 
     // BP-core: check its own recurrent structure too, for the same reason.
     auto bp = balanced_pair_transition_graph(rule);
@@ -369,7 +358,7 @@ void diagnose_dominant_scc(const char* name, const ContactBoundaryReport& rep,
     }
     auto [bp_dom_core, bp_dom_idx] = extract_dominant_recurrent_core(bp_graph, g_max_iters);
     (void)bp_dom_idx;
-    auto bpc = charpoly_int([&]() {
+    auto bpc = charpoly_PolyZ([&]() {
         std::vector<std::vector<long long>> dense(bp_dom_core.n,
                                                     std::vector<long long>(bp_dom_core.n, 0));
         for (std::size_t u = 0; u < bp_dom_core.n; ++u) {

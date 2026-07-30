@@ -631,7 +631,11 @@ inline PisotProperties compute_pisot_properties(
     p.beta = sp.beta;
     p.b2 = sp.b2;
 
-    // Charpoly in high-first order.
+    // Charpoly in high-first order. charpoly_int (checked long-long)
+    // is kept here: M is the substitution incidence matrix, sized by
+    // alphabet size (small in every tested case), so overflow risk
+    // is negligible. See docs/RECOVERY_AUDIT_2026-07-29.md queue
+    // item Q4 for the migration policy this follows.
     auto cp = charpoly_int(M);
     p.charpoly_high_first.assign(cp.rbegin(), cp.rend());
 
@@ -680,19 +684,29 @@ inline PisotProperties compute_pisot_properties(
             p.a2_total = total;
             p.a2_involution_exact = (matched == total && total > 0);
 
+            // FIX (2026-07-29, docs/RECOVERY_AUDIT_2026-07-29.md
+            // queue item Q4 follow-up): this used to reverse
+            // charpoly_int's output before calling check_exact_factor
+            // -- the same erroneous reversal as
+            // app/probe_a1_a2_unimodular.cpp's A1 check had (see the
+            // detailed note there for the from_high_first proof and
+            // the cross-check against the original Finding 4 source,
+            // app/gb_bp_matrix_equality.cpp, which uses
+            // charpoly_faddeev_leverrier + divmod directly on native
+            // PolyZ with no reversal). Fixed the same way here, which
+            // also removes the checked-long-long overflow risk on
+            // what can be a large quotient (the actual Q4 target).
             auto gb_qsym = compute_gb_sym_quotient<3>(rep, rule_obj);
             auto bp_qsym = compute_bp_sym_quotient(rule_obj);
             if (gb_qsym.num_orbits > 0 && bp_qsym.num_orbits > 0) {
-                auto ch_gb = charpoly_int(gb_qsym.Qsym);
-                auto ch_bp = charpoly_int(bp_qsym.Qsym);
-                std::vector<long long> ch_gb_hf(ch_gb.rbegin(), ch_gb.rend());
-                std::vector<long long> ch_bp_hf(ch_bp.rbegin(), ch_bp.rend());
+                auto ch_gb = charpoly_PolyZ(gb_qsym.Qsym);
+                auto ch_bp = charpoly_PolyZ(bp_qsym.Qsym);
                 bool exact = check_exact_factor("Pisot probe (Q_sym_GB / Q_sym_BP)",
-                                                 ch_gb_hf, ch_bp_hf);
+                                                 ch_gb, ch_bp);
                 p.a1_xk = exact;
                 if (exact) {
-                    p.a1_k = static_cast<long>(ch_gb.size()) -
-                              static_cast<long>(ch_bp.size());
+                    p.a1_k = static_cast<long>(ch_gb.degree()) -
+                              static_cast<long>(ch_bp.degree());
                 }
             }
         }

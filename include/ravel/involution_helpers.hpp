@@ -18,12 +18,16 @@
 //     "EXACT" vs "partial" coverage.
 //   - recurrent_core_dense_matrix(M): extracts the largest recurrent
 //     SCC of a dense matrix as a fresh dense vector-of-vector.
-//   - bp_core_charpoly(rule): the exact integer charpoly of the
-//     balanced-pair transition graph's recurrent core (used in the
-//     cofactor divisibility check).
+//   - bp_core_charpoly_PolyZ(rule): the exact, arbitrary-precision
+//     charpoly of the balanced-pair transition graph's recurrent
+//     core (used in the cofactor divisibility check).
+//     bp_core_charpoly(rule) is the legacy checked-long-long
+//     wrapper.
 //   - check_exact_factor(name, whole, factor): does whole / factor
 //     over math::PolyZ with exact integer arithmetic and reports
 //     whether the remainder is zero; prints YES/no to stdout.
+//     Overloaded for PolyZ operands directly, or for legacy
+//     vector<long long> (high-first) operands.
 //
 // All functions are header-only; no link-time conflict with the
 // existing gb_bp_involution_general_n.cpp (which still has its own
@@ -159,10 +163,25 @@ recurrent_core_dense_matrix(const std::vector<std::vector<long long>>& full_matr
 // Balanced-pair core's charpoly (the divisor in the cofactor check)
 // =====================================================================
 
+// Exact, arbitrary-precision balanced-pair core charpoly. The
+// recurrent core can grow with the substitution's complexity, so
+// this is exactly the "large-graph characteristic polynomial"
+// consumer flagged in docs/RECOVERY_AUDIT_2026-07-29.md queue item
+// Q4: compute it with charpoly_PolyZ, not the checked long-long
+// charpoly_int, so a genuinely large core never throws away the
+// computation.
+inline mathlib::PolyZ
+bp_core_charpoly_PolyZ(const SubstitutionRule& rule) {
+    auto bp = balanced_pair_transition_graph(rule);
+    return charpoly_PolyZ(recurrent_core_dense_matrix(bp.matrix));
+}
+
+// Legacy checked-long-long surface, kept for callers that still want
+// a vector<long long>; throws std::overflow_error if a true
+// coefficient doesn't fit. Prefer bp_core_charpoly_PolyZ directly.
 inline std::vector<long long>
 bp_core_charpoly(const SubstitutionRule& rule) {
-    auto bp = balanced_pair_transition_graph(rule);
-    return charpoly_int(recurrent_core_dense_matrix(bp.matrix));
+    return polyZ_to_long_long_vec(bp_core_charpoly_PolyZ(rule));
 }
 
 // =====================================================================
@@ -177,22 +196,34 @@ inline mathlib::PolyZ from_high_first(std::vector<long long> hf) {
     return p;
 }
 
+// Core PolyZ-native check: does `factor` exactly divide `whole`?
+// Callers computing either polynomial from a matrix that might be
+// large should build the mathlib::PolyZ directly (e.g. via
+// bp_core_charpoly_PolyZ / charpoly_PolyZ) and call this overload,
+// rather than routing through the checked vector<long long> surface.
+inline bool check_exact_factor(const char* name,
+                              const mathlib::PolyZ& whole,
+                              const mathlib::PolyZ& factor) {
+    if (whole.is_zero() || factor.is_zero()) return false;
+    auto dm = mathlib::divmod(whole, factor);
+    bool exact = dm.r.is_zero();
+    std::printf("  %s: charpoly(whole) / charpoly(factor) exact? %s%s\n",
+                name, exact ? "YES" : "no",
+                exact ? "  (cofactor is the x^k nilpotent part)" : "");
+    return exact;
+}
+
+// Legacy checked-long-long surface: converts both inputs to PolyZ
+// and delegates.  Kept for literal/small hardcoded polynomial
+// callers (see tests/involution_helpers_test.cpp); a caller that
+// already has PolyZ operands should call the overload above instead.
 inline bool check_exact_factor(const char* name,
                               std::vector<long long> whole_hf,
                               std::vector<long long> factor_hf) {
     while (factor_hf.size() > 1 && factor_hf.back() == 0) factor_hf.pop_back();
     if (whole_hf.empty() || factor_hf.empty()) return false;
-    auto whole = from_high_first(whole_hf);
-    auto factor = from_high_first(factor_hf);
-    auto dm = mathlib::divmod(whole, factor);
-    bool exact = true;
-    for (std::size_t i = 0; i < dm.r.coeffs_.size(); ++i) {
-        if (mpz_sgn(dm.r.coeff(i).get()) != 0) { exact = false; break; }
-    }
-    std::printf("  %s: charpoly(whole) / charpoly(factor) exact? %s%s\n",
-                name, exact ? "YES" : "no",
-                exact ? "  (cofactor is the x^k nilpotent part)" : "");
-    return exact;
+    return check_exact_factor(name, from_high_first(whole_hf),
+                              from_high_first(factor_hf));
 }
 
 // =====================================================================

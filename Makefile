@@ -92,6 +92,8 @@ TRANSITION_FILES := $(addprefix $(TRANSITIONS_DIR)/spectre_transitions_,$(addsuf
 .PHONY: class_ii_terminal_transport_probe
 .PHONY: class_ii_bp_family_probe
 .PHONY: csy_carry_automaton_test
+.PHONY: csy_finite_carry_automaton_test
+.PHONY: lean_class_ii_catalogue_cross_check_test
 
 all: build data apps tests
 build: $(LIB)
@@ -312,10 +314,11 @@ TESTS_DEFAULT := \
 	substitution_neighborhood_test \
 	family_of_families_test \
 	pisot_numeration_topology_test \
-	rauzy_fractal_unit_distance_test \
 	openai_unit_distance_test \
 	csy_carry_automaton_test \
-	class_ii_neighbor_d_matrix_test
+	csy_finite_carry_automaton_test \
+	class_ii_neighbor_d_matrix_test \
+	lean_class_ii_catalogue_cross_check_test
 
 tests: $(TESTS_DEFAULT)
 
@@ -407,14 +410,19 @@ $(RAUZY_FRACTAL_TEST_BIN): $(TESTDIR)/rauzy_fractal_test.cpp \
 		$(BUILDDIR)/rauzy_fractal.o
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
 
-RAUZY_FRACTAL_UNIT_DISTANCE_BIN := $(BUILDDIR)/rauzy_fractal_unit_distance_test
-rauzy_fractal_unit_distance_test: $(RAUZY_FRACTAL_UNIT_DISTANCE_BIN)
-$(RAUZY_FRACTAL_UNIT_DISTANCE_BIN): $(TESTDIR)/rauzy_fractal_unit_distance_test.cpp | $(BUILDDIR) $(MATH_LIB)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
-
 OPENAI_UNIT_DISTANCE_BIN := $(BUILDDIR)/openai_unit_distance_test
 openai_unit_distance_test: $(OPENAI_UNIT_DISTANCE_BIN)
 $(OPENAI_UNIT_DISTANCE_BIN): $(TESTDIR)/openai_unit_distance_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+LEAN_CLASS_II_CATALOGUE_CROSS_CHECK_TEST_BIN := $(BUILDDIR)/lean_class_ii_catalogue_cross_check_test
+lean_class_ii_catalogue_cross_check_test: $(LEAN_CLASS_II_CATALOGUE_CROSS_CHECK_TEST_BIN)
+$(LEAN_CLASS_II_CATALOGUE_CROSS_CHECK_TEST_BIN): $(TESTDIR)/lean_class_ii_catalogue_cross_check_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+CSY_FINITE_CARRY_AUTOMATON_TEST_BIN := $(BUILDDIR)/csy_finite_carry_automaton_test
+csy_finite_carry_automaton_test: $(CSY_FINITE_CARRY_AUTOMATON_TEST_BIN)
+$(CSY_FINITE_CARRY_AUTOMATON_TEST_BIN): $(TESTDIR)/csy_finite_carry_automaton_test.cpp | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
 FAMILY_OF_FAMILIES_TEST_BIN := $(BUILDDIR)/family_of_families_test
@@ -498,25 +506,50 @@ $(PACKED_BINARY_DYNAMICS_TEST_BIN): \
 # `make check` -- build everything and run all tests
 # ====================================================================
 
+# ====================================================================
+# Check-run stamps: `make check` used to unconditionally re-execute
+# every test/app/Lua binary on every invocation, regardless of what
+# had actually changed (compilation was already incremental via the
+# generated .d files; execution was not). Each stamp file re-runs its
+# target only when the target's binary -- or, for Lua, its sources --
+# is newer than the last passing run, mirroring ordinary Make
+# incremental-build semantics. Run `make retest` to force a full
+# re-run (clears all stamps without touching build artifacts).
+# ====================================================================
+STAMPDIR := $(BUILDDIR)/.stamps
+
+$(STAMPDIR):
+	@mkdir -p $(STAMPDIR)
+
+TEST_STAMPS := $(addprefix $(STAMPDIR)/,$(TESTS_DEFAULT))
+$(STAMPDIR)/%: $(BUILDDIR)/% | $(STAMPDIR)
+	@echo "[check] $*"
+	@./$(BUILDDIR)/$* && touch $@
+
+# Only rational_transcendentals_test is actually executed as part of
+# `make check` from APPS_DEFAULT; the others are build-only checks
+# (already covered by the `apps` prerequisite of `all`).
+APP_RUN_STAMPS := $(STAMPDIR)/rational_transcendentals_test
+
+LUA_SOURCES := $(shell find lua -type f \( -name '*.lua' -o -name '*.txt' \) 2>/dev/null)
+$(STAMPDIR)/lua_tests: $(LUA_SOURCES) $(LIB) | $(STAMPDIR)
+	@echo "[check] lua tests"
+	@cd lua && lua5.4 scripts/run_lua_tests.lua
+	@touch $@
+
+.PHONY: retest
+retest:
+	rm -f $(TEST_STAMPS) $(APP_RUN_STAMPS) $(STAMPDIR)/lua_tests
+	@echo "Cleared check-run stamps; next 'make check' re-runs everything."
+
 check: all $(LIB)
 	@$(MAKE) -C $(MATH_DIR) check
 	@echo "--- Running C++ tests ---"
-	@for t in $(TESTS_DEFAULT); do \
-		if [ -x $(BUILDDIR)/$$t ]; then \
-			echo "[check] $$t"; \
-			./$(BUILDDIR)/$$t || exit 1; \
-		fi; \
-	done
+	@$(MAKE) $(TEST_STAMPS)
 	@echo "--- Running app verifications ---"
-	@for t in $(APPS_DEFAULT); do \
-		if [ -x $(BUILDDIR)/$$t ]; then \
-			case "$$t" in \
-				rational_transcendentals_test) echo "[check] $$t"; ./$(BUILDDIR)/$$t || exit 1 ;; \
-			esac; \
-		fi; \
- 	done
+	@$(MAKE) $(APP_RUN_STAMPS)
 	@echo "--- Running Lua tests ---"
-	@cd lua && lua5.4 scripts/run_lua_tests.lua || exit 1
+	@$(MAKE) $(STAMPDIR)/lua_tests
 	@echo ""
 	@echo "All checks passed."
 

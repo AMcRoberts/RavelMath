@@ -468,8 +468,15 @@ struct DivisorComparisonResult {
                                         // for charpoly_int's O(k^4) cost;
                                         // dominant_eigenvalue_a/b (power
                                         // iteration) were used instead
-    std::vector<long long> charpoly_a;   // only populated if used_exact_charpoly
-    std::vector<long long> charpoly_b;   // only populated if used_exact_charpoly
+    // charpoly_a / charpoly_b are stored as mathlib::PolyZ so that
+    // genuinely large quotient characteristic polynomials are
+    // compared at their true coefficients rather than silently
+    // weakened via a long long overflow check (see
+    // docs/RECOVERY_AUDIT_2026-07-29.md queue item Q4).  Use
+    // polyZ_to_long_long_vec (or polyZ_to_string) when a legacy
+    // vector<long long> surface is required.
+    mathlib::PolyZ charpoly_a;           // only populated if used_exact_charpoly
+    mathlib::PolyZ charpoly_b;           // only populated if used_exact_charpoly
     bool charpoly_match = false;         // exact integer charpoly equality
                                           // (only meaningful if used_exact_charpoly)
     double dominant_eigenvalue_a = 0.0;  // power-iteration estimate, always computed
@@ -546,8 +553,8 @@ inline DivisorComparisonResult compare_divisors(
     // exact quotient-matrix equality.
     if (r.classes_a <= exact_charpoly_limit && r.classes_b <= exact_charpoly_limit) {
         r.used_exact_charpoly = true;
-        r.charpoly_a = charpoly_int(Qa);
-        r.charpoly_b = charpoly_int(Qb);
+        r.charpoly_a = charpoly_PolyZ(Qa);
+        r.charpoly_b = charpoly_PolyZ(Qb);
         r.charpoly_match = (r.charpoly_a == r.charpoly_b);
     }
     r.dominant_eigenvalue_a = dominant_eigenvalue_estimate(Qa);
