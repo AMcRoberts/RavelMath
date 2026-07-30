@@ -161,14 +161,40 @@ proof therefore remains a separate, earlier-stage problem.
 
 ## Next implementation
 
-Define the four base `A_r/B_r` catalogues and a small
-`ClassIINeighbor2GlobalInductionCertificate` that does not recompute
-local eliminations. It should consume their exact booleans, use the
-now-kernel-checked round router, record the four base-round equalities
-and the small-parameter table separately, and report the first missing
-local premise rather than a single opaque false flag. The corresponding
-theorem document can then distinguish:
+Done (2026-07-30): `ClassIINeighbor2GlobalInductionCertificate` and its
+supporting `ClassIINeighbor2BaseRoundPremises` /
+`class_ii_neighbor2_first_missing_premise` are implemented in
+`include/ravel/class_ii_neighbor2_pruning.hpp` and enrolled in
+`tests/substitution_neighborhood_test.cpp`. This is bookkeeping, not new
+mathematics: for round >= 5 it defers entirely to the already-proved
+nonbase dispatcher with no recomputation; for round in {1,2,3,4} it
+reports the honest base-premise ledger from the table above rather than
+attempting a catalogue, since no symbolic pre-Red/post-Red construction
+for these four rounds exists anywhere in this codebase. Direct search
+confirmed this before implementation:
+`class_ii_neighbor2_signed_contact_set()` (round 1's candidate `E_1`
+object) is checked only against literal corona-trace output for
+`3<=a<=8` in `app/class_ii_neighbor_probe.cpp` — exact finite evidence,
+not universal reverse inclusion. `class_ii_neighbor2_first_missing_premise(a)`
+therefore returns round 1, `open_reverse_inclusion`, for every tested
+`a`; the enrolled test asserts exactly this and is written to fail
+loudly the day a base round actually closes, so it cannot silently go
+stale into a false-green result.
+
+The corresponding theorem document can now distinguish:
 
 - local transition certificates (closed);
-- global round induction (next);
+- global round induction (still open at rounds 1-4; the induction
+  router and non-base bookkeeping are done, the four base premises are
+  not);
 - recurrent SCC exhaustion (afterward).
+
+The next real mathematical step, not yet attempted, is constructing a
+symbolic backward-envelope certificate for round 1's neighbor signed
+contact set, `plus_minus_C(tau_a) = plus_minus_C(sigma_a) union E_1`,
+by the same method that closed the center's 16-state pre-contact
+envelope in `docs/CLASS_II_CONTACT_BASE_PROOF.md`: exact affine
+category classification of the raw backward-closure branches for
+`tau_a` specifically, reduced via the Class-II cubic to a bounded
+number of `x0` slices, then closed by affine endpoint classification.
+No such construction for `tau_a` (as opposed to `sigma_a`) exists yet.

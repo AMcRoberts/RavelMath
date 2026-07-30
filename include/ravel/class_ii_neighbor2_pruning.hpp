@@ -4787,4 +4787,143 @@ class_ii_neighbor2_nonbase_post_red_catalogue(
     return result;
 }
 
+// Global induction status ledger.
+//
+// docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md's "Next implementation"
+// asks for a small object that does not recompute local eliminations,
+// consumes the existing exact booleans, uses the kernel-checked round
+// router, records the four base-round premises separately from the
+// small-parameter table, and reports the first missing local premise
+// rather than one opaque false flag. This is that object.
+//
+// For round >= 5 (stable/penultimate/terminal/repeated) this reuses
+// the existing nonbase dispatcher above with no recomputation, and
+// reports `closed`: raw-corona equality and the Red rank theorems for
+// those four phases are proved universal for a>=7 in
+// docs/THEOREM_STATUS.md ("Formalization queue" section), not merely
+// bounded-checked -- that is what licenses `closed` here rather than
+// a bounded-sweep claim.
+//
+// For round in {1,2,3,4} this does NOT attempt a catalogue: no
+// symbolic pre-Red/post-Red construction for these rounds exists
+// anywhere in this codebase (confirmed 2026-07-30 by direct search;
+// `class_ii_neighbor2_signed_contact_set()` is only checked against
+// literal corona-trace output for 3<=a<=8 in
+// `app/class_ii_neighbor_probe.cpp`, which is exact finite evidence,
+// not a universal reverse-inclusion proof). This object instead
+// reports the honest base-premise ledger from the doc's own table.
+// Do not set any base round's status to `closed` without a proved
+// certificate to cite in this comment; as of 2026-07-30 all four are
+// open.
+enum class ClassIINeighbor2InductionStatus {
+    closed,
+    open_reverse_inclusion,  // missing: raw-corona reverse inclusion
+    open_red_exclusion,      // missing: full Red exclusion
+    open_bridge,             // missing: connect to the stable theorem
+                             // whose own domain starts at round 5
+                             // (round 4 specifically)
+};
+
+struct ClassIINeighbor2BaseRoundPremises {
+    long long round = 0;
+    // Every one of these three is independently attested for every
+    // row of the base-premise table in
+    // docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md
+    // ("The four base premises, explicitly"):
+    bool center_contact_base_closed = false;      // universal 9->16->14
+    bool positive_witnesses_and_bridges_closed = false;
+        // composition witnesses, Red successors/retention/bridges,
+        // per round -- named differently per row in the doc table,
+        // but every row lists this class of premise as already closed.
+    bool window_validity_closed = false;          // stepped-hyperplane
+                                                   // membership
+    // What the doc table's own "still needed" column names for this
+    // round. Reported as a single first-missing status per the
+    // doc's explicit instruction; rounds 2 and 3 are missing BOTH
+    // reverse inclusion and Red exclusion, and this reports whichever
+    // is logically prior (reverse inclusion has to hold before a Red
+    // rank on the correct raw set is even well posed).
+    ClassIINeighbor2InductionStatus status =
+        ClassIINeighbor2InductionStatus::open_reverse_inclusion;
+};
+
+inline ClassIINeighbor2BaseRoundPremises
+class_ii_neighbor2_base_round_premises(long long round) {
+    if (round < 1 || round > 4)
+        throw std::domain_error(
+            "Class-II neighbor-2 base round premises are only named"
+            " for rounds 1..4");
+    ClassIINeighbor2BaseRoundPremises result;
+    result.round = round;
+    result.center_contact_base_closed = true;
+    result.positive_witnesses_and_bridges_closed = true;
+    result.window_validity_closed = true;
+    result.status = (round == 4)
+        ? ClassIINeighbor2InductionStatus::open_bridge
+        : ClassIINeighbor2InductionStatus::open_reverse_inclusion;
+    return result;
+}
+
+struct ClassIINeighbor2GlobalInductionCertificate {
+    long long a = 0;
+    long long round = 0;
+    bool is_base_round = false;
+    ClassIINeighbor2InductionStatus status =
+        ClassIINeighbor2InductionStatus::open_reverse_inclusion;
+    // Populated only when !is_base_round. Sizes only, not the sets
+    // themselves -- a caller that needs the literal catalogue already
+    // has class_ii_neighbor2_nonbase_pre_red_catalogue /
+    // _post_red_catalogue directly; duplicating the sets here would
+    // be exactly the "recompute a local elimination" this object is
+    // supposed to avoid.
+    std::size_t pre_red_size = 0;
+    std::size_t post_red_size = 0;
+};
+
+inline ClassIINeighbor2GlobalInductionCertificate
+class_ii_neighbor2_global_induction_certificate(
+        long long a, long long round) {
+    ClassIINeighbor2GlobalInductionCertificate result;
+    result.a = a;
+    result.round = round;
+    const auto phase = class_ii_neighbor2_global_round_phase(a, round);
+    if (phase == ClassIINeighbor2GlobalRoundPhase::base) {
+        result.is_base_round = true;
+        result.status =
+            class_ii_neighbor2_base_round_premises(round).status;
+        return result;
+    }
+    result.is_base_round = false;
+    result.status = ClassIINeighbor2InductionStatus::closed;
+    result.pre_red_size =
+        class_ii_neighbor2_nonbase_pre_red_catalogue(a, round).size();
+    result.post_red_size =
+        class_ii_neighbor2_nonbase_post_red_catalogue(a, round).size();
+    return result;
+}
+
+// Scans every round 1..a+1 in order and returns the first one whose
+// status is not `closed` -- the literal "report the first missing
+// local premise" object the doc asks for. Not reachable to return a
+// fully-closed result as of 2026-07-30: round 1 is always in domain
+// and always open, so every call with a valid `a` returns round 1,
+// open_reverse_inclusion. That is the honest current state of the
+// global occurrence theorem, not a placeholder; the enrolled test
+// below asserts exactly this, and updating that assertion is itself
+// the signal that a base round has actually closed.
+inline ClassIINeighbor2GlobalInductionCertificate
+class_ii_neighbor2_first_missing_premise(long long a) {
+    for (long long round = 1; round <= a + 1; ++round) {
+        auto cert =
+            class_ii_neighbor2_global_induction_certificate(a, round);
+        if (cert.status != ClassIINeighbor2InductionStatus::closed)
+            return cert;
+    }
+    ClassIINeighbor2GlobalInductionCertificate all_closed;
+    all_closed.a = a;
+    all_closed.round = 0;
+    all_closed.status = ClassIINeighbor2InductionStatus::closed;
+    return all_closed;
+}
+
 } // namespace ravel

@@ -86,6 +86,76 @@ int main() {
         " named-nonbase=%zu base-rejected=%d\n",
         named_nonbase_catalogues,
         base_catalogue_rejected ? 1 : 0);
+
+    // ClassIINeighbor2GlobalInductionCertificate: reports the base
+    // premise ledger for rounds 1..4 and, for round >= 5, defers
+    // entirely to the already-checked nonbase dispatcher above (no
+    // recomputation). As of 2026-07-30 rounds 1-3 are missing reverse
+    // inclusion and round 4 is missing the bridge to the stable
+    // theorem; round 1 is always the first missing premise. This test
+    // intentionally fails loudly if a future session marks a base
+    // round `closed` without also updating this assertion.
+    bool induction_ledger_ok = true;
+    {
+        const auto premises1 = class_ii_neighbor2_base_round_premises(1);
+        const auto premises2 = class_ii_neighbor2_base_round_premises(2);
+        const auto premises3 = class_ii_neighbor2_base_round_premises(3);
+        const auto premises4 = class_ii_neighbor2_base_round_premises(4);
+        induction_ledger_ok = induction_ledger_ok
+            && premises1.center_contact_base_closed
+            && premises1.positive_witnesses_and_bridges_closed
+            && premises1.window_validity_closed
+            && premises1.status
+                == ClassIINeighbor2InductionStatus::open_reverse_inclusion
+            && premises2.status
+                == ClassIINeighbor2InductionStatus::open_reverse_inclusion
+            && premises3.status
+                == ClassIINeighbor2InductionStatus::open_reverse_inclusion
+            && premises4.status
+                == ClassIINeighbor2InductionStatus::open_bridge;
+        bool premises_reject_out_of_range = false;
+        try {
+            (void)class_ii_neighbor2_base_round_premises(5);
+        } catch (const std::domain_error&) {
+            premises_reject_out_of_range = true;
+        }
+        induction_ledger_ok =
+            induction_ledger_ok && premises_reject_out_of_range;
+    }
+    for (long long a = 7; a <= 32; ++a) {
+        for (long long round = 1; round <= 4; ++round) {
+            const auto cert =
+                class_ii_neighbor2_global_induction_certificate(a, round);
+            induction_ledger_ok = induction_ledger_ok
+                && cert.is_base_round
+                && cert.a == a && cert.round == round
+                && cert.pre_red_size == 0 && cert.post_red_size == 0;
+        }
+        for (long long round = 5; round <= a + 1; ++round) {
+            const auto cert =
+                class_ii_neighbor2_global_induction_certificate(a, round);
+            induction_ledger_ok = induction_ledger_ok
+                && !cert.is_base_round
+                && cert.status == ClassIINeighbor2InductionStatus::closed
+                && cert.pre_red_size
+                    == class_ii_neighbor2_nonbase_pre_red_catalogue(
+                           a, round).size()
+                && cert.post_red_size
+                    == class_ii_neighbor2_nonbase_post_red_catalogue(
+                           a, round).size();
+        }
+        const auto missing = class_ii_neighbor2_first_missing_premise(a);
+        induction_ledger_ok = induction_ledger_ok
+            && missing.round == 1
+            && missing.status
+                == ClassIINeighbor2InductionStatus::open_reverse_inclusion;
+    }
+    ok = ok && induction_ledger_ok;
+    std::printf(
+        "  neighbor 2: global induction certificate"
+        " base-ledger=1,2,3=open_reverse_inclusion 4=open_bridge"
+        " first-missing=round1 through a=32 ok=%d\n",
+        induction_ledger_ok ? 1 : 0);
     for (std::size_t a = 1; a <= 128; ++a) {
         const auto center = class_ii(a);
         const auto neighbors = adjacent_swap_neighbors(center);
