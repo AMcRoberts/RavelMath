@@ -1,0 +1,19 @@
+# Native build outputs
+/out/
+/math/out/
+
+# Python bytecode and local environments
+__pycache__/
+*.py[cod]
+.venv/
+
+# Editor, OS, and test-tool state
+.DS_Store
+*.swp
+.cache/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Generated media from exploratory scripts
+*.gif

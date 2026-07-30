@@ -1,0 +1,228 @@
+@article{SirventSolomyak2002,
+  author={Sirvent, V. F. and Solomyak, Boris},
+  title={Pure discrete spectrum for one-dimensional substitution systems of {Pisot} type},
+  journal={Canadian Mathematical Bulletin}, volume={45}, number={4},
+  pages={697--710}, year={2002}, doi={10.4153/CMB-2002-062-3}}
+
+@article{Bernat2007,
+  author={Bernat, Julien},
+  title={Study of irreducible balanced pairs for substitutive languages},
+  journal={RAIRO -- Theoretical Informatics and Applications},
+  volume={41}, pages={663--678}, year={2007},
+  doi={10.1051/ita:2007062}}
+
+@article{Thuswaldner2006,
+  author={Thuswaldner, J{\"o}rg M.},
+  title={Unimodular {Pisot} substitutions and their associated tiles},
+  journal={Journal de Th{\'e}orie des Nombres de Bordeaux},
+  volume={18}, number={2}, pages={487--536}, year={2006},
+  doi={10.5802/jtnb.556}}
+
+@misc{CartonSudberyYassawi2026,
+  author={Carton, Olivier and Sudbery, Jake and Yassawi, Reem},
+  title={From some {Pisot} numerations to topological groups},
+  year={2026}, eprint={2606.30496}, archivePrefix={arXiv},
+  primaryClass={math.DS},
+  month={Jun},
+  note={Submitted 29 Jun 2026; 29 pages, PDF at
+    \texttt{refs/arXiv\_2606.30496\_CartonSudberyYassawi2026\_
+    Pisot-numerations-topological-groups.pdf} and full text at
+    \texttt{refs/arXiv\_2606.30496\_CartonSudberyYassawi2026\_
+    Pisot-numerations-topological-groups.txt}.
+    Two pieces.  (i) Topology: for a Pisot numeration U satisfying
+    the pseudo-valuation bound $\\nu_U(x+y) \ge \\min(\\nu_U(x),
+    \\nu_U(y)) - K$ ("preserves zeros", equivalent to Frougny--
+    Solomyak Condition F for $\\beta$-numerations), the construction
+    $\\mathbb{Z}_U = G / H_U$ (where $G$ is bounded integer-valued
+    sequences and $H_U$ is the closure of finite expansions of $0$)
+    is a topological group carrying a continuous homomorphism
+    $\\Phi: \\mathbb{Z}_U \\to \\mathbb{T}^{d-1}$ onto a torus; for
+    unimodular Pisot U, $\\Phi$ is an isomorphism (Theorem 1.1).
+    (ii) Automaton: the carry propagation for $g + h$ in $\\mathbb{Z}_U$
+    is accepted by a finite deterministic automaton (after Messaoudi
+    1998), and the homomorphic image factors through this automaton's
+    state set.  Both pieces matter to this project: (i) makes the
+    existing F-check (`include/adelic/coincidence_and_property_f.hpp`)
+    the precondition for applying the topological iso to the unimodular
+    Class-II $\\sigma_{a,1}$ family, and (ii) is exactly what
+    `math/pisot_numeration_topology.hpp`'s `bifix_code` and `group_add`
+    approximate; the integer-value carry we use is the homomorphic
+    image of the automaton's exact carry, so $\\pi(a+b) = \\pi(a) +
+    \\pi(b) \\bmod 1$ holds up to the finite-crossing correction
+    recorded as a future obligation in the CSY test header.}}
+
+@article{HoriikeFujishiro2025,
+  author={Horiike, Yoshiaki and Fujishiro, Shin},
+  title={Orthogonal projections of hypercubes},
+  journal={Physical Review E}, volume={112}, number={4}, pages={045304},
+  year={2025}, doi={10.1103/v291-9hxy},
+  note={arXiv:2501.10257; PCA-projected hypercubes for visualizing
+    high-dimensional binary state spaces, with analytical error
+    bounds and a peripheral-band pathway theorem.  Touches the
+    cut-and-project vocabulary used in the project's family-of-families
+    organization but applies to Ising spin-ice rather than Pisot
+    numerations directly.}}
+
+@misc{Williams2026OpenAIUnitDistance,
+  author={Williams, Kai},
+  title={An OpenAI model solved a famous math problem that stumped humans
+    for 80 years},
+  year={2026}, month={Jun},
+  howpublished={Ars Technica},
+  note={Source: \texttt{https://arstechnica.com/ai/2026/06/openais-math-breakthrough-played-to-ais-strengths/}.
+    The OpenAI model disproved the Erdős unit distance conjecture by
+    constructing an algebraic-integer grid in higher dimensions and
+    projecting to 2D.  This is the cut-and-project construction applied
+    with a non-trivial tile (algebraic integer lattice, not the unit
+    cube), showing that the unit-distance count grows as n^1.014 rather
+    than n^{1 + c/log log n} (Erdős's lower bound).  The relevant
+    connection to this project: the family-of-families machinery in
+    \texttt{docs/FAMILY\_OF\_FAMILIES.md} now has a concrete reason
+    to look at non-unit-cube tile shapes (algebraic integer tiles,
+    simplices, cross-polytopes) rather than just the unit cube.  The
+    Pisot number is unchanged; the boundary compactness is the gain.
+    Local copy of the underlying arXiv / OpenAI PDFs lives under
+    \texttt{refs/} alongside this bibtex.}}
+
+@misc{OpenAIUnitDistance2026,
+  author={{OpenAI Research}},
+  title={An OpenAI model has disproved a central conjecture in discrete
+    geometry},
+  year={2026}, month={May},
+  howpublished={OpenAI Blog},
+  note={Source: \texttt{https://openai.com/index/model-disproves-discrete-geometry-conjecture/}.
+    The original OpenAI internal-model proof of the disproof of the
+    Erdős unit distance conjecture.  Constructed an infinite family of
+    planar point sets with superlinear unit-distance count, disproving
+    Erdős's 80-year-old conjecture.  The key idea is a higher-
+    dimensional algebraic-integer grid projected to 2D, bringing
+    algebraic number theory (Golod-Shafarevich, Ellenberg-Venkatesh,
+    Hajir-Maire-Ramakrishna) to bear on an elementary geometric
+    problem.  Connection to the Rauzy-fractal machinery in this
+    project: the unit-distance count of the projected Rauzy fractal
+    depends on the tile shape; algebraic-integer tiles give a strictly
+    more compact Rauzy fractal than unit-cube tiles, while the Pisot
+    contraction rate is the same.
+    Local PDF: \texttt{refs/OpenAI-Research-2026\_unit-distance-proof.pdf};
+    companion human-verified remarks: \texttt{refs/OpenAI-Research-2026\_
+    unit-distance-remarks.pdf}.}}
+
+@misc{AlonEtAl2026UnitDistanceRemarks,
+  author={Alon, Noga and Bloom, Thomas F. and Gowers, W. T. and
+    Litt, Daniel and Sawin, Will and Shankar, Arul and Tsimerman,
+    Jacob and Wang, Victor and Wood, Melanie Matchett},
+  title={Remarks on the disproof of the unit distance conjecture},
+  year={2026}, eprint={2605.20695}, archivePrefix={arXiv},
+  primaryClass={math.CO},
+  month={May},
+  note={arXiv:2605.20695, 12 pages.  Human-verified digest of the
+    OpenAI disproof of the Erdős unit distance conjecture.  Confirms
+    the superlinear unit-distance count.  Local PDF:
+    \texttt{refs/arXiv\_2605.20695\_AlonEtAl2026\_
+    Remarks-disproof-unit-distance.pdf}.}}
+
+@misc{Sawin2026ExplicitUnitDistance,
+  author={Sawin, Will},
+  title={An explicit lower bound for the unit distance problem},
+  year={2026}, eprint={2605.20579}, archivePrefix={arXiv},
+  primaryClass={math.CO},
+  month={May},
+  note={arXiv:2605.20579, 3 pages.  Improves the disproof of the unit
+    distance conjecture to give the explicit exponent δ = 0.014
+    (i.e., the unit-distance count grows as n^1.014).  Uses algebraic
+    number theory (Golod-Shafarevich, infinite class field towers).
+    This is the cleanest "lower-bound with explicit exponent" form of
+    the OpenAI result.  Local PDF: \texttt{refs/arXiv\_2605.20579\_
+    Sawin2026\_explicit-lower-bound-unit-distance.pdf}.}}
+
+
+
+@misc{LoridantThuswaldnerZhang2026,
+  author={Loridant, Beno{\^i}t and Thuswaldner, J{\"o}rg M. and Zhang, Shu-Qin},
+  title={Neighbors of self-affine tiles and {Rauzy} Fractals},
+  year={2026}, eprint={2511.16442}, archivePrefix={arXiv},
+  note={Version dated 2026-03-22}}
+
+@article{ArnouxIto2001,
+  author={Arnoux, Pierre and Ito, Shunji},
+  title={Pisot substitutions and {Rauzy} fractals},
+  journal={Bulletin of the Belgian Mathematical Society -- Simon Stevin},
+  volume={8}, pages={181--207}, year={2001},
+  doi={10.36045/bbms/1102714169}}
+
+@article{MinervinoThuswaldner2014,
+  author={Minervino, Milton and Thuswaldner, J{\"o}rg M.},
+  title={The geometry of non-unit {Pisot} substitutions},
+  journal={Annales de l'Institut Fourier}, volume={64}, number={4},
+  pages={1373--1417}, year={2014}, doi={10.5802/aif.2884}}
+
+@article{MauldinWilliams1988,
+  author={Mauldin, R. Daniel and Williams, S. C.},
+  title={Hausdorff dimension in graph directed constructions},
+  journal={Transactions of the American Mathematical Society},
+  volume={309}, number={2}, pages={811--829}, year={1988},
+  doi={10.2307/2000925}}
+
+@article{Barge2018,
+  author={Barge, Marcy},
+  title={The {Pisot} conjecture for beta-substitutions},
+  journal={Ergodic Theory and Dynamical Systems}, volume={38},
+  number={1}, pages={1--26}, year={2018},
+  doi={10.1017/etds.2016.29}}
+
+@article{Grimm2015,
+  author={Grimm, Uwe},
+  title={Aperiodic crystals and beyond},
+  journal={Acta Crystallographica Section B},
+  volume={71}, pages={258--274}, year={2015},
+  doi={10.1107/S2052520615008409}}
+
+@article{TsessesEtAl2025,
+  author={Tsesses, Shai and Dreher, Pascal and Janoschka, David and
+    Neuhaus, Alexander and Cohen, Kobi and Meiler, Tim C. and
+    Bucher, Tomer and Sapir, Shay and Frank, Bettina and
+    Davis, Timothy J. and Meyer zu Heringdorf, Frank and
+    Giessen, Harald and Bartal, Guy},
+  title={Four-dimensional conserved topological charge vectors in
+    plasmonic quasicrystals},
+  journal={Science}, volume={387}, number={6734},
+  pages={644--648}, year={2025},
+  doi={10.1126/science.adt2495}}
+
+@article{Sellami2010,
+  author={Sellami, Tarek},
+  title={Geometry of the common dynamics of {Pisot} substitutions
+    with the same incidence matrix},
+  journal={Comptes Rendus Mathematique}, volume={348},
+  number={17--18}, pages={1005--1008}, year={2010},
+  doi={10.1016/j.crma.2010.07.030}}
+
+@article{ArnouxMizutaniSellami2014,
+  author={Arnoux, Pierre and Mizutani, Masahiro and Sellami, Tarek},
+  title={Random product of substitutions with the same incidence
+    matrix},
+  journal={Theoretical Computer Science}, volume={543},
+  pages={68--78}, year={2014},
+  doi={10.1016/j.tcs.2014.05.036}}
+
+@article{SellamiSirvent2016,
+  author={Sellami, Tarek and Sirvent, V. F.},
+  title={Symmetric and congruent {Rauzy} fractals},
+  journal={Indagationes Mathematicae}, volume={27}, number={3},
+  pages={799--820}, year={2016},
+  doi={10.1016/j.indag.2016.01.011}}
+
+@article{BaakeLenz2005,
+  author={Baake, Michael and Lenz, Daniel},
+  title={Deformation of {Delone} dynamical systems and pure point
+    diffraction},
+  journal={Journal of Fourier Analysis and Applications},
+  volume={11}, pages={125--150}, year={2005},
+  doi={10.1007/s00041-005-4021-1}}
+
+@article{GohlkeMitchellRustSamuel2026,
+  author={Gohlke, P. and Mitchell, A. and Rust, D. and Samuel, T.},
+  title={Rauzy fractals of random substitutions},
+  journal={Advances in Mathematics}, volume={485},
+  pages={110713}, year={2026},
+  doi={10.1016/j.aim.2025.110713}}

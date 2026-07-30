@@ -1,0 +1,21 @@
+# Per-Spectre transition table for parent hex P
+# columns: child_index spectre_edge parent_edge neighbour source
+# child_index: 0 = dominant Spectre, 1 = inner child (G only)
+# spectre_edge: 0..13 (Tatham's labelling)
+# parent_edge: the parent hex edge (0..5) that this Spectre edge sits on
+# neighbour: hex kind on the other side (from outer table)
+# source: geometric (from polygon centroid) or closest-segment fallback
+child=0 edge= 0 parent_edge=0 neighbour=G   source=closest-segment
+child=0 edge= 1 parent_edge=1 neighbour=F   source=closest-segment
+child=0 edge= 2 parent_edge=0 neighbour=G   source=closest-segment
+child=0 edge= 3 parent_edge=2 neighbour=Y   source=closest-segment
+child=0 edge= 4 parent_edge=1 neighbour=F   source=closest-segment
+child=0 edge= 5 parent_edge=0 neighbour=G   source=closest-segment
+child=0 edge= 6 parent_edge=2 neighbour=Y   source=closest-segment
+child=0 edge= 7 parent_edge=1 neighbour=F   source=closest-segment
+child=0 edge= 8 parent_edge=0 neighbour=G   source=closest-segment
+child=0 edge= 9 parent_edge=0 neighbour=G   source=closest-segment
+child=0 edge=10 parent_edge=2 neighbour=Y   source=closest-segment
+child=0 edge=11 parent_edge=1 neighbour=F   source=closest-segment
+child=0 edge=12 parent_edge=0 neighbour=G   source=closest-segment
+child=0 edge=13 parent_edge=1 neighbour=F   source=closest-segment

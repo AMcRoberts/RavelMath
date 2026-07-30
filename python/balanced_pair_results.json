@@ -1,0 +1,37 @@
+{
+ "tribonacci": {
+  "((0, 1), (1, 0))": {
+   "terminates": true,
+   "n_irreducible": 11,
+   "all_reach_coincidence": true
+  }
+ },
+ "plastic_ab": {
+  "((0, 1), (1, 0))": {
+   "terminates": true,
+   "n_irreducible": 61,
+   "all_reach_coincidence": true
+  }
+ },
+ "plastic_ba": {
+  "((0, 1), (1, 0))": {
+   "terminates": true,
+   "n_irreducible": 61,
+   "all_reach_coincidence": true
+  }
+ },
+ "smallest_pisot": {
+  "((0, 1), (1, 0))": {
+   "terminates": true,
+   "n_irreducible": 11,
+   "all_reach_coincidence": true
+  }
+ },
+ "thue_morse": {
+  "((0, 1), (1, 0))": {
+   "terminates": true,
+   "n_irreducible": 2,
+   "all_reach_coincidence": false
+  }
+ }
+}

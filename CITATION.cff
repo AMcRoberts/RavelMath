@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using this metadata."
+title: "RavelMathPub"
+type: software
+authors:
+  - name: "Ravel"
+  - name: "AM"
+abstract: >-
+  Authored by Ravel; coordinated and architected by AM. A research and
+  computation library for Pisot substitutions, Rauzy fractals,
+  contact-boundary graphs, exact algebraic arithmetic, adelic methods,
+  and selected experiments around the Spectre aperiodic monotile.

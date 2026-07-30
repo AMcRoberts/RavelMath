@@ -1,0 +1,80 @@
+[
+  {
+    "n_tiles": 700,
+    "max_depth": 12,
+    "n_pairs": 4000,
+    "min_pair_distance_used": 13,
+    "E00": 0.011,
+    "E01": -0.003,
+    "E10": 0.033,
+    "E11": -0.008,
+    "S": 0.049,
+    "crop_count": 700,
+    "seed": 1
+  },
+  {
+    "n_tiles": 700,
+    "max_depth": 12,
+    "n_pairs": 4000,
+    "min_pair_distance_used": 13,
+    "E00": -0.0195,
+    "E01": -0.0145,
+    "E10": -0.0155,
+    "E11": -0.0025,
+    "S": -0.047,
+    "crop_count": 700,
+    "seed": 7
+  },
+  {
+    "n_tiles": 700,
+    "max_depth": 12,
+    "n_pairs": 4000,
+    "min_pair_distance_used": 13,
+    "E00": 0.039,
+    "E01": 0.0035,
+    "E10": 0.003,
+    "E11": 0.0215,
+    "S": 0.024000000000000007,
+    "crop_count": 700,
+    "seed": 42
+  },
+  {
+    "n_tiles": 1000,
+    "max_depth": 13,
+    "n_pairs": 4000,
+    "min_pair_distance_used": 14,
+    "E00": 0.0125,
+    "E01": -0.02,
+    "E10": 0.0025,
+    "E11": 0.004,
+    "S": -0.009,
+    "crop_count": 1000,
+    "seed": 1
+  },
+  {
+    "n_tiles": 1000,
+    "max_depth": 13,
+    "n_pairs": 4000,
+    "min_pair_distance_used": 14,
+    "E00": -0.0065,
+    "E01": 0.009,
+    "E10": 0.0065,
+    "E11": 0.011,
+    "S": -0.002,
+    "crop_count": 1000,
+    "seed": 7
+  },
+  {
+    "n_tiles": 1000,
+    "max_depth": 13,
+    "n_pairs": 4000,
+    "min_pair_distance_used": 14,
+    "E00": -0.0205,
+    "E01": -0.01,
+    "E10": 0.022,
+    "E11": -0.0045,
+    "S": -0.004000000000000001,
+    "crop_count": 1000,
+    "seed": 42
+  }
+]

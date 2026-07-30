@@ -1,0 +1,326 @@
+[
+ {
+  "name": "fibonacci",
+  "n_irr": 4,
+  "margin": null,
+  "det": -1,
+  "log_det": 0.0,
+  "kernel_sum": 0.0,
+  "kernel_max_w": 0.0
+ },
+ {
+  "name": "silver_2L",
+  "n_irr": 4,
+  "margin": null,
+  "det": -1,
+  "log_det": 0.0,
+  "kernel_sum": 0.0,
+  "kernel_max_w": 0.0
+ },
+ {
+  "name": "tribonacci",
+  "n_irr": 11,
+  "margin": 0.7063685261871558,
+  "det": 1,
+  "log_det": 0.0,
+  "kernel_sum": 0.0,
+  "kernel_max_w": 0.0
+ },
+ {
+  "name": "smallest_pisot",
+  "n_irr": 11,
+  "margin": 0.5002769371373258,
+  "det": 1,
+  "log_det": 0.0,
+  "kernel_sum": 0.0,
+  "kernel_max_w": 0.0
+ },
+ {
+  "name": "plastic",
+  "n_irr": 61,
+  "margin": 0.0567032206692307,
+  "det": 1,
+  "log_det": 0.0,
+  "kernel_sum": 0.0,
+  "kernel_max_w": 0.0
+ },
+ {
+  "name": "rnd1_canon",
+  "n_irr": 131,
+  "margin": 0.11213648720615085,
+  "det": 2,
+  "log_det": 0.6931471805599453,
+  "kernel_sum": 0.6931471805599453,
+  "kernel_max_w": 0.6931471805599453
+ },
+ {
+  "name": "rnd2_canon",
+  "n_irr": 12,
+  "margin": 0.7210908232778449,
+  "det": -1,
+  "log_det": 0.0,
+  "kernel_sum": 0.0,
+  "kernel_max_w": 0.0
+ },
+ {
+  "name": "rnd2_barge",
+  "n_irr": 15,
+  "margin": 0.6042832529023077,
+  "det": -1,
+  "log_det": 0.0,
+  "kernel_sum": 0.0,
+  "kernel_max_w": 0.0
+ },
+ {
+  "name": "rnd3_canon",
+  "n_irr": 13,
+  "margin": 0.14758334695053366,
+  "det": 1,
+  "log_det": 0.0,
+  "kernel_sum": 0.0,
+  "kernel_max_w": 0.0
+ },
+ {
+  "name": "rnd3_barge",
+  "n_irr": 22,
+  "margin": 0.11859236399344432,
+  "det": 1,
+  "log_det": 0.0,
+  "kernel_sum": 0.0,
+  "kernel_max_w": 0.0
+ },
+ {
+  "name": "rnd4_canon",
+  "n_irr": 64,
+  "margin": 0.083468923749675,
+  "det": 2,
+  "log_det": 0.6931471805599453,
+  "kernel_sum": 0.6931471805599453,
+  "kernel_max_w": 0.6931471805599453
+ },
+ {
+  "name": "rnd5_canon",
+  "n_irr": 37,
+  "margin": 0.40287460308273526,
+  "det": 2,
+  "log_det": 0.6931471805599453,
+  "kernel_sum": 0.6931471805599453,
+  "kernel_max_w": 0.6931471805599453
+ },
+ {
+  "name": "rnd5_barge",
+  "n_irr": 13,
+  "margin": 0.557187690145389,
+  "det": 2,
+  "log_det": 0.6931471805599453,
+  "kernel_sum": 0.6931471805599453,
+  "kernel_max_w": 0.6931471805599453
+ },
+ {
+  "name": "rnd6_canon",
+  "n_irr": 129,
+  "margin": 0.1112134259495278,
+  "det": 2,
+  "log_det": 0.6931471805599453,
+  "kernel_sum": 0.6931471805599453,
+  "kernel_max_w": 0.6931471805599453
+ },
+ {
+  "name": "rnd7_canon",
+  "n_irr": 13,
+  "margin": 0.29767743785649126,
+  "det": 1,
+  "log_det": 0.0,
+  "kernel_sum": 0.0,
+  "kernel_max_w": 0.0
+ },
+ {
+  "name": "rnd8_canon",
+  "n_irr": 46,
+  "margin": 0.10843773573973985,
+  "det": 2,
+  "log_det": 0.6931471805599453,
+  "kernel_sum": 0.6931471805599453,
+  "kernel_max_w": 0.6931471805599453
+ },
+ {
+  "name": "rnd8_barge",
+  "n_irr": 121,
+  "margin": 0.11138884626572478,
+  "det": 2,
+  "log_det": 0.6931471805599453,
+  "kernel_sum": 0.6931471805599453,
+  "kernel_max_w": 0.6931471805599453
+ },
+ {
+  "name": "rnd9_canon",
+  "n_irr": 10,
+  "margin": 0.34770510965460766,
+  "det": 1,
+  "log_det": 0.0,
+  "kernel_sum": 0.0,
+  "kernel_max_w": 0.0
+ },
+ {
+  "name": "rnd10_canon",
+  "n_irr": 83,
+  "margin": 0.19866462858567266,
+  "det": 2,
+  "log_det": 0.6931471805599453,
+  "kernel_sum": 0.6931471805599453,
+  "kernel_max_w": 0.6931471805599453
+ },
+ {
+  "name": "rnd11_canon",
+  "n_irr": 21,
+  "margin": 0.3085987841963895,
+  "det": 1,
+  "log_det": 0.0,
+  "kernel_sum": 0.0,
+  "kernel_max_w": 0.0
+ },
+ {
+  "name": "rnd12_canon",
+  "n_irr": 23,
+  "margin": 0.13179253950007616,
+  "det": 1,
+  "log_det": 0.0,
+  "kernel_sum": 0.0,
+  "kernel_max_w": 0.0
+ },
+ {
+  "name": "rnd13_canon",
+  "n_irr": 92,
+  "margin": 0.2598150794454362,
+  "det": -2,
+  "log_det": 0.6931471805599453,
+  "kernel_sum": 0.6931471805599453,
+  "kernel_max_w": 0.6931471805599453
+ },
+ {
+  "name": "rnd14_canon",
+  "n_irr": 34,
+  "margin": 0.29846796628212136,
+  "det": 2,
+  "log_det": 0.6931471805599453,
+  "kernel_sum": 0.6931471805599453,
+  "kernel_max_w": 0.6931471805599453
+ },
+ {
+  "name": "rnd15_canon",
+  "n_irr": 50,
+  "margin": 0.06846790983571494,
+  "det": 2,
+  "log_det": 0.6931471805599453,
+  "kernel_sum": 0.6931471805599453,
+  "kernel_max_w": 0.6931471805599453
+ },
+ {
+  "name": "rnd15_barge",
+  "n_irr": 50,
+  "margin": 0.0903546214253341,
+  "det": 2,
+  "log_det": 0.6931471805599453,
+  "kernel_sum": 0.6931471805599453,
+  "kernel_max_w": 0.6931471805599453
+ },
+ {
+  "name": "rnd16_canon",
+  "n_irr": 45,
+  "margin": 0.1625137232075313,
+  "det": 2,
+  "log_det": 0.6931471805599453,
+  "kernel_sum": 0.6931471805599453,
+  "kernel_max_w": 0.6931471805599453
+ },
+ {
+  "name": "rnd17_canon",
+  "n_irr": 14,
+  "margin": 0.9898113789965335,
+  "det": 1,
+  "log_det": 0.0,
+  "kernel_sum": 0.0,
+  "kernel_max_w": 0.0
+ },
+ {
+  "name": "rnd17_barge",
+  "n_irr": 16,
+  "margin": 0.3412814119865703,
+  "det": 1,
+  "log_det": 0.0,
+  "kernel_sum": 0.0,
+  "kernel_max_w": 0.0
+ },
+ {
+  "name": "rnd18_canon",
+  "n_irr": 15,
+  "margin": 0.16747360195180888,
+  "det": -2,
+  "log_det": 0.6931471805599453,
+  "kernel_sum": 0.6931471805599453,
+  "kernel_max_w": 0.6931471805599453
+ },
+ {
+  "name": "rnd18_barge",
+  "n_irr": 15,
+  "margin": 0.20334036983122172,
+  "det": -2,
+  "log_det": 0.6931471805599453,
+  "kernel_sum": 0.6931471805599453,
+  "kernel_max_w": 0.6931471805599453
+ },
+ {
+  "name": "rnd19_canon",
+  "n_irr": 55,
+  "margin": 0.1304640230893395,
+  "det": 2,
+  "log_det": 0.6931471805599453,
+  "kernel_sum": 0.6931471805599453,
+  "kernel_max_w": 0.6931471805599453
+ },
+ {
+  "name": "rnd19_barge",
+  "n_irr": 55,
+  "margin": 0.1530372847214304,
+  "det": 2,
+  "log_det": 0.6931471805599453,
+  "kernel_sum": 0.6931471805599453,
+  "kernel_max_w": 0.6931471805599453
+ },
+ {
+  "name": "rnd20_canon",
+  "n_irr": 21,
+  "margin": 0.33279793227354076,
+  "det": 1,
+  "log_det": 0.0,
+  "kernel_sum": 0.0,
+  "kernel_max_w": 0.0
+ },
+ {
+  "name": "rnd21_canon",
+  "n_irr": 13,
+  "margin": 0.266261010853963,
+  "det": 2,
+  "log_det": 0.6931471805599453,
+  "kernel_sum": 0.6931471805599453,
+  "kernel_max_w": 0.6931471805599453
+ },
+ {
+  "name": "rnd22_canon",
+  "n_irr": 12,
+  "margin": 0.4214244255055953,
+  "det": 1,
+  "log_det": 0.0,
+  "kernel_sum": 0.0,
+  "kernel_max_w": 0.0
+ },
+ {
+  "name": "rnd24_canon",
+  "n_irr": 586,
+  "margin": 4.200142279151261e-19,
+  "det": 2,
+  "log_det": 0.6931471805599453,
+  "kernel_sum": 0.6931471805599453,
+  "kernel_max_w": 0.6931471805599453
+ }
+]

@@ -1,0 +1,16 @@
+{
+ "silver_digits": [
+  1,
+  0,
+  1,
+  1
+ ],
+ "silver_terminates": true,
+ "golden_rem_24": 5.53381754324468e-07,
+ "menu_size": 150,
+ "menu_hits_TS": true,
+ "menu_neighbors": [
+  2.8284271247,
+  2.8382536626
+ ]
+}
