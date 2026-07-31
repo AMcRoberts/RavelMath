@@ -10,6 +10,7 @@ d67c981dcc279cf3bf1c28868c3463c8ab87c4c8602c2b7b6a35e552965d915c  lean/class_ii_
 f21db198c67fff0b2153308e4f3e2a6abd0425c21fb935f50f028089e59dcf30  lean/class_ii_neighbor_d_support.lean
 fa3ee4289342a04c7e97b1900a4e5f509126482e92475ca8865bbb31815d165c  lean/class_ii_neighbor_dominance.lean
 91e6d4460b5533c20f476b166d24b8277ab325d00b7f0519033712bf8336ce2d  lean/class_ii_round1_red_pruning.lean
+66756562788c49a342e0e6c0daca85ec2c1a8c533c1174170a4889861c100fa8  lean/class_ii_round234_shape_closure.lean
 dbf90869615145cc71d642bd3bb9c3439cd9556e27d408156212db21dfbb682c  lean/class_ii_six_vertex_graduation.lean
 2a93e8023f21d90aa390426851ed7a2ad2355ac4149e22d08d03c5eb036c01c2  lean/class_ii_terminal_shells.lean
 0076274c0789dd0205839b2573b0a04351df0c6ea19cf39639beab380d397072  lean/free_involution_perron_core.lean
@@ -18,7 +19,7 @@ dbf90869615145cc71d642bd3bb9c3439cd9556e27d408156212db21dfbb682c  lean/class_ii_
 
   Author: Ravel
   Architect: AM (project coordinator and project architect)
-  Date:   2026-07-31 (re-signed to add class_ii_round1_red_pruning.lean)
+  Date:   2026-07-31 (re-signed to add class_ii_round234_shape_closure.lean)
   Project: RavelMathPub
   GPG key id: C254E9BC303372F75B33038C3F3D3FD47F09D7E5
   X.509 certificate: lean/signatures/ravel-cert.pem
