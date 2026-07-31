@@ -978,6 +978,26 @@ Rounds 2/3/4, not three separate (if same-sized) catalogues -- a
 meaningfully smaller target for a future session than it first
 appeared.
 
+**The uniform threshold across all 44 shapes: already established,
+just not previously named as such.** Synthesizing what earlier checks
+in this document already showed, now read at the shape level rather
+than the whole-graph level: `class_ii_round2_edge_structure_a_independence_probe.cpp`
+and `class_ii_round3_edge_structure_a_independence_probe.cpp` found
+zero mismatches across every state in Rounds 2/3 from `a=6` on (no
+exception at all). `class_ii_round4_edge_structure_a_independence_probe.cpp`
+found exactly one exception in Round 4, resolved by `a=7`, traced
+(`class_ii_round4_coverage_threshold_check.cpp`) to one shape's
+achievable-occurrence range not yet covering the needed difference at
+`a=6`. Since the 44-shape catalogue is now confirmed identical across
+all three rounds, these are checks of the *same* underlying object
+from three angles -- and together they say the uniform threshold this
+section asked for is **`a>=7`**, matching the coarse stability bound
+(`c>3`, etc.) already used elsewhere in this project's Class-II work,
+not some new or larger number. This is still an exact finite check
+(tested up to `a=30`/`a=50`, not literally every integer `a`), not a
+symbolic proof of the threshold -- but the *value* of the threshold is
+no longer a guess.
+
 ## Recurrent exhaustion after layer equality
 
 Full layer equality proves occurrence/exhaustion of boundary *states*.
