@@ -611,6 +611,129 @@ class_ii_contact_backward_envelope_certificate() {
     return result;
 }
 
+// Reusable abstract (a-independent) window-validity classifier, factored
+// out after class_ii_contact_backward_envelope_certificate()'s own
+// AffineCD/universally_nonnegative machinery was duplicated once (for
+// app/class_ii_neighbor2_round1_window_certificate.cpp) rather than
+// risking a refactor of that already-verified function mid-investigation.
+// Deliberately NOT used by that function itself -- it stays untouched.
+// Intended for Round 2/3/4's analogous raw-corona reverse-inclusion
+// obligations (docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md's "Round 2:
+// reconnaissance only" note), so a future session does not have to
+// re-derive or re-duplicate this argument a third time.
+//
+// `candidates` maps a (left_letter, x1, x2, right_letter) category to
+// the list of affine-in-a (minimum, maximum) ranges for x0 that some
+// destination's backward branch produced. For every category and every
+// x0 in [-x0_limit, x0_limit], this decides -- from the Lean-derived
+// Class-II cubic bounds alone, never by evaluating at a concrete a --
+// whether [left_letter, (x0,x1,x2), right_letter] is a valid restricted
+// node that actually occurs as a predecessor.
+struct ClassIIAbstractWindowResult {
+    std::set<SNode<3>> window_valid_nodes;
+    long long bounded_cases = 0;
+    long long unresolved_cases = 0;
+};
+
+inline ClassIIAbstractWindowResult class_ii_abstract_window_classify(
+        const std::map<ClassIIBackwardCategory,
+                       std::vector<std::pair<ClassIIAffineValue,
+                                             ClassIIAffineValue>>>& candidates,
+        long long x0_limit) {
+    struct AffineCD {
+        long long c;
+        long long d;
+        long long constant;
+    };
+    const auto minimum_boundary_scaled = [](AffineCD form) {
+        if (form.c < 0) return std::pair{false, 0LL};
+        return std::pair{true,
+            3 * form.c + (form.d >= 0 ? 2 * form.d : 3 * form.d)
+                + 3 * form.constant};
+    };
+    const auto maximum_boundary_scaled = [](AffineCD form) {
+        if (form.c > 0) return std::pair{false, 0LL};
+        return std::pair{true,
+            3 * form.c + (form.d >= 0 ? 3 * form.d : 2 * form.d)
+                + 3 * form.constant};
+    };
+    const auto universally_nonnegative = [&](AffineCD form) {
+        const auto [bounded, value] = minimum_boundary_scaled(form);
+        return bounded && value >= 0;
+    };
+    const auto universally_positive = [&](AffineCD form) {
+        const auto [bounded, value] = minimum_boundary_scaled(form);
+        return bounded && (value > 0 || (value == 0 && (form.c > 0 || form.d != 0)));
+    };
+    const auto universally_nonpositive = [&](AffineCD form) {
+        const auto [bounded, value] = maximum_boundary_scaled(form);
+        return bounded && value <= 0;
+    };
+    const auto universally_negative = [&](AffineCD form) {
+        const auto [bounded, value] = maximum_boundary_scaled(form);
+        return bounded && (value < 0 || (value == 0 && (form.c < 0 || form.d != 0)));
+    };
+    const auto affine_a_nonnegative_from_two = [](ClassIIAffineValue form) {
+        return form.slope >= 0 && form.value(2) >= 0;
+    };
+    const auto affine_a_positive_from_two = [](ClassIIAffineValue form) {
+        return form.slope >= 0 && form.value(2) > 0;
+    };
+
+    ClassIIAbstractWindowResult result;
+    for (const auto& [category, intervals] : candidates) {
+        for (long long x0 = -x0_limit; x0 <= x0_limit; ++x0) {
+            ++result.bounded_cases;
+            const AffineCD height{x0 + category[1], x0, category[2]};
+            AffineCD width{};
+            if (category[3] == 0) width = {1, 1, 0};
+            else if (category[3] == 1) width = {1, 0, 0};
+            else width = {0, 0, 1};
+            const AffineCD upper_margin{
+                width.c - height.c, width.d - height.d,
+                width.constant - height.constant};
+            const bool window_valid =
+                universally_nonnegative(height)
+                && universally_positive(upper_margin);
+            const bool window_invalid =
+                universally_negative(height)
+                || universally_nonpositive(upper_margin);
+
+            bool occurrence_present = false;
+            bool occurrence_absent = true;
+            for (const auto& [minimum, maximum] : intervals) {
+                const ClassIIAffineValue above_minimum{
+                    x0 - minimum.intercept, -minimum.slope};
+                const ClassIIAffineValue below_maximum{
+                    maximum.intercept - x0, maximum.slope};
+                occurrence_present = occurrence_present
+                    || (affine_a_nonnegative_from_two(above_minimum)
+                        && affine_a_nonnegative_from_two(below_maximum));
+                const ClassIIAffineValue below_minimum{
+                    minimum.intercept - x0, minimum.slope};
+                const ClassIIAffineValue above_maximum{
+                    x0 - maximum.intercept, -maximum.slope};
+                occurrence_absent = occurrence_absent
+                    && (affine_a_positive_from_two(below_minimum)
+                        || affine_a_positive_from_two(above_maximum));
+            }
+
+            const SNode<3> node{
+                category[0], {x0, category[1], category[2]}, category[3]};
+            const bool trivial =
+                x0 == 0 && category[1] == 0 && category[2] == 0
+                && !(category[0] < category[3]);
+
+            if (occurrence_present && window_valid && !trivial) {
+                result.window_valid_nodes.insert(node);
+            } else if (!(occurrence_absent || window_invalid || trivial)) {
+                ++result.unresolved_cases;
+            }
+        }
+    }
+    return result;
+}
+
 inline std::array<long long, 3> class_ii_incidence_action(
         long long a, const std::array<long long, 3>& x) {
     return {

@@ -783,6 +783,18 @@ $(CLASS_II_NEIGHBOR2_ROUND1_SIGNED_RELATION_BIN): $(APPDIR)/class_ii_neighbor2_r
 		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# class_ii_abstract_window_classify_regression: checks that
+# class_ii_abstract_window_classify() (include/ravel/class_ii_neighbor_family.hpp,
+# factored out of class_ii_neighbor2_round1_window_certificate.cpp for
+# reuse by future Round 2/3/4 attempts) reproduces that file's own
+# already-verified result exactly.
+CLASS_II_ABSTRACT_WINDOW_CLASSIFY_REGRESSION_BIN := $(BUILDDIR)/class_ii_abstract_window_classify_regression
+class_ii_abstract_window_classify_regression: $(CLASS_II_ABSTRACT_WINDOW_CLASSIFY_REGRESSION_BIN)
+	./$(CLASS_II_ABSTRACT_WINDOW_CLASSIFY_REGRESSION_BIN)
+$(CLASS_II_ABSTRACT_WINDOW_CLASSIFY_REGRESSION_BIN): $(APPDIR)/class_ii_abstract_window_classify_regression.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 BP_DUMP_PROVENANCE_BIN := $(BUILDDIR)/bp_dump_provenance
 bp_dump_provenance: $(BP_DUMP_PROVENANCE_BIN)
 $(BP_DUMP_PROVENANCE_BIN): $(APPDIR)/bp_dump_provenance.cpp \
