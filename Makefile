@@ -857,6 +857,26 @@ $(CLASS_II_ROUND2_PRUNED_STATES_A_INDEPENDENCE_PROBE_BIN): $(APPDIR)/class_ii_ro
 		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# class_ii_round2_edge_structure_a_independence_probe: sharper than
+# the pruned-states probe above -- checks whether the entire
+# forward-edge connectivity graph over the 195 raw states (not just
+# the pruned node set) is a-independent.
+CLASS_II_ROUND2_EDGE_STRUCTURE_A_INDEPENDENCE_PROBE_BIN := $(BUILDDIR)/class_ii_round2_edge_structure_a_independence_probe
+class_ii_round2_edge_structure_a_independence_probe: $(CLASS_II_ROUND2_EDGE_STRUCTURE_A_INDEPENDENCE_PROBE_BIN)
+	./$(CLASS_II_ROUND2_EDGE_STRUCTURE_A_INDEPENDENCE_PROBE_BIN)
+$(CLASS_II_ROUND2_EDGE_STRUCTURE_A_INDEPENDENCE_PROBE_BIN): $(APPDIR)/class_ii_round2_edge_structure_a_independence_probe.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+# class_ii_round2_edge_structure_far_a_check: stress test at a=50 (far
+# outside the sampled cluster) for the finding above.
+CLASS_II_ROUND2_EDGE_STRUCTURE_FAR_A_CHECK_BIN := $(BUILDDIR)/class_ii_round2_edge_structure_far_a_check
+class_ii_round2_edge_structure_far_a_check: $(CLASS_II_ROUND2_EDGE_STRUCTURE_FAR_A_CHECK_BIN)
+	./$(CLASS_II_ROUND2_EDGE_STRUCTURE_FAR_A_CHECK_BIN)
+$(CLASS_II_ROUND2_EDGE_STRUCTURE_FAR_A_CHECK_BIN): $(APPDIR)/class_ii_round2_edge_structure_far_a_check.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 # class_ii_round3_pruned_states_a_independence_probe: the Round 2
 # a-independence probe applied to Round 3.
 CLASS_II_ROUND3_PRUNED_STATES_A_INDEPENDENCE_PROBE_BIN := $(BUILDDIR)/class_ii_round3_pruned_states_a_independence_probe
@@ -895,18 +915,8 @@ $(CLASS_II_ROUND4_PRUNED_STATES_A_INDEPENDENCE_PROBE_BIN): $(APPDIR)/class_ii_ro
 		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
-# class_ii_round{2,3,4}_edge_structure_a_independence_probe: sharper
-# than the pruned-state probes above -- checks whether the entire
-# forward-edge connectivity graph (not just the pruned node set) is
-# a-independent, which would reduce the still-open symbolic proof to
-# checking one fixed graph rather than an affine argument per state.
-CLASS_II_ROUND2_EDGE_STRUCTURE_A_INDEPENDENCE_PROBE_BIN := $(BUILDDIR)/class_ii_round2_edge_structure_a_independence_probe
-class_ii_round2_edge_structure_a_independence_probe: $(CLASS_II_ROUND2_EDGE_STRUCTURE_A_INDEPENDENCE_PROBE_BIN)
-	./$(CLASS_II_ROUND2_EDGE_STRUCTURE_A_INDEPENDENCE_PROBE_BIN)
-$(CLASS_II_ROUND2_EDGE_STRUCTURE_A_INDEPENDENCE_PROBE_BIN): $(APPDIR)/class_ii_round2_edge_structure_a_independence_probe.cpp \
-		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
-
+# class_ii_round{3,4}_edge_structure_a_independence_probe: the Round 2
+# edge-structure probe above, applied to Rounds 3/4.
 CLASS_II_ROUND3_EDGE_STRUCTURE_A_INDEPENDENCE_PROBE_BIN := $(BUILDDIR)/class_ii_round3_edge_structure_a_independence_probe
 class_ii_round3_edge_structure_a_independence_probe: $(CLASS_II_ROUND3_EDGE_STRUCTURE_A_INDEPENDENCE_PROBE_BIN)
 	./$(CLASS_II_ROUND3_EDGE_STRUCTURE_A_INDEPENDENCE_PROBE_BIN)

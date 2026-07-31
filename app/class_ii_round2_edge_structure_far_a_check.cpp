@@ -110,12 +110,12 @@ int main() {
     std::printf(
         "%s\n",
         ok ? "FAR_A_CHECK_CONFIRMS_AFFINE_HYPOTHESIS: the graph found "
-             "identical at a=6..15 is still identical at a=200 -- "
+             "identical at a=6..15 is still identical at a=50 -- "
              "strong evidence the forward-edge connectivity is "
              "genuinely a-independent (affine with slope 0), not a "
              "coincidence of small sampled a"
            : "FAR_A_CHECK_REFUTES_AFFINE_HYPOTHESIS -- structure "
-             "differs at a=200, so agreement at a=6..15 was "
+             "differs at a=50, so agreement at a=6..15 was "
              "coincidental over a narrow range, not genuine "
              "a-independence");
     return ok ? 0 : 1;
