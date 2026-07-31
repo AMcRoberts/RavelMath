@@ -225,6 +225,18 @@ repository root unless the file itself states otherwise.
 | `app/class_ii_symmetry_probe.cpp` | Enumerates exact automorphisms of the weighted recurrent core. |
 | `app/class_ii_terminal_transport_probe.cpp` | Audits inherited terminal-layer transport and Red pruning. |
 | `app/probe_a1_a2_unimodular.cpp` | Tests nilpotent cofactors and nearby unimodular families. |
+| `app/class_ii_neighbor2_round1_window_certificate.cpp` | Round 1: closes the raw 27-state target's window validity abstractly (every `a`, not sampled). |
+| `app/class_ii_neighbor2_round1_red_identity.cpp` | Round 1: checks Red's pruned pair equals the `D_cont`-seed pair, `a=3..60`. |
+| `app/class_ii_neighbor2_round1_red_forward_check.cpp` | Round 1: dense/sparse numeric confirmation of the forward-image closed forms. |
+| `app/class_ii_neighbor2_round1_red_symbolic.cpp` | Round 1: the symbolic Red-pruning proof for `a>=3`, derived from `tau_a`'s own fixed word forms. |
+| `app/class_ii_neighbor2_round1_signed_relation.cpp` | Round 1: verifies the signed 50-state contact set is the unsigned survivors' exact mirror-closure (and that a naive mirror-and-rerun shortcut is false). |
+| `app/class_ii_abstract_window_classify_regression.cpp` | Regression test for the extracted `class_ii_abstract_window_classify` header function against Round 1's own result. |
+| `app/class_ii_round2_recon.cpp` | Round 2: confirms `E_1..E_4` sizes via the trusted `algorithm2_trace` pipeline. |
+| `app/class_ii_round2_ccorona_stability.cpp` | Round 2: confirms `T_1 = ±C` and stable 195-candidate raw corona output across `a`. |
+| `app/class_ii_round2_structure.cpp` | Round 2: confirms `T_2 = B_2 union E_2` exactly and the 195-to-72 Red-pruning split. |
+| `app/class_ii_round2_red_exclusion_check.cpp` | Round 2: independent exact finite certificate for Red exclusion (123 pruned states, `simple_forward_targets_exact` vs `red_anode`'s ranks). |
+| `app/class_ii_round2_pruned_states_a_independence_probe.cpp` | Round 2: confirms the 123 pruned states are the literal same coordinate set across `a`. |
+| `app/class_ii_round3_structure.cpp` | Round 3: the same `T_3 = B_3 union E_3` identity and independent Red-exclusion certificate (163 pruned states). |
 
 ### Adelic and non-unit probes
 
