@@ -297,8 +297,85 @@ previously open and could have gone either way; it does not yet show
 that requires a symbolic argument about `forward_edges`/
 `induced_restricted_edges` applied to these two specific seed nodes
 (a different derivation direction from the backward-branch categories
-used above), which has not been attempted. Red pruning (27 -> 25)
-remains open.
+used above).
+
+### Round 1: Red pruning closed symbolically for `a>=3` (2026-07-31)
+
+That symbolic argument is now done.
+`app/class_ii_neighbor2_round1_red_symbolic.cpp`
+(`make class_ii_neighbor2_round1_red_symbolic`) derives, from `tau_a`'s
+own fixed word forms (`sigma(0)=0^a 1 2`, `sigma(1)=0^(a-1) 2 0`,
+`sigma(2)=0`) rather than from sampling `a`, that letter `1` occurs
+exactly once across all three images and letter `2` occurs exactly
+twice, for every `a` -- a structural fact about the definition, not an
+observation. This pins `parent_decompositions` to fixed cardinalities
+(1 for letter `1`, 2 for letter `2`), so `forward_edges_type1`/`type2`
+applied to the two D_cont seeds `A={1,{0,0,1},1}` and `B={2,{0,1,-1},1}`
+enumerate exactly 2 raw candidates for `A` and 4 for `B` -- never more,
+for every `a`. `tau_a`'s incidence matrix is the fixed form
+
+```text
+M(a) = [[a, a, 1],
+        [1, 0, 0],
+        [1, 1, 0]]
+```
+
+Rows 1 and 2 don't depend on `a`, so back-substitution from those rows
+first, then row 0, gives `x2' = rhs[0] - a*rhs[2]` for the solved
+successor coordinate. The file computes `rhs[0]` and `rhs[2]` for all 6
+raw candidates using `class_ii_neighbor_symbolic_prefix_families`
+(the same trusted engine the window certificate above already builds
+its 97 categories from) and confirms, for every one of the 6: `rhs[2]`
+is itself `a`-independent (slope 0, not assumed) and the resulting
+`x2'(a)` is affine in `a` with slope exactly `+/-1` -- reproducing
+exactly the six affine forms `-a, a, a+1, a, 1-a, -a` a first hand
+derivation against the same matrix found independently (self-corrected
+once, an arithmetic slip on which row of `M` to use for the second
+equation, caught by cross-checking against the numeric ground truth
+rather than trusted on the first pass).
+
+Since every one of the 27 raw pre-Red target states has all three
+coordinates in `[-2,2]`
+(`app/class_ii_neighbor2_round1_red_forward_check.cpp` checks this
+directly), and every raw candidate's `x2'` has slope exactly `+/-1`
+(not some fraction that could vanish), `|x2'(a)| >= a - 1` at worst --
+so for `a>=3` no raw candidate, surviving `tau_a`'s window filter or
+not, can ever equal any of the 27 targets. `induced_restricted_edges`
+therefore finds zero edges from `A` or `B` into the 27-state set for
+every `a>=3`, which is exactly `red_anode`'s rank-one pruning criterion.
+This is symbolic, not sampled: it holds for literally every integer
+`a>=3`, matching the exact finite check at `a=3..60` above.
+
+Scope, precisely: the clean bound argument needs `|a|>2`, i.e. `a>=3`
+(matching this whole Round-1 investigation's tested domain throughout).
+At `a=2`, `x2'=+/-a=+/-2` sits exactly on the target bound rather than
+outside it, so this specific argument does not automatically cover
+that case; `class_ii_neighbor2_round1_red_identity.cpp` was re-run at
+`a=2` directly and still found zero mismatches there, but by the
+ground-truth pipeline, not by this bound argument -- `a=2` is not
+claimed closed by the symbolic proof above, only by the exact finite
+check.
+
+Together with the abstract window-validity certificate, Round 1's raw
+27-state self-closure and its Red-pruning down to the 25-state target
+are now both closed for `a>=3`: the full `27 -> 25` transition no
+longer depends on a sampled range of `a`.
+
+**Scope note, so this is not overread against the base-premises table
+below:** the "27-state" and "25-state" objects here are the *unsigned*
+new_states (11) + center_states (14) [+ 2 seeds for the raw 27], not
+the mirror-closed 22-state `E_1` (`new_states` mirrored via
+`[i,x,j] -> [j,-x,i]`) that the base-premises table's Round 1 row
+names. Transporting this result to the full signed `plus_minus_C(tau_a)
+= plus_minus_C(sigma_a) union E_1` claim requires an additional
+argument that the mirror operation preserves both the raw self-closure
+and the Red-pruning structure -- plausible by symmetry, since nothing
+in this derivation privileges a handedness, but not checked here. Until
+that transport step is done, the table's Round 1 row should still read
+"reverse inclusion for the neighbor signed-contact set" as the
+remaining global-equality obligation; what changed is that its
+*unsigned* half now has a from-the-definition proof rather than a
+finite check.
 
 ## Recurrent exhaustion after layer equality
 

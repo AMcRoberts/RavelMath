@@ -748,6 +748,29 @@ $(CLASS_II_NEIGHBOR2_ROUND1_RED_IDENTITY_BIN): $(APPDIR)/class_ii_neighbor2_roun
 		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# class_ii_neighbor2_round1_red_forward_check: dense+sparse numeric
+# confirmation (a=3..200, then 500/1000/5000/20000) of the closed-form
+# forward images of the two Round-1 D_cont seeds, plus the exact bound
+# (2) on the 27-target coordinates.
+CLASS_II_NEIGHBOR2_ROUND1_RED_FORWARD_CHECK_BIN := $(BUILDDIR)/class_ii_neighbor2_round1_red_forward_check
+class_ii_neighbor2_round1_red_forward_check: $(CLASS_II_NEIGHBOR2_ROUND1_RED_FORWARD_CHECK_BIN)
+	./$(CLASS_II_NEIGHBOR2_ROUND1_RED_FORWARD_CHECK_BIN)
+$(CLASS_II_NEIGHBOR2_ROUND1_RED_FORWARD_CHECK_BIN): $(APPDIR)/class_ii_neighbor2_round1_red_forward_check.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+# class_ii_neighbor2_round1_red_symbolic: the actual symbolic proof --
+# every raw forward-edge candidate from the two Round-1 D_cont seeds has
+# an x2-coordinate affine in a with nonzero slope (derived from tau_a's
+# fixed word forms and incidence matrix, not sampled), so none can ever
+# match a bounded (|coord|<=2) target. Closes Round 1's Red-pruning gap.
+CLASS_II_NEIGHBOR2_ROUND1_RED_SYMBOLIC_BIN := $(BUILDDIR)/class_ii_neighbor2_round1_red_symbolic
+class_ii_neighbor2_round1_red_symbolic: $(CLASS_II_NEIGHBOR2_ROUND1_RED_SYMBOLIC_BIN)
+	./$(CLASS_II_NEIGHBOR2_ROUND1_RED_SYMBOLIC_BIN)
+$(CLASS_II_NEIGHBOR2_ROUND1_RED_SYMBOLIC_BIN): $(APPDIR)/class_ii_neighbor2_round1_red_symbolic.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 BP_DUMP_PROVENANCE_BIN := $(BUILDDIR)/bp_dump_provenance
 bp_dump_provenance: $(BP_DUMP_PROVENANCE_BIN)
 $(BP_DUMP_PROVENANCE_BIN): $(APPDIR)/bp_dump_provenance.cpp \

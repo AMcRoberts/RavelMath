@@ -561,12 +561,38 @@ above are the same pair, for every `a` in `[3,60]`: zero mismatches.
 This is an exact finite check, not a symbolic proof -- it answers
 "same pair or different pairs" (previously open either way) but does
 not show *why* Red prunes exactly these two states for literal every
-integer `a`. See
+integer `a`.
+
+**Round 1, Red pruning closed symbolically for `a>=3` (2026-07-31).**
+`app/class_ii_neighbor2_round1_red_symbolic.cpp`
+(`make class_ii_neighbor2_round1_red_symbolic`) supplies that "why":
+from `tau_a`'s fixed word forms alone (not from sampling `a`), letter
+`1` occurs exactly once and letter `2` exactly twice across its three
+images, for every `a`; combined with `tau_a`'s incidence matrix having
+two rows that don't depend on `a`, every one of the 6 raw
+`forward_edges` candidates from the two D_cont seeds has a successor
+`x2`-coordinate that is affine in `a` with slope exactly `+/-1`. Since
+every one of the 27 raw targets has all coordinates in `[-2,2]`
+(`class_ii_neighbor2_round1_red_forward_check.cpp` checks this
+directly), none of the 6 candidates can ever match a target for
+`a>=3`, so both seeds have zero outgoing edges into the 27-state set --
+exactly the rank-one Red-pruning criterion -- for every integer `a>=3`,
+not a sampled range. `a=2` sits exactly on the coordinate bound and is
+not covered by this argument, though the finite check above confirms
+it holds there too by direct computation.
+
+This closes the *unsigned* half of Round 1's raw self-closure and Red
+pruning (the 27/25-state objects built from `new_states`+`center_states`,
+not yet the mirror-closed 22-state `E_1` the base-premises table names
+as Round 1's actual target -- transporting this result across the
+mirror `[i,x,j]->[j,-x,i]` is plausible by symmetry but not checked).
+See
 `docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md` §§ "Round 1: validated
 symbolic self-closure of the raw 27-state pre-Red set", "Round 1:
-window validity closed abstractly, not just at sampled `a`", and
-"Round 1: the Red-pruned pair coincides with the D_cont-seed pair" for
-the full account and exactly what remains.
+window validity closed abstractly, not just at sampled `a`", "Round 1:
+the Red-pruned pair coincides with the D_cont-seed pair", and "Round 1:
+Red pruning closed symbolically for `a>=3`" for the full account,
+including the precise scope note against the base-premises table.
 
 For the four non-base phases, C++ now exposes named pre-Red, ordered
 rank, and post-Red catalogue dispatchers. A structural sweep over 429
