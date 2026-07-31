@@ -649,6 +649,66 @@ style of bound gives `3*(b-c)+1<4`, which needs `c>=4`, tighter than
 the generic `c>3`. This may need a sharper, `a`-specific bound rather
 than the coarse one Round 2 could use for free.
 
+### Round 4: same structural shape; the real gap is elsewhere (2026-07-31)
+
+`app/class_ii_round4_structure.cpp` extends the identical checks to
+Round 4: `T_4 = B_4 union E_4` exactly (113 = 88 + 25, literal identity
+at `a=6,7,8`), `E_4` again exactly
+`class_ii_neighbor2_interior_extension_states(4)` (no swap, matching
+Round 3, not Round 2). Red exclusion: 325 raw candidates, 113
+survivors, 212 pruned across 3 ranks, zero violations under an
+independent `simple_forward_targets_exact` re-derivation. The `B_4=88`
+figure matches the base-premises table's own exact center trace
+(`center A_r` row: `28,47,68,88`), an independent cross-check that
+this file's `trace_c.layers[3]` is picking up the right object.
+
+**This does not close Round 4's actual stated gap.** Per the
+base-premises table above, Round 4's "still needed" column reads
+differently from Rounds 2/3: not a bare occurrence/exclusion checklist
+item, but "connect the bounded round-four grammar to the universal
+stable reverse/exclusion theorem whose stated domain begins at round
+five." What this file establishes is that Round 4's raw-corona
+occurrence/exclusion *shape* is the same kind of object as Rounds 2/3
+(same identity pattern, same kind of finite certificate) -- useful
+groundwork, since it means round four is not structurally exceptional
+in the way that would block a round-five-style argument from reaching
+backward to cover it, but the actual bridging theorem asked for in the
+table is a separate, harder claim not attempted here.
+
+### All four base rounds: the a-independence hypothesis, resolved (2026-07-31)
+
+AM asked directly whether the pruned-state coordinate sets are the
+literal same across all four rounds. Checked now for every round, not
+assumed:
+
+```text
+round   pruned states a-independent across a?
+1       NO -- pruned coordinates are affine in a with nonzero slope
+        (the M(a) argument; -a, a, a, a+1, -a, 1-a), closed
+        symbolically for a>=3, now Lean-formalized
+        (lean/class_ii_round1_red_pruning.lean)
+2       YES -- 123 pruned states, literal same coordinate set at
+        a=6,7,8,9,10,12,15,20,30
+3       YES -- 163 pruned states, same
+4       YES -- 212 pruned states, same
+```
+
+The hypothesis as originally posed ("all four are the literal same")
+is **false**: Round 1 is a genuine outlier, not an oversight -- its
+raw target only has 27 states (versus 195/256/325 for Rounds 2/3/4),
+small enough that the pruned pair's forward images are simple closed
+affine forms rather than a fixed catalogue. Rounds 2/3/4 share a
+different, second pattern: a fixed, a-independent list of pruned
+states with only the forward-edge *weights* varying by `a`. This
+resolves the reconnaissance question cleanly: there are two regimes,
+not four separate ones and not one uniform one, and Round 1 is already
+closed by the regime it belongs to (affine-in-a, small raw target).
+Rounds 2/3/4 remain open in the regime they share (fixed pruned-state
+list, `simple_forward_targets_exact`-driven weights) -- the natural
+next symbolic-proof strategy is therefore one argument applicable to
+all three of Rounds 2/3/4, not three separate derivations, since they
+are now confirmed to share the same shape of gap.
+
 ## Recurrent exhaustion after layer equality
 
 Full layer equality proves occurrence/exhaustion of boundary *states*.

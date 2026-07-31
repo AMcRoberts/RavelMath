@@ -876,6 +876,25 @@ $(CLASS_II_ROUND3_STRUCTURE_BIN): $(APPDIR)/class_ii_round3_structure.cpp \
 		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# class_ii_round4_structure: the Round 2/3 treatment applied to
+# Round 4, the last of the four base transitions.
+CLASS_II_ROUND4_STRUCTURE_BIN := $(BUILDDIR)/class_ii_round4_structure
+class_ii_round4_structure: $(CLASS_II_ROUND4_STRUCTURE_BIN)
+	./$(CLASS_II_ROUND4_STRUCTURE_BIN)
+$(CLASS_II_ROUND4_STRUCTURE_BIN): $(APPDIR)/class_ii_round4_structure.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+# class_ii_round4_pruned_states_a_independence_probe: the Round 2/3
+# a-independence probe applied to Round 4, completing the check
+# across all four base rounds.
+CLASS_II_ROUND4_PRUNED_STATES_A_INDEPENDENCE_PROBE_BIN := $(BUILDDIR)/class_ii_round4_pruned_states_a_independence_probe
+class_ii_round4_pruned_states_a_independence_probe: $(CLASS_II_ROUND4_PRUNED_STATES_A_INDEPENDENCE_PROBE_BIN)
+	./$(CLASS_II_ROUND4_PRUNED_STATES_A_INDEPENDENCE_PROBE_BIN)
+$(CLASS_II_ROUND4_PRUNED_STATES_A_INDEPENDENCE_PROBE_BIN): $(APPDIR)/class_ii_round4_pruned_states_a_independence_probe.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 BP_DUMP_PROVENANCE_BIN := $(BUILDDIR)/bp_dump_provenance
 bp_dump_provenance: $(BP_DUMP_PROVENANCE_BIN)
 $(BP_DUMP_PROVENANCE_BIN): $(APPDIR)/bp_dump_provenance.cpp \
