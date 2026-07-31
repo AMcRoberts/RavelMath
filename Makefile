@@ -1083,6 +1083,16 @@ $(CLASS_II_HYBRID_WINDOW_MONOTONICITY_CHECK_BIN): $(APPDIR)/class_ii_hybrid_wind
 		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# class_ii_hybrid_window_slope_derivation: derives WHY the window
+# grows monotonically -- exhaustive slope enumeration over every fixed
+# occurrence type, not another numerical sample.
+CLASS_II_HYBRID_WINDOW_SLOPE_DERIVATION_BIN := $(BUILDDIR)/class_ii_hybrid_window_slope_derivation
+class_ii_hybrid_window_slope_derivation: $(CLASS_II_HYBRID_WINDOW_SLOPE_DERIVATION_BIN)
+	./$(CLASS_II_HYBRID_WINDOW_SLOPE_DERIVATION_BIN)
+$(CLASS_II_HYBRID_WINDOW_SLOPE_DERIVATION_BIN): $(APPDIR)/class_ii_hybrid_window_slope_derivation.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 BP_DUMP_PROVENANCE_BIN := $(BUILDDIR)/bp_dump_provenance
 bp_dump_provenance: $(BP_DUMP_PROVENANCE_BIN)
 $(BP_DUMP_PROVENANCE_BIN): $(APPDIR)/bp_dump_provenance.cpp \

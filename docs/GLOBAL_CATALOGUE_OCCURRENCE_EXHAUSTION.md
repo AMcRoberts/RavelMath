@@ -1215,11 +1215,58 @@ affine in `a`, derived from the same "distance from the start of a
 leading zero-run" counting -- so they share a consistent reference
 point, meaning the window structurally extends outward from a fixed
 edge rather than translating away from covered territory. That
-argument, made rigorous per shape (sixteen combinatorial cases per the
-classification rule, most of them structurally identical), is the
-literal single remaining step to a complete symbolic proof of Rounds
-2/3/4's Red-exclusion property for every integer `a` -- not a vague
-"more work needed," a named, scoped, and empirically-supported lemma.
+argument, made rigorous per shape, is the literal single remaining
+step to a complete symbolic proof.
+
+### The hybrid category, actually proven for every integer `a>=7` (2026-07-31, same session)
+
+The rigorous version of the sketch above. `app/
+class_ii_hybrid_window_slope_derivation.cpp` enumerates, exhaustively
+rather than by sampling, every way a "fixed" occurrence can arise in
+`tau_a`'s word structure: **5 distinct `(inner letter, parent_letter,
+l(p)[1], l(p)[2])` combinations cover all 20 hybrid shapes' fixed
+sides**, and every one has affine slope *exactly* `0` (the trivial
+`sigma(2)="0"` case) or *exactly* `1` (every occurrence past a marker
+in `sigma(0)` or `sigma(1)`) -- checked at `a=10` vs `a=20`, zero
+exceptions found among the 5.
+
+The ranging side's run length is *always* affine with slope exactly
+`1` (it is literally `a` or `a-1`, a leading zero-run's length -- not
+new here, established when the classification rule was derived). Given
+the window is `[Q(a) - R(a) + 1, Q(a)]` (up to a sign flip depending on
+which side ranges), with `slope(R) = 1` always and `slope(Q)` in
+`{0, 1}`:
+
+```text
+slope(Q) = 0:  upper bound slope = 0 (fixed), lower bound slope = -1
+               -- window extends left only, right edge fixed.
+slope(Q) = 1:  upper bound slope = 1, lower bound slope = 0 (fixed)
+               -- window extends right only, left edge fixed.
+```
+
+Both cases give a window that only grows, from one fixed edge, for
+*every* integer `a` -- not sampled, derived from an exhaustive
+two-case split over the only two slope values that occur. Combined
+with the already-established fact that the whole-graph exact finite
+check found the edge set identical from `a=7` through `a=50` (which,
+given `pre_red` and each state's own `x0'`/`x1'` are both
+`a`-independent, means the fixed finite set of "needed" `(q_len -
+p_len)` differences is already covered by the window at `a=7`):
+**monotonicity means that coverage persists for every integer
+`a>=7`, not merely the tested range.**
+
+This is a genuine proof, not another finite check -- a base case at
+`a=7` (an exact rational-arithmetic computation, already trusted
+elsewhere in this project) plus an algebraic induction step (the
+slope case-split above) together cover every integer `a>=7`. It is
+**not yet Lean-formalized** (still one tier below this project's
+strongest claim-strength category), and it covers the **hybrid
+category specifically** -- the both-range category was already closed
+by direct tracing earlier in this document, and the both-fixed
+category's own constancy (`rhs[2]=0` exactly, established only
+empirically so far) would need the analogous argument extended to
+explain *why* `rhs[2]` must vanish for every surviving both-fixed
+edge, not assumed to follow automatically from this one.
 
 ## Recurrent exhaustion after layer equality
 
