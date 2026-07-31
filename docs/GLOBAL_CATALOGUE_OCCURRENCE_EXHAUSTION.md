@@ -550,6 +550,47 @@ This is a materially more precise (and more honest) picture than the
 "structurally easier than Round 1" guess in the previous paragraph,
 which undersold the actual size of Round 2's remaining obligation.
 
+### Round 2: Red exclusion has an independent exact finite certificate (2026-07-31)
+
+The key missing piece for a symbolic Red-exclusion argument turned out
+to matter: `algorithm2_trace`'s Red step does *not* determine edges by
+plain vector addition over the fixed 195-state raw set. It calls
+`simple_forward_targets_exact`, the same kind of genuine
+parent-decomposition-plus-linear-solve machinery Round 1's
+`forward_edges` used -- so the pruning graph is not automatically
+`a`-independent just because its node set is.
+
+Checked directly rather than assumed: for every one of the 123 pruned
+states (all three ranks, `a=6,7,8`), calling
+`simple_forward_targets_exact` and comparing each resulting edge
+against `red_anode`'s own reported ranks confirms every edge landing
+inside the 195-state set goes to a node already pruned at an
+earlier-or-equal rank -- never to a survivor, never to a later rank.
+Zero violations across `369` total checked states (123 x 3 tested `a`
+values) and `90` edges found within the 195-set (30 per `a`).
+`app/class_ii_round2_red_exclusion_check.cpp`
+(`make class_ii_round2_red_exclusion_check`). This is an *independent*
+recomputation, not a re-report of `red_anode`'s own bookkeeping --
+exactly the "check against something other than the derivation itself"
+discipline this project applies elsewhere, now applied to Red's own
+correctness rather than assumed from the fact that `red_anode` is
+already trusted code.
+
+What this establishes: an exact finite certificate, at `a=6,7,8`
+specifically, that Red's ranking is internally consistent (not a
+symbolic proof for literal every `a`, and not yet a proof that these
+*are* the only possible edges -- it confirms the observed edges are
+consistent with the observed ranks, which is the whole of what
+"Red-exclusion is correct" means operationally, but the underlying
+`simple_forward_targets_exact` computation has not been derived by
+hand the way Round 1's `forward_edges` was). The genuinely open step
+is promoting this to a symbolic argument valid for every integer `a`
+-- tractable in principle (same machinery as Round 1), but a
+materially larger undertaking: several of the 123 states have on the
+order of `200+` raw forward-target candidates before window filtering
+(Round 1's two pruned states had 1 and 2), so a from-scratch by-hand
+derivation for each is not a quick afternoon's work.
+
 ## Recurrent exhaustion after layer equality
 
 Full layer equality proves occurrence/exhaustion of boundary *states*.

@@ -47,7 +47,13 @@ seam consists of four exceptional base transitions:
    open gap is Red exclusion for 123 states across three ranks
    (98, 15, 10) -- bounded (`|x_k|<=3`), not unbounded-in-`a` the way
    Round 1's two pruned states were, so no quick escape-hatch argument
-   applies; not attempted yet.
+   applies. Red's ranking now has an independent exact finite
+   certificate at `a=6,7,8` (all 123 pruned states' edges
+   re-derived via `simple_forward_targets_exact` and checked against
+   `red_anode`'s own ranks, not just trusted from it) -- a symbolic
+   argument for every `a` remains open and is a materially larger
+   undertaking than Round 1's (some states have 200+ raw forward-target
+   candidates before window filtering).
 3. round-three raw reverse inclusion and Red exclusion;
 4. the round-four reverse/exclusion bridge into the stable theorem.
 

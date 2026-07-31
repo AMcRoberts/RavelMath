@@ -831,6 +831,18 @@ $(CLASS_II_ROUND2_STRUCTURE_BIN): $(APPDIR)/class_ii_round2_structure.cpp \
 		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# class_ii_round2_red_exclusion_check: independently re-verifies (via
+# simple_forward_targets_exact, not red_anode's own bookkeeping) that
+# every one of Round 2's 123 pruned states has all its in-195-set edges
+# landing on an earlier-or-equal rank, never a survivor or later rank.
+# Exact finite certificate at a=6,7,8, not yet a universal proof.
+CLASS_II_ROUND2_RED_EXCLUSION_CHECK_BIN := $(BUILDDIR)/class_ii_round2_red_exclusion_check
+class_ii_round2_red_exclusion_check: $(CLASS_II_ROUND2_RED_EXCLUSION_CHECK_BIN)
+	./$(CLASS_II_ROUND2_RED_EXCLUSION_CHECK_BIN)
+$(CLASS_II_ROUND2_RED_EXCLUSION_CHECK_BIN): $(APPDIR)/class_ii_round2_red_exclusion_check.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 BP_DUMP_PROVENANCE_BIN := $(BUILDDIR)/bp_dump_provenance
 bp_dump_provenance: $(BP_DUMP_PROVENANCE_BIN)
 $(BP_DUMP_PROVENANCE_BIN): $(APPDIR)/bp_dump_provenance.cpp \
