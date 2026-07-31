@@ -1033,6 +1033,16 @@ $(CLASS_II_ROUND2_EDGE_MECHANISM_ESCAPING_SLOPES_BIN): $(APPDIR)/class_ii_round2
 		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# class_ii_shape_classification_rule: derives and checks a rule
+# predicting which shapes range vs are fixed, from tau_a's word
+# structure directly, against every one of the 44 shapes.
+CLASS_II_SHAPE_CLASSIFICATION_RULE_BIN := $(BUILDDIR)/class_ii_shape_classification_rule
+class_ii_shape_classification_rule: $(CLASS_II_SHAPE_CLASSIFICATION_RULE_BIN)
+	./$(CLASS_II_SHAPE_CLASSIFICATION_RULE_BIN)
+$(CLASS_II_SHAPE_CLASSIFICATION_RULE_BIN): $(APPDIR)/class_ii_shape_classification_rule.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 BP_DUMP_PROVENANCE_BIN := $(BUILDDIR)/bp_dump_provenance
 bp_dump_provenance: $(BP_DUMP_PROVENANCE_BIN)
 $(BP_DUMP_PROVENANCE_BIN): $(APPDIR)/bp_dump_provenance.cpp \

@@ -1060,6 +1060,45 @@ categories are not yet -- each now has a precisely stated shape, not a
 restated existing
 finding.
 
+### The classification rule, derived and verified (2026-07-31)
+
+AM asked directly: is there a pattern behind the 4/20/20 split, or is
+it just an observed count? There is a pattern, and it is exact, not
+approximate. `app/class_ii_shape_classification_rule.cpp` states the
+rule directly from `tau_a`'s fixed word forms and checks it against
+every one of the 44 shapes:
+
+> A side (the `p`-occurrence or the `q`-occurrence) **ranges** over an
+> interval that grows with `a` if and only if (1) its inner search
+> letter is `0`, **and** (2) its occurrence is a *pure leading-run
+> prefix* -- `parent_letter=0` with `l(p)[1]=l(p)[2]=0` (`sigma(0)`'s
+> length-`a` leading run) or `parent_letter=1` with the same (`sigma(1)`'s
+> length-`(a-1)` leading run). Every other combination gives a single
+> **fixed** occurrence: inner letter `1` (occurs exactly once, total,
+> across every image) or `2` (occurs exactly twice, total, once per
+> image) regardless of position; inner letter `0` via `parent_letter=2`
+> (`sigma(2)="0"` is one letter, trivially unique); or inner letter `0`
+> via `parent_letter` in `{0,1}` but *past* a marker
+> (`l(p)[1]!=0` or `l(p)[2]!=0` -- at most one further occurrence exists
+> past either image's marker).
+
+Checked, not assumed: applying this rule independently to each side of
+each of the 44 shapes and comparing against the actual observed
+range/fixed behavior gives **44/44 agreement**, and the rule's own
+predicted counts (`4` both-range, `20` one-side-ranges, `20`
+both-fixed) match the empirically-found split exactly. This fully
+*explains* the classification -- it is a direct, checkable consequence
+of which letters occur where in `tau_a`'s three images, not a
+coincidence of counting. It does not by itself close any of the three
+categories' remaining proof obligations (the `20`-shape "escaping"
+category's constancy condition and the `20`-shape hybrid category's
+coverage argument are both still open), but it means a future
+symbolic proof can be organized by this rule directly -- three cases
+on `(inner letter, parent_letter, marker-crossed or not)` per side,
+sixteen combinations in principle, collapsing to exactly the three
+categories found -- rather than 44 shapes needing individual
+treatment.
+
 ## Recurrent exhaustion after layer equality
 
 Full layer equality proves occurrence/exhaustion of boundary *states*.
