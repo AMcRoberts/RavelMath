@@ -270,11 +270,35 @@ window-validity half of Round 1's raw self-closure universally --
 every one-hop backward branch that occurs in the bounded region also
 lands in the stepped-hyperplane window if and only if it is one of the
 25 non-seed target states, for every integer `a`, not six sampled
-ones. It says nothing about Red (the two D_cont seeds shown to need no
-predecessor here are not asserted to be the same two states the
-post-Red survivor accounting elsewhere calls "pruned by Red" --
-that would be a different, unverified claim). Red pruning (27 -> 25)
-remains open and untouched by this result.
+ones. It says nothing on its own about Red (the two D_cont seeds shown
+to need no predecessor here are not, by this argument alone, the same
+two states the post-Red survivor accounting elsewhere calls "pruned by
+Red").
+
+### Round 1: the Red-pruned pair coincides with the D_cont-seed pair (checked, not proved; 2026-07-31)
+
+That "different, unverified claim" from the paragraph above has now
+been checked directly against the trusted ground-truth pipeline
+(`search_D_cont -> backward_closure -> red_anode`, the same functions
+`app/class_ii_neighbor2_dump_backward.cpp` already calls) rather than
+left as a coincidence of the counting. `app/class_ii_neighbor2_round1_red_identity.cpp`
+(`make class_ii_neighbor2_round1_red_identity`) computes, for every `a`
+in `[3,60]`, the actual rank-one Red-pruned pair and compares it against
+the two D_cont seeds `{1,{0,0,1},1}` and `{2,{0,1,-1},1}`: **zero
+mismatches** across all 58 tested values. So, as an exact finite check
+(not yet a symbolic proof for every `a`): the two states Red prunes and
+the two states needing no backward predecessor are the same pair.
+
+This is real progress on "which two states" but is explicitly **not**
+the symbolic Red-pruning proof Round 1 still needs. It answers a
+question (are they the same pair, or two different pairs?) that was
+previously open and could have gone either way; it does not yet show
+*why* Red prunes exactly these two for literal every integer `a` --
+that requires a symbolic argument about `forward_edges`/
+`induced_restricted_edges` applied to these two specific seed nodes
+(a different derivation direction from the backward-branch categories
+used above), which has not been attempted. Red pruning (27 -> 25)
+remains open.
 
 ## Recurrent exhaustion after layer equality
 

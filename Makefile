@@ -738,6 +738,16 @@ $(CLASS_II_NEIGHBOR2_ROUND1_WINDOW_CERTIFICATE_BIN): $(APPDIR)/class_ii_neighbor
 		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# class_ii_neighbor2_round1_red_identity: exact finite check (not a
+# symbolic proof) of whether Red's 2 pruned states, for a=3..60, equal
+# the 2 D_cont seeds shown to need no backward predecessor above.
+CLASS_II_NEIGHBOR2_ROUND1_RED_IDENTITY_BIN := $(BUILDDIR)/class_ii_neighbor2_round1_red_identity
+class_ii_neighbor2_round1_red_identity: $(CLASS_II_NEIGHBOR2_ROUND1_RED_IDENTITY_BIN)
+	./$(CLASS_II_NEIGHBOR2_ROUND1_RED_IDENTITY_BIN)
+$(CLASS_II_NEIGHBOR2_ROUND1_RED_IDENTITY_BIN): $(APPDIR)/class_ii_neighbor2_round1_red_identity.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 BP_DUMP_PROVENANCE_BIN := $(BUILDDIR)/bp_dump_provenance
 bp_dump_provenance: $(BP_DUMP_PROVENANCE_BIN)
 $(BP_DUMP_PROVENANCE_BIN): $(APPDIR)/bp_dump_provenance.cpp \

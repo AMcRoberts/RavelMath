@@ -550,12 +550,23 @@ recovering the same 25 non-seed target states for literally every `a`
 rather than six sampled values. Cross-checked against the concrete
 numeric method at `a = 9, 10, 15, 20, 30, 50, 80, 120` with identical
 results. This closes the window-validity half of Round 1's raw
-self-closure universally; Red pruning (`27 -> 25`) remains open and is
-a separate, unverified claim from the D_cont-seed result here. See
+self-closure universally; Red pruning (`27 -> 25`) remains open.
+
+**Round 1, Red-pruned pair identified (checked, not proved; 2026-07-31).**
+`app/class_ii_neighbor2_round1_red_identity.cpp`
+(`make class_ii_neighbor2_round1_red_identity`) checks, against the
+trusted `search_D_cont -> backward_closure -> red_anode` pipeline, that
+the two states Red actually prunes and the two D_cont seeds identified
+above are the same pair, for every `a` in `[3,60]`: zero mismatches.
+This is an exact finite check, not a symbolic proof -- it answers
+"same pair or different pairs" (previously open either way) but does
+not show *why* Red prunes exactly these two states for literal every
+integer `a`. See
 `docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md` §§ "Round 1: validated
-symbolic self-closure of the raw 27-state pre-Red set" and "Round 1:
-window validity closed abstractly, not just at sampled `a`" for the
-full account and exactly what remains.
+symbolic self-closure of the raw 27-state pre-Red set", "Round 1:
+window validity closed abstractly, not just at sampled `a`", and
+"Round 1: the Red-pruned pair coincides with the D_cont-seed pair" for
+the full account and exactly what remains.
 
 For the four non-base phases, C++ now exposes named pre-Red, ordered
 rank, and post-Red catalogue dispatchers. A structural sweep over 429
