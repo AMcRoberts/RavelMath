@@ -679,12 +679,27 @@ not merely checked:
 
 Together: **Rounds 2/3/4's Red-exclusion property is provable for
 every integer `a>=7`**, not merely exact-finite-checked through
-`a=50` -- still one tier below Lean-formalized, reached the same
-night it was asked for by catching and fixing a real error in the
-first attempt at the both-fixed case rather than by getting it right
-immediately. See `docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md`'s
-"Round 2/3/4", "Sharper still", and the three category-closure
-sections for the full account.
+`a=50` -- reached the same night it was asked for by catching and
+fixing a real error in the first attempt at the both-fixed case rather
+than by getting it right immediately. See `docs/GLOBAL_CATALOGUE_
+OCCURRENCE_EXHAUSTION.md`'s "Round 2/3/4", "Sharper still", and the
+three category-closure sections for the full account.
+
+**The shared arithmetic core, Lean-kernel-checked
+(2026-07-31).** `lean/class_ii_round234_shape_closure.lean`
+(sorry-free, signed) formalizes the general lemma that makes both the
+hybrid category's window-monotonicity argument and the both-fixed
+category's closed-form proof valid: an affine integer function with
+nonzero slope hits any fixed target for at most one input, so a
+solution below a threshold never recurs at or above it. It also
+formalizes the exhaustive occurrence-type slope enumeration (5 types,
+slope in `{0,1}`) and its consequence. As with `lean/class_ii_round1_
+red_pruning.lean`, this formalizes the arithmetic core only -- which
+specific `(node, shape, target)` triples arise in Rounds 2/3/4's
+`pre_red` catalogues is still taken as given C++-checked input, not
+re-derived in Lean, so the overall Rounds 2/3/4 closure remains one
+tier below fully Lean-formalized even though its shared arithmetic
+engine now is.
 
 For the four non-base phases, C++ now exposes named pre-Red, ordered
 rank, and post-Red catalogue dispatchers. A structural sweep over 429

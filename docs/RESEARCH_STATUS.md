@@ -112,10 +112,16 @@ the achievable window to grow monotonically from one fixed edge);
 both-fixed by the corrected condition `rhs2 = slope_q - slope_p`
 (an earlier draft wrongly required `rhs2=0` and found real
 counterexamples -- checked exhaustively, not sampled states, at two
-widely separated `a`, zero exceptions once corrected). **Rounds
-2/3/4's Red-exclusion property is therefore provable for every
-integer `a>=7`**, not merely exact-finite-checked through `a=50` --
-still one tier below Lean-formalized. See `docs/GLOBAL_CATALOGUE_
+widely separated `a`, then closed in actual closed form: every
+slope-nonzero case's required `a` is solved for directly and shown
+`<7`, not sampled further). **Rounds 2/3/4's Red-exclusion property is
+therefore provable for every integer `a>=7`**, not merely exact-
+finite-checked through `a=50`. The shared arithmetic core (why a
+solution below a threshold never recurs above it) is now Lean-
+kernel-checked (`lean/class_ii_round234_shape_closure.lean`,
+sorry-free, signed) -- the specific `pre_red` catalogues themselves
+remain C++-checked input, not ported to Lean, so the overall closure
+is one tier below fully Lean-formalized. See `docs/GLOBAL_CATALOGUE_
 OCCURRENCE_EXHAUSTION.md`'s "Sharper still" section and the three
 category-closure sections following it for the full account.
 
