@@ -51,7 +51,7 @@ vertex compatibility equations. No numerical approximation enters.
 
 The representation-independent proof is
 `lean/return_contact_lift.lean`; `make lean-check` accepts it without
-`sorry`. The implementation is `include/spectre/return_contact_lift.hpp`.
+`sorry`. The implementation is `include/ravel/return_contact_lift.hpp`.
 `tests/return_contact_lift_test.cpp` checks both commuting equations
 for every generated sigma_{1,1} edge and independently checks complete
 bare edge support for the all-fibre seed set.
@@ -535,13 +535,27 @@ exactly) computes the raw one-hop backward branches into the full
 concrete `a=3..8` and window-filtered exactly, this reproduces the
 27-state target with zero spurious states, and the only two nodes not
 recovered are the two `D_cont` seeds themselves (correctly requiring
-no predecessor). This is still an exact finite certificate, not a
-universal proof: the window filtering was done by concrete evaluation,
-not the center's own abstract `(c,d)`-corner-bound argument, and Red
-pruning (`27 -> 25`) has not been attempted symbolically. See
-`docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md` § "Round 1: validated
-symbolic self-closure of the raw 27-state pre-Red set" for the full
-account and exactly what remains.
+no predecessor). This was an exact finite certificate at `a=3..8`, not
+yet a universal proof, because the window filtering was done by
+concrete evaluation rather than the center's own abstract
+`(c,d)`-corner-bound argument.
+
+**Round 1, window validity closed abstractly (2026-07-31).**
+`app/class_ii_neighbor2_round1_window_certificate.cpp`
+(`make class_ii_neighbor2_round1_window_certificate`) closes exactly
+that gap: it applies `class_ii_contact_backward_envelope_certificate()`'s
+own `(c,d)`-corner-bound closures to the same 97 categories, with zero
+unresolved cases across all 679 bounded `(category, x0)` pairs,
+recovering the same 25 non-seed target states for literally every `a`
+rather than six sampled values. Cross-checked against the concrete
+numeric method at `a = 9, 10, 15, 20, 30, 50, 80, 120` with identical
+results. This closes the window-validity half of Round 1's raw
+self-closure universally; Red pruning (`27 -> 25`) remains open and is
+a separate, unverified claim from the D_cont-seed result here. See
+`docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md` §§ "Round 1: validated
+symbolic self-closure of the raw 27-state pre-Red set" and "Round 1:
+window validity closed abstractly, not just at sampled `a`" for the
+full account and exactly what remains.
 
 For the four non-base phases, C++ now exposes named pre-Red, ordered
 rank, and post-Red catalogue dispatchers. A structural sweep over 429

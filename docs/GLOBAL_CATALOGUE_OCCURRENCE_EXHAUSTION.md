@@ -238,6 +238,44 @@ exact target they need to hit are all in hand and validated. Red
 pruning (27 -> 25, matching the already-known post-Red survivor sets)
 has not yet been attempted symbolically.
 
+### Round 1: window validity closed abstractly, not just at sampled `a` (2026-07-31)
+
+The remaining step named above -- promoting the 97 categories' window
+test from concrete evaluation to the center's own abstract
+`(c,d)`-corner-bound argument -- is done.
+`app/class_ii_neighbor2_round1_window_certificate.cpp`
+(`make class_ii_neighbor2_round1_window_certificate`) rebuilds the same
+97 categories and applies `class_ii_contact_backward_envelope_certificate()`'s
+own `AffineCD`/`universally_nonnegative`/`universally_positive` closures
+verbatim (duplicated, not refactored, to avoid touching that already-verified
+function) to every category and every `x0` in `[-3,3]` (wider than the
+center's `[-2,2]`, since this family's category `x2` range is `[-2,2]`
+rather than the center's `[-1,1]`). Result: all `679` bounded cases
+resolve with **zero unresolved cases** -- the same margin bounds the
+Lean-derived `2/3<d<1` gives the center decide every neighbor case too,
+with no dependence on `a` at all. The window-valid-and-occurring node
+set is exactly the 25 non-seed states of the 27-state raw target once
+the same all-zero `i<j` triviality convention the center's certificate
+already uses is applied (four `(x0,x1,x2)=(0,0,0)` mirror duplicates
+would otherwise appear as false positives); the two absent states are
+exactly the two D_cont seeds (`{1,{0,0,1},1}` and `{2,{0,1,-1},1}`,
+confirmed against `class_ii_d_cont_set()`), which correctly need no
+predecessor. Cross-checked against the concrete numeric method at
+`a = 9, 10, 15, 20, 30, 50, 80, 120` (beyond the originally tested
+`3..8`): identical `window_valid=25, extra=0`, same two missing seeds,
+at every value.
+
+What this does and does not prove, precisely: it proves the
+window-validity half of Round 1's raw self-closure universally --
+every one-hop backward branch that occurs in the bounded region also
+lands in the stepped-hyperplane window if and only if it is one of the
+25 non-seed target states, for every integer `a`, not six sampled
+ones. It says nothing about Red (the two D_cont seeds shown to need no
+predecessor here are not asserted to be the same two states the
+post-Red survivor accounting elsewhere calls "pruned by Red" --
+that would be a different, unverified claim). Red pruning (27 -> 25)
+remains open and untouched by this result.
+
 ## Recurrent exhaustion after layer equality
 
 Full layer equality proves occurrence/exhaustion of boundary *states*.

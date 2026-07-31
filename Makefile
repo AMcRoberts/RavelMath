@@ -728,6 +728,16 @@ $(CLASS_II_NEIGHBOR_PROBE_BIN): $(APPDIR)/class_ii_neighbor_probe.cpp \
 		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# class_ii_neighbor2_round1_window_certificate: abstract (not per-a)
+# window-validity certificate for Round 1's 27-state raw pre-Red
+# self-closure. Exits nonzero if the certificate stops closing.
+CLASS_II_NEIGHBOR2_ROUND1_WINDOW_CERTIFICATE_BIN := $(BUILDDIR)/class_ii_neighbor2_round1_window_certificate
+class_ii_neighbor2_round1_window_certificate: $(CLASS_II_NEIGHBOR2_ROUND1_WINDOW_CERTIFICATE_BIN)
+	./$(CLASS_II_NEIGHBOR2_ROUND1_WINDOW_CERTIFICATE_BIN)
+$(CLASS_II_NEIGHBOR2_ROUND1_WINDOW_CERTIFICATE_BIN): $(APPDIR)/class_ii_neighbor2_round1_window_certificate.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 BP_DUMP_PROVENANCE_BIN := $(BUILDDIR)/bp_dump_provenance
 bp_dump_provenance: $(BP_DUMP_PROVENANCE_BIN)
 $(BP_DUMP_PROVENANCE_BIN): $(APPDIR)/bp_dump_provenance.cpp \
