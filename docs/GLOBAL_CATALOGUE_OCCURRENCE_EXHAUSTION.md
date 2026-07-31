@@ -437,6 +437,45 @@ characterization of "the neighbor's `±C`" the cited literature (Def
 question, not a code-verification one, and is outside what this
 investigation checked.
 
+### Round 2: reconnaissance only, not attempted (2026-07-31)
+
+With Round 1's window-validity and Red-pruning both closed above
+(`a>=3`, unsigned half), I looked at whether the same playbook
+transplants quickly to Round 2 (`E_2`, the fixed 25-state correction).
+It does not look like a quick follow-on, and I want the reason on
+record rather than a silent "ran out of time."
+
+`docs/CLASS_II_NEIGHBOR2_TRANSPORT_THEOREM.md` shows Round 2's
+surrounding machinery is already considerably more mature than Round
+1's was before today: window validity for the fixed 24-state interior
+correction is already Lean-kernel-checked (`lean/class_ii_neighbor2_extensions.lean`,
+derived from the same cubic margin `2/3<d<1`-style bound Round 1
+reused); corona propagation has an exact witness table
+(`class_ii_neighbor2_interior_composition_witnesses`, checked through
+`r=128`); Red survival is closed *conditionally on center-layer
+survival* for every correction state. What the base-premises table
+still lists as open for Round 2 -- "full raw-corona reverse inclusion
+and full Red exclusion" -- is the same *shape* of gap Round 1 had
+(prove the raw one-hop composition self-closes to exactly the target,
+then prove Red removes exactly the right non-survivors), but the input
+to that composition is `T_1 = B_1 union E_1` run through `c_corona`
+against the fifty-hop signed contact set, not a direct
+`backward_closure(D_cont)` -- a genuinely different (and, from the
+Lemma-2/3 write-up above, evidently more involved) derivation, not a
+copy-paste-with-different-data version of Round 1's `app/class_ii_neighbor2_symbolic_backward.cpp`.
+
+Given the size of that surrounding machinery, attempting Round 2's
+remaining gap in the same session, on top of Round 1's already
+substantial work today, would have meant starting a comparably-scoped
+derivation with materially less time to catch a subtle bug the way
+Round 1's session caught three (the `struct`/`import struct` bug in
+NetHack's `repl.py`, the double-temporary UB in the window certificate,
+and the arithmetic slip in the by-hand `M` derivation). Better to name
+this precisely and stop than rush it. A future session picking this up
+should start from `class_ii_neighbor2_interior_composition_witnesses`
+and the twelve-state/nine-state round-two/round-three center-interface
+functional graphs mentioned in Lemma 4 above, not from scratch.
+
 ## Recurrent exhaustion after layer equality
 
 Full layer equality proves occurrence/exhaustion of boundary *states*.
