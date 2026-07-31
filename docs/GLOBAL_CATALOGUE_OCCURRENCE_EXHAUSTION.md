@@ -476,6 +476,17 @@ should start from `class_ii_neighbor2_interior_composition_witnesses`
 and the twelve-state/nine-state round-two/round-three center-interface
 functional graphs mentioned in Lemma 4 above, not from scratch.
 
+One concrete thing to start from: `app/class_ii_round2_recon.cpp`
+(`make class_ii_round2_recon`) confirms, against the same trusted
+`algorithm2_trace` pipeline `class_ii_neighbor_probe.cpp`'s
+`corona_trace` already calls (not new machinery), that the per-round
+survivor-count difference between `tau_a` and `sigma_a` is exactly `22`
+at round 1 (matching `E_1`) and exactly `25` at rounds 2, 3, and 4
+(matching `E_2`/`E_3`/`E_4`), at `a=7,8`. This is confirmation of the
+target *sizes* using existing trusted code, not a derivation of *why*
+-- Round 2's actual reverse-inclusion/Red-exclusion gap is unaffected
+by this and remains exactly as open as stated above.
+
 ## Recurrent exhaustion after layer equality
 
 Full layer equality proves occurrence/exhaustion of boundary *states*.

@@ -795,6 +795,18 @@ $(CLASS_II_ABSTRACT_WINDOW_CLASSIFY_REGRESSION_BIN): $(APPDIR)/class_ii_abstract
 		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# class_ii_round2_recon: confirms Round 2's E_2 = 25-state size against
+# the trusted corona-trace pipeline at a=7,8. Reconnaissance only, not
+# a reverse-inclusion or Red-exclusion proof -- see
+# docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md's "Round 2:
+# reconnaissance only" note.
+CLASS_II_ROUND2_RECON_BIN := $(BUILDDIR)/class_ii_round2_recon
+class_ii_round2_recon: $(CLASS_II_ROUND2_RECON_BIN)
+	./$(CLASS_II_ROUND2_RECON_BIN)
+$(CLASS_II_ROUND2_RECON_BIN): $(APPDIR)/class_ii_round2_recon.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 BP_DUMP_PROVENANCE_BIN := $(BUILDDIR)/bp_dump_provenance
 bp_dump_provenance: $(BP_DUMP_PROVENANCE_BIN)
 $(BP_DUMP_PROVENANCE_BIN): $(APPDIR)/bp_dump_provenance.cpp \
