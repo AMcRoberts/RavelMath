@@ -105,7 +105,7 @@ un-shortened trajectory (hence: designated, and -- since every other
 chunk corresponds to an earlier, partial resync -- necessarily derived
 from a *shorter* sub-word). Checked with zero exceptions across all
 $250$ branching states for $n=3,\dots,7$ (`app/bp_dump_provenance.cpp`
-+ `include/spectre/bp_dump_analysis.hpp` and
++ `include/ravel/bp_dump_analysis.hpp` and
 `lua/scripts/bp_hypothesis_checks.lua`); the explicit-induction
 form of this argument is the writing exercise noted in
 `RESEARCH_STATUS.md` ("Closing the determinant argument"), not an open

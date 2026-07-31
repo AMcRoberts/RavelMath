@@ -10,7 +10,7 @@ All C++ examples assume:
 
 ```cpp
 #include "math/..."
-#include "spectre/..."
+#include "ravel/..."
 #include "adelic/..."
 ```
 
@@ -272,9 +272,9 @@ Prony/matrix-pencil construction would be a new composed subsystem.
 `SubstitutionRule` is used by word algorithms and surveys:
 
 ```cpp
-#include "spectre/substitution.hpp"
+#include "ravel/substitution.hpp"
 
-spectre::SubstitutionRule sigma({
+ravel::SubstitutionRule sigma({
     {0,1},  // sigma(0)
     {0}     // sigma(1)
 });
@@ -290,14 +290,14 @@ Words use zero-based signed integer letters.
 hyperplane data:
 
 ```cpp
-#include "spectre/core.hpp"
+#include "ravel/core.hpp"
 
 std::array<std::vector<long long>, 3> images{
     std::vector<long long>{0,1},
     std::vector<long long>{0,2},
     std::vector<long long>{0}
 };
-spectre::Substitution<3> s(images, beta);
+ravel::Substitution<3> s(images, beta);
 bool in_face_strip = s.in_H_sigma(x, j);
 s.ensure_exact_qbeta();
 bool exact = s.in_H_sigma_exact(x, j);
@@ -309,13 +309,13 @@ decisive or a floating tolerance is near zero.
 ### Spectral invariants
 
 ```cpp
-#include "spectre/spectral.hpp"
+#include "ravel/spectral.hpp"
 
-auto inv3 = spectre::spectral_invariants_3x3(
+auto inv3 = ravel::spectral_invariants_3x3(
     1, 1, 1,
     1, 0, 0,
     0, 1, 0);
-auto invn = spectre::spectral_invariants_general(Mn);
+auto invn = ravel::spectral_invariants_general(Mn);
 ```
 
 The result contains the Perron root `beta`, secondary modulus `beta2`,
@@ -328,18 +328,18 @@ An affine node is `[i,x,j]`, represented by `ANode<d>`, with lattice
 translation `x in Z^d` and face labels `i,j`.
 
 ```cpp
-spectre::ANode<3> n{i, x, j};
-auto parents = spectre::parent_decompositions(s, n);
-auto next = spectre::forward_edges(s, n);
+ravel::ANode<3> n{i, x, j};
+auto parents = ravel::parent_decompositions(s, n);
+auto next = ravel::forward_edges(s, n);
 ```
 
 The contact digit predicate combines hyperplane and face geometry:
 
 ```cpp
-#include "spectre/d_cont_check.hpp"
+#include "ravel/d_cont_check.hpp"
 
-bool contact = spectre::is_in_D_cont(s, candidate);
-auto digits = spectre::search_D_cont(s, coordinate_bound);
+bool contact = ravel::is_in_D_cont(s, candidate);
+auto digits = ravel::search_D_cont(s, coordinate_bound);
 ```
 
 Face intersections use `face_intersection_dim` and
@@ -360,11 +360,11 @@ G_B          recurrent boundary graph obtained by corona + Red
 Invoke the composed pipeline:
 
 ```cpp
-#include "spectre/contact_boundary.hpp"
+#include "ravel/contact_boundary.hpp"
 
-spectre::ContactBoundaryLimits limits;
+ravel::ContactBoundaryLimits limits;
 auto report =
-    spectre::compute_contact_boundary_from_subst<3>(
+    ravel::compute_contact_boundary_from_subst<3>(
         rule, beta, beta2, 2, limits);
 ```
 
@@ -372,7 +372,7 @@ Or supply a verified `D_cont`:
 
 ```cpp
 auto report =
-    spectre::compute_contact_boundary<3>(
+    ravel::compute_contact_boundary<3>(
         rule, beta, beta2, d_cont, limits);
 ```
 
@@ -392,13 +392,13 @@ them at their first recurring equal prefix-sums. The transition graph
 iterates substitution followed by this reduction.
 
 ```cpp
-#include "spectre/balanced_pair.hpp"
+#include "ravel/balanced_pair.hpp"
 
-auto cert = spectre::balanced_pair_certify(
+auto cert = ravel::balanced_pair_certify(
     rule, max_pairs, max_word_length);
-double rho = spectre::rho_nc(
+double rho = ravel::rho_nc(
     rule, max_pairs, max_word_length);
-auto graph = spectre::balanced_pair_transition_graph(
+auto graph = ravel::balanced_pair_transition_graph(
     rule, max_pairs, max_word_length);
 ```
 
@@ -410,14 +410,14 @@ that equality.
 ## Weighted graph quotients and involutions
 
 ```cpp
-#include "spectre/graph_divisor.hpp"
+#include "ravel/graph_divisor.hpp"
 
-spectre::WeightedDigraph g = ...;
-auto p = spectre::coarsest_equitable_partition(g);
-auto Q = spectre::quotient_matrix(g, p);
-auto sccs = spectre::tarjan_scc(g);
+ravel::WeightedDigraph g = ...;
+auto p = ravel::coarsest_equitable_partition(g);
+auto Q = ravel::quotient_matrix(g, p);
+auto sccs = ravel::tarjan_scc(g);
 auto [core, old_indices] =
-    spectre::extract_dominant_recurrent_core(g);
+    ravel::extract_dominant_recurrent_core(g);
 ```
 
 `extract_recurrent_core` and `extract_dominant_recurrent_core` answer
@@ -427,10 +427,10 @@ radius.
 For the free involution mechanism:
 
 ```cpp
-#include "spectre/involution_helpers.hpp"
+#include "ravel/involution_helpers.hpp"
 
-auto gbq = spectre::compute_gb_sym_quotient<d>(report, subst);
-auto bpq = spectre::compute_bp_sym_quotient(rule);
+auto gbq = ravel::compute_gb_sym_quotient<d>(report, subst);
+auto bpq = ravel::compute_bp_sym_quotient(rule);
 ```
 
 The Lean theorem in `free_involution_perron_core.lean` formalizes the
@@ -439,16 +439,16 @@ general quotient/Perron relationship.
 ## Return substitutions and labelled lifts
 
 ```cpp
-#include "spectre/return_substitution.hpp"
-#include "spectre/return_contact_lift.hpp"
+#include "ravel/return_substitution.hpp"
+#include "ravel/return_contact_lift.hpp"
 
-auto words = spectre::discover_return_words(rule, marker, orbit_cap);
+auto words = ravel::discover_return_words(rule, marker, orbit_cap);
 auto derived =
-    spectre::build_return_substitution(rule, marker, orbit_cap);
+    ravel::build_return_substitution(rule, marker, orbit_cap);
 auto phase =
-    spectre::build_return_phase_system(rule, marker, orbit_cap);
-spectre::ReturnContactLimits lift_limits;
-auto lift = spectre::build_reachable_return_contact_lift(
+    ravel::build_return_phase_system(rule, marker, orbit_cap);
+ravel::ReturnContactLimits lift_limits;
+auto lift = ravel::build_reachable_return_contact_lift(
     substitution, contact_states, phase, seeds, lift_limits);
 ```
 
@@ -468,15 +468,15 @@ sigma_{a,b}: 0 -> 0^a 1,
 with the active parametric results concentrated on `b=1`.
 
 ```cpp
-#include "spectre/class_ii_boundary_family.hpp"
-#include "spectre/class_ii_neighbor_family.hpp"
-#include "spectre/class_ii_neighbor2_pruning.hpp"
+#include "ravel/class_ii_boundary_family.hpp"
+#include "ravel/class_ii_neighbor_family.hpp"
+#include "ravel/class_ii_neighbor2_pruning.hpp"
 
-auto C = spectre::class_ii_contact_set();
-auto shell = spectre::class_ii_interior_shell(round);
-auto terminal = spectre::class_ii_terminal_shell(a);
+auto C = ravel::class_ii_contact_set();
+auto shell = ravel::class_ii_interior_shell(round);
+auto terminal = ravel::class_ii_terminal_shell(a);
 auto matrix =
-    spectre::class_ii_neighbor_compressed_matrix(neighbor, a);
+    ravel::class_ii_neighbor_compressed_matrix(neighbor, a);
 ```
 
 The neighbor-2 pruning header exposes separate functions for stable,
@@ -488,9 +488,9 @@ predicates are disjoint and exhaustive on the stated domain.
 ## Rauzy fractals
 
 ```cpp
-#include "spectre/rauzy_fractal.hpp"
+#include "ravel/rauzy_fractal.hpp"
 
-spectre::RauzyFractal<3> rf(images);
+ravel::RauzyFractal<3> rf(images);
 auto raw_points = rf.chaos_game(max_points, seed);
 auto point = rf.project_2d(raw_points.front());
 ```
@@ -590,11 +590,11 @@ theorem from a single successful subcheck.
 ## Finite Fibonacci and packed dynamics
 
 ```cpp
-#include "spectre/fibonacci_selection.hpp"
+#include "ravel/fibonacci_selection.hpp"
 
-auto target = spectre::quantum_chsh_targets();
-spectre::FibonacciSelectionLimits limits;
-auto exact = spectre::fibonacci_selection_exact(
+auto target = ravel::quantum_chsh_targets();
+ravel::FibonacciSelectionLimits limits;
+auto exact = ravel::fibonacci_selection_exact(
     selection_stride, setting_stride, shift, target, limits);
 ```
 
@@ -602,11 +602,11 @@ The exact routine integrates interval/window lengths rather than
 sampling sites.
 
 ```cpp
-#include "spectre/packed_binary_dynamics.hpp"
+#include "ravel/packed_binary_dynamics.hpp"
 
-auto bits = spectre::packed_fibonacci_word(N);
-spectre::packed_rule30(bits, steps);
-auto C = spectre::packed_parity_correlation_matrix(bits, settings);
+auto bits = ravel::packed_fibonacci_word(N);
+ravel::packed_rule30(bits, steps);
+auto C = ravel::packed_parity_correlation_matrix(bits, settings);
 ```
 
 Packed routines are finite periodic experiments. Their caps and system
@@ -627,16 +627,16 @@ package.cpath = "../out/?.so;" .. package.cpath
 package.path = "lua_src/?.lua;lua_src/?/init.lua;" .. package.path
 
 local native = require("spectre_native")
-local spectre = require("spectre").init(native)
+local ravel = require("ravel").init(native)
 ```
 
 ### Core examples
 
 ```lua
-local z = spectre.cyclo.make(1, 2, 0, -1)
-local xy = spectre.cyclo.to_xy(z)
+local z = ravel.cyclo.make(1, 2, 0, -1)
+local xy = ravel.cyclo.to_xy(z)
 
-local inv = spectre.spectral.invariants_3x3({
+local inv = ravel.spectral.invariants_3x3({
   {1, 1, 1},
   {1, 0, 0},
   {0, 1, 0},
@@ -646,9 +646,9 @@ local sigma = {
   {0, 1},
   {0},
 }
-local bp = spectre.balanced_pair.certify(sigma)
+local bp = ravel.balanced_pair.certify(sigma)
 
-local report = spectre.contact_boundary.from_subst(sigma)
+local report = ravel.contact_boundary.from_subst(sigma)
 assert(report.converged and not report.closure_stopped_early)
 ```
 

@@ -51,7 +51,7 @@ The 12 "EXPLODED" candidates from the 39-substitution survey are
 3-letter cubic Pisot substitutions with `|det M| = 2` whose
 contact-boundary pipeline previously diverged in the closure step.
 Under the exact `in_H_sigma` path (`Substitution::in_H_sigma_exact` in
-`include/spectre/core.hpp`, backed by the Sturm-isolated `β` interval
+`include/ravel/core.hpp`, backed by the Sturm-isolated `β` interval
 + exact Q(β) sign test), all 12 produce finite `|C|`, `|±C|`, `|G_B|`,
 and a definite BP-`ρ_nc` / `λ(G_B)` pair. See
 `tests/test_12_exploded.cpp` (67/67) for the end-to-end run;
@@ -135,7 +135,7 @@ simple-Parry family," not "holds for unimodular Pisot in general."**
 **The exact mechanism (proven, not a coincidence), n=2..6.**
 Restricting to `G_B`'s DOMINANT recurrent strongly-connected component
 (the one whose own Perron root equals `λ(G_B)` — use
-`extract_dominant_recurrent_core`, `include/spectre/graph_divisor.hpp`,
+`extract_dominant_recurrent_core`, `include/ravel/graph_divisor.hpp`,
 never `extract_recurrent_core`, which picks by node count and can pick
 the wrong component when a graph has multiple recurrent SCCs, as
 Hexanacci's `G_B` does), the map `[i,x,j] ↔ [j,-x,i]` (swap the two
@@ -321,7 +321,7 @@ future non-unit candidate.
 `rauzy_fractal_natural` i.i.d. projected-letter cloud was illustrative
 only and has been removed. The corrected construction is the
 graph-directed native generator exposed as
-`spectre.rauzy_fractal.generate`; run
+`ravel.rauzy_fractal.generate`; run
 `lua5.4 lua/scripts/rnd13_rauzy.lua 50000 points.tsv`. It reports
 `β=5.6236`, bounded affine-hyperplane error, and writes 3D contracting
 coordinates. Rendering remains illustrative; the strict tiling
@@ -486,7 +486,7 @@ two minutes at n<=6 (the n=7 case takes ~30s for the dump).
   construction with the separately-sourced Hollander-Solomyak
   balanced-pair algorithm.
 - Hollander, M. & Solomyak, B. — balanced-pair automaton / `ρ_nc`
-  (`include/spectre/balanced_pair.hpp`).
+  (`include/ravel/balanced_pair.hpp`).
 - Barge, M., Bruin, H., Jones, L. & Sadun, L. (2010) — Exact
   Regularity Property, non-unimodular Pisot tiling failure.
 - Barge, M. & Gambaudo, J.-M. (2011) — geometric realization /
@@ -495,8 +495,8 @@ two minutes at n<=6 (the n=7 case takes ~30s for the dump).
   — aperiodic monotile.
 - Hall, M. J. W. & Branciard, C., Phys. Rev. A 102, 052228 (2020) —
   source for the CHSH-style correlation statistic used as a
-  diagnostic in `include/spectre/thermometer.hpp` and
-  `include/spectre/tilt.hpp` (unrelated to Findings 1–3).
+  diagnostic in `include/ravel/thermometer.hpp` and
+  `include/ravel/tilt.hpp` (unrelated to Findings 1–3).
 - **Minervino, M. & Thuswaldner, J. M.**, "The geometry of non-unit
   Pisot substitutions" (Annales de l'Institut Fourier; extended
   version on arXiv as 1402.2002) — source for the strong-coincidence +
@@ -519,7 +519,7 @@ fall into 3 distinct structural classes.**
 
 Construction: `app/probe_a1_a2_unimodular.cpp` (focused A1/A2 probe)
 + `app/tabulate_pisot_properties.cpp` (full tabulation, 9 properties
-per candidate) + `include/spectre/pisot_substitution_properties.hpp`
+per candidate) + `include/ravel/pisot_substitution_properties.hpp`
 (general Pisot first-principles machinery; extends the existing
 `Substitution<d>::v`, `letter_frequencies`, `has_constant_factor`,
 etc., does not reimplement).

@@ -36,7 +36,7 @@ matrix / number-field stratum (light)
 
 ## A smallest useful neighborhood relation
 
-`include/spectre/substitution_neighborhood.hpp` implements the first
+`include/ravel/substitution_neighborhood.hpp` implements the first
 exact edge relation: swap two adjacent unequal letters in one image.
 This preserves every Parikh vector and hence preserves the incidence
 matrix, characteristic polynomial, Perron root, and stable projection.
@@ -378,7 +378,7 @@ The state-level extraction is now sharper. For every tested
 `3<=a<=8`, each neighbor's selected dominant core has a literally
 parameter-independent node set. The three explicit catalogues of
 sizes `15,17,39` are library objects in
-`include/spectre/class_ii_neighbor_family.hpp`, and the probe requires
+`include/ravel/class_ii_neighbor_family.hpp`, and the probe requires
 freshly computed core-set equality.
 
 With each catalogue sorted canonically, every adjacency entry tested

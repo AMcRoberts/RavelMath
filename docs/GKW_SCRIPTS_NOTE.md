@@ -13,7 +13,7 @@ mathematical machinery and print a report.  C++ files that
 have a `main()` do not belong in `src/`, `include/`, or `tests/`
 under this project's conventions:
 
-- `include/spectre/*.hpp` is the *reusable C++ header library*
+- `include/ravel/*.hpp` is the *reusable C++ header library*
   (templated class definitions, function templates, no `main()`,
   called by other code).
 - `src/*.cpp` is the small set of non-header-only implementations
@@ -51,7 +51,7 @@ Look at the other `.cpp` files in `app/`:
   library here.
 - `qbeta_eigenvalue.cpp` — reads a matrix dump from a file,
   runs the exact-Q(β) eigenvalue routine on it, prints the
-  result.  Standalone driver for `spectre/qbeta_eigenvalue.hpp`.
+  result.  Standalone driver for `ravel/qbeta_eigenvalue.hpp`.
 - `contact_boundary_4x4.cpp` — takes a 4×4 matrix as command-line
   args, runs the full contact-boundary pipeline on it, prints
   the report.  Standalone driver for the contact-boundary
@@ -65,7 +65,7 @@ Look at the other `.cpp` files in `app/`:
   in_H_sigma path.  Standalone driver / verifier.
 - `rational_transcendentals_test.cpp` — verifies the Machin-formula
   π and Taylor+remainder sin/cos brackets in
-  `spectre/rational_transcendentals.hpp`.
+  `ravel/rational_transcendentals.hpp`.
 - `verify_exploded_12.cpp` — forward-branch driver for the same
   12 candidates under the exact Sturm classifier (smaller
   surface area than `validate_exploded.cpp`; kept as an
@@ -81,11 +81,11 @@ The GKW `.cpp` files fit this pattern exactly.  Each one:
 3. Isolates specific roots to high precision.
 4. Prints a labeled report.
 
-## Why not a header in `include/spectre/`?
+## Why not a header in `include/ravel/`?
 
-`include/spectre/*.hpp` is reusable mathematical machinery —
+`include/ravel/*.hpp` is reusable mathematical machinery —
 typed once, instantiated many times, used by other code.
-Examples: `spectre::Substitution<d>`, `spectral_invariants_general`,
+Examples: `ravel::Substitution<d>`, `spectral_invariants_general`,
 `compute_contact_boundary_dispatch`.
 
 The GKW work is the opposite shape: it has a single hardcoded
@@ -96,7 +96,7 @@ the work currently is "certify that this specific matrix has a
 specific eigenvalue to 90 digits" — a single fact, not a
 generality.  If/when the GKW work grows into a reusable
 spectral-radius-of-transfer-operator tool, it would move to
-`include/spectre/gkw.hpp` (header-only, templated on M).
+`include/ravel/gkw.hpp` (header-only, templated on M).
 Today it isn't there.
 
 ## Why not a test in `tests/`?
@@ -152,7 +152,7 @@ gated by CI.
 ## See also
 
 - `docs/CPP_DESIGN_PHILOSOPHY.md` — the rules that put reusable
-  code in `include/spectre/*.hpp`, non-header-only impls in
+  code in `include/ravel/*.hpp`, non-header-only impls in
   `src/*.cpp`, tests in `tests/*_test.cpp`, and standalone
   drivers in `app/*.cpp`.
 - `docs/DIRECTION_AND_OPEN_THREADS.md` — the GKW work's status

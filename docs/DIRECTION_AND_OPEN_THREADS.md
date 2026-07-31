@@ -160,7 +160,7 @@ perturbations specifically.
 **(B2) Smooth-relaxation search.** The natural way to generate
 new Item A and Item B candidates, replacing pure random sampling
 with gradient-based Pisot-preserving mutation. The natural
-starting point: a small `include/spectre/dual.hpp` (forward-mode
+starting point: a small `include/ravel/dual.hpp` (forward-mode
 automatic-differentiation helper), use `spectral_invariants_3x3`
 (closed-form Cardano) as the differentiable objective, and a
 Pisot-preserving gradient step that perturbs the matrix in a way
@@ -193,7 +193,7 @@ verification, not a new finding.)
 Several pieces of machinery are shared between the two items.
 
 **`ContactBoundaryLimits`** (this session's new struct,
-`include/spectre/contact_boundary.hpp`) — the implementing layer's
+`include/ravel/contact_boundary.hpp`) — the implementing layer's
 knobs for the contact-boundary pipeline. Default-constructed
 reproduces the historical 20000/60000/5000/50000/8 caps (the
 `bp_rho_pairs`, `bp_rho_len`, `closure_cap`, `corona_cap`, and

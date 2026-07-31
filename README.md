@@ -43,7 +43,7 @@ sweep is not presented as a universal proof.
 
 | Path | Contents |
 |---|---|
-| `include/spectre/` | Header-oriented substitution, graph, boundary, spectral, and finite-dynamics library. |
+| `include/ravel/` | Header-oriented substitution, graph, boundary, spectral, and finite-dynamics library. |
 | `include/adelic/` | Dedekind factorization, ideal arithmetic, local fields, prefix automata, coincidence, and property-(F) machinery. |
 | `math/` | Exact arithmetic, algebraic-number, matrix, Sturm, root-isolation, FFT, and Perron tools. |
 | `src/` | Non-header-only implementations and Lua bindings. |

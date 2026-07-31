@@ -8,7 +8,7 @@ the codebase consistently.
 
 | Location | Contains |
 |---|---|
-| `include/spectre/*.hpp` | Reusable C++ headers (the public `spectre::` library). Header-only when possible; paired with `tests/*_test.cpp` per §3. |
+| `include/ravel/*.hpp` | Reusable C++ headers (the public `ravel::` library). Header-only when possible; paired with `tests/*_test.cpp` per §3. |
 | `src/*.cpp` | The small set of non-header-only implementations paired with the header library. Currently: `lua_bindings.cpp` (Lua-C bridge), `rauzy_fractal.cpp` (explicit template instantiation). |
 | `app/*.cpp` | Standalone driver programs (`main()`-bearing). Each one exercises a piece of mathematical machinery and prints a report. NOT tests, NOT library code. |
 | `tests/*_test.cpp` | Test binaries. Paired one-per-header per §3. |
@@ -65,7 +65,7 @@ via `Substitution::in_H_sigma_exact` (see `core.hpp`).
 
 ## 3. Every header ships a paired, standalone self-test
 
-`foo.hpp` in `include/spectre/` → `foo_test.cpp` in `tests/`, using
+`foo.hpp` in `include/ravel/` → `foo_test.cpp` in `tests/`, using
 the `CHECK`/`CHECK_NEAR`/`EXPECT` macro pair (any `*_test.cpp` shows
 the pattern), printing `[ok]`/`[FAIL]` per case, nonzero exit on
 any failure. Wired into the top-level `Makefile` as an independent
@@ -95,13 +95,13 @@ is what makes the numerical cross-check table in
 ## 5. One decimal constant, one source
 
 The decimal mantissa of `sqrt(3)/2` lives only in
-`include/spectre/cyclotomic.hpp`.  Every other constant is either
+`include/ravel/cyclotomic.hpp`.  Every other constant is either
 exact in binary floating point (`0.5`, `1.0`, `0.0`) or derived
 from that source. Don't re-type a decimal expansion of an irrational
 in a second file.
 
 The transcendentals are the one principled exception:
-`include/spectre/rational_transcendentals.hpp` is the source of
+`include/ravel/rational_transcendentals.hpp` is the source of
 truth for π, sin, and cos, computed via Machin's formula +
 alternating-series remainder bound (and Taylor + Lagrange
 remainder for sin/cos), with no floating point anywhere.  The
@@ -124,7 +124,7 @@ the two concerns.
 ## Checklist for new numerical work
 
 1. Pick the right location for the code:
-   - Reusable header → `include/spectre/foo.hpp`.
+   - Reusable header → `include/ravel/foo.hpp`.
    - Non-header-only implementation → `src/foo.cpp`.
    - Standalone driver with `main()` → `app/foo.cpp`.
    - Test of a specific header → `tests/foo_test.cpp`.

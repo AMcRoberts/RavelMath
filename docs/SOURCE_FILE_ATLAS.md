@@ -13,7 +13,7 @@ mathematical objects, use `MATHEMATICAL_API.md`.
 math/include/math + mini-gmp
              |
              v
-include/spectre -------- include/adelic
+include/ravel -------- include/adelic
        |                       |
        +-----------+-----------+
                    v
@@ -27,8 +27,8 @@ Lean files formalize selected statements independently.
 Python files are retained prototypes, fixtures, and visualization tools.
 ```
 
-The reusable C++ namespaces are `mathlib`, `spectre`, and `adelic`.
-Most Spectre headers are header-oriented; `src/rauzy_fractal.cpp` and
+The reusable C++ namespaces are `mathlib`, `ravel`, and `adelic`.
+Most `ravel` headers are header-oriented; `src/rauzy_fractal.cpp` and
 `src/lua_bindings.cpp` contain the principal compiled implementations.
 
 ## Exact mathematics library
@@ -90,56 +90,56 @@ Most Spectre headers are header-oriented; `src/rauzy_fractal.cpp` and
 
 | File | Mathematical responsibility |
 |---|---|
-| `include/spectre/substitution.hpp` | Runtime `SubstitutionRule`, word iteration, incidence matrices, and binary correlation helpers. |
-| `include/spectre/core.hpp` | Fixed-dimension `Substitution<d>`, affine nodes `ANode<d>`, Perron data, and exact/approximate `H_sigma` membership. |
-| `include/spectre/spectral.hpp` | Perron root, secondary modulus, determinant, and separation bounds for 2x2, 3x3, and general matrices. |
-| `include/spectre/spectral_dual.hpp` | Forward-mode automatic differentiation of the closed-form 3x3 spectral invariants. |
-| `include/spectre/dual.hpp` | Generic first-order dual numbers and elementary operations. |
-| `include/spectre/dual_format.hpp` | Exact-ball-aware presentation and rationality assessment of dual values. |
-| `include/spectre/qbasis.hpp` | Compatibility layer for exact `Q(beta)` vectors and eigenvectors. |
-| `include/spectre/qbeta_eigenvalue.hpp` | Memory-bounded exact-power iteration for a dominant eigenvalue in `Q(beta)`. |
-| `include/spectre/rational_transcendentals.hpp` | Rational enclosures for pi, sine, and cosine. |
-| `include/spectre/cyclotomic.hpp` | Arithmetic and planar embedding for the rank-four twelfth-cyclotomic coordinate ring. |
-| `include/spectre/faces.hpp` | Cube-face intervals and intersection dimension tests. |
-| `include/spectre/ambient_graph.hpp` | Parent decompositions, exact lattice solves, and type-1/type-2 ambient-graph edges. |
-| `include/spectre/d_cont_check.hpp` | Geometric construction and verification of the finite contact digit set `D_cont`. |
-| `include/spectre/corona.hpp` | Simple nodes `SNode<d>`, signed contacts, corona composition, and Red pruning. |
-| `include/spectre/contact_boundary.hpp` | End-to-end `D_cont -> precontact -> C -> ±C -> G_B` computation and report. |
-| `include/spectre/rauzy_fractal.hpp` | Contracting-space point generation and finite Rauzy-fractal diagnostics. |
+| `include/ravel/substitution.hpp` | Runtime `SubstitutionRule`, word iteration, incidence matrices, and binary correlation helpers. |
+| `include/ravel/core.hpp` | Fixed-dimension `Substitution<d>`, affine nodes `ANode<d>`, Perron data, and exact/approximate `H_sigma` membership. |
+| `include/ravel/spectral.hpp` | Perron root, secondary modulus, determinant, and separation bounds for 2x2, 3x3, and general matrices. |
+| `include/ravel/spectral_dual.hpp` | Forward-mode automatic differentiation of the closed-form 3x3 spectral invariants. |
+| `include/ravel/dual.hpp` | Generic first-order dual numbers and elementary operations. |
+| `include/ravel/dual_format.hpp` | Exact-ball-aware presentation and rationality assessment of dual values. |
+| `include/ravel/qbasis.hpp` | Compatibility layer for exact `Q(beta)` vectors and eigenvectors. |
+| `include/ravel/qbeta_eigenvalue.hpp` | Memory-bounded exact-power iteration for a dominant eigenvalue in `Q(beta)`. |
+| `include/ravel/rational_transcendentals.hpp` | Rational enclosures for pi, sine, and cosine. |
+| `include/ravel/cyclotomic.hpp` | Arithmetic and planar embedding for the rank-four twelfth-cyclotomic coordinate ring. |
+| `include/ravel/faces.hpp` | Cube-face intervals and intersection dimension tests. |
+| `include/ravel/ambient_graph.hpp` | Parent decompositions, exact lattice solves, and type-1/type-2 ambient-graph edges. |
+| `include/ravel/d_cont_check.hpp` | Geometric construction and verification of the finite contact digit set `D_cont`. |
+| `include/ravel/corona.hpp` | Simple nodes `SNode<d>`, signed contacts, corona composition, and Red pruning. |
+| `include/ravel/contact_boundary.hpp` | End-to-end `D_cont -> precontact -> C -> ±C -> G_B` computation and report. |
+| `include/ravel/rauzy_fractal.hpp` | Contracting-space point generation and finite Rauzy-fractal diagnostics. |
 
 ### Symbolic dynamics and graph headers
 
 | File | Mathematical responsibility |
 |---|---|
-| `include/spectre/balanced_pair.hpp` | Irreducible balanced-pair reduction, transition graph, certification, and noncoincidence spectral radius `rho_nc`. |
-| `include/spectre/barge.hpp` | Barge-style substitution flags, exact integer characteristic polynomial, and simple Pisot classification helpers. |
-| `include/spectre/graph_divisor.hpp` | Weighted digraphs, equitable partitions, quotient matrices, SCC extraction, and spectral comparison. |
-| `include/spectre/gb_bp_hop_rule.hpp` | n-bonacci boundary/balanced-pair core construction and the predicted hop rule. |
-| `include/spectre/involution_helpers.hpp` | Free-involution quotients, symmetric `G_B`/balanced-pair matrices, and exact factor checks. |
-| `include/spectre/bp_dump_analysis.hpp` | Bounded sparse analysis of serialized balanced-pair core data. |
-| `include/spectre/return_substitution.hpp` | Return-word discovery, factorization, induced substitution, and return-phase system. |
-| `include/spectre/return_contact_lift.hpp` | Reachable product of a contact graph with a prefix/return-phase system. |
-| `include/spectre/substitution_neighborhood.hpp` | Adjacent unequal-letter swaps and incidence-matrix/Parikh-fiber comparison. |
-| `include/spectre/pisot_substitution_properties.hpp` | Frequencies, common factors/finals, dual substitution, return words, rotation data, complexity, and carry sequences. |
-| `include/spectre/survey.hpp` | Enumerated/random substitution surveys, spectral classification, and Perron-frequency estimates. |
+| `include/ravel/balanced_pair.hpp` | Irreducible balanced-pair reduction, transition graph, certification, and noncoincidence spectral radius `rho_nc`. |
+| `include/ravel/barge.hpp` | Barge-style substitution flags, exact integer characteristic polynomial, and simple Pisot classification helpers. |
+| `include/ravel/graph_divisor.hpp` | Weighted digraphs, equitable partitions, quotient matrices, SCC extraction, and spectral comparison. |
+| `include/ravel/gb_bp_hop_rule.hpp` | n-bonacci boundary/balanced-pair core construction and the predicted hop rule. |
+| `include/ravel/involution_helpers.hpp` | Free-involution quotients, symmetric `G_B`/balanced-pair matrices, and exact factor checks. |
+| `include/ravel/bp_dump_analysis.hpp` | Bounded sparse analysis of serialized balanced-pair core data. |
+| `include/ravel/return_substitution.hpp` | Return-word discovery, factorization, induced substitution, and return-phase system. |
+| `include/ravel/return_contact_lift.hpp` | Reachable product of a contact graph with a prefix/return-phase system. |
+| `include/ravel/substitution_neighborhood.hpp` | Adjacent unequal-letter swaps and incidence-matrix/Parikh-fiber comparison. |
+| `include/ravel/pisot_substitution_properties.hpp` | Frequencies, common factors/finals, dual substitution, return words, rotation data, complexity, and carry sequences. |
+| `include/ravel/survey.hpp` | Enumerated/random substitution surveys, spectral classification, and Perron-frequency estimates. |
 
 ### Class-II family headers
 
 | File | Mathematical responsibility |
 |---|---|
-| `include/spectre/class_ii_boundary_family.hpp` | Explicit Class-II contact candidates, affine interior shells, terminal shells, recurrent candidates, and witnesses. |
-| `include/spectre/class_ii_neighbor_family.hpp` | Three fixed-light adjacent-swap families, symbolic affine prefixes, edge controls, and matrix catalogues. |
-| `include/spectre/class_ii_neighbor2_pruning.hpp` | Five-phase global round decomposition and exact stable/terminal/repeated-terminal Red certificates for neighbor 2. |
+| `include/ravel/class_ii_boundary_family.hpp` | Explicit Class-II contact candidates, affine interior shells, terminal shells, recurrent candidates, and witnesses. |
+| `include/ravel/class_ii_neighbor_family.hpp` | Three fixed-light adjacent-swap families, symbolic affine prefixes, edge controls, and matrix catalogues. |
+| `include/ravel/class_ii_neighbor2_pruning.hpp` | Five-phase global round decomposition and exact stable/terminal/repeated-terminal Red certificates for neighbor 2. |
 
 ### Finite dynamics and correlation headers
 
 | File | Mathematical responsibility |
 |---|---|
-| `include/spectre/fibonacci_selection.hpp` | Exact-measure Fibonacci rotation windows and four-context correlation targets. |
-| `include/spectre/fibonacci_finite.hpp` | Finite Fibonacci words, periodic Rule 30, and finite selection experiments. |
-| `include/spectre/packed_binary_dynamics.hpp` | Packed periodic bit vectors, Rule 30, local windows, parity functionals, and correlation matrices. |
-| `include/spectre/thermometer.hpp` | Substitution-sequence correlation diagnostic and finite-size convergence record. |
-| `include/spectre/tilt.hpp` | Four-setting correlators and Hall–Branciard information-cost formulas. |
+| `include/ravel/fibonacci_selection.hpp` | Exact-measure Fibonacci rotation windows and four-context correlation targets. |
+| `include/ravel/fibonacci_finite.hpp` | Finite Fibonacci words, periodic Rule 30, and finite selection experiments. |
+| `include/ravel/packed_binary_dynamics.hpp` | Packed periodic bit vectors, Rule 30, local windows, parity functionals, and correlation matrices. |
+| `include/ravel/thermometer.hpp` | Substitution-sequence correlation diagnostic and finite-size convergence record. |
+| `include/ravel/tilt.hpp` | Four-setting correlators and Hall–Branciard information-cost formulas. |
 
 ## Adelic library
 
@@ -160,7 +160,7 @@ Most Spectre headers are header-oriented; `src/rauzy_fractal.cpp` and
 | File | Role |
 |---|---|
 | `src/rauzy_fractal.cpp` | Implements and explicitly instantiates `RauzyFractal<d>` point generation and diagnostics. |
-| `src/lua_bindings.cpp` | Converts Lua tables to C++ objects and publishes the native `spectre.*` modules. |
+| `src/lua_bindings.cpp` | Converts Lua tables to C++ objects and publishes the native `ravel.*` modules. |
 
 ## Research and diagnostic executables
 
@@ -264,17 +264,17 @@ repository root unless the file itself states otherwise.
 
 | File | Role |
 |---|---|
-| `lua/lua_src/spectre/init.lua` | Composes the public Lua namespace and attaches the native backend. |
-| `lua/lua_src/spectre/substitution_rule.lua` | Pure-Lua substitutions and balanced-pair helpers. |
-| `lua/lua_src/spectre/lineage.lua` | Addresses, least common ancestors, and substitution-tree distance. |
-| `lua/lua_src/spectre/coord_bfs.lua` | Breadth-first traversal of the coordinate transition graph. |
-| `lua/lua_src/spectre/predict_dimension.lua` | Closed-form dimension estimates from spectral inputs. |
-| `lua/lua_src/spectre/spectre.lua` | Pure-Lua Spectre geometry helpers. |
-| `lua/lua_src/spectre/data/constants.lua` | Constants loaded from the native module. |
-| `lua/lua_src/spectre/data/hex_kind.lua` | Symbolic names/indices for the nine hex metatile kinds. |
-| `lua/lua_src/spectre/data/hex_vertices.lua` | Exact cyclotomic offsets of the unit hexagon. |
-| `lua/lua_src/spectre/data/hex_outer_table.lua` | Deterministic outer-neighbor transition table. |
-| `lua/lua_src/spectre/data/spectre_transitions.lua` | Per-kind Spectre transition table assembled from text fixtures. |
+| `lua/lua_src/ravel/init.lua` | Composes the public Lua namespace and attaches the native backend. |
+| `lua/lua_src/ravel/substitution_rule.lua` | Pure-Lua substitutions and balanced-pair helpers. |
+| `lua/lua_src/ravel/lineage.lua` | Addresses, least common ancestors, and substitution-tree distance. |
+| `lua/lua_src/ravel/coord_bfs.lua` | Breadth-first traversal of the coordinate transition graph. |
+| `lua/lua_src/ravel/predict_dimension.lua` | Closed-form dimension estimates from spectral inputs. |
+| `lua/lua_src/ravel/ravel.lua` | Pure-Lua Spectre geometry helpers. |
+| `lua/lua_src/ravel/data/constants.lua` | Constants loaded from the native module. |
+| `lua/lua_src/ravel/data/hex_kind.lua` | Symbolic names/indices for the nine hex metatile kinds. |
+| `lua/lua_src/ravel/data/hex_vertices.lua` | Exact cyclotomic offsets of the unit hexagon. |
+| `lua/lua_src/ravel/data/hex_outer_table.lua` | Deterministic outer-neighbor transition table. |
+| `lua/lua_src/ravel/data/spectre_transitions.lua` | Per-kind Spectre transition table assembled from text fixtures. |
 
 The `specmap_enriched/*.txt`, `spectre_transitions/*.txt`, and
 `cluster_marks.json` files are data fixtures consumed by these modules;
@@ -306,7 +306,7 @@ they are not executable source.
 
 | File | Coverage |
 |---|---|
-| `lua/lua_src/spectre/tests/runner.lua` | Minimal suite runner/assertion layer. |
+| `lua/lua_src/ravel/tests/runner.lua` | Minimal suite runner/assertion layer. |
 | `test_cyclotomic.lua` | Twelfth-cyclotomic arithmetic. |
 | `test_hex.lua` | Hex kinds, vertices, and outer table. |
 | `test_transitions.lua` | General transition-table consistency. |
@@ -342,7 +342,7 @@ finite experiments, and renderers.
 
 | File | Purpose |
 |---|---|
-| `python/spectre.py` | Basic polygon/affine-transform representation. |
+| `python/ravel.py` | Basic polygon/affine-transform representation. |
 | `python/spectre_gen.py` | Recursive Spectre tiling generator. |
 | `python/spectre_gen_lineage.py` | Generator variant recording complete ancestor addresses. |
 | `python/spectre_ca.py` | Reversible second-order CA on the Spectre adjacency graph. |
@@ -433,11 +433,11 @@ executable code.
 - Add general exact arithmetic under `math/include/math/`, with a paired
   `math/tests/test_*.cpp`.
 - Add reusable substitution/boundary machinery under
-  `include/spectre/`, with a paired native test.
+  `include/ravel/`, with a paired native test.
 - Add local-field/ideal machinery under `include/adelic/`.
 - Add a one-purpose experiment under `app/`; do not put `main()` in
   `src/`.
 - Add Lua orchestration under `lua/scripts/` and a test under
-  `lua/lua_src/spectre/tests/`.
+  `lua/lua_src/ravel/tests/`.
 - Formalize a stable mathematical statement under `lean/`, and enroll
   it in `make lean-check` only when it is `sorry`-free.
