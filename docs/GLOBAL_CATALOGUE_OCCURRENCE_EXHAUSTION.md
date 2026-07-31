@@ -998,40 +998,41 @@ not some new or larger number. This is still an exact finite check
 symbolic proof of the threshold -- but the *value* of the threshold is
 no longer a guess.
 
-**The precise case split a symbolic proof would need.** Printing the
-44 shapes' `(l(p)[1], l(p)[2], l(q)[1], l(q)[2])` components directly
-(not just counting them) shows a clean **22/22 split**:
+**The precise case split a symbolic proof would need -- first attempt
+overclaimed, corrected immediately.** An initial pass grouped the 44
+shapes by whether their `(l(p)[1], l(p)[2], l(q)[1], l(q)[2])`
+components were all zero, claiming a clean 22/22 "pure-prefix versus
+marker-crossed = escaping" split. Checked directly rather than trusted
+by hand: that grouping does not actually track whether `p_len`/`q_len`
+are ranges or fixed single values (a shape can have a nonzero
+abelianization component on one side while the *other* side still
+ranges freely -- e.g. searching for a range-producing letter on one
+side and a marker-crossed, single-occurrence letter on the other). The
+real split, checked by directly counting how many distinct `p_len`
+(resp. `q_len`) values each shape actually admits at `a=15`:
 
-- **22 "pure-prefix" shapes** (`l(p)[1]=l(p)[2]=l(q)[1]=l(q)[2]=0`):
-  both occurrence indices lie strictly within a leading `0`-run (before
-  any letter-1/letter-2 marker in that image), so both `p_len` and
-  `q_len` range freely over an interval that grows with `a` (`0` to
-  `a-1` for `sigma(0)`'s run, `0` to `a-2` for `sigma(1)`'s). This is
-  a genuine *coverage* question: does the achievable
-  `(q_len - p_len)` range cover every value the bounded target window
-  needs, once `a` is large enough. This is the case
-  `class_ii_round4_coverage_threshold_check.cpp` already traced
-  concretely for one shape.
-- **22 "marker-crossed" shapes** (at least one of the four counts
-  nonzero): at least one side's occurrence is pinned to a position
-  *after* a fixed marker, where (per `tau_a`'s word structure) there is
-  only ever one further occurrence available -- not a range, a single
-  value, itself affine in `a` (an occurrence at "the position right
-  after the marker" moves by exactly one place as the leading run
-  grows). This is structurally Round 1's *original* mechanism (a
-  single, unbounded-in-`a` candidate that must be shown to land
-  outside the target window for `a` large enough), not the coverage
-  question -- just applied here to one side of a two-sided edge rather
-  than a whole raw candidate.
+- **20 shapes, both sides fixed** -- true Round-1-style escaping
+  candidates: no ranging parameter at all, so `x2'` is a single value,
+  affine in `a`, that must be shown to leave the bounded target window
+  for `a` large enough. This is the case that matches Round 1's
+  *original* two D_cont seeds structurally exactly.
+- **20 shapes, exactly one side ranges** -- a hybrid: `x2'` is affine
+  in the one free occurrence index, so this is a coverage question,
+  but over a range anchored at a value that itself shifts with `a`
+  (unlike the pure case below), since the fixed side still contributes
+  an `a`-dependent offset.
+- **4 shapes, both sides range** -- pure coverage, closest to the one
+  example `class_ii_round4_coverage_threshold_check.cpp` already
+  traced concretely (though that traced state's *shape* turns out to
+  be one of the hybrid 20, not one of these 4 -- worth re-checking
+  against this corrected split rather than assumed to carry over).
 
-Neither half is closed symbolically yet, but each now has a named,
-previously-solved template to follow: the pure-prefix half needs the
-coverage argument generalized past its one worked example; the
-marker-crossed half needs Round 1's own `M(a)`-affine-slope argument,
-applied per shape rather than per whole state. This is real
-narrowing -- from "44 unclassified shapes" to "two known argument
-shapes, 22 instances each" -- not a restatement of what was already
-known.
+This is a real correction, not a rounding of the earlier claim: three
+categories, not two, and the earlier claimed membership counts (22/22)
+were wrong even though the total (44) was right. Neither the whole
+split nor any of the three categories is closed symbolically yet --
+each now has a precisely stated shape, not a restated existing
+finding.
 
 ## Recurrent exhaustion after layer equality
 

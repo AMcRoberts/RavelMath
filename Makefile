@@ -1013,6 +1013,16 @@ $(CLASS_II_ROUND34_EDGE_MECHANISM_SHAPE_COUNT_BIN): $(APPDIR)/class_ii_round34_e
 		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# class_ii_round2_edge_mechanism_shape_range_check: corrects an
+# overclaimed 22/22 shape split -- checks directly whether p_len/q_len
+# are genuinely ranges or fixed per shape (true split: 20/20/4).
+CLASS_II_ROUND2_EDGE_MECHANISM_SHAPE_RANGE_CHECK_BIN := $(BUILDDIR)/class_ii_round2_edge_mechanism_shape_range_check
+class_ii_round2_edge_mechanism_shape_range_check: $(CLASS_II_ROUND2_EDGE_MECHANISM_SHAPE_RANGE_CHECK_BIN)
+	./$(CLASS_II_ROUND2_EDGE_MECHANISM_SHAPE_RANGE_CHECK_BIN)
+$(CLASS_II_ROUND2_EDGE_MECHANISM_SHAPE_RANGE_CHECK_BIN): $(APPDIR)/class_ii_round2_edge_mechanism_shape_range_check.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 BP_DUMP_PROVENANCE_BIN := $(BUILDDIR)/bp_dump_provenance
 bp_dump_provenance: $(BP_DUMP_PROVENANCE_BIN)
 $(BP_DUMP_PROVENANCE_BIN): $(APPDIR)/bp_dump_provenance.cpp \
