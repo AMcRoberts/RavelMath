@@ -1073,6 +1073,16 @@ $(CLASS_II_HYBRID_PER_STATE_CONSTANCY_CHECK_BIN): $(APPDIR)/class_ii_hybrid_per_
 		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# class_ii_hybrid_window_monotonicity_check: the key lemma for a
+# genuine symbolic proof -- does each hybrid state's achievable window
+# grow monotonically (nested) as a increases? Checked at a=7,12,20,30.
+CLASS_II_HYBRID_WINDOW_MONOTONICITY_CHECK_BIN := $(BUILDDIR)/class_ii_hybrid_window_monotonicity_check
+class_ii_hybrid_window_monotonicity_check: $(CLASS_II_HYBRID_WINDOW_MONOTONICITY_CHECK_BIN)
+	./$(CLASS_II_HYBRID_WINDOW_MONOTONICITY_CHECK_BIN)
+$(CLASS_II_HYBRID_WINDOW_MONOTONICITY_CHECK_BIN): $(APPDIR)/class_ii_hybrid_window_monotonicity_check.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 BP_DUMP_PROVENANCE_BIN := $(BUILDDIR)/bp_dump_provenance
 bp_dump_provenance: $(BP_DUMP_PROVENANCE_BIN)
 $(BP_DUMP_PROVENANCE_BIN): $(APPDIR)/bp_dump_provenance.cpp \

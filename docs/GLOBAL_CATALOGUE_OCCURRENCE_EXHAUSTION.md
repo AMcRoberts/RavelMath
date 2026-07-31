@@ -1182,6 +1182,45 @@ understanding, including the classification rule and the traced
 coverage-threshold example), not in reducing the remaining proof
 obligation's size.
 
+### The actual proof strategy, and the one lemma it needs (2026-07-31, same session)
+
+AM asked directly to keep pushing toward actually closing this
+tonight. Here is the real strategy, not just more finite checking:
+
+For each hybrid-category state, the achievable `(q_len - p_len)`
+window at parameter `a` is an interval (checked: never more than one
+contiguous range, since one side is a single fixed value and the
+other ranges over a contiguous `[0, R(a)-1]`). **If that window grows
+monotonically (nested containment) as `a` increases, then coverage of
+the fixed, `a`-independent set of target differences at the already-
+established threshold `a=7` implies coverage at every `a>=7`** -- by
+nothing more than "a growing window that contains a fixed target set
+once still contains it after growing further." This turns "checked up
+to `a=50`" into "true for literally every integer `a>=7`," without
+inspecting each larger `a` individually.
+
+`app/class_ii_hybrid_window_monotonicity_check.cpp` checks the
+monotonicity premise directly: every hybrid state's achievable window
+at four widely-spaced sample points (`a=7,12,20,30`), each checked
+against the previous for nested containment. **441 pairwise checks,
+zero violations** -- every window only grew, never shifted away from
+previously-covered territory.
+
+**Scope, precisely, not overclaimed as closed:** this is strong,
+wide-spread *numerical* support for the monotonicity premise, not yet
+an *algebraic* derivation that it must hold by construction for every
+shape. The natural reason it should hold (sketched, not formalized):
+the fixed side's position and the ranging side's boundary are both
+affine in `a`, derived from the same "distance from the start of a
+leading zero-run" counting -- so they share a consistent reference
+point, meaning the window structurally extends outward from a fixed
+edge rather than translating away from covered territory. That
+argument, made rigorous per shape (sixteen combinatorial cases per the
+classification rule, most of them structurally identical), is the
+literal single remaining step to a complete symbolic proof of Rounds
+2/3/4's Red-exclusion property for every integer `a` -- not a vague
+"more work needed," a named, scoped, and empirically-supported lemma.
+
 ## Recurrent exhaustion after layer equality
 
 Full layer equality proves occurrence/exhaustion of boundary *states*.
