@@ -415,6 +415,28 @@ the closure sense the base-premises table means is still open, and is
 now a narrower, better-specified question than "mirror-transport,
 plausible by symmetry" was.
 
+**One more piece of context, found while looking at how `±C` is
+actually consumed.** `c_corona` (Def 3.9) takes `pmC` as a *given* hop
+set and composes with it via `same_letter_H`, which explicitly checks
+a state *and* its mirror at the destination
+(`include/ravel/corona.hpp`, the `c_corona` comment: "The
+`same_letter_H` fix (both endpoints) is essential"). That is, the
+literature's own `±C` convention is a *definitional* doubling
+(`±C := C ∪ mirror(C)`) applied so corona composition can be checked
+symmetrically without assuming the underlying oriented closure is
+symmetric -- not a claim that redoing the closure from mirrored seeds
+would reproduce the same answer. Read this way, the naive check this
+note just refuted was never actually load-bearing for `c_corona`'s
+correctness: `±C`'s job is to supply both orientations as hops, and it
+does that by construction, exactly as verified above. What would still
+need an argument, if the base-premises table means something beyond
+the definitional doubling, is a comparison between this project's
+`class_ii_neighbor2_signed_contact_set()` and whatever independent
+characterization of "the neighbor's `±C`" the cited literature (Def
+3.9's source) actually specifies -- which is a literature-comparison
+question, not a code-verification one, and is outside what this
+investigation checked.
+
 ## Recurrent exhaustion after layer equality
 
 Full layer equality proves occurrence/exhaustion of boundary *states*.
