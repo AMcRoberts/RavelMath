@@ -591,6 +591,27 @@ order of `200+` raw forward-target candidates before window filtering
 (Round 1's two pruned states had 1 and 2), so a from-scratch by-hand
 derivation for each is not a quick afternoon's work.
 
+### Round 3: the same treatment, same scale (2026-07-31)
+
+`app/class_ii_round3_structure.cpp` applies the identical checks to
+Round 3: `T_3 = B_3 union E_3` exactly (93 = 68 + 25, literal identity
+at `a=6,7,8`), with `E_3` this time being exactly
+`class_ii_neighbor2_interior_extension_states(3)` (no special swap the
+way Round 2 needed one). Red exclusion also has an independent exact
+finite certificate: 256 raw candidates, 93 survivors, 163 pruned
+across 3 ranks, zero violations under an independent
+`simple_forward_targets_exact` re-derivation at `a=6,7,8`. Round 3 is
+comparable in scale to Round 2, not smaller -- there is no shortcut
+via "later rounds are easier."
+
+One thing flagged, not resolved: whether
+`neighbor2InteriorTip_in_open_strip`'s hypothesis `r*(b-c)+1<c`
+actually holds at `r=3` under the coarse `c>3` bound is unchecked here
+-- at `r=2` it held trivially (`2*(b-c)+1<3<c`), but at `r=3` the same
+style of bound gives `3*(b-c)+1<4`, which needs `c>=4`, tighter than
+the generic `c>3`. This may need a sharper, `a`-specific bound rather
+than the coarse one Round 2 could use for free.
+
 ## Recurrent exhaustion after layer equality
 
 Full layer equality proves occurrence/exhaustion of boundary *states*.

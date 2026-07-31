@@ -843,6 +843,16 @@ $(CLASS_II_ROUND2_RED_EXCLUSION_CHECK_BIN): $(APPDIR)/class_ii_round2_red_exclus
 		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# class_ii_round3_structure: the Round 2 treatment (T_r=B_r+E_r
+# identity, independent Red-exclusion re-derivation via
+# simple_forward_targets_exact) applied to Round 3.
+CLASS_II_ROUND3_STRUCTURE_BIN := $(BUILDDIR)/class_ii_round3_structure
+class_ii_round3_structure: $(CLASS_II_ROUND3_STRUCTURE_BIN)
+	./$(CLASS_II_ROUND3_STRUCTURE_BIN)
+$(CLASS_II_ROUND3_STRUCTURE_BIN): $(APPDIR)/class_ii_round3_structure.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 BP_DUMP_PROVENANCE_BIN := $(BUILDDIR)/bp_dump_provenance
 bp_dump_provenance: $(BP_DUMP_PROVENANCE_BIN)
 $(BP_DUMP_PROVENANCE_BIN): $(APPDIR)/bp_dump_provenance.cpp \
