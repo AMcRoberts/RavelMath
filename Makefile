@@ -931,6 +931,17 @@ $(CLASS_II_ROUND4_EDGE_STRUCTURE_A_INDEPENDENCE_PROBE_BIN): $(APPDIR)/class_ii_r
 		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# class_ii_round4_edge_mechanism_probe: inspects the raw
+# (p_k,q_k)-indexed candidate list for one representative state to
+# find WHY the edge structure is a-independent (not just confirm that
+# it is): x0'/x1' constant, x2' affine in q_k-p_k rather than in a.
+CLASS_II_ROUND4_EDGE_MECHANISM_PROBE_BIN := $(BUILDDIR)/class_ii_round4_edge_mechanism_probe
+class_ii_round4_edge_mechanism_probe: $(CLASS_II_ROUND4_EDGE_MECHANISM_PROBE_BIN)
+	./$(CLASS_II_ROUND4_EDGE_MECHANISM_PROBE_BIN)
+$(CLASS_II_ROUND4_EDGE_MECHANISM_PROBE_BIN): $(APPDIR)/class_ii_round4_edge_mechanism_probe.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 BP_DUMP_PROVENANCE_BIN := $(BUILDDIR)/bp_dump_provenance
 bp_dump_provenance: $(BP_DUMP_PROVENANCE_BIN)
 $(BP_DUMP_PROVENANCE_BIN): $(APPDIR)/bp_dump_provenance.cpp \

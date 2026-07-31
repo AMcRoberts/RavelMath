@@ -768,6 +768,57 @@ but it is not yet closed -- reported at its real strength (exact
 finite certificate across 7-8 sample points per round, not a
 universal proof), not overclaimed.
 
+### The actual mechanism, found on one representative state (2026-07-31)
+
+Rather than guess at why the graph is `a`-independent, the raw
+`(p_k, q_k)`-indexed candidate list itself was inspected directly for
+Round 4's state `{i=0, x=(3,-3,0), j=0}` (the state whose extra edge
+at `a=6` was the one exception found above), at `a=6,7,15`, printing
+every surviving `(p_k, q_k, destination)` triple rather than just
+counts.
+
+**What the raw data shows, plainly:** the *number* of raw
+`(p_k, q_k)` candidate pairs surviving `is_valid_simple_node` grows
+with `a` exactly as expected (32 edges at `a=6`, 45 at `a=7`, 149 at
+`a=15` -- `parent_decompositions` for the heavily-repeated letter `0`
+really does have `O(a)` entries, confirming the earlier "some states
+have 200+ raw candidates" remark is about exactly this). But the
+*destinations* those edges land on are overwhelmingly repeated: `x0'`
+and `x1'` are the same fixed constants (`-3, 3` for this state's `i=0`
+family) across every single surviving `(p_k, q_k)` pair at every
+tested `a`, and `x2'` depends only on the *difference* `q_k - p_k`,
+not on `p_k`, `q_k`, or `a` individually -- e.g. every pair with
+`q_k - p_k = -5` gives `x2' = -2`, whether that pair is `(p_k=5,
+q_k=0)` at `a=6` or `(p_k=6, q_k=1)` at `a=15`.
+
+This is the same mechanism Round 1's proof already used (`M(a)`'s rows
+1 and 2 don't depend on `a`, so `x0'`/`x1'` come out as fixed
+formulas; only the row-0 back-substitution carries an `a`-dependent
+term), applied to a *different* free parameter: Round 1's argument
+made `x2'` affine in `a` itself (because its two D_cont seeds are
+genuinely fixed nodes with a single raw candidate each). Here, `x2'`
+is instead affine in `q_k - p_k`, a parameter that both `p_k` and
+`q_k` range over widely as `a` grows -- so the *set* of achievable
+`x2'` values that fall inside a small bounded target window stabilizes
+once `a` is large enough for that range to be fully covered (matching
+the observed `a>=7` stabilization point for this exact state), even
+though the raw candidate *count* keeps growing.
+
+**Scope, precisely:** this is verified on one representative state,
+not yet the general lemma. What a full proof needs, now precisely
+named rather than vague: (1) show `x0'`/`x1'` are constant across all
+valid `(p_k, q_k)` pairs for every state in the fixed pruned-state
+catalogues (plausible from the same `M(a)` row-independence Round 1
+already used, but not yet checked state-by-state); (2) show `x2'` is
+affine in `q_k - p_k` with a fixed, known slope, for every state; (3)
+show the achievable range of `q_k - p_k` (as a function of `a`) covers
+every value landing in the bounded target window once `a` crosses each
+state's own threshold, and that this threshold is uniformly bounded
+(not, say, growing without limit for some pathological state). None of
+these three are yet shown beyond this one worked example, but each is
+now a concrete, checkable claim rather than an open question about
+*why* the empirical agreement holds.
+
 ## Recurrent exhaustion after layer equality
 
 Full layer equality proves occurrence/exhaustion of boundary *states*.
