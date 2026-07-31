@@ -164,8 +164,11 @@ starting point: a small `include/ravel/dual.hpp` (forward-mode
 automatic-differentiation helper), use `spectral_invariants_3x3`
 (closed-form Cardano) as the differentiable objective, and a
 Pisot-preserving gradient step that perturbs the matrix in a way
-that keeps the dominant eigenvalue > 1 and all others < 1. See
-`docs/RESEARCH_VECTORS.md` vector 2 for the full design.
+that keeps the dominant eigenvalue > 1 and all others < 1. (A prior
+version of this note pointed to `docs/RESEARCH_VECTORS.md` vector 2
+for the full design; that file does not exist and has no git history
+in this repository -- the full design was never written down beyond
+this paragraph, checked 2026-07-31.)
 
 **(B3) Apply the Item A machinery to the non-unimodular case as
 it matures.** The involution φ, the `extract_dominant_recurrent_core`
