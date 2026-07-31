@@ -79,6 +79,27 @@ plus_minus_C(tau_a)
 `class_ii_neighbor2_signed_contact_set` is the candidate object.
 `E_1` is mirror closed, so it consists of eleven signed pairs.
 
+**Progress (2026-07-31).** The *unsigned* half of this lemma is now
+closed for `a>=3`: `tau_a`'s own raw backward-closure of its `D_cont`
+seeds is proved (not just checked) to self-close to exactly 27 states
+and Red-prune to exactly the 25-state `center_states union new_states`
+(`new_states` being the unsigned half of `E_1`), universally, not at
+sampled `a`. `class_ii_neighbor2_signed_contact_set()` is verified
+*exactly* equal to the mirror-closure of that unsigned 25-survivor
+set, which is definitionally
+`plus_minus_C(sigma_a) union E_1` (mirror-closing `center_states`
+gives `plus_minus_C(sigma_a)`'s 28 states; mirror-closing `new_states`
+gives `E_1`'s 22). See
+`docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md`'s Round 1 sections
+(dated 2026-07-31) for the full derivation, the two bugs and one
+overclaim caught along the way, and the precise remaining gap: whether
+this definitional identity is also the complete *closure* answer this
+lemma means, as opposed to merely the correct construction, is not yet
+resolved -- checked directly, mirroring `D_cont`'s seeds and rerunning
+the closure does *not* reproduce the mirror of the unsigned survivors,
+so the lemma's truth (if it is one) rests on the corona framework's
+`same_letter_H` convention, not on closure symmetry.
+
 ### 2. Window validity
 
 The center and neighbor use the same `H_sigma`. Lean now proves
@@ -148,6 +169,20 @@ What remains in this lemma is no longer an unstructured corona
 calculation: prove the eighteen interface states persist in the center
 layer. All destination-side `same_letter_H` predicates for the
 interior and endpoint correction catalogues are now kernel-checked.
+
+**Base-round note (2026-07-31).** For the base rounds specifically
+(round 2's own `T_1 -> T_2` step, distinct from the `r`-indexed stable
+machinery above), `app/class_ii_round2_ccorona_stability.cpp` confirms
+`T_1` for `tau_a`'s own construction literally *is* the fifty signed
+contact hops referenced above (`T_1 = +/-C`, the same 50-state
+`class_ii_neighbor2_signed_contact_set()` object, checked equal, not
+assumed) -- and calling `c_corona(T_1, +/-C)` directly gives an
+identical 195-candidate raw composition at `a=6,7,8,15`. This is a
+checked starting point for round 2's own reverse-inclusion obligation,
+not a proof of it; whether those 195 candidates' window validity
+already falls under the kernel-checked cases above has not been
+matched category-by-category. See
+`docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md`'s "Round 2" sections.
 
 The center-interface occurrence problem now has a bounded raw-corona
 object too. The eighteen interface states split into parameter-free
