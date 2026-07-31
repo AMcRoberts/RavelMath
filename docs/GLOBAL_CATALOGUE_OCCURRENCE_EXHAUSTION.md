@@ -1129,6 +1129,27 @@ not a single argument per shape. This is the second and more
 consequential of two corrections to the same finding in one session --
 recorded plainly rather than quietly folded into a revised number.
 
+**Resolved by asking the right question.** The correction above named
+the right level (states, not shapes) but left open whether the
+both-fixed category actually needs new work. `app/
+class_ii_shape_per_state_constancy_check.cpp` asks the question that
+actually matters: not "does `x2'` stay the same across the different
+states that share a shape" (it doesn't, and never needed to), but "for
+a given state, does its own set of both-fixed-rule destinations stay
+the same across `a`." Checked at `a=8` vs `a=25`, per state: **45/45
+match exactly**. This ties the whole both-fixed investigation back to
+the already-established whole-graph `a`-independence result
+(`class_ii_round2_edge_structure_a_independence_probe.cpp` and
+siblings, `a=6..50`) -- that result already implies per-state
+constancy for every edge, including these. The shape-level device
+remains genuinely useful for classifying *which side ranges*
+(`class_ii_shape_classification_rule.cpp`, unaffected by any of this),
+but was never the right level to ask about specific `x2'` values. Net
+result: the both-fixed category needs **no separate treatment** beyond
+what the whole-graph checks already established -- the two corrections
+above were about getting the reasoning right, not about finding a real
+gap in the underlying a-independence claim.
+
 ## Recurrent exhaustion after layer equality
 
 Full layer equality proves occurrence/exhaustion of boundary *states*.

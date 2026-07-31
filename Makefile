@@ -1054,6 +1054,16 @@ $(CLASS_II_SHAPE_STATE_CONSISTENCY_CHECK_BIN): $(APPDIR)/class_ii_shape_state_co
 		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# class_ii_shape_per_state_constancy_check: resolves the correction
+# above by checking the right question -- per-state destination
+# constancy, not per-shape x2' constancy.
+CLASS_II_SHAPE_PER_STATE_CONSTANCY_CHECK_BIN := $(BUILDDIR)/class_ii_shape_per_state_constancy_check
+class_ii_shape_per_state_constancy_check: $(CLASS_II_SHAPE_PER_STATE_CONSTANCY_CHECK_BIN)
+	./$(CLASS_II_SHAPE_PER_STATE_CONSTANCY_CHECK_BIN)
+$(CLASS_II_SHAPE_PER_STATE_CONSTANCY_CHECK_BIN): $(APPDIR)/class_ii_shape_per_state_constancy_check.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 BP_DUMP_PROVENANCE_BIN := $(BUILDDIR)/bp_dump_provenance
 bp_dump_provenance: $(BP_DUMP_PROVENANCE_BIN)
 $(BP_DUMP_PROVENANCE_BIN): $(APPDIR)/bp_dump_provenance.cpp \
