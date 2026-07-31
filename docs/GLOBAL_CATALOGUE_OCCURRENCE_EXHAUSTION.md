@@ -385,20 +385,35 @@ set." Checked their exact relationship rather than assuming one:
   mirror(unsigned 25 survivors) -- checked as a literal set equality,
   50 = 50, zero extra, zero missing.
 
-So "reverse inclusion for the neighbor signed-contact set" reduces
-to exactly two pieces: (1) reverse inclusion for the *unsigned*
-25-survivor set -- now closed above, for `a>=3` -- and (2) the general
-fact that mirroring a correct backward-closure/Red result gives a
-correct backward-closure/Red result for the mirrored destinations.
-Piece (2) is a structural property of the corona framework's own `±C`
-convention (used identically for the center's own contact set, which
-the base-premises table already lists as closed), not something novel
-to this neighbor -- but it has not been independently re-derived here,
-so this note stops short of marking the table's Round 1 row closed.
-What changed concretely: the *unsigned* half, which piece (1) needs,
-now has a from-the-definition proof rather than a finite check, and the
-exact relationship between the two objects is now a verified identity
-rather than an assumption either way.
+**Correction, same session:** the paragraph originally here claimed
+"(2) the general fact that mirroring a correct backward-closure/Red
+result gives a correct backward-closure/Red result for the mirrored
+destinations" was "plausible by symmetry." That specific claim was
+checked directly and is **false in the naive form**: running
+`backward_closure -> red_anode` from the *mirrored* `D_cont` seeds does
+**not** reproduce `mirror(real_survivors)` -- it gives 32 survivors,
+not 25, at both `a=5` and `a=8` tested. So the unsigned result does not
+transport to the signed one by simply "mirror the seeds and rerun the
+same closure"; whatever makes `class_ii_neighbor2_signed_contact_set()`
+the correct `±C` for later corona composition, it is not that.
+
+What the identity above *does* establish: `class_ii_neighbor2_signed_contact_set()`
+is definitionally `unsigned_survivors ∪ mirror(unsigned_survivors)` --
+a fact about how the object is *built* (`build_signed_contact_set` just
+unions each state with its own mirror, it is not a rederived closure),
+which is exactly why `same_letter_H`/`c_corona` check both a state and
+its mirror explicitly rather than relying on the raw backward-closure
+being symmetric. That construction step is definitionally sound
+independent of any closure-symmetry question. But "reverse inclusion
+for the neighbor signed-contact set" as a *closure* question -- does
+`±C` actually equal the full backward-closure of *something* symmetric
+-- is not answered by this note and should not be assumed from it. The
+honest state: the *unsigned* result is closed (`a>=3`); its relationship
+to the signed object is a definitional union, verified exactly; whether
+that union is *itself* the correct/complete signed-contact answer in
+the closure sense the base-premises table means is still open, and is
+now a narrower, better-specified question than "mirror-transport,
+plausible by symmetry" was.
 
 ## Recurrent exhaustion after layer equality
 

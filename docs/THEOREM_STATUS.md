@@ -590,12 +590,18 @@ equality, not cardinality) that `class_ii_neighbor2_signed_contact_set()`
 closure of this unsigned 25-survivor set, and that `tau_a`'s own
 `D_cont` seeds are genuinely not self-mirror-closed (so the unsigned
 result is a real, oriented computation, not a disguised symmetric one).
-So "reverse inclusion for the neighbor signed-contact set" reduces to
-this unsigned result plus the general fact that mirroring a correct
-backward-closure/Red result gives a correct one for the mirrored
-destinations -- a structural property of the corona framework's own
-`+/-C` convention (used identically for the center's own contact set),
-not independently re-derived here. See
+**Correction, same session:** an earlier draft of this note claimed
+mirroring the closure was "plausible by symmetry." Checked directly and
+false in the naive form: running `backward_closure -> red_anode` from
+the *mirrored* `D_cont` seeds gives 32 survivors, not
+`mirror(unsigned_survivors)`'s 25, at both `a=5` and `a=8` tested. The
+verified identity above is a *definitional* fact (`build_signed_contact_set`
+unions each state with its own mirror; it does not rerun the closure),
+not a closure-symmetry theorem -- see
+`docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md`'s correction note for
+the full account. Whether the resulting `±C` union is itself the
+correct/complete signed-contact answer in the closure sense the
+base-premises table means remains open. See
 `docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md` §§ "Round 1: validated
 symbolic self-closure of the raw 27-state pre-Red set", "Round 1:
 window validity closed abstractly, not just at sampled `a`", "Round 1:
