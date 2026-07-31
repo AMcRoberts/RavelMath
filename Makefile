@@ -895,6 +895,32 @@ $(CLASS_II_ROUND4_PRUNED_STATES_A_INDEPENDENCE_PROBE_BIN): $(APPDIR)/class_ii_ro
 		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# class_ii_round{2,3,4}_edge_structure_a_independence_probe: sharper
+# than the pruned-state probes above -- checks whether the entire
+# forward-edge connectivity graph (not just the pruned node set) is
+# a-independent, which would reduce the still-open symbolic proof to
+# checking one fixed graph rather than an affine argument per state.
+CLASS_II_ROUND2_EDGE_STRUCTURE_A_INDEPENDENCE_PROBE_BIN := $(BUILDDIR)/class_ii_round2_edge_structure_a_independence_probe
+class_ii_round2_edge_structure_a_independence_probe: $(CLASS_II_ROUND2_EDGE_STRUCTURE_A_INDEPENDENCE_PROBE_BIN)
+	./$(CLASS_II_ROUND2_EDGE_STRUCTURE_A_INDEPENDENCE_PROBE_BIN)
+$(CLASS_II_ROUND2_EDGE_STRUCTURE_A_INDEPENDENCE_PROBE_BIN): $(APPDIR)/class_ii_round2_edge_structure_a_independence_probe.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+CLASS_II_ROUND3_EDGE_STRUCTURE_A_INDEPENDENCE_PROBE_BIN := $(BUILDDIR)/class_ii_round3_edge_structure_a_independence_probe
+class_ii_round3_edge_structure_a_independence_probe: $(CLASS_II_ROUND3_EDGE_STRUCTURE_A_INDEPENDENCE_PROBE_BIN)
+	./$(CLASS_II_ROUND3_EDGE_STRUCTURE_A_INDEPENDENCE_PROBE_BIN)
+$(CLASS_II_ROUND3_EDGE_STRUCTURE_A_INDEPENDENCE_PROBE_BIN): $(APPDIR)/class_ii_round3_edge_structure_a_independence_probe.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+CLASS_II_ROUND4_EDGE_STRUCTURE_A_INDEPENDENCE_PROBE_BIN := $(BUILDDIR)/class_ii_round4_edge_structure_a_independence_probe
+class_ii_round4_edge_structure_a_independence_probe: $(CLASS_II_ROUND4_EDGE_STRUCTURE_A_INDEPENDENCE_PROBE_BIN)
+	./$(CLASS_II_ROUND4_EDGE_STRUCTURE_A_INDEPENDENCE_PROBE_BIN)
+$(CLASS_II_ROUND4_EDGE_STRUCTURE_A_INDEPENDENCE_PROBE_BIN): $(APPDIR)/class_ii_round4_edge_structure_a_independence_probe.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 BP_DUMP_PROVENANCE_BIN := $(BUILDDIR)/bp_dump_provenance
 bp_dump_provenance: $(BP_DUMP_PROVENANCE_BIN)
 $(BP_DUMP_PROVENANCE_BIN): $(APPDIR)/bp_dump_provenance.cpp \
