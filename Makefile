@@ -1043,6 +1043,17 @@ $(CLASS_II_SHAPE_CLASSIFICATION_RULE_BIN): $(APPDIR)/class_ii_shape_classificati
 		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# class_ii_shape_state_consistency_check: corrects a methodological
+# gap in the escaping-slopes check -- a shape does not uniquely
+# determine a state, so shape-level constancy claims must be checked
+# across ALL states sharing a shape, not one representative.
+CLASS_II_SHAPE_STATE_CONSISTENCY_CHECK_BIN := $(BUILDDIR)/class_ii_shape_state_consistency_check
+class_ii_shape_state_consistency_check: $(CLASS_II_SHAPE_STATE_CONSISTENCY_CHECK_BIN)
+	./$(CLASS_II_SHAPE_STATE_CONSISTENCY_CHECK_BIN)
+$(CLASS_II_SHAPE_STATE_CONSISTENCY_CHECK_BIN): $(APPDIR)/class_ii_shape_state_consistency_check.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 BP_DUMP_PROVENANCE_BIN := $(BUILDDIR)/bp_dump_provenance
 bp_dump_provenance: $(BP_DUMP_PROVENANCE_BIN)
 $(BP_DUMP_PROVENANCE_BIN): $(APPDIR)/bp_dump_provenance.cpp \

@@ -1099,6 +1099,36 @@ sixteen combinations in principle, collapsing to exactly the three
 categories found -- rather than 44 shapes needing individual
 treatment.
 
+### A methodological gap caught in the "escaping" check (2026-07-31, same session)
+
+`class_ii_round2_edge_mechanism_escaping_slopes.cpp`'s "all 20
+both-fixed shapes appear constant" finding tested only ONE arbitrary
+representative state per shape (whichever state's edge happened to be
+processed last while building the lookup map), not every state that
+shares that shape. A shape (the 8-tuple used for classification) does
+**not** uniquely determine a state -- multiple different source states
+(different `node.x`) can share the same shape. Checked directly,
+gathering every valid edge per shape rather than one representative
+(`app/class_ii_shape_state_consistency_check.cpp`): **15 of the 20
+both-fixed shapes have more than one distinct `x2'` value** across
+their instantiating states (up to 4 distinct values for some shapes).
+
+What survives this correction and what doesn't: the arithmetic in
+`escaping_slopes.cpp` was not wrong -- the one state it checked per
+shape really does have zero slope between `a=7` and `a=40` -- but the
+*generalization* ("the shape needs no further argument") overreached
+by conflating a per-shape property with a per-state one. The
+classification rule itself (`class_ii_shape_classification_rule.cpp`,
+44/44 agreement) is unaffected -- it correctly predicts which *side*
+ranges vs is fixed, and that is a genuine shape-level fact. What is
+NOT a shape-level fact is the resulting `x2'` value once both sides
+are fixed, since that depends on `node.x` too. A symbolic proof for
+the both-fixed category therefore needs a per-*state* argument (though
+still organized by shape for the *type* of argument each state needs),
+not a single argument per shape. This is the second and more
+consequential of two corrections to the same finding in one session --
+recorded plainly rather than quietly folded into a revised number.
+
 ## Recurrent exhaustion after layer equality
 
 Full layer equality proves occurrence/exhaustion of boundary *states*.
