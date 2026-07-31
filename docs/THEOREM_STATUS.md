@@ -581,6 +581,19 @@ not a sampled range. `a=2` sits exactly on the coordinate bound and is
 not covered by this argument, though the finite check above confirms
 it holds there too by direct computation.
 
+**Lean-kernel-checked (2026-07-31).** The arithmetic core of this
+argument -- each of the six candidates' x2'-images outside the
+target's x2-range, for every integer `a>=3` -- is now formalized,
+sorry-free, and signed in `lean/class_ii_round1_red_pruning.lean`
+(enrolled in `make lean-check`). It also tightens the bound used
+above: the 27 targets' x2-coordinates are actually confined to
+`{-1,0,1}`, not the coarser `[-2,2]` (that coarser bound is driven by
+x0/x1, not x2). The combinatorial fact that these six candidates are
+exhaustive is *not* re-derived in Lean -- it is taken as given,
+C++-checked input, the same scope convention
+`class_ii_neighbor2_extensions.lean` already uses for its own
+fixed-state catalogues.
+
 This closes the *unsigned* half of Round 1's raw self-closure and Red
 pruning (the 27/25-state objects built from `new_states`+`center_states`).
 `app/class_ii_neighbor2_round1_signed_relation.cpp` checks (exact set

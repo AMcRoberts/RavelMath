@@ -34,7 +34,11 @@ seam consists of four exceptional base transitions:
    verified identity (`class_ii_neighbor2_signed_contact_set()` equals
    the unsigned survivors' mirror-closure, exactly) rather than an
    assumption, though whether that identity is itself the complete
-   answer the base-premises table means remains open. See
+   answer the base-premises table means remains open. The Red-pruning
+   argument's arithmetic core is now Lean-kernel-checked
+   (`lean/class_ii_round1_red_pruning.lean`, sorry-free, signed) --
+   the combinatorial exhaustiveness fact behind it is still taken as
+   given C++-checked input, not re-derived in Lean. See
    `docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md`'s Round 1 sections
    for the full account, including a caught-and-corrected overclaim
    about mirror-closure preserving correctness.

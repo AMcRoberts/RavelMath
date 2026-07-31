@@ -361,6 +361,26 @@ Together with the abstract window-validity certificate, Round 1's raw
 are now both closed for `a>=3`: the full `27 -> 25` transition no
 longer depends on a sampled range of `a`.
 
+**Lean formalization (2026-07-31):** the arithmetic core of this
+argument -- that all six raw candidates' x2'-images (`-a, a, a, a+1,
+-a, 1-a`) lie outside the 27-state target's x2-range for every integer
+`a>=3` -- is now Lean-kernel-checked, sorry-free, and signed:
+`lean/class_ii_round1_red_pruning.lean`. This is a genuine tier
+upgrade for that piece specifically, from "checked C++, exact rational
+arithmetic" to "Lean-kernel-checked," matching this project's own
+claim-strength vocabulary. It formalizes the arithmetic only, not the
+combinatorial fact that these six candidates are exhaustive (that
+still rests on `tau_a`'s fixed word forms as established and checked
+in the C++ file, taken as given input here -- the same scope
+convention `class_ii_neighbor2_extensions.lean` already uses for its
+own fixed-state catalogues). The Lean file also tightened the target
+bound used in the proof: the 27 targets' x2-coordinates are actually
+in `{-1,0,1}`, not the coarser `[-2,2]` used in the prose above (that
+coarser bound comes from the x0/x1 coordinates, not x2) -- checked
+directly, not assumed, and the tightened bound still gives exactly the
+same `a>=3` threshold (the binding case, `1-a`, sits on this tighter
+boundary at `a=2`, matching the scope note already given above).
+
 **Scope note, precisely -- corrected after checking, not guessed:**
 the "27-state" and "25-state" objects here are the *unsigned*
 `new_states`(11) + `center_states`(14) [+ 2 seeds for the raw 27], not
