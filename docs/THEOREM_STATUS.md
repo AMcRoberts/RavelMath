@@ -506,6 +506,25 @@ round four connected to the universal stable theorem); existing
 positive witnesses and survival bridges prove only the other
 inclusion and retention.
 
+**Round 1, exact finite certificate extended, not closed (2026-07-30).**
+`tau_a`'s unsigned contact set, computed directly via
+`search_D_cont -> backward_closure -> red_anode` (not a symbolic
+re-derivation), was checked node-for-node against the center's
+14-state contact set for every `a` in `3..15`, with zero exceptions:
+the center's 14 states are present unchanged, the remaining 11 states
+are the identical literal tuples for every tested `a`, and their
+mirror-closure equals `E_1` exactly. This extends the prior `a<=8`
+finite check but is not a universal proof. It does supply a structural
+reason, not just more data: letters `0` and `2`'s images are
+byte-identical between the center and neighbor 2 for every `a` (only
+letter `1`'s image differs), so any raw branch that never expands
+letter `1` is provably identical for both, and the true remaining
+proof obligation narrows to the letter-`1` branches specifically. See
+`docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md` § "Round 1: a precise
+structural narrowing" for the full account, including a caution about
+an argument-order bug in `class_ii_neighbor_transition_weight` found
+and fixed during this investigation.
+
 For the four non-base phases, C++ now exposes named pre-Red, ordered
 rank, and post-Red catalogue dispatchers. A structural sweep over 429
 instances (`7<=a<=32`) checks rank containment/disjointness and exact

@@ -130,6 +130,57 @@ the displayed correction. This pins down the four `A_r` targets. It
 remains finite discovery evidence until the corresponding raw
 `B_r` reverse inclusions and Red exclusions are proved universally.
 
+### Round 1: a precise structural narrowing (2026-07-30, extended verification, not a closed proof)
+
+The unsigned (pre-mirror) contact set of `tau_a`, obtained by running
+`search_D_cont -> backward_closure -> red_anode` directly (the same
+trusted functions `app/class_ii_neighbor_probe.cpp`'s `corona_trace`
+already calls) rather than by re-deriving a symbolic envelope, has
+been dumped and compared node-for-node against the center's own
+14-state contact set for every `a` in `3..15`, with zero exceptions
+(`app/class_ii_neighbor2_dump_backward.cpp`):
+
+- the center's 14 states are, literally, node-for-node, all present
+  in `tau_a`'s own 25-state unsigned contact set, for every tested
+  `a`;
+- the remaining 11 states are new to `tau_a`, and are the *exact same
+  11 literal `(i,x0,x1,x2,j)` tuples*, with no `a`-dependence, for
+  every tested `a`;
+- the mirror-closure of those 11 states (`[i,x,j] -> [j,-x,i]`)
+  equals `class_ii_neighbor2_initial_extension_states()` (`E_1`)
+  exactly, node-for-node, for every tested `a`.
+
+This is exact finite verification extended well past the previous
+`a<=8` ceiling, not a universal proof, and should not be cited as
+closing Round 1.
+
+What it does supply is a genuine narrowing of the remaining proof
+target, for a structural reason rather than a numerical coincidence:
+`class_ii_neighbor_image_segments` shows letters `0` and `2`'s images
+are byte-identical between the center (`sigma_a`) and neighbor 2
+(`tau_a`) for every `a` -- only letter `1`'s image differs
+(`0^a 2` vs `0^(a-1) 2 0`). Any raw backward branch whose prefix-family
+decomposition never has to expand letter `1`'s image is therefore
+provably identical for center and neighbor, which is the structural
+reason the center's 14 states survive unchanged rather than an
+empirical accident. The remaining reverse-inclusion obligation is
+consequently narrower than "re-derive the whole envelope from
+scratch": it is "prove that branches touching letter `1`'s image
+produce exactly these 11 states, and no others, for every `a`" --
+reusing, rather than re-deriving, everything the center's closed
+certificate already established for the letter-`0`/letter-`2`
+branches. That symbolic step (an `E_1`-specific window-validity
+margin and category table, analogous to the center's own, but scoped
+to only the letter-`1` branches) has not been built. See
+`app/class_ii_neighbor2_dump_backward.cpp` (ground-truth extraction),
+`app/class_ii_neighbor2_e1_harvest.cpp` and
+`app/class_ii_neighbor2_e1_window_check.cpp` (an earlier, incompletely
+scoped attempt at the same question, kept for its diagnostic value
+and as a caution: an argument-order bug in
+`class_ii_neighbor_transition_weight` calls silently inverted the
+parent/child relation there before it was caught and fixed -- read
+the fix before reusing the pattern).
+
 ## Recurrent exhaustion after layer equality
 
 Full layer equality proves occurrence/exhaustion of boundary *states*.
