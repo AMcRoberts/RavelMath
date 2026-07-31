@@ -328,7 +328,7 @@ raw candidates using `class_ii_neighbor_symbolic_prefix_families`
 its 97 categories from) and confirms, for every one of the 6: `rhs[2]`
 is itself `a`-independent (slope 0, not assumed) and the resulting
 `x2'(a)` is affine in `a` with slope exactly `+/-1` -- reproducing
-exactly the six affine forms `-a, a, a+1, a, 1-a, -a` a first hand
+exactly the six affine forms (`-a, a, a+1, a, 1-a, -a`) a first hand
 derivation against the same matrix found independently (self-corrected
 once, an arithmetic slip on which row of `M` to use for the second
 equation, caught by cross-checking against the numeric ground truth
