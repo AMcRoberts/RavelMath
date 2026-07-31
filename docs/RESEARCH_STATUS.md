@@ -38,11 +38,16 @@ seam consists of four exceptional base transitions:
    `docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md`'s Round 1 sections
    for the full account, including a caught-and-corrected overclaim
    about mirror-closure preserving correctness.
-2. round-two raw reverse inclusion and Red exclusion -- reconnaissance
-   only (2026-07-31): target sizes confirmed (`E_2`=25 states) against
-   existing trusted machinery, but the actual reverse-inclusion/Red
-   derivation was assessed as comparably scoped to round 1's and not
-   attempted this session.
+2. round-two raw reverse inclusion and Red exclusion -- precisely
+   scoped (2026-07-31): `T_2 = B_2 union E_2` exactly (checked as a
+   literal identity, not sizes); `E_2`'s window validity needs no new
+   derivation (its 25 states reduce entirely to bounds already proved
+   for the fixed-24 catalogue and the interior tip theorem, plus one
+   state that's a one-line corollary of the same bounds). The actual
+   open gap is Red exclusion for 123 states across three ranks
+   (98, 15, 10) -- bounded (`|x_k|<=3`), not unbounded-in-`a` the way
+   Round 1's two pruned states were, so no quick escape-hatch argument
+   applies; not attempted yet.
 3. round-three raw reverse inclusion and Red exclusion;
 4. the round-four reverse/exclusion bridge into the stable theorem.
 

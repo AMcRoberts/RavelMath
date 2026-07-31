@@ -177,12 +177,25 @@ machinery above), `app/class_ii_round2_ccorona_stability.cpp` confirms
 contact hops referenced above (`T_1 = +/-C`, the same 50-state
 `class_ii_neighbor2_signed_contact_set()` object, checked equal, not
 assumed) -- and calling `c_corona(T_1, +/-C)` directly gives an
-identical 195-candidate raw composition at `a=6,7,8,15`. This is a
-checked starting point for round 2's own reverse-inclusion obligation,
-not a proof of it; whether those 195 candidates' window validity
-already falls under the kernel-checked cases above has not been
-matched category-by-category. See
-`docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md`'s "Round 2" sections.
+identical 195-candidate raw composition at `a=6,7,8,15`.
+
+`app/class_ii_round2_structure.cpp` then matched those 195 candidates
+against this file's own catalogues precisely, rather than leaving the
+match as a guess: `T_2 = B_2 union E_2` exactly (72 = 47 + 25, a
+literal set identity at `a=6,7,8`), and `E_2`'s window validity turns
+out to need no new derivation at all -- its 25 states are 23 of the
+24 fixed states above, the general interior tip at `r=2`, and one
+genuinely new state whose height/margin follow the same `c>3,
+1/2<b-c<1` bounds trivially. The real remaining gap is Red exclusion:
+of the 195 raw candidates, 25 land on `E_2` and 47 on `B_2` (both
+fully covered, checked, not assumed), and the other 123 are removed by
+Red across three ranks (98, 15, 10), stable across the tested `a`
+range. Unlike Round 1's two-state, unbounded-in-`a` Red exclusion,
+these 123 states have bounded coordinates (`|x_k|<=3`) close to the
+survivors' own bound (`|x_k|<=2`) -- no quick escape-hatch argument
+applies, and this has not been attempted. See
+`docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md`'s "Round 2" sections
+for the full account.
 
 The center-interface occurrence problem now has a bounded raw-corona
 object too. The eighteen interface states split into parameter-free

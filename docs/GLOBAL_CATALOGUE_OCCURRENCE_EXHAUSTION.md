@@ -510,21 +510,45 @@ vector-addition step `y + delta` never touches `a` at all --
 `c_corona()` directly (no reimplementation) and confirms its raw
 output size is identically `195` at `a=6,7,8,15`.
 
-If Lemma 2's already-Lean-proved uniform window validity for the fixed
-correction states genuinely covers every candidate this composition
-can produce (not verified here -- would need checking each of the 195
-raw candidates' category against the actual Lean statement's scope,
-not assumed from the docs' prose), then Round 2's reverse-inclusion
-question could reduce to a single finite check (enumerate the fixed
-pair set, apply the already-uniform window decision, compare to `T_2`)
-rather than a fresh affine derivation -- structurally easier than
-Round 1 was, not harder, since every candidate here is a single fixed
-point rather than a growing range. This remains a lead, not a proof:
-the 195 candidates' individual categories have not been matched against
-Lemma 2's kernel-checked cases, and "one representative computation
-stands in for a universal claim" is exactly the kind of reasoning this
-project's diary keeps warning against skipping the verification step
-on.
+The hoped-for shortcut from the paragraph above -- "if Lemma 2 already
+covers every candidate, reverse inclusion is a single finite check" --
+was checked directly and only half holds.
+`app/class_ii_round2_structure.cpp`
+(`make class_ii_round2_structure`) matched the 195 raw candidates
+against `lean_neighbor2_fixed_states()`'s 24 entries: only 24 of 195
+land there. `c_corona()` already applies `same_letter_H` internally, so
+all 195 *are* window-valid by construction -- but 195 is not `T_2`
+(72 states); it is the pre-Red input to a separate Red-pruning step.
+So the actual gap was mis-shaped in the earlier draft: it isn't
+(mostly) a window-validity question at all. It's specifically:
+
+- `T_2 = B_2 union E_2` **exactly** (72 = 47 + 25, checked as a literal
+  set identity, not just matching sizes, at `a=6,7,8`);
+- `E_2`'s 25 states decompose as
+  (`class_ii_neighbor2_fixed_extension_states()`'s 24 states, the same
+  ones `Neighbor2FixedKind` covers) minus `{2,{1,-2,-1},0}` plus
+  `{2,{-2,2,-1},0}` (the general interior tip at `r=2`, *also* already
+  covered by `neighbor2InteriorTip_in_open_strip`) plus `{0,{0,1,-1},0}`
+  (genuinely new, but its window validity is a one-line corollary of
+  the same `c>3, 1/2<b-c<1` bounds Lemma 2 already uses: height
+  `= c-1 > 2 > 0`, and `c-1<b` iff `b-c>-1`, true since `b-c>1/2`). So
+  **`E_2`'s window validity needs no new derivation** -- every one of
+  its 25 states already falls under bounds proved for a different
+  purpose.
+- The real open gap is Red exclusion, and it is bigger than Round 1's:
+  of the 195 raw candidates, exactly 25 land on `E_2` and 47 on `B_2`
+  (both fully covered, not just checked in aggregate) -- the remaining
+  **123 get removed by Red, across three ranks (98, 15, 10)**, stable
+  across `a=6,7,8`. Round 1's Red exclusion was two states in one rank
+  with unbounded-in-`a` forward images, which made the argument
+  essentially free once written down. These 123 states' coordinates
+  only reach `|x_k|=3` against the survivors' `|x_k|<=2` -- there is no
+  simple "unbounded in `a`" escape hatch here. A real multi-rank
+  forward-edge argument is needed, and it has not been attempted.
+
+This is a materially more precise (and more honest) picture than the
+"structurally easier than Round 1" guess in the previous paragraph,
+which undersold the actual size of Round 2's remaining obligation.
 
 ## Recurrent exhaustion after layer equality
 

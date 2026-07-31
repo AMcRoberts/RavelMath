@@ -820,6 +820,17 @@ $(CLASS_II_ROUND2_CCORONA_STABILITY_BIN): $(APPDIR)/class_ii_round2_ccorona_stab
 		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# class_ii_round2_structure: precise structural findings about Round 2
+# (T_2=B_2+E_2 identity, E_2's window validity reducing to
+# already-established bounds, the exact 3-rank/123-state Red-exclusion
+# shape), replacing the vaguer earlier lead.
+CLASS_II_ROUND2_STRUCTURE_BIN := $(BUILDDIR)/class_ii_round2_structure
+class_ii_round2_structure: $(CLASS_II_ROUND2_STRUCTURE_BIN)
+	./$(CLASS_II_ROUND2_STRUCTURE_BIN)
+$(CLASS_II_ROUND2_STRUCTURE_BIN): $(APPDIR)/class_ii_round2_structure.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 BP_DUMP_PROVENANCE_BIN := $(BUILDDIR)/bp_dump_provenance
 bp_dump_provenance: $(BP_DUMP_PROVENANCE_BIN)
 $(BP_DUMP_PROVENANCE_BIN): $(APPDIR)/bp_dump_provenance.cpp \
