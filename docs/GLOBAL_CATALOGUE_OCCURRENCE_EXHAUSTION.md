@@ -487,6 +487,45 @@ target *sizes* using existing trusted code, not a derivation of *why*
 -- Round 2's actual reverse-inclusion/Red-exclusion gap is unaffected
 by this and remains exactly as open as stated above.
 
+**A lead for whoever picks Round 2 up next, now checked more
+concretely than a first guess, but still not a proof.** The same
+recon checked whether rounds 2 and 3's actual *state sets* (not just
+their sizes) are literally identical across different `a` -- not
+affine-in-`a` like Round 1's raw candidates were, but exactly,
+bit-for-bit the same set, checked at `a=5,6,7,8`. They are (round 4
+differs at `a=5` only, consistent with `a=5` being a documented
+small-parameter exception elsewhere). The reason this might matter:
+Round 1's candidates needed genuine affine-in-`a` treatment because
+they came directly from backward-closing into the `0^a` run. Round
+2's candidates instead come from `c_corona(T_1, +/-C)`. Checked
+directly, not assumed: for `tau_a`, `T_1` **is** `+/-C` -- both are
+literally `class_ii_neighbor2_signed_contact_set()`, 50 states, the
+same object, confirmed equal at every tested `a` (an earlier draft of
+this note incorrectly guessed `T_1` was the *center's* 28-state signed
+contact set; it is not, for the neighbor's own corona construction).
+Both are `a`-independent sets by construction, so `c_corona`'s
+vector-addition step `y + delta` never touches `a` at all --
+`app/class_ii_round2_ccorona_stability.cpp`
+(`make class_ii_round2_ccorona_stability`) calls the real, trusted
+`c_corona()` directly (no reimplementation) and confirms its raw
+output size is identically `195` at `a=6,7,8,15`.
+
+If Lemma 2's already-Lean-proved uniform window validity for the fixed
+correction states genuinely covers every candidate this composition
+can produce (not verified here -- would need checking each of the 195
+raw candidates' category against the actual Lean statement's scope,
+not assumed from the docs' prose), then Round 2's reverse-inclusion
+question could reduce to a single finite check (enumerate the fixed
+pair set, apply the already-uniform window decision, compare to `T_2`)
+rather than a fresh affine derivation -- structurally easier than
+Round 1 was, not harder, since every candidate here is a single fixed
+point rather than a growing range. This remains a lead, not a proof:
+the 195 candidates' individual categories have not been matched against
+Lemma 2's kernel-checked cases, and "one representative computation
+stands in for a universal claim" is exactly the kind of reasoning this
+project's diary keeps warning against skipping the verification step
+on.
+
 ## Recurrent exhaustion after layer equality
 
 Full layer equality proves occurrence/exhaustion of boundary *states*.

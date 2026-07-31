@@ -807,6 +807,19 @@ $(CLASS_II_ROUND2_RECON_BIN): $(APPDIR)/class_ii_round2_recon.cpp \
 		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# class_ii_round2_ccorona_stability: confirms (calling the real,
+# trusted c_corona() directly, not a reimplementation) that Round 2's
+# raw candidate count is identical across a=6,7,8,15. Strengthens the
+# "unverified lead" note in
+# docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md into something more
+# concrete; still not a reverse-inclusion proof.
+CLASS_II_ROUND2_CCORONA_STABILITY_BIN := $(BUILDDIR)/class_ii_round2_ccorona_stability
+class_ii_round2_ccorona_stability: $(CLASS_II_ROUND2_CCORONA_STABILITY_BIN)
+	./$(CLASS_II_ROUND2_CCORONA_STABILITY_BIN)
+$(CLASS_II_ROUND2_CCORONA_STABILITY_BIN): $(APPDIR)/class_ii_round2_ccorona_stability.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 BP_DUMP_PROVENANCE_BIN := $(BUILDDIR)/bp_dump_provenance
 bp_dump_provenance: $(BP_DUMP_PROVENANCE_BIN)
 $(BP_DUMP_PROVENANCE_BIN): $(APPDIR)/bp_dump_provenance.cpp \
