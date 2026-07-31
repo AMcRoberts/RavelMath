@@ -855,6 +855,22 @@ precisely enough located (letter `2`'s double occurrence, in mixed
 regime only) that a future session should start here rather than
 re-deriving the coarse picture.
 
+**One more refinement before stopping this thread.** The pooled tests
+above mix surviving edges from genuinely different
+`(parent_letter_i, parent_letter_j)` *types* -- Round 1's own proof
+never did this; it treated "A type1", "A type2", "B type1", "B type2"
+as separate categories throughout. `app/
+class_ii_round2_edge_mechanism_by_type_check.cpp` regroups by type
+first, then tests the stricter claim "`x0'`/`x1'` constant and
+`x2' = (q_len - p_len) + a fixed offset`" within each type: 94/139
+multi-edge types are clean at `a=8`, a real improvement over the
+pooled test (which had effectively 0 types passing that exact test)
+but still not universal. The untested next step, now precisely named:
+whether the 45 "dirty" types have *some other* fixed slope (not
+necessarily `1`) relating `x2'` to `q_len - p_len` -- Round 1's own
+six candidates all had slope exactly `+/-1`, but nothing established
+that every type must.
+
 ## Recurrent exhaustion after layer equality
 
 Full layer equality proves occurrence/exhaustion of boundary *states*.

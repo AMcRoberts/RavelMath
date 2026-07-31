@@ -953,6 +953,16 @@ $(CLASS_II_ROUND2_EDGE_MECHANISM_GENERALITY_CHECK_BIN): $(APPDIR)/class_ii_round
 		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# class_ii_round2_edge_mechanism_by_type_check: refines the check
+# above by grouping surviving edges by (parent_letter_i,
+# parent_letter_j) type first, matching Round 1's actual granularity.
+CLASS_II_ROUND2_EDGE_MECHANISM_BY_TYPE_CHECK_BIN := $(BUILDDIR)/class_ii_round2_edge_mechanism_by_type_check
+class_ii_round2_edge_mechanism_by_type_check: $(CLASS_II_ROUND2_EDGE_MECHANISM_BY_TYPE_CHECK_BIN)
+	./$(CLASS_II_ROUND2_EDGE_MECHANISM_BY_TYPE_CHECK_BIN)
+$(CLASS_II_ROUND2_EDGE_MECHANISM_BY_TYPE_CHECK_BIN): $(APPDIR)/class_ii_round2_edge_mechanism_by_type_check.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 BP_DUMP_PROVENANCE_BIN := $(BUILDDIR)/bp_dump_provenance
 bp_dump_provenance: $(BP_DUMP_PROVENANCE_BIN)
 $(BP_DUMP_PROVENANCE_BIN): $(APPDIR)/bp_dump_provenance.cpp \
