@@ -985,6 +985,16 @@ $(CLASS_II_ROUND2_EDGE_MECHANISM_EXACT_BIN): $(APPDIR)/class_ii_round2_edge_mech
 		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# class_ii_round4_coverage_threshold_check: confirms the "coverage"
+# remaining-gap mechanism directly on the one concrete exception found
+# earlier (Round 4's a=6 exceptional edge).
+CLASS_II_ROUND4_COVERAGE_THRESHOLD_CHECK_BIN := $(BUILDDIR)/class_ii_round4_coverage_threshold_check
+class_ii_round4_coverage_threshold_check: $(CLASS_II_ROUND4_COVERAGE_THRESHOLD_CHECK_BIN)
+	./$(CLASS_II_ROUND4_COVERAGE_THRESHOLD_CHECK_BIN)
+$(CLASS_II_ROUND4_COVERAGE_THRESHOLD_CHECK_BIN): $(APPDIR)/class_ii_round4_coverage_threshold_check.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 BP_DUMP_PROVENANCE_BIN := $(BUILDDIR)/bp_dump_provenance
 bp_dump_provenance: $(BP_DUMP_PROVENANCE_BIN)
 $(BP_DUMP_PROVENANCE_BIN): $(APPDIR)/bp_dump_provenance.cpp \

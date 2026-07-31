@@ -940,6 +940,22 @@ yet attempted at the "every group, every state" level (only observed
 as a consequence, via the whole-graph a-independence checks earlier
 in this document).
 
+**That remaining step, confirmed on the one concrete exception
+available.** `app/class_ii_round4_coverage_threshold_check.cpp` traces
+Round 4's single known `a=6` exception directly: the missing edge
+needs an occurrence of letter `0` at prefix length exactly `5` within
+`sigma(1) = 0^(a-1) 2 0`'s leading zero-run. That run has length
+`a-1`, so the occurrence exists only once `a-1 > 5`, i.e. `a>=7` --
+exactly the observed threshold, exactly matching the mechanism
+sketched above. This is not a coincidence dressed up as confirmation:
+it is the literal, checkable reason for the one exception found in
+this entire investigation, traced to a specific missing occurrence
+rather than an unexplained empirical gap. The remaining work to a full
+proof is generalizing this single traced instance into a uniform
+bound across every group in every one of Rounds 2/3/4's state
+catalogues -- the mechanism is now understood precisely enough to
+attempt that, not just gestured at.
+
 ## Recurrent exhaustion after layer equality
 
 Full layer equality proves occurrence/exhaustion of boundary *states*.
