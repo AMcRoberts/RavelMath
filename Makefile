@@ -973,6 +973,18 @@ $(CLASS_II_ROUND2_EDGE_MECHANISM_GENERAL_SLOPE_CHECK_BIN): $(APPDIR)/class_ii_ro
 		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# class_ii_round2_edge_mechanism_exact: closes the mechanism line of
+# inquiry -- groups by the FULL abelianization vector (not just
+# occurrence length), giving 100% clean x0'/x1' constant, x2' affine
+# with slope exactly 1, at every tested a. See the file header for
+# the full derivation.
+CLASS_II_ROUND2_EDGE_MECHANISM_EXACT_BIN := $(BUILDDIR)/class_ii_round2_edge_mechanism_exact
+class_ii_round2_edge_mechanism_exact: $(CLASS_II_ROUND2_EDGE_MECHANISM_EXACT_BIN)
+	./$(CLASS_II_ROUND2_EDGE_MECHANISM_EXACT_BIN)
+$(CLASS_II_ROUND2_EDGE_MECHANISM_EXACT_BIN): $(APPDIR)/class_ii_round2_edge_mechanism_exact.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 BP_DUMP_PROVENANCE_BIN := $(BUILDDIR)/bp_dump_provenance
 bp_dump_provenance: $(BP_DUMP_PROVENANCE_BIN)
 $(BP_DUMP_PROVENANCE_BIN): $(APPDIR)/bp_dump_provenance.cpp \

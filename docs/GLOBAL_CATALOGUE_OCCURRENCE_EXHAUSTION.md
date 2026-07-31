@@ -883,9 +883,62 @@ line of inquiry here for this session.** Three refinements in
 slope) have each narrowed the gap without closing it; the remaining
 failures plausibly need a genuinely two-parameter model (`x'` as an
 affine function of `p_len` and `q_len` independently, not reduced to
-one difference), which none of these files attempt. A future session
-should start from the two-parameter model rather than a fourth
-refinement of the one-parameter reduction.
+one difference), which none of these files attempt.
+
+### The mechanism, closed exactly (2026-07-31, same session -- the "stopping point" above was premature)
+
+The two-parameter model above is exactly right, but the missing piece
+was which two parameters. `p_len`/`q_len` (raw occurrence-prefix
+*length*) are not what `simple_forward_targets_exact`'s underlying
+equation actually depends on -- working the algebra directly from
+`rhs = node.x + l(q1) - l(p1)`, `M(a)x' = rhs`, and Round 1's own
+back-substitution (`x0' = rhs[1]`, `x1' = rhs[2]-rhs[1]`,
+`x2' = rhs[0] - a*rhs[2]`, since rows 1,2 of `M(a)` don't depend on
+`a`) gives
+
+```text
+x0' = node.x[1] + l(q)[1] - l(p)[1]
+x1' = rhs[2] - rhs[1]
+x2' = (node.x[0] + l(q)[0] - l(p)[0]) - a*(node.x[2] + l(q)[2] - l(p)[2])
+```
+
+-- three formulas depending on the *per-letter abelianization counts*
+`l(p)[1], l(p)[2], l(q)[1], l(q)[2]` specifically, not on `p_len`,
+`q_len` as scalars. Since `l(p)[0] = p_len - l(p)[1] - l(p)[2]`, once
+`l(p)[1], l(p)[2], l(q)[1], l(q)[2]` are held fixed, `x0'`/`x1'`
+literally cannot vary (they don't depend on `p_len`/`q_len` at all)
+and `x2'` is affine in `(q_len - p_len)` with slope *exactly* `1` --
+not approximately, by direct substitution.
+
+`app/class_ii_round2_edge_mechanism_exact.cpp` groups Round 2's raw
+candidates by the full 6-tuple `(parent_letter_i, parent_letter_j,
+l(p)[1], l(p)[2], l(q)[1], l(q)[2])` instead of by occurrence length,
+and checks the resulting groups against exactly the formula above:
+**100% clean at every tested `a`** -- `135/135` multi-edge groups,
+zero exceptions, across `728` to `1700` total edges checked depending
+on `a` (`a=6,7,8,15`). This is not a partial pattern like the three
+refinements before it; it is the actual mechanism, verified against
+its own derivation rather than curve-fit against the data.
+
+**What this closes and what it doesn't.** Closed: *why* the
+destination set stays small as raw candidate count grows with `a` --
+answered completely, for every group, not just plausibly. Still open,
+precisely: (1) whether this identity (`x0'`/`x1'` determined purely by
+the four fixed abelianization components, `x2'` affine with slope `1`
+in `q_len-p_len`) holds for literal every integer `a`, not just the
+four tested values -- though the derivation above is itself
+`a`-independent algebra (it never used a specific numeric `a`, only
+`M(a)`'s row-1/row-2 structure, which Round 1 already established
+holds for every `a`), so this is very likely already established in
+substance and mainly needs writing up formally rather than further
+checking; (2) showing the achievable range of `(q_len - p_len)`
+values *within each group* that land inside the bounded target window
+stabilizes once `a` crosses each group's own threshold, and that this
+threshold is uniformly bounded across all of Rounds 2/3/4's state
+catalogues -- this is the genuinely remaining combinatorial step, not
+yet attempted at the "every group, every state" level (only observed
+as a consequence, via the whole-graph a-independence checks earlier
+in this document).
 
 ## Recurrent exhaustion after layer equality
 
