@@ -25,8 +25,24 @@ partition of every legal round for `a>=7` into five phases.
 The global occurrence theorem is not closed. Its remaining state-level
 seam consists of four exceptional base transitions:
 
-1. signed-contact reverse inclusion at the neighbor base;
-2. round-two raw reverse inclusion and Red exclusion;
+1. signed-contact reverse inclusion at the neighbor base -- **partially
+   closed (2026-07-31)**: the *unsigned* raw 27-state self-closure and
+   its Red-pruning to 25 survivors are now proved for every `a>=3`
+   (window validity abstractly, Red pruning symbolically from `tau_a`'s
+   own fixed word forms), not just checked at sampled `a`. The exact
+   relationship to the full *signed* 50-state contact set is now a
+   verified identity (`class_ii_neighbor2_signed_contact_set()` equals
+   the unsigned survivors' mirror-closure, exactly) rather than an
+   assumption, though whether that identity is itself the complete
+   answer the base-premises table means remains open. See
+   `docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md`'s Round 1 sections
+   for the full account, including a caught-and-corrected overclaim
+   about mirror-closure preserving correctness.
+2. round-two raw reverse inclusion and Red exclusion -- reconnaissance
+   only (2026-07-31): target sizes confirmed (`E_2`=25 states) against
+   existing trusted machinery, but the actual reverse-inclusion/Red
+   derivation was assessed as comparably scoped to round 1's and not
+   attempted this session.
 3. round-three raw reverse inclusion and Red exclusion;
 4. the round-four reverse/exclusion bridge into the stable theorem.
 
