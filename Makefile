@@ -855,6 +855,15 @@ $(CLASS_II_ROUND2_PRUNED_STATES_A_INDEPENDENCE_PROBE_BIN): $(APPDIR)/class_ii_ro
 		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# class_ii_round3_pruned_states_a_independence_probe: the Round 2
+# a-independence probe applied to Round 3.
+CLASS_II_ROUND3_PRUNED_STATES_A_INDEPENDENCE_PROBE_BIN := $(BUILDDIR)/class_ii_round3_pruned_states_a_independence_probe
+class_ii_round3_pruned_states_a_independence_probe: $(CLASS_II_ROUND3_PRUNED_STATES_A_INDEPENDENCE_PROBE_BIN)
+	./$(CLASS_II_ROUND3_PRUNED_STATES_A_INDEPENDENCE_PROBE_BIN)
+$(CLASS_II_ROUND3_PRUNED_STATES_A_INDEPENDENCE_PROBE_BIN): $(APPDIR)/class_ii_round3_pruned_states_a_independence_probe.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 # class_ii_round3_structure: the Round 2 treatment (T_r=B_r+E_r
 # identity, independent Red-exclusion re-derivation via
 # simple_forward_targets_exact) applied to Round 3.
