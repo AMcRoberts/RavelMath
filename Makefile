@@ -843,6 +843,18 @@ $(CLASS_II_ROUND2_RED_EXCLUSION_CHECK_BIN): $(APPDIR)/class_ii_round2_red_exclus
 		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# class_ii_round2_pruned_states_a_independence_probe: recon for the
+# still-open symbolic Red-exclusion proof -- checks whether the 123
+# pruned STATES (not just counts) are the literal same coordinate set
+# across a, so a symbolic proof only needs per-category M-matrix
+# arguments rather than a-varying state enumeration.
+CLASS_II_ROUND2_PRUNED_STATES_A_INDEPENDENCE_PROBE_BIN := $(BUILDDIR)/class_ii_round2_pruned_states_a_independence_probe
+class_ii_round2_pruned_states_a_independence_probe: $(CLASS_II_ROUND2_PRUNED_STATES_A_INDEPENDENCE_PROBE_BIN)
+	./$(CLASS_II_ROUND2_PRUNED_STATES_A_INDEPENDENCE_PROBE_BIN)
+$(CLASS_II_ROUND2_PRUNED_STATES_A_INDEPENDENCE_PROBE_BIN): $(APPDIR)/class_ii_round2_pruned_states_a_independence_probe.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 # class_ii_round3_structure: the Round 2 treatment (T_r=B_r+E_r
 # identity, independent Red-exclusion re-derivation via
 # simple_forward_targets_exact) applied to Round 3.

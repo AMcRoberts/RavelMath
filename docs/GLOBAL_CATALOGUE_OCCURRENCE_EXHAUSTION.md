@@ -591,6 +591,23 @@ order of `200+` raw forward-target candidates before window filtering
 (Round 1's two pruned states had 1 and 2), so a from-scratch by-hand
 derivation for each is not a quick afternoon's work.
 
+### Round 2: the 123 pruned states are themselves `a`-independent (2026-07-31)
+
+A narrower recon question worth checking before attempting the
+symbolic argument above: is the pruned-state *set* itself the same
+coordinate set across `a`, with only the forward-edge weights varying,
+or does the set of states needing pruning change shape as `a` grows?
+Checked directly, not assumed: `app/
+class_ii_round2_pruned_states_a_independence_probe.cpp` (`make
+class_ii_round2_pruned_states_a_independence_probe`) recomputes the
+123-state pruned set at `a=6,7,8,9,10,12,15,20,30` and finds it is the
+literal same 123-state coordinate set every time (max `|x_k|=3`). This
+matches the pattern Round 1 already established (fixed states, `a`
+enters only through the forward-map weights) and means the eventual
+symbolic proof does not need to also handle a changing enumeration of
+which states require pruning as `a` varies -- only per-category
+M-matrix arguments for a fixed, already-known list of 123 states.
+
 ### Round 3: the same treatment, same scale (2026-07-31)
 
 `app/class_ii_round3_structure.cpp` applies the identical checks to
