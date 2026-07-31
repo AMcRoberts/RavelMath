@@ -871,6 +871,22 @@ necessarily `1`) relating `x2'` to `q_len - p_len` -- Round 1's own
 six candidates all had slope exactly `+/-1`, but nothing established
 that every type must.
 
+That exact next step, checked immediately: `app/
+class_ii_round2_edge_mechanism_general_slope_check.cpp` fits whatever
+slope the data actually shows (rather than forcing slope `1`) for
+`x2'` against `q_len - p_len`, and separately checks whether `x0'`/`x1'`
+are themselves affine in `p_len` (rather than strictly constant). Real
+further improvement -- `103/139` types clean for `x2'` (up from `94`),
+`116/139` for `x0'`/`x1'` -- but still not universal. **Stopping this
+line of inquiry here for this session.** Three refinements in
+(pooled-in-a, then type-grouped-slope-1, then type-grouped-general-
+slope) have each narrowed the gap without closing it; the remaining
+failures plausibly need a genuinely two-parameter model (`x'` as an
+affine function of `p_len` and `q_len` independently, not reduced to
+one difference), which none of these files attempt. A future session
+should start from the two-parameter model rather than a fourth
+refinement of the one-parameter reduction.
+
 ## Recurrent exhaustion after layer equality
 
 Full layer equality proves occurrence/exhaustion of boundary *states*.

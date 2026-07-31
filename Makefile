@@ -963,6 +963,16 @@ $(CLASS_II_ROUND2_EDGE_MECHANISM_BY_TYPE_CHECK_BIN): $(APPDIR)/class_ii_round2_e
 		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# class_ii_round2_edge_mechanism_general_slope_check: last refinement
+# in this line of inquiry -- fits whatever slope the data shows rather
+# than forcing slope 1. Real improvement, still not universal.
+CLASS_II_ROUND2_EDGE_MECHANISM_GENERAL_SLOPE_CHECK_BIN := $(BUILDDIR)/class_ii_round2_edge_mechanism_general_slope_check
+class_ii_round2_edge_mechanism_general_slope_check: $(CLASS_II_ROUND2_EDGE_MECHANISM_GENERAL_SLOPE_CHECK_BIN)
+	./$(CLASS_II_ROUND2_EDGE_MECHANISM_GENERAL_SLOPE_CHECK_BIN)
+$(CLASS_II_ROUND2_EDGE_MECHANISM_GENERAL_SLOPE_CHECK_BIN): $(APPDIR)/class_ii_round2_edge_mechanism_general_slope_check.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 BP_DUMP_PROVENANCE_BIN := $(BUILDDIR)/bp_dump_provenance
 bp_dump_provenance: $(BP_DUMP_PROVENANCE_BIN)
 $(BP_DUMP_PROVENANCE_BIN): $(APPDIR)/bp_dump_provenance.cpp \
