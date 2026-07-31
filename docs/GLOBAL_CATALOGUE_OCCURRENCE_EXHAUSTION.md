@@ -967,18 +967,16 @@ remaining uniform-bound step is a genuinely tractable finite case
 analysis for a future session -- not an unbounded search over 195
 states individually, a bounded search over roughly four dozen shapes.
 
-**Extended to Rounds 3/4, same session, later:** `app/
-class_ii_round34_edge_mechanism_shape_count.cpp` finds Round 3 (256
-raw states) and Round 4 (325 raw states) both also have **exactly 44**
-distinct shapes at `a=15`. Since a shape depends only on `tau_a`'s
-fixed structure (which parent image, which letter-1/letter-2 side of
-which marker) and not on the specific `node.x` or which round, this is
-consistent with -- though not yet directly verified as -- the same 44
-shapes recurring across all three rounds rather than three separate
-catalogues of 44 each. If confirmed, the remaining case analysis is a
-single bounded catalogue shared by all of Rounds 2/3/4, not three
-parallel ones. Not checked here whether the shape *sets* are literally
-identical (only that their sizes match); a quick, natural next step.
+**Extended to Rounds 3/4, then confirmed as one shared catalogue:**
+`app/class_ii_round34_edge_mechanism_shape_count.cpp` finds Round 3
+(256 raw states) and Round 4 (325 raw states) both also have
+**exactly 44** distinct shapes at `a=15` -- and, checked directly (set
+equality, not just matching counts), it is the **literal same 44-shape
+set** in all three rounds. The remaining uniform-bound case analysis
+is therefore one shared bounded catalogue of 44 shapes covering all of
+Rounds 2/3/4, not three separate (if same-sized) catalogues -- a
+meaningfully smaller target for a future session than it first
+appeared.
 
 ## Recurrent exhaustion after layer equality
 

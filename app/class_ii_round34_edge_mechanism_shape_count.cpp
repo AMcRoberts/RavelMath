@@ -1,12 +1,16 @@
 // Extends class_ii_round2_edge_mechanism_shape_count.cpp's tractability
-// check to Rounds 3 and 4: counts distinct group shapes for each,
-// completing the picture across all three still-open rounds.
+// check to Rounds 3 and 4, then goes one step further: not just do
+// all three rounds have the same COUNT of distinct group shapes (44),
+// do they share the literal same SET?
 //
-// Result: Round 3 (256 raw states, layer 2) and Round 4 (325 raw
-// states, layer 3, a=15 so past the a=6 exception) both have small,
-// bounded shape counts too -- see stdout. None of the three rounds
-// needs an unbounded per-state case analysis; all three reduce to a
-// bounded number of shapes, matching Round 2's finding.
+// Result: yes. Rounds 2, 3, and 4 (a=15, past Round 4's a=6 exception)
+// share the literal identical 44-shape catalogue -- confirmed by set
+// equality, not just matching cardinalities. The remaining
+// uniform-bound case analysis is therefore ONE shared bounded
+// catalogue of 44 shapes, not three separate 44-shape catalogues that
+// happen to be the same size.
+
+
 
 #include <cstdio>
 #include <set>
@@ -49,7 +53,7 @@ Matrix incidence(const FiniteSubstitution& s) {
 using Shape = std::tuple<long long, long long, long long, long long,
                           long long, long long, long long, long long>;
 
-std::size_t count_shapes(long long a, std::size_t layer_index) {
+std::set<Shape> shapes_at(long long a, std::size_t layer_index) {
     const auto center = class_ii(static_cast<std::size_t>(a));
     const auto spectral = classify_matrix_spectral(incidence(center));
     const auto neighbors = adjacent_swap_neighbors(center);
@@ -93,20 +97,31 @@ std::size_t count_shapes(long long a, std::size_t layer_index) {
             }
         }
     }
-    return shapes.size();
+    return shapes;
 }
 
 }  // namespace
 
 int main() {
-    const auto round3 = count_shapes(15, 2);
-    const auto round4 = count_shapes(15, 3);
-    std::printf("Round 3 (a=15, 256 raw states): %zu distinct shapes\n", round3);
-    std::printf("Round 4 (a=15, 325 raw states): %zu distinct shapes\n", round4);
+    const auto round2 = shapes_at(15, 1);
+    const auto round3 = shapes_at(15, 2);
+    const auto round4 = shapes_at(15, 3);
+    std::printf("Round 2 (a=15, 195 raw states): %zu distinct shapes\n", round2.size());
+    std::printf("Round 3 (a=15, 256 raw states): %zu distinct shapes\n", round3.size());
+    std::printf("Round 4 (a=15, 325 raw states): %zu distinct shapes\n", round4.size());
+    const bool same_2_3 = round2 == round3;
+    const bool same_2_4 = round2 == round4;
+    std::printf("round2 == round3 (literal same shape SET): %d\n", same_2_3);
+    std::printf("round2 == round4 (literal same shape SET): %d\n", same_2_4);
     std::printf(
         "%s\n",
-        "ROUND34_SHAPE_COUNT: both rounds have a small, bounded shape "
-        "count too -- all three of Rounds 2/3/4 reduce to a tractable "
-        "finite case analysis, not an unbounded per-state one");
+        (same_2_3 && same_2_4)
+            ? "ROUND234_SHAPE_SET_IDENTICAL: all three rounds share the "
+              "literal same 44-shape catalogue -- the remaining case "
+              "analysis is one shared bounded catalogue, not three "
+              "separate ones"
+            : "ROUND234_SHAPE_SET_DIFFERS: same size, different "
+              "members -- three separate (same-size) catalogues, not "
+              "one shared one");
     return 0;
 }
