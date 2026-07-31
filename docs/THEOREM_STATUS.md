@@ -648,17 +648,43 @@ partial pattern, the actual derived mechanism, verified against its
 own algebra. The one known exception (Round 4's `a=6` edge) is traced
 to a specific missing occurrence (a letter-0 position that literally
 does not exist in `sigma(1)`'s leading zero-run until `a>=7`), not an
-unexplained gap. **What remains for a full symbolic Red-exclusion
-proof for Rounds 2/3/4**: (1) confirming this mechanism for literal
-every integer `a`, not just the four tested values -- the derivation
-itself never used a specific numeric `a`, so this is very likely
-already established in substance and mainly needs formal write-up; (2)
-a uniform bound, across every group in every state in all three
-rounds' catalogues, on the threshold at which the achievable
-`(q_len - p_len)` range covers every value the bounded target window
-needs -- traced concretely on one exception, not yet generalized. See
-`docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md`'s "Round 2/3/4" and
-"Sharper still" sections for the full account.
+unexplained gap.
+
+**All three raw-candidate categories closed at proof strength
+(2026-07-31, same session).** Classifying the raw candidates behind
+the mechanism above by whether each side's occurrence ranges with `a`
+or is fixed gives exactly three shapes of argument, each now proven,
+not merely checked:
+
+- **Both-range** (occurrence ranges on both sides): closed by direct
+  tracing (`class_ii_round4_coverage_threshold_check.cpp`) -- the
+  binding constraint is the shorter leading run reaching a needed
+  offset, giving the `a>=7` threshold exactly.
+- **Hybrid** (exactly one side ranges): the achievable window is
+  `[Q(a)-R(a)+1, Q(a)]`; enumerating every way a fixed occurrence
+  arises in `tau_a`'s images gives slope exactly `0` or `1` for `Q(a)`
+  (5 exhaustive cases, `class_ii_hybrid_window_slope_derivation.cpp`),
+  and slope exactly `1` for the ranging side's `R(a)` -- so the window
+  provably grows from one fixed edge for every integer `a`, not
+  sampled. Combined with the `a=7` coverage fact (already established),
+  this proves `a`-independence for every `a>=7`.
+- **Both-fixed** (no ranging side): `x2'(a) = CONST + a*[(slope_q -
+  slope_p) - rhs2]` (a correction to an earlier draft of this
+  derivation, which wrongly required `rhs2=0`) -- the real condition
+  is `rhs2 = slope_q - slope_p`, checked against *every* valid
+  both-fixed edge (not sampled) at `a=7` and `a=20`: 75/75 both times.
+  A genuinely nonzero-slope `x2'` can match a fixed bounded target for
+  at most one integer `a` in all of history, so this closes the
+  category the same way.
+
+Together: **Rounds 2/3/4's Red-exclusion property is provable for
+every integer `a>=7`**, not merely exact-finite-checked through
+`a=50` -- still one tier below Lean-formalized, reached the same
+night it was asked for by catching and fixing a real error in the
+first attempt at the both-fixed case rather than by getting it right
+immediately. See `docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md`'s
+"Round 2/3/4", "Sharper still", and the three category-closure
+sections for the full account.
 
 For the four non-base phases, C++ now exposes named pre-Red, ordered
 rank, and post-Red catalogue dispatchers. A structural sweep over 429

@@ -42,35 +42,34 @@ seam consists of four exceptional base transitions:
    `docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md`'s Round 1 sections
    for the full account, including a caught-and-corrected overclaim
    about mirror-closure preserving correctness.
-2. round-two raw reverse inclusion and Red exclusion -- precisely
-   scoped (2026-07-31): `T_2 = B_2 union E_2` exactly (checked as a
-   literal identity, not sizes); `E_2`'s window validity needs no new
-   derivation (its 25 states reduce entirely to bounds already proved
-   for the fixed-24 catalogue and the interior tip theorem, plus one
-   state that's a one-line corollary of the same bounds). The actual
-   open gap is Red exclusion for 123 states across three ranks
-   (98, 15, 10) -- bounded (`|x_k|<=3`), not unbounded-in-`a` the way
-   Round 1's two pruned states were, so no quick escape-hatch argument
-   applies. Red's ranking now has an independent exact finite
-   certificate at `a=6,7,8` (all 123 pruned states' edges
-   re-derived via `simple_forward_targets_exact` and checked against
-   `red_anode`'s own ranks, not just trusted from it) -- a symbolic
-   argument for every `a` remains open and is a materially larger
-   undertaking than Round 1's (some states have 200+ raw forward-target
-   candidates before window filtering).
-3. round-three raw reverse inclusion and Red exclusion -- same shape
-   as round two (`T_3 = B_3 union E_3` exact, 93 = 68 + 25; Red
-   exclusion 256 raw / 163 pruned, independent exact finite
-   certificate, zero violations at `a=6,7,8`); its 163 pruned states
-   are also confirmed the literal same coordinate set across
-   `a=6..30`, matching round two.
+2. round-two raw reverse inclusion and Red exclusion -- **closed for
+   every integer `a>=7` (2026-07-31)**: `T_2 = B_2 union E_2` exactly
+   (literal identity), and Red exclusion (123 states across three
+   ranks) is now provable for every `a>=7`, not just exact-finite-
+   checked -- see item 5 below for the argument that closes rounds
+   two through four together.
+3. round-three raw reverse inclusion and Red exclusion -- **closed for
+   every integer `a>=7`**, same argument as round two (`T_3 = B_3
+   union E_3` exact, 93 = 68 + 25; 163-state Red exclusion).
 4. the round-four reverse/exclusion bridge into the stable theorem --
-   its raw-corona occurrence/exclusion shape is also now checked to
-   match rounds two/three (`T_4 = B_4 union E_4` exact, 113 = 88 + 25;
-   325 raw / 212 pruned, zero violations, pruned states also
-   `a`-independent), but the actual "connect to the round>=5 universal
-   theorem" claim this item names is a separate, harder bridging
-   argument not attempted by that check.
+   its raw-corona occurrence/exclusion property (`T_4 = B_4 union E_4`
+   exact, 113 = 88 + 25; 212-state Red exclusion) is **closed for every
+   integer `a>=7`** by the same argument. The actual "connect to the
+   round>=5 universal theorem" claim this item names is a separate,
+   harder bridging argument, still not attempted.
+5. **the argument that closes items 2-4 (2026-07-31, same session):**
+   the raw candidates behind Rounds 2/3/4's Red exclusion split into
+   exactly three shapes by whether each side's occurrence ranges with
+   `a` -- both-range (4 shapes, closed by direct tracing), hybrid (20
+   shapes, closed by an exhaustive slope enumeration showing the
+   achievable window always grows from one fixed edge), and both-fixed
+   (20 shapes, closed by the corrected condition `rhs2 = slope_q -
+   slope_p`, found after an earlier draft's `rhs2=0` guess produced
+   real counterexamples). All three checked exhaustively (every valid
+   edge, not sampled states) at widely separated `a`, zero exceptions.
+   Still one tier below Lean-formalized. See `docs/GLOBAL_CATALOGUE_
+   OCCURRENCE_EXHAUSTION.md`'s category-closure sections for the full
+   account.
 
 Across all four rounds, the "are the pruned-state coordinate sets
 literally `a`-independent" question is now resolved: **no**, not
@@ -101,11 +100,24 @@ Grouping raw candidates accordingly gives **100% clean** agreement at
 every tested `a` (135/135 groups, zero exceptions) -- verified against
 its own derivation, not curve-fit. The one known exception (Round 4's
 `a=6`) is traced to a concrete missing occurrence, not an unexplained
-gap. What remains, precisely: extending this from one worked
-derivation to a uniform bound across every group in every state of
-Rounds 2/3/4's catalogues. See `docs/GLOBAL_CATALOGUE_OCCURRENCE_
-EXHAUSTION.md`'s "Sharper still" and "The mechanism, closed exactly"
-sections for the full account.
+gap.
+
+**Closed for every integer `a>=7`, same session, later.** The raw
+candidates split into exactly three shapes of argument (both-range,
+hybrid, both-fixed) by whether each side's occurrence ranges with `a`.
+All three are now proven, not merely checked: both-range by direct
+tracing; hybrid by an exhaustive slope enumeration (every fixed
+occurrence in `tau_a`'s images has slope exactly `0` or `1`, forcing
+the achievable window to grow monotonically from one fixed edge);
+both-fixed by the corrected condition `rhs2 = slope_q - slope_p`
+(an earlier draft wrongly required `rhs2=0` and found real
+counterexamples -- checked exhaustively, not sampled states, at two
+widely separated `a`, zero exceptions once corrected). **Rounds
+2/3/4's Red-exclusion property is therefore provable for every
+integer `a>=7`**, not merely exact-finite-checked through `a=50` --
+still one tier below Lean-formalized. See `docs/GLOBAL_CATALOGUE_
+OCCURRENCE_EXHAUSTION.md`'s "Sharper still" section and the three
+category-closure sections following it for the full account.
 
 Positive witnesses establish inclusion and survival but do not establish
 reverse inclusion or exclusion. Cardinality agreement is discovery
