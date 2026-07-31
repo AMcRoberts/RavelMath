@@ -82,6 +82,22 @@ the forward-edge weights varying by `a`. This means the still-open
 symbolic Red-exclusion proof is one argument applicable to all three
 of rounds 2/3/4, not three independent derivations.
 
+**Sharper still (2026-07-31, background continuation):** the entire
+forward-edge connectivity graph over each round's raw pre-Red states
+-- not just the pruned node set -- checks out `a`-independent too, at
+7-8 sampled `a` values per round including one far outside the
+cluster (Round 2 stress-tested at `a=50`), with a single genuine
+exception at Round 4's `a=6` (resolved by `a>=7`, this project's
+established general stability threshold elsewhere). This is a
+substantially cheaper target than a per-state affine-in-`a` argument,
+but is not yet a proof: it still needs the general lemma that
+forward-edge coordinates are always affine in `a` (established only
+for Round 1's two states so far), which combined with the
+`a`-independent node sets would make the observed graph agreement
+provably universal rather than an exact finite certificate. See
+`docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md`'s "Sharper still"
+section for the full account and precisely what remains.
+
 Positive witnesses establish inclusion and survival but do not establish
 reverse inclusion or exclusion. Cardinality agreement is discovery
 evidence, not set equality.

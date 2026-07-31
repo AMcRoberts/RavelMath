@@ -709,6 +709,65 @@ next symbolic-proof strategy is therefore one argument applicable to
 all three of Rounds 2/3/4, not three separate derivations, since they
 are now confirmed to share the same shape of gap.
 
+### Sharper still: the entire forward-edge graph is a-independent, not just the pruned-state set (2026-07-31)
+
+A background continuation of this session pushed the question above
+one step further and found something stronger: not just the pruned
+*node* set, but the entire forward-edge *connectivity* among the raw
+pre-Red states -- which state's `simple_forward_targets_exact` output
+includes which other states, as a set of destinations, not merely the
+exact rational edge weights -- is itself the literal same graph across
+`a`, for all three of Rounds 2/3/4.
+
+- Round 2 (195 raw states): identical graph at `a=6,7,8,9,10,12,15`,
+  and stress-tested at `a=50` (far outside the sampled cluster) with
+  zero mismatches. `app/class_ii_round2_edge_structure_a_independence_probe.cpp`,
+  `app/class_ii_round2_edge_structure_far_a_check.cpp`.
+- Round 3 (256 raw states): identical graph at `a=6,7,8,9,10,12,15`.
+  `app/class_ii_round3_edge_structure_a_independence_probe.cpp`.
+- Round 4 (325 raw states): identical graph at `a=7,8,9,10,12,15,20,30`,
+  with **one genuine exception at `a=6`** -- state
+  `{i=0,x=(3,-3,0),j=0}` gains an extra destination,
+  `{i=1,x=(-3,3,-2),j=0}`, only at `a>=7` (14 destinations at `a=6`,
+  15 at `a=7` and up). `a>=7` is already this project's established
+  general round-family stability threshold elsewhere (the point where
+  the "stable" non-base dispatcher's own domain begins), so this reads
+  as the same kind of boundary exception as Round 1's `a=2`, not a
+  counterexample to the pattern. `app/class_ii_round4_edge_structure_a_independence_probe.cpp`.
+
+**Why this narrows the remaining gap substantially.** The previous
+framing ("one symbolic argument applicable to all three of Rounds
+2/3/4") still implicitly meant a per-state affine-in-`a` argument
+scaled up from Round 1's method, applied across 123+163+212 states.
+This finding suggests a cheaper route: any forward-edge coordinate
+that is affine in `a` (the general shape the `M(a)` back-substitution
+mechanism produces, established for Round 1's two states and
+plausible generally, though not yet proven for the full 195/256/325
+state sets) and that lands within a *fixed, bounded, a-independent*
+target set at two or more distinct values of `a` must, by the basic
+fact that an affine function equal to a constant at two points is that
+constant everywhere, be `a`-independent for literal every integer `a`.
+Since the pruned/survivor node sets are already confirmed
+`a`-independent (above), and the connectivity among them now checks
+out identical at 7-8 sampled points per round including one far
+outlier, this is strong -- but still not yet complete -- evidence
+that the whole graph, not just its sampled snapshots, is fixed for
+literal every `a` in each round's stable domain (`a>=3` for Round 2/3,
+`a>=7` for Round 4).
+
+**What remains, precisely, to turn this into an actual proof**: the
+general "forward-edge coordinates are affine in `a`" lemma itself is
+not yet established beyond Round 1's two specific states -- it needs
+either a direct symbolic derivation from `parent_decompositions` and
+`class_ii_neighbor_symbolic_prefix_families`'s general behavior (the
+same machinery, not yet shown to always produce affine, rather than
+higher-degree, forms), or enough additional sampled points per state
+to make higher-degree agreement implausible. This is a smaller, more
+tractable target than the original per-state M-matrix undertaking,
+but it is not yet closed -- reported at its real strength (exact
+finite certificate across 7-8 sample points per round, not a
+universal proof), not overclaimed.
+
 ## Recurrent exhaustion after layer equality
 
 Full layer equality proves occurrence/exhaustion of boundary *states*.
