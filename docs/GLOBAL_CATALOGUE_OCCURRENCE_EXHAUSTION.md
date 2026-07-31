@@ -819,6 +819,24 @@ these three are yet shown beyond this one worked example, but each is
 now a concrete, checkable claim rather than an open question about
 *why* the empirical agreement holds.
 
+**Checked immediately, not left as an assumption: (1) does not
+generalize.** `app/class_ii_round2_edge_mechanism_generality_check.cpp`
+tested the representative state's one-parameter model against all 195
+of Round 2's raw states at `a=8`: of the 73 states with more than one
+surviving edge, only 17 have `x0'`/`x1'` constant across every edge
+(claim (1), false in general), and 65 have `x2'` a function of
+`q_k - p_k` alone (claim (2)'s weaker cousin, still not universal).
+The representative state happened to have `node.i = node.j = 0`,
+which is a special case; most states mix contributions from letter 0
+(whose occurrence count scales with `a`, per `tau_a`'s fixed word
+forms) and letters 1/2 (whose counts don't, per Round 1's own
+finding), giving more than the one free parameter the representative
+case had. The real mechanism generalizing the graph's `a`-independence
+across all of Rounds 2/3/4 is therefore still open -- the
+representative-state derivation above is a genuine partial insight
+(one concrete case fully understood, not just observed) but not yet a
+template that transfers directly to the rest of the catalogue.
+
 ## Recurrent exhaustion after layer equality
 
 Full layer equality proves occurrence/exhaustion of boundary *states*.

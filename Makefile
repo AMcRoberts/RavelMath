@@ -942,6 +942,17 @@ $(CLASS_II_ROUND4_EDGE_MECHANISM_PROBE_BIN): $(APPDIR)/class_ii_round4_edge_mech
 		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# class_ii_round2_edge_mechanism_generality_check: tests whether the
+# mechanism above generalizes across all 195 Round 2 raw states. It
+# does not -- recorded plainly rather than left as an unchecked
+# generalization.
+CLASS_II_ROUND2_EDGE_MECHANISM_GENERALITY_CHECK_BIN := $(BUILDDIR)/class_ii_round2_edge_mechanism_generality_check
+class_ii_round2_edge_mechanism_generality_check: $(CLASS_II_ROUND2_EDGE_MECHANISM_GENERALITY_CHECK_BIN)
+	./$(CLASS_II_ROUND2_EDGE_MECHANISM_GENERALITY_CHECK_BIN)
+$(CLASS_II_ROUND2_EDGE_MECHANISM_GENERALITY_CHECK_BIN): $(APPDIR)/class_ii_round2_edge_mechanism_generality_check.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 BP_DUMP_PROVENANCE_BIN := $(BUILDDIR)/bp_dump_provenance
 bp_dump_provenance: $(BP_DUMP_PROVENANCE_BIN)
 $(BP_DUMP_PROVENANCE_BIN): $(APPDIR)/bp_dump_provenance.cpp \
