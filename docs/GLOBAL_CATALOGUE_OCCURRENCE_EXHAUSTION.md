@@ -837,6 +837,24 @@ representative-state derivation above is a genuine partial insight
 (one concrete case fully understood, not just observed) but not yet a
 template that transfers directly to the rest of the catalogue.
 
+**A cleaner refinement, found immediately after.** Splitting Round 2's
+73 multi-edge states by whether `node.i`/`node.j` are letter `0`
+(`tau_a`'s only occurrence-count-scales-with-`a` letter) or not:
+same-regime pairs are clean -- `node.i=node.j=0` (22 states) and
+`node.i,node.j` both in `{1,2}` (8 states) each get `x2' = f(q_k-p_k)`
+for **100%** of states, no exceptions. Mixed-regime pairs (one letter
+`0`, one in `{1,2}`) are mostly clean too (35/43) but have exactly 8
+exceptions, and every single exception involves letter `2` specifically
+(never letter `1`) -- e.g. `{i=0,x=(-1,1,0),j=2}`, `{i=2,x=(0,0,0),j=0}`.
+This tracks with Round 1's own finding that letter `2` (not letter `1`)
+has *two* occurrences across `tau_a`'s images rather than one, which
+plausibly gives letter-2-involving mixed pairs an extra degree of
+freedom the letter-1 pairs don't have. This is a real, promising
+further lead -- not pursued to a full characterization tonight, but
+precisely enough located (letter `2`'s double occurrence, in mixed
+regime only) that a future session should start here rather than
+re-deriving the coarse picture.
+
 ## Recurrent exhaustion after layer equality
 
 Full layer equality proves occurrence/exhaustion of boundary *states*.
