@@ -998,6 +998,41 @@ not some new or larger number. This is still an exact finite check
 symbolic proof of the threshold -- but the *value* of the threshold is
 no longer a guess.
 
+**The precise case split a symbolic proof would need.** Printing the
+44 shapes' `(l(p)[1], l(p)[2], l(q)[1], l(q)[2])` components directly
+(not just counting them) shows a clean **22/22 split**:
+
+- **22 "pure-prefix" shapes** (`l(p)[1]=l(p)[2]=l(q)[1]=l(q)[2]=0`):
+  both occurrence indices lie strictly within a leading `0`-run (before
+  any letter-1/letter-2 marker in that image), so both `p_len` and
+  `q_len` range freely over an interval that grows with `a` (`0` to
+  `a-1` for `sigma(0)`'s run, `0` to `a-2` for `sigma(1)`'s). This is
+  a genuine *coverage* question: does the achievable
+  `(q_len - p_len)` range cover every value the bounded target window
+  needs, once `a` is large enough. This is the case
+  `class_ii_round4_coverage_threshold_check.cpp` already traced
+  concretely for one shape.
+- **22 "marker-crossed" shapes** (at least one of the four counts
+  nonzero): at least one side's occurrence is pinned to a position
+  *after* a fixed marker, where (per `tau_a`'s word structure) there is
+  only ever one further occurrence available -- not a range, a single
+  value, itself affine in `a` (an occurrence at "the position right
+  after the marker" moves by exactly one place as the leading run
+  grows). This is structurally Round 1's *original* mechanism (a
+  single, unbounded-in-`a` candidate that must be shown to land
+  outside the target window for `a` large enough), not the coverage
+  question -- just applied here to one side of a two-sided edge rather
+  than a whole raw candidate.
+
+Neither half is closed symbolically yet, but each now has a named,
+previously-solved template to follow: the pure-prefix half needs the
+coverage argument generalized past its one worked example; the
+marker-crossed half needs Round 1's own `M(a)`-affine-slope argument,
+applied per shape rather than per whole state. This is real
+narrowing -- from "44 unclassified shapes" to "two known argument
+shapes, 22 instances each" -- not a restatement of what was already
+known.
+
 ## Recurrent exhaustion after layer equality
 
 Full layer equality proves occurrence/exhaustion of boundary *states*.
