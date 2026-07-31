@@ -752,6 +752,19 @@ $(CLASS_II_NEIGHBOR2_ROUND1_RED_IDENTITY_BIN): $(APPDIR)/class_ii_neighbor2_roun
 		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# class_ii_neighbor2_symmetric_seed_closure: tests whether
+# class_ii_neighbor2_signed_contact_set() (the hardcoded 50-state ±C)
+# is the backward_closure/red_anode result of the SYMMETRIC seed
+# D_cont union mirror(D_cont), as opposed to the already-refuted
+# "mirror the seeds alone" hypothesis or the merely-definitional
+# union identity.
+CLASS_II_NEIGHBOR2_SYMMETRIC_SEED_CLOSURE_BIN := $(BUILDDIR)/class_ii_neighbor2_symmetric_seed_closure
+class_ii_neighbor2_symmetric_seed_closure: $(CLASS_II_NEIGHBOR2_SYMMETRIC_SEED_CLOSURE_BIN)
+	./$(CLASS_II_NEIGHBOR2_SYMMETRIC_SEED_CLOSURE_BIN)
+$(CLASS_II_NEIGHBOR2_SYMMETRIC_SEED_CLOSURE_BIN): $(APPDIR)/class_ii_neighbor2_symmetric_seed_closure.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 # class_ii_neighbor2_round1_red_forward_check: dense+sparse numeric
 # confirmation (a=3..200, then 500/1000/5000/20000) of the closed-form
 # forward images of the two Round-1 D_cont seeds, plus the exact bound

@@ -38,7 +38,15 @@ seam consists of four exceptional base transitions:
    argument's arithmetic core is now Lean-kernel-checked
    (`lean/class_ii_round1_red_pruning.lean`, sorry-free, signed) --
    the combinatorial exhaustiveness fact behind it is still taken as
-   given C++-checked input, not re-derived in Lean. See
+   given C++-checked input, not re-derived in Lean. The natural
+   remaining candidate for "does `±C` equal the closure of some
+   symmetric seed" -- seeding the same pipeline from `D_cont ∪
+   mirror(D_cont)` -- was tried and refuted (2026-07-31): it reproduces
+   the same 32-state result as the already-refuted mirror-only seed, a
+   strict 32-of-50 subset of `±C` that is not even itself self-mirror-
+   closed, checked at `a` in `{3..8,20,50}`. `±C`'s correctness rests
+   on the `c_corona`/`same_letter_H` construction argument, not on any
+   closure-of-a-symmetric-seed characterization. See
    `docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md`'s Round 1 sections
    for the full account, including a caught-and-corrected overclaim
    about mirror-closure preserving correctness.

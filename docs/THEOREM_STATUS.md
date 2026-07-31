@@ -612,15 +612,27 @@ verified identity above is a *definitional* fact (`build_signed_contact_set`
 unions each state with its own mirror; it does not rerun the closure),
 not a closure-symmetry theorem -- see
 `docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md`'s correction note for
-the full account. Whether the resulting `±C` union is itself the
-correct/complete signed-contact answer in the closure sense the
-base-premises table means remains open. See
-`docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md` §§ "Round 1: validated
-symbolic self-closure of the raw 27-state pre-Red set", "Round 1:
-window validity closed abstractly, not just at sampled `a`", "Round 1:
-the Red-pruned pair coincides with the D_cont-seed pair", and "Round 1:
-Red pruning closed symbolically for `a>=3`" for the full account,
-including the precise scope note against the base-premises table.
+the full account. **The remaining natural candidate for a closure
+characterization -- seeding the same pipeline from the literally
+symmetric `D_cont ∪ mirror(D_cont)` -- was also checked and refuted
+(2026-07-31):** it reproduces the identical 32-state result as the
+mirror-only seed (not the union of the two, not `±C`'s 50), a strict
+subset of `±C` missing exactly 18 states at every tested `a` in
+`{3..8,20,50}`, and that 32-state result is itself not self-mirror-
+closed. So `±C`'s correctness rests on the `c_corona`/`same_letter_H`
+construction argument, not on any closure-of-a-symmetric-seed
+characterization tried so far; whether the resulting `±C` union is
+itself the correct/complete signed-contact answer in the closure sense
+the base-premises table means remains open only insofar as it is a
+literature-comparison question now, not an untested closure candidate.
+See `docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md` §§ "Round 1:
+validated symbolic self-closure of the raw 27-state pre-Red set",
+"Round 1: window validity closed abstractly, not just at sampled `a`",
+"Round 1: the Red-pruned pair coincides with the D_cont-seed pair",
+"Round 1: Red pruning closed symbolically for `a>=3`", and "Round 1:
+the natural 'closure of a symmetric seed' candidate, tested and
+refuted" for the full account, including the precise scope note
+against the base-premises table.
 
 **Rounds 2/3/4, structural identities and exact finite Red-exclusion
 certificates (2026-07-31).** Each gets the identical treatment: exact

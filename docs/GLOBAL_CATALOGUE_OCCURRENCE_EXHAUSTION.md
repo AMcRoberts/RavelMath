@@ -457,6 +457,58 @@ characterization of "the neighbor's `±C`" the cited literature (Def
 question, not a code-verification one, and is outside what this
 investigation checked.
 
+### Round 1: the natural "closure of a symmetric seed" candidate, tested and refuted (2026-07-31)
+
+The open question left above -- "does `±C` actually equal the full
+backward-closure of *something* symmetric" -- had one natural untested
+candidate: seed `backward_closure -> red_anode` (the same trusted
+pipeline, unmodified) not from `D_cont` alone (gives the known 25) and
+not from `mirror(D_cont)` alone (already known to give 32, refuting
+naive mirror-transport), but from the literally symmetric union
+`D_cont ∪ mirror(D_cont)`. `app/class_ii_neighbor2_symmetric_seed_closure.cpp`
+(`make class_ii_neighbor2_symmetric_seed_closure`) runs exactly this,
+for `a` in `{3,4,5,6,7,8,20,50}`:
+
+- the result is **32 survivors, every time, identical to the
+  mirror(D_cont)-only closure** (`SAME_AS_MIRROR_ONLY_CLOSURE=YES` at
+  every tested `a`) -- `D_cont`'s own contribution is entirely absorbed
+  once `mirror(D_cont)` is present in the seed; symmetrizing the seed
+  does not "add" the 25-state unsigned answer on top;
+- this 32-state result is a **strict subset** of `±C` (50 states):
+  `extra=0, missing=18` at every tested `a`, and the *specific* 18
+  missing states are the identical literal tuples across all of
+  `3..8,20,50`, not just the same count;
+- structurally, the 32 survivors are exactly: all 14 of
+  `class_ii_contact_set()` (the unsigned center), plus exactly 7 of the
+  14 states in `mirror(class_ii_contact_set())`, plus exactly 11 of the
+  22 states in `class_ii_neighbor2_initial_extension_states()` (`E_1`)
+  -- `14 + 7 + 11 = 32`, and the complementary halves (`7` of
+  `mirror(center)`, `11` of `E_1`) are exactly the 18 missing states
+  (`7 + 11 = 18`), checked directly, not inferred from cardinalities;
+- most importantly, **this 32-state result is not itself self-mirror-
+  closed** (`SYM_SELF_MIRROR_CLOSED=NO` at every tested `a`): feeding
+  the oriented `backward_closure`/`red_anode` pipeline a manifestly
+  symmetric seed does not produce a symmetric answer. It isn't a
+  candidate for "the correct `±C`" on structural grounds alone, before
+  cardinality is even considered.
+
+This closes off the natural remaining candidate for "closure of
+something symmetric reproduces `±C`" -- checked, not assumed, across
+seven widely separated `a` including `a=50`. Combined with the earlier
+mirror-only refutation, the honest state is now sharper: **no seed
+variant of the oriented `backward_closure`/`red_anode` pipeline tried
+so far (bare `D_cont`, `mirror(D_cont)` alone, or their union)
+reproduces `±C`.** This is consistent with -- and reinforces -- the
+reading already reached above: `±C`'s correctness rests on the
+`c_corona`/`same_letter_H` composition argument (it supplies both
+orientations as hops *by construction*, independent of any closure
+question), not on `±C` itself being characterizable as "the closure of
+a symmetric seed" under this pipeline. Whether the base-premises
+table's "reverse inclusion for the neighbor signed-contact set" row
+means something beyond that constructional soundness is still the
+literature-comparison question flagged above, and remains outside what
+code alone can settle.
+
 ### Round 2: reconnaissance only, not attempted (2026-07-31)
 
 With Round 1's window-validity and Red-pruning both closed above
