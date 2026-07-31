@@ -1023,15 +1023,26 @@ real split, checked by directly counting how many distinct `p_len`
   an `a`-dependent offset.
 - **4 shapes, both sides range** -- pure coverage, closest to the one
   example `class_ii_round4_coverage_threshold_check.cpp` already
-  traced concretely (though that traced state's *shape* turns out to
-  be one of the hybrid 20, not one of these 4 -- worth re-checking
-  against this corrected split rather than assumed to carry over).
+  traced concretely -- and, checked directly (not assumed), that
+  traced state's shape (`i=j=0`) **is** one of these 4: all four
+  "both-range" shapes turn out to be the same `i=j=0` pure-prefix
+  family, differing only in which image (`sigma(0)`'s length-`a` run
+  or `sigma(1)`'s length-`(a-1)` run) each side's occurrence is drawn
+  from. **This category is therefore already effectively closed**: the
+  binding constraint is `sigma(1)`'s shorter `(a-1)`-length run
+  reaching the needed offset, exactly the `a-1>5, i.e. a>=7` argument
+  already traced concretely for one of the four variants -- the other
+  three follow the identical shape of argument with the same or looser
+  bound.
 
 This is a real correction, not a rounding of the earlier claim: three
 categories, not two, and the earlier claimed membership counts (22/22)
-were wrong even though the total (44) was right. Neither the whole
-split nor any of the three categories is closed symbolically yet --
-each now has a precisely stated shape, not a restated existing
+were wrong even though the total (44) was right. The 4-shape
+both-range category is now closed at the same strength as the rest of
+this section's findings (exact finite check plus a traced, not
+guessed, mechanism); the 20-shape escaping and 20-shape hybrid
+categories are not yet -- each now has a precisely stated shape, not a
+restated existing
 finding.
 
 ## Recurrent exhaustion after layer equality
