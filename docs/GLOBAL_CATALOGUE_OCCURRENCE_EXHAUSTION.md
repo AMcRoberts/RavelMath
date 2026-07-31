@@ -956,6 +956,17 @@ bound across every group in every one of Rounds 2/3/4's state
 catalogues -- the mechanism is now understood precisely enough to
 attempt that, not just gestured at.
 
+**Tractability of that remaining step, checked.** `app/
+class_ii_round2_edge_mechanism_shape_count.cpp` counts distinct group
+*shapes* -- `(node.i, node.j, parent_letter_i, parent_letter_j,
+l(p)[1], l(p)[2], l(q)[1], l(q)[2])`, abstracted from the specific
+`node.x` coordinate offset, which doesn't affect which occurrence-
+segment structure applies. Result: **44 distinct shapes** cover all
+195 of Round 2's raw states at `a=15`. This is small enough that the
+remaining uniform-bound step is a genuinely tractable finite case
+analysis for a future session -- not an unbounded search over 195
+states individually, a bounded search over roughly four dozen shapes.
+
 ## Recurrent exhaustion after layer equality
 
 Full layer equality proves occurrence/exhaustion of boundary *states*.
