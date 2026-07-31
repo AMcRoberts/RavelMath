@@ -1113,6 +1113,16 @@ $(CLASS_II_BOTH_FIXED_CORRECTED_CONDITION_BIN): $(APPDIR)/class_ii_both_fixed_co
 		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# class_ii_both_fixed_full_proof: closed-form proof (solving directly
+# for the required a, not sampling) that no slope-nonzero both-fixed
+# edge can ever be valid for any integer a>=7.
+CLASS_II_BOTH_FIXED_FULL_PROOF_BIN := $(BUILDDIR)/class_ii_both_fixed_full_proof
+class_ii_both_fixed_full_proof: $(CLASS_II_BOTH_FIXED_FULL_PROOF_BIN)
+	./$(CLASS_II_BOTH_FIXED_FULL_PROOF_BIN)
+$(CLASS_II_BOTH_FIXED_FULL_PROOF_BIN): $(APPDIR)/class_ii_both_fixed_full_proof.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 BP_DUMP_PROVENANCE_BIN := $(BUILDDIR)/bp_dump_provenance
 bp_dump_provenance: $(BP_DUMP_PROVENANCE_BIN)
 $(BP_DUMP_PROVENANCE_BIN): $(APPDIR)/bp_dump_provenance.cpp \

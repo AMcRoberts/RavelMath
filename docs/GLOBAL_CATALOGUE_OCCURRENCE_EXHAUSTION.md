@@ -1317,6 +1317,24 @@ across `a=6..50`: **this completes the proof for the both-fixed
 category too, for every integer `a>=7`, at the same tier as the
 hybrid category's.**
 
+**The closed-form version, solved directly rather than sampled
+further.** AM asked to "prove even the counterexamples" -- rather than
+checking more points, `app/class_ii_both_fixed_corrected_condition.cpp`'s
+finding (75/75 at `a=7`, 75/75 at `a=20`) is upgraded to an actual
+proof by *solving* for the exact integer `a` that WOULD be required to
+make each slope-nonzero `(node, shape-combination, candidate target)`
+triple valid, computed in closed form from `x2'(a) = CONST +
+a \cdot [(slope_q - slope_p) - rhs2]` -- not evaluated at sample points
+at all. `app/class_ii_both_fixed_full_proof.cpp` enumerates every
+such triple across all of `pre_red` (not just the currently-valid
+ones): **410 slope-nonzero combinations total; 10 have no integer
+solution for `a` at all; the remaining 400 all require `a<7`; zero
+require `a>=7`.** This is a genuine closed-form proof, not a finite
+check with a larger sample: it directly establishes that no
+slope-nonzero both-fixed edge can *ever* be valid for any integer
+`a>=7`, for every combination that could conceivably arise, not merely
+the ones observed to be valid at the two tested points.
+
 **Where the whole 44-shape investigation now stands.** All three
 non-trivial categories are closed at proof strength, not just checked:
 the 4 both-range shapes (direct tracing), the 20 hybrid shapes and the
