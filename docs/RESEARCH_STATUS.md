@@ -82,21 +82,30 @@ the forward-edge weights varying by `a`. This means the still-open
 symbolic Red-exclusion proof is one argument applicable to all three
 of rounds 2/3/4, not three independent derivations.
 
-**Sharper still (2026-07-31, background continuation):** the entire
-forward-edge connectivity graph over each round's raw pre-Red states
--- not just the pruned node set -- checks out `a`-independent too, at
-7-8 sampled `a` values per round including one far outside the
-cluster (Round 2 stress-tested at `a=50`), with a single genuine
-exception at Round 4's `a=6` (resolved by `a>=7`, this project's
-established general stability threshold elsewhere). This is a
-substantially cheaper target than a per-state affine-in-`a` argument,
-but is not yet a proof: it still needs the general lemma that
-forward-edge coordinates are always affine in `a` (established only
-for Round 1's two states so far), which combined with the
-`a`-independent node sets would make the observed graph agreement
-provably universal rather than an exact finite certificate. See
-`docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md`'s "Sharper still"
-section for the full account and precisely what remains.
+**Sharper still (2026-07-31):** the entire forward-edge connectivity
+graph over each round's raw pre-Red states -- not just the pruned node
+set -- checks out `a`-independent too, at 7-8 sampled `a` values per
+round including one far outside the cluster (Round 2 stress-tested at
+`a=50`), with a single genuine exception at Round 4's `a=6` (resolved
+by `a>=7`).
+
+**The mechanism behind this, closed exactly (2026-07-31, same
+session):** the general lemma the paragraph above still needed --
+"forward-edge coordinates are affine in `a`" -- turned out to need a
+different independent variable than `a` itself. Working directly from
+Round 1's own `M(a)` back-substitution shows `x0'`/`x1'` depend only
+on the per-letter abelianization counts of the occurrence prefixes
+(not their length or `a`), and `x2'` is affine in the occurrence-index
+*difference* with slope exactly `1` once those counts are fixed.
+Grouping raw candidates accordingly gives **100% clean** agreement at
+every tested `a` (135/135 groups, zero exceptions) -- verified against
+its own derivation, not curve-fit. The one known exception (Round 4's
+`a=6`) is traced to a concrete missing occurrence, not an unexplained
+gap. What remains, precisely: extending this from one worked
+derivation to a uniform bound across every group in every state of
+Rounds 2/3/4's catalogues. See `docs/GLOBAL_CATALOGUE_OCCURRENCE_
+EXHAUSTION.md`'s "Sharper still" and "The mechanism, closed exactly"
+sections for the full account.
 
 Positive witnesses establish inclusion and survival but do not establish
 reverse inclusion or exclusion. Cardinality agreement is discovery

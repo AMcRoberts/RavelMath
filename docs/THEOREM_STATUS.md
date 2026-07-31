@@ -622,6 +622,44 @@ the Red-pruned pair coincides with the D_cont-seed pair", and "Round 1:
 Red pruning closed symbolically for `a>=3`" for the full account,
 including the precise scope note against the base-premises table.
 
+**Rounds 2/3/4, structural identities and exact finite Red-exclusion
+certificates (2026-07-31).** Each gets the identical treatment: exact
+literal identity `T_r = B_r union E_r` (Round 2: 72=47+25; Round 3:
+93=68+25; Round 4: 113=88+25), and Red exclusion re-derived
+independently via `simple_forward_targets_exact` against `red_anode`'s
+own ranks with zero violations (Round 2: 123 pruned/195 raw; Round 3:
+163/256; Round 4: 212/325, a=6 excepted -- see below). The pruned-state
+*set* (not just its size) is confirmed the literal same coordinate set
+across `a=6..30` for all three rounds. Pushed further: the entire
+forward-edge *connectivity graph* over each round's raw states is also
+`a`-independent (Round 2 stress-tested at `a=50`), except Round 4's
+single `a=6` exception (resolved by `a>=7`).
+
+**The edge-graph mechanism, closed exactly (2026-07-31).** Working
+directly from `simple_forward_targets_exact`'s equation and Round 1's
+own `M(a)` back-substitution: `x0'`/`x1'` depend only on the per-letter
+abelianization counts `l(p)[1], l(p)[2], l(q)[1], l(q)[2]` (not
+occurrence length), and `x2'` is affine in `(q_len - p_len)` with slope
+*exactly* `1` once those four counts are fixed. Grouping Round 2's raw
+candidates by the full 6-tuple `(parent_letter_i, parent_letter_j,
+l(p)[1], l(p)[2], l(q)[1], l(q)[2])` gives **100% clean** groups at
+every tested `a` (135/135, zero exceptions, `a=6,7,8,15`) -- not a
+partial pattern, the actual derived mechanism, verified against its
+own algebra. The one known exception (Round 4's `a=6` edge) is traced
+to a specific missing occurrence (a letter-0 position that literally
+does not exist in `sigma(1)`'s leading zero-run until `a>=7`), not an
+unexplained gap. **What remains for a full symbolic Red-exclusion
+proof for Rounds 2/3/4**: (1) confirming this mechanism for literal
+every integer `a`, not just the four tested values -- the derivation
+itself never used a specific numeric `a`, so this is very likely
+already established in substance and mainly needs formal write-up; (2)
+a uniform bound, across every group in every state in all three
+rounds' catalogues, on the threshold at which the achievable
+`(q_len - p_len)` range covers every value the bounded target window
+needs -- traced concretely on one exception, not yet generalized. See
+`docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md`'s "Round 2/3/4" and
+"Sharper still" sections for the full account.
+
 For the four non-base phases, C++ now exposes named pre-Red, ordered
 rank, and post-Red catalogue dispatchers. A structural sweep over 429
 instances (`7<=a<=32`) checks rank containment/disjointness and exact
