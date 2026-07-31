@@ -1064,6 +1064,15 @@ $(CLASS_II_SHAPE_PER_STATE_CONSTANCY_CHECK_BIN): $(APPDIR)/class_ii_shape_per_st
 		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# class_ii_hybrid_per_state_constancy_check: applies the same
+# per-state resolution to the 20-shape hybrid category.
+CLASS_II_HYBRID_PER_STATE_CONSTANCY_CHECK_BIN := $(BUILDDIR)/class_ii_hybrid_per_state_constancy_check
+class_ii_hybrid_per_state_constancy_check: $(CLASS_II_HYBRID_PER_STATE_CONSTANCY_CHECK_BIN)
+	./$(CLASS_II_HYBRID_PER_STATE_CONSTANCY_CHECK_BIN)
+$(CLASS_II_HYBRID_PER_STATE_CONSTANCY_CHECK_BIN): $(APPDIR)/class_ii_hybrid_per_state_constancy_check.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 BP_DUMP_PROVENANCE_BIN := $(BUILDDIR)/bp_dump_provenance
 bp_dump_provenance: $(BP_DUMP_PROVENANCE_BIN)
 $(BP_DUMP_PROVENANCE_BIN): $(APPDIR)/bp_dump_provenance.cpp \

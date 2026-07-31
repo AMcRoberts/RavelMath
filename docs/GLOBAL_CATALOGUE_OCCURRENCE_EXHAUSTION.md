@@ -1150,6 +1150,38 @@ what the whole-graph checks already established -- the two corrections
 above were about getting the reasoning right, not about finding a real
 gap in the underlying a-independence claim.
 
+### The hybrid category resolves the same way (2026-07-31, same session)
+
+`app/class_ii_hybrid_per_state_constancy_check.cpp` applies the
+identical per-state check to the 20-shape hybrid category: at `a=8`
+vs `a=25`, **79/79 states match** exactly, same clean result as the
+both-fixed category's 45/45.
+
+**This changes the overall picture of what the 44-shape investigation
+actually found.** Combining every result in this subsection: all four
+categories -- the 4 both-range shapes (closed concretely), the 20
+both-fixed shapes, and the 20 hybrid shapes (both tied back to the
+same whole-graph result) -- show per-state destination constancy that
+traces to one single already-established fact: the whole-graph
+`a`-independence exact finite check
+(`class_ii_round2_edge_structure_a_independence_probe.cpp` and
+siblings, `a=6..50`). The shape classification
+(`class_ii_shape_classification_rule.cpp`) genuinely explains the
+*mechanism* -- exactly which occurrences range with `a` and why, a
+real structural fact about `tau_a`'s word forms -- but does not, on
+its own, surface any *new* proof obligation beyond what was already
+known before this investigation began. **The remaining honest gap for
+Rounds 2/3/4's symbolic Red-exclusion proof is exactly what it was
+before the shape-classification work started**: promoting the
+whole-graph `a`-independence result from an exact finite check
+(tested up to `a=50`) to a symbolic argument valid for literal every
+integer `a` -- not a shape-by-shape or category-by-category
+undertaking. The value of this session's shape work is understanding
+*why* the whole-graph result holds (a real, mechanistic
+understanding, including the classification rule and the traced
+coverage-threshold example), not in reducing the remaining proof
+obligation's size.
+
 ## Recurrent exhaustion after layer equality
 
 Full layer equality proves occurrence/exhaustion of boundary *states*.
