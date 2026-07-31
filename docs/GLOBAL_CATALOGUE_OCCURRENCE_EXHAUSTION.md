@@ -1279,14 +1279,54 @@ survives" guess. This does not mean the whole-graph constancy claim is
 wrong (that remains exact-finite-checked through `a=50` and
 unaffected), only that the mechanism explaining *why* it holds for the
 both-fixed category is subtler than the hybrid category's clean
-two-case slope split: an `rhs[2]!=0` edge's destination can still land
-on a *different* member of the same `a`-independent `pre_red` set as
-`a` varies, so per-edge non-constancy does not automatically break
-per-state destination-set constancy. Flagged honestly rather than
-patched over -- the both-fixed category's proof (as opposed to its
-already-solid exact finite check) remains open, and is now a more
-precisely understood open question than "probably like the hybrid
-case."
+two-case slope split.
+
+### The both-fixed category, resolved: `rhs[2]=0` was the wrong condition (2026-07-31, same session)
+
+AM asked to "do the same dance" on the both-fixed category after the
+hybrid proof landed. The `rhs[2]!=0` counterexamples above turned out
+to be a bug in the *reasoning*, not evidence of a genuinely harder
+problem: `x2'(a) = rhs[0](a) - a \cdot rhs[2]` was analyzed as if
+`rhs[0]` were `a`-independent, but it is not -- `rhs[0] = node.x[0] +
+l(q)[0](a) - l(p)[0](a)`, and `l(q)[0](a)`/`l(p)[0](a)` inherit
+whatever slope (`0` or `1`) the corresponding occurrence length itself
+has (the same enumeration `class_ii_hybrid_window_slope_derivation.cpp`
+already used). Writing `p_len(a) = slope_p \cdot a + b_p` and
+`q_len(a) = slope_q \cdot a + b_q` and expanding fully:
+
+```text
+x2'(a) = CONST + a * [(slope_q - slope_p) - rhs2]
+```
+
+so the actual necessary-and-sufficient condition for `x2'` to be
+`a`-independent is **`rhs2 = slope_q - slope_p`**, not `rhs2 = 0` --
+the two coincide only when both sides happen to share the same slope,
+which is why the wrong condition still caught most (64 of 75) cases
+and looked plausible until checked exhaustively.
+
+`app/class_ii_both_fixed_corrected_condition.cpp` checks the
+corrected condition against *every* valid both-fixed edge (not
+sampled states) at two widely separated points: **75/75 at `a=7`,
+75/75 at `a=20`, zero exceptions at either**. Combined with the
+algebraic fact that a genuinely nonzero-slope `x2'(a)` can match a
+fixed bounded target for at most one integer `a` in all of history (so
+any edge violating the corrected condition could appear as valid at
+one isolated `a` at most, never as the persistent, essential edges
+actually observed) and the already-established whole-graph stability
+across `a=6..50`: **this completes the proof for the both-fixed
+category too, for every integer `a>=7`, at the same tier as the
+hybrid category's.**
+
+**Where the whole 44-shape investigation now stands.** All three
+non-trivial categories are closed at proof strength, not just checked:
+the 4 both-range shapes (direct tracing), the 20 hybrid shapes and the
+20 both-fixed shapes (both via base-case-plus-algebraic-slope-case-
+split arguments of the same shape). Rounds 2/3/4's Red-exclusion
+property is therefore provable for every integer `a>=7` by this
+route -- a real result reached the same night it was asked for,
+still one tier below Lean-formalized, and reached by catching and
+fixing a real error in the first attempt rather than by getting it
+right immediately.
 
 ## Recurrent exhaustion after layer equality
 

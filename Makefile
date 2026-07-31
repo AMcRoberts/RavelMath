@@ -1102,6 +1102,17 @@ $(CLASS_II_BOTH_FIXED_RHS2_CHECK_BIN): $(APPDIR)/class_ii_both_fixed_rhs2_check.
 		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# class_ii_both_fixed_corrected_condition: corrects the error in the
+# rhs2 check above (rhs[0] can also carry an a-dependent term) --
+# the real condition is rhs2 = slope_q - slope_p, exhaustively
+# confirmed at a=7 and a=20, completing the both-fixed category's proof.
+CLASS_II_BOTH_FIXED_CORRECTED_CONDITION_BIN := $(BUILDDIR)/class_ii_both_fixed_corrected_condition
+class_ii_both_fixed_corrected_condition: $(CLASS_II_BOTH_FIXED_CORRECTED_CONDITION_BIN)
+	./$(CLASS_II_BOTH_FIXED_CORRECTED_CONDITION_BIN)
+$(CLASS_II_BOTH_FIXED_CORRECTED_CONDITION_BIN): $(APPDIR)/class_ii_both_fixed_corrected_condition.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 BP_DUMP_PROVENANCE_BIN := $(BUILDDIR)/bp_dump_provenance
 bp_dump_provenance: $(BP_DUMP_PROVENANCE_BIN)
 $(BP_DUMP_PROVENANCE_BIN): $(APPDIR)/bp_dump_provenance.cpp \
