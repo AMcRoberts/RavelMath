@@ -771,6 +771,18 @@ $(CLASS_II_NEIGHBOR2_ROUND1_RED_SYMBOLIC_BIN): $(APPDIR)/class_ii_neighbor2_roun
 		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# class_ii_neighbor2_round1_signed_relation: checks the exact
+# relationship (not just cardinality) between the unsigned Round-1
+# survivor set this investigation proves and
+# class_ii_neighbor2_signed_contact_set(), the object the base-premises
+# table names as Round 1's actual target.
+CLASS_II_NEIGHBOR2_ROUND1_SIGNED_RELATION_BIN := $(BUILDDIR)/class_ii_neighbor2_round1_signed_relation
+class_ii_neighbor2_round1_signed_relation: $(CLASS_II_NEIGHBOR2_ROUND1_SIGNED_RELATION_BIN)
+	./$(CLASS_II_NEIGHBOR2_ROUND1_SIGNED_RELATION_BIN)
+$(CLASS_II_NEIGHBOR2_ROUND1_SIGNED_RELATION_BIN): $(APPDIR)/class_ii_neighbor2_round1_signed_relation.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 BP_DUMP_PROVENANCE_BIN := $(BUILDDIR)/bp_dump_provenance
 bp_dump_provenance: $(BP_DUMP_PROVENANCE_BIN)
 $(BP_DUMP_PROVENANCE_BIN): $(APPDIR)/bp_dump_provenance.cpp \

@@ -361,21 +361,44 @@ Together with the abstract window-validity certificate, Round 1's raw
 are now both closed for `a>=3`: the full `27 -> 25` transition no
 longer depends on a sampled range of `a`.
 
-**Scope note, so this is not overread against the base-premises table
-below:** the "27-state" and "25-state" objects here are the *unsigned*
-new_states (11) + center_states (14) [+ 2 seeds for the raw 27], not
-the mirror-closed 22-state `E_1` (`new_states` mirrored via
-`[i,x,j] -> [j,-x,i]`) that the base-premises table's Round 1 row
-names. Transporting this result to the full signed `plus_minus_C(tau_a)
-= plus_minus_C(sigma_a) union E_1` claim requires an additional
-argument that the mirror operation preserves both the raw self-closure
-and the Red-pruning structure -- plausible by symmetry, since nothing
-in this derivation privileges a handedness, but not checked here. Until
-that transport step is done, the table's Round 1 row should still read
-"reverse inclusion for the neighbor signed-contact set" as the
-remaining global-equality obligation; what changed is that its
-*unsigned* half now has a from-the-definition proof rather than a
-finite check.
+**Scope note, precisely -- corrected after checking, not guessed:**
+the "27-state" and "25-state" objects here are the *unsigned*
+`new_states`(11) + `center_states`(14) [+ 2 seeds for the raw 27], not
+directly `class_ii_neighbor2_signed_contact_set()` (50 states) that the
+base-premises table's Round 1 row calls the "neighbor signed-contact
+set." Checked their exact relationship rather than assuming one:
+
+- `search_D_cont` for `tau_a`'s own 9 seeds is **not** self-mirror-closed
+  (verified directly: mirroring the 9 seeds gives 9 *different* states,
+  zero of the originals have a mirror partner among themselves) -- so
+  the raw `backward_closure(D_cont)` this whole investigation has been
+  proving is a genuinely asymmetric (unsigned, oriented) computation,
+  not secretly already-symmetric.
+- Running the *actual*, unrestricted `backward_closure -> red_anode`
+  pipeline on `tau_a`'s real `D_cont` (not the hypothesized 27-state
+  target) reproduces exactly `27` raw states and `25` survivors, at
+  every tested `a` -- confirming the unsigned 25-survivor set
+  (`center_states`+`new_states`) genuinely *is* the real ground-truth
+  answer, not an approximation of some larger true object.
+- `class_ii_neighbor2_signed_contact_set()` is verified **exactly**
+  (not approximately) equal to (unsigned 25 survivors) `union`
+  mirror(unsigned 25 survivors) -- checked as a literal set equality,
+  50 = 50, zero extra, zero missing.
+
+So "reverse inclusion for the neighbor signed-contact set" reduces
+to exactly two pieces: (1) reverse inclusion for the *unsigned*
+25-survivor set -- now closed above, for `a>=3` -- and (2) the general
+fact that mirroring a correct backward-closure/Red result gives a
+correct backward-closure/Red result for the mirrored destinations.
+Piece (2) is a structural property of the corona framework's own `±C`
+convention (used identically for the center's own contact set, which
+the base-premises table already lists as closed), not something novel
+to this neighbor -- but it has not been independently re-derived here,
+so this note stops short of marking the table's Round 1 row closed.
+What changed concretely: the *unsigned* half, which piece (1) needs,
+now has a from-the-definition proof rather than a finite check, and the
+exact relationship between the two objects is now a verified identity
+rather than an assumption either way.
 
 ## Recurrent exhaustion after layer equality
 

@@ -582,11 +582,20 @@ not covered by this argument, though the finite check above confirms
 it holds there too by direct computation.
 
 This closes the *unsigned* half of Round 1's raw self-closure and Red
-pruning (the 27/25-state objects built from `new_states`+`center_states`,
-not yet the mirror-closed 22-state `E_1` the base-premises table names
-as Round 1's actual target -- transporting this result across the
-mirror `[i,x,j]->[j,-x,i]` is plausible by symmetry but not checked).
-See
+pruning (the 27/25-state objects built from `new_states`+`center_states`).
+`app/class_ii_neighbor2_round1_signed_relation.cpp` checks (exact set
+equality, not cardinality) that `class_ii_neighbor2_signed_contact_set()`
+-- the object the base-premises table calls Round 1's actual
+"neighbor signed-contact set" target -- equals precisely the mirror
+closure of this unsigned 25-survivor set, and that `tau_a`'s own
+`D_cont` seeds are genuinely not self-mirror-closed (so the unsigned
+result is a real, oriented computation, not a disguised symmetric one).
+So "reverse inclusion for the neighbor signed-contact set" reduces to
+this unsigned result plus the general fact that mirroring a correct
+backward-closure/Red result gives a correct one for the mirrored
+destinations -- a structural property of the corona framework's own
+`+/-C` convention (used identically for the center's own contact set),
+not independently re-derived here. See
 `docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md` §§ "Round 1: validated
 symbolic self-closure of the raw 27-state pre-Red set", "Round 1:
 window validity closed abstractly, not just at sampled `a`", "Round 1:
