@@ -1004,6 +1004,15 @@ $(CLASS_II_ROUND2_EDGE_MECHANISM_SHAPE_COUNT_BIN): $(APPDIR)/class_ii_round2_edg
 		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# class_ii_round34_edge_mechanism_shape_count: extends the shape-count
+# tractability check to Rounds 3/4.
+CLASS_II_ROUND34_EDGE_MECHANISM_SHAPE_COUNT_BIN := $(BUILDDIR)/class_ii_round34_edge_mechanism_shape_count
+class_ii_round34_edge_mechanism_shape_count: $(CLASS_II_ROUND34_EDGE_MECHANISM_SHAPE_COUNT_BIN)
+	./$(CLASS_II_ROUND34_EDGE_MECHANISM_SHAPE_COUNT_BIN)
+$(CLASS_II_ROUND34_EDGE_MECHANISM_SHAPE_COUNT_BIN): $(APPDIR)/class_ii_round34_edge_mechanism_shape_count.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 BP_DUMP_PROVENANCE_BIN := $(BUILDDIR)/bp_dump_provenance
 bp_dump_provenance: $(BP_DUMP_PROVENANCE_BIN)
 $(BP_DUMP_PROVENANCE_BIN): $(APPDIR)/bp_dump_provenance.cpp \
