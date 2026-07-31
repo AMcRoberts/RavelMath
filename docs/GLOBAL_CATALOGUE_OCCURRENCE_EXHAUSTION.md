@@ -181,6 +181,63 @@ and as a caution: an argument-order bug in
 parent/child relation there before it was caught and fixed -- read
 the fix before reusing the pattern).
 
+### Round 1: validated symbolic self-closure of the raw 27-state pre-Red set (2026-07-30/31)
+
+A direct (non-forked) attempt built a symbolic (affine-in-`a`)
+replica of the *actual* trusted `backward_edges` formula from
+`corona.hpp` (`M x' = x + l(p1) - l(q1)` for type 1, roles swapped and
+`M` negated for type 2) -- not `class_ii_neighbor_transition_weight`,
+which was traced carefully and shown not to reproduce `backward_edges`
+at all, even after fixing an argument-order bug and adding the
+window-validity gate: on the *center's own known* `9->16` chain (the
+one universal-truth check this whole attempt was built to survive),
+a naive replica using `class_ii_neighbor_transition_weight` blew
+straight past a 500-node BFS cap. The correct replica, built instead
+from `class_ii_neighbor_symbolic_prefix_families` (the low-level
+"where does this letter appear in that image" enumeration, which was
+never the bug) combined with the verified `backward_edges` formula,
+reproduces the center's 16 states exactly, and the neighbor's 27
+states exactly, node-for-node, for `a` in `3..8` --
+`app/class_ii_neighbor2_bfs_v2.cpp` (a second bug, in
+`abelianize_prefix` confusing a segment index with a flattened
+position, was found and fixed the same way, by validating against
+this known-correct case before trusting it on the neighbor).
+
+Built on that validated formula, `app/class_ii_neighbor2_symbolic_backward.cpp`
+computes the *symbolic* (`ClassIIAffineValue`, affine-in-`a`) raw
+one-hop backward branches into the full 27-state pre-Red closure (the
+center's 14, the 11 new states, and the 2 states Red later prunes),
+using the neighbor's actual image structure throughout. This produces
+97 raw branch categories with affine `(min,max)` ranges for `x0`, with
+zero violations of the (checked, not assumed) structural fact that
+categories 1 and 2 (the `x1`,`x2` coordinates) are always plain
+integers, never `a`-dependent.
+
+Evaluated at concrete `a` and window-filtered with the exact (not
+floating-point) `in_H_sigma_exact` predicate, this reproduces the
+target 27-state set **exactly** for every `a` in `3..8`: zero spurious
+states, and the only two nodes not recovered as one-hop predecessors
+are `(1,(0,0,1),1)` and `(2,(0,1,-1),1)` -- which are precisely the
+two `D_cont` seeds present in the target set, correctly requiring no
+predecessor since they are the closure's own base case, not a gap.
+
+This is real progress, precisely bounded: it is an exact finite
+certificate (checked `a=3..8`, not universal) that a *symbolic,
+affine-in-`a`* raw-branch derivation, built from validated primitives,
+correctly self-closes the full 27-state target. What it is not yet:
+the window-validity filtering above was done by concrete evaluation
+at each tested `a`, not by the abstract `(c,d)`-corner-bound argument
+the center's own certificate uses (`universally_nonnegative` etc. in
+`class_ii_contact_backward_envelope_certificate()`) to make the claim
+hold for literally every `a`. Promoting these 97 categories' window
+tests to that abstract, `a`-independent form -- deriving whatever
+margin(s) in `(c,d)` play the role of the center's `2/3<d<1`, for
+these specific categories -- is the concrete remaining step, and it
+is now well-scoped: the categories, their affine ranges, and the
+exact target they need to hit are all in hand and validated. Red
+pruning (27 -> 25, matching the already-known post-Red survivor sets)
+has not yet been attempted symbolically.
+
 ## Recurrent exhaustion after layer equality
 
 Full layer equality proves occurrence/exhaustion of boundary *states*.

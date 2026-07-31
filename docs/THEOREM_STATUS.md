@@ -525,6 +525,24 @@ structural narrowing" for the full account, including a caution about
 an argument-order bug in `class_ii_neighbor_transition_weight` found
 and fixed during this investigation.
 
+**Round 1, symbolic self-closure validated (2026-07-30/31).** A
+symbolic (affine-in-`a`) replica of the trusted `backward_edges`
+formula (`app/class_ii_neighbor2_symbolic_backward.cpp`, built on a
+validated `app/class_ii_neighbor2_bfs_v2.cpp` that reproduces the
+center's known `9->16` chain and the neighbor's `27`-state closure
+exactly) computes the raw one-hop backward branches into the full
+27-state pre-Red target as 97 affine-in-`a` categories. Evaluated at
+concrete `a=3..8` and window-filtered exactly, this reproduces the
+27-state target with zero spurious states, and the only two nodes not
+recovered are the two `D_cont` seeds themselves (correctly requiring
+no predecessor). This is still an exact finite certificate, not a
+universal proof: the window filtering was done by concrete evaluation,
+not the center's own abstract `(c,d)`-corner-bound argument, and Red
+pruning (`27 -> 25`) has not been attempted symbolically. See
+`docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md` § "Round 1: validated
+symbolic self-closure of the raw 27-state pre-Red set" for the full
+account and exactly what remains.
+
 For the four non-base phases, C++ now exposes named pre-Red, ordered
 rank, and post-Red catalogue dispatchers. A structural sweep over 429
 instances (`7<=a<=32`) checks rank containment/disjointness and exact
