@@ -58,8 +58,29 @@ seam consists of four exceptional base transitions:
    argument for every `a` remains open and is a materially larger
    undertaking than Round 1's (some states have 200+ raw forward-target
    candidates before window filtering).
-3. round-three raw reverse inclusion and Red exclusion;
-4. the round-four reverse/exclusion bridge into the stable theorem.
+3. round-three raw reverse inclusion and Red exclusion -- same shape
+   as round two (`T_3 = B_3 union E_3` exact, 93 = 68 + 25; Red
+   exclusion 256 raw / 163 pruned, independent exact finite
+   certificate, zero violations at `a=6,7,8`); its 163 pruned states
+   are also confirmed the literal same coordinate set across
+   `a=6..30`, matching round two.
+4. the round-four reverse/exclusion bridge into the stable theorem --
+   its raw-corona occurrence/exclusion shape is also now checked to
+   match rounds two/three (`T_4 = B_4 union E_4` exact, 113 = 88 + 25;
+   325 raw / 212 pruned, zero violations, pruned states also
+   `a`-independent), but the actual "connect to the round>=5 universal
+   theorem" claim this item names is a separate, harder bridging
+   argument not attempted by that check.
+
+Across all four rounds, the "are the pruned-state coordinate sets
+literally `a`-independent" question is now resolved: **no**, not
+uniformly. Round 1 is a genuine outlier (pruned coordinates affine in
+`a`, small 27-state raw target, already closed symbolically and now
+Lean-formalized for its arithmetic core). Rounds 2/3/4 share a second
+pattern instead: a fixed, `a`-independent pruned-state list with only
+the forward-edge weights varying by `a`. This means the still-open
+symbolic Red-exclusion proof is one argument applicable to all three
+of rounds 2/3/4, not three independent derivations.
 
 Positive witnesses establish inclusion and survival but do not establish
 reverse inclusion or exclusion. Cardinality agreement is discovery
