@@ -1011,11 +1011,26 @@ side and a marker-crossed, single-occurrence letter on the other). The
 real split, checked by directly counting how many distinct `p_len`
 (resp. `q_len`) values each shape actually admits at `a=15`:
 
-- **20 shapes, both sides fixed** -- true Round-1-style escaping
-  candidates: no ranging parameter at all, so `x2'` is a single value,
-  affine in `a`, that must be shown to leave the bounded target window
-  for `a` large enough. This is the case that matches Round 1's
-  *original* two D_cont seeds structurally exactly.
+- **20 shapes, both sides fixed** -- assumed by analogy to be
+  Round-1-style escaping candidates, but checked directly rather than
+  trusted: `app/class_ii_round2_edge_mechanism_escaping_slopes.cpp`
+  computes each shape's single `x2'` value at `a=7` and `a=40` and
+  compares. **All 20 have slope exactly zero** between these two
+  sample points. `x2'` looks *constant* for these shapes, not
+  affine-in-`a` the way Round 1's two seeds were -- the Round-1
+  analogy was wrong for this category. **Caution against
+  overclaiming, learned twice already this session**: two sample
+  points at zero slope is consistent with genuine `a`-independence but
+  does not itself prove it for literal every integer `a` -- the
+  algebra (`x2' = rhs[0] - a*rhs[2]`, slope `= -rhs[2] =
+  -(node.x[2]+l(q)[2]-l(p)[2])`) shows the slope is exactly zero *iff*
+  `node.x[2] = l(p)[2] - l(q)[2]` holds for every state exhibiting the
+  shape, which is plausible (both quantities are small fixed integers)
+  but not yet derived as a necessary consequence of state validity.
+  Still a real narrowing -- from "assumed escaping, unproven" to
+  "empirically constant at two widely-separated points, with the exact
+  algebraic condition for genuine constancy now named" -- not a closed
+  proof.
 - **20 shapes, exactly one side ranges** -- a hybrid: `x2'` is affine
   in the one free occurrence index, so this is a coverage question,
   but over a range anchored at a value that itself shifts with `a`

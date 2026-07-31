@@ -1023,6 +1023,16 @@ $(CLASS_II_ROUND2_EDGE_MECHANISM_SHAPE_RANGE_CHECK_BIN): $(APPDIR)/class_ii_roun
 		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# class_ii_round2_edge_mechanism_escaping_slopes: tests whether the
+# 20 both-fixed shapes actually escape (Round-1-style) or are simply
+# constant -- checked at a=7 vs a=40, zero slope in all 20.
+CLASS_II_ROUND2_EDGE_MECHANISM_ESCAPING_SLOPES_BIN := $(BUILDDIR)/class_ii_round2_edge_mechanism_escaping_slopes
+class_ii_round2_edge_mechanism_escaping_slopes: $(CLASS_II_ROUND2_EDGE_MECHANISM_ESCAPING_SLOPES_BIN)
+	./$(CLASS_II_ROUND2_EDGE_MECHANISM_ESCAPING_SLOPES_BIN)
+$(CLASS_II_ROUND2_EDGE_MECHANISM_ESCAPING_SLOPES_BIN): $(APPDIR)/class_ii_round2_edge_mechanism_escaping_slopes.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 BP_DUMP_PROVENANCE_BIN := $(BUILDDIR)/bp_dump_provenance
 bp_dump_provenance: $(BP_DUMP_PROVENANCE_BIN)
 $(BP_DUMP_PROVENANCE_BIN): $(APPDIR)/bp_dump_provenance.cpp \
