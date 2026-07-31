@@ -1263,10 +1263,30 @@ slope case-split above) together cover every integer `a>=7`. It is
 strongest claim-strength category), and it covers the **hybrid
 category specifically** -- the both-range category was already closed
 by direct tracing earlier in this document, and the both-fixed
-category's own constancy (`rhs[2]=0` exactly, established only
-empirically so far) would need the analogous argument extended to
-explain *why* `rhs[2]` must vanish for every surviving both-fixed
-edge, not assumed to follow automatically from this one.
+category's own constancy needs separate treatment, checked directly
+below rather than assumed to follow from this argument.
+
+**Attempted the same extension to the both-fixed category; found a
+real complication, not a proof.** The natural guess: `rhs[2]=0`
+exactly for every surviving both-fixed edge (making `x2'` genuinely
+constant), with any `rhs[2]!=0` edge eventually and permanently
+excluded once its unboundedly-growing `x2'` leaves the target window
+-- structurally the same "escapes forever once it escapes" argument
+Round 1 already used. Checked directly at `a=7`: **11 of 408 raw
+both-fixed candidates have `rhs[2]!=0` and are currently valid,
+landing in `pre_red`** -- contradicting the simple "only `rhs[2]=0`
+survives" guess. This does not mean the whole-graph constancy claim is
+wrong (that remains exact-finite-checked through `a=50` and
+unaffected), only that the mechanism explaining *why* it holds for the
+both-fixed category is subtler than the hybrid category's clean
+two-case slope split: an `rhs[2]!=0` edge's destination can still land
+on a *different* member of the same `a`-independent `pre_red` set as
+`a` varies, so per-edge non-constancy does not automatically break
+per-state destination-set constancy. Flagged honestly rather than
+patched over -- the both-fixed category's proof (as opposed to its
+already-solid exact finite check) remains open, and is now a more
+precisely understood open question than "probably like the hybrid
+case."
 
 ## Recurrent exhaustion after layer equality
 
