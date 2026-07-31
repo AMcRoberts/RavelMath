@@ -2,8 +2,8 @@
 --
 -- BFS walker over the hex outer transition table. Produces a set of
 -- SpectreKey = {hex, child_index, hex_edge} triples reachable from a
--- root, mirroring src/spectre_coordinate_main.cpp and the
--- `spectre_coordinate 4` audit.
+-- root. Pure-Lua original; no `src/spectre_coordinate_main.cpp` or
+-- `spectre_coordinate` app exists or ever existed in this repository.
 
 local M = {}
 

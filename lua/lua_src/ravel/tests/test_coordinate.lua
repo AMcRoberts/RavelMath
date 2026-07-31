@@ -1,7 +1,8 @@
 -- lua/tests/test_coordinate.lua
 --
 -- SpectreKey equality/hash and hex-vertex regular-hexagon shape.
--- Mirrors tests/test_spectre_coordinate.cpp.
+-- Pure-Lua original; no `tests/test_spectre_coordinate.cpp` exists
+-- or ever existed in this repository.
 
 local runner = require("ravel.tests.runner")
 local R = runner.make_runner()

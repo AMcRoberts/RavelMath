@@ -1,7 +1,9 @@
 -- lua/tests/test_transitions.lua
 --
 -- Verifies that the 9x36 hex outer transition table is row-complete.
--- Mirrors tests/test_spectre_transitions.cpp.
+-- Pure-Lua original; no `tests/test_spectre_transitions.cpp` exists
+-- or ever existed in this repository (an earlier comment claiming a
+-- C++ mirror was stale).
 
 local runner = require("ravel.tests.runner")
 local R = runner.make_runner()
@@ -13,10 +15,8 @@ local hex
 
 local function table_complete()
     T(outer.table_complete(), "transition table is not row-complete")
-    -- Spot-check a known row. The original C++ test_spectre_coordinate
-    -- checked hex_to_hex_transition(G, 0, 1) -> X, which contradicts
-    -- the actual table data (G edge 0 maps to F at every segment). The
-    -- C++ test had a stale expectation; we verify both endpoints.
+    -- Spot-check a known row: G edge 0 maps to F at every segment,
+    -- G edge 1 to X.
     local g_e0 = outer.lookup(hex.G, 0, 0)
     T(g_e0 ~= nil, "G.0.0 missing")
     T(g_e0.neighbour == hex.F, "G.0.0 neighbour = F")

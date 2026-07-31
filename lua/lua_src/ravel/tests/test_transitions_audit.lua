@@ -1,10 +1,12 @@
 -- lua/tests/test_transitions_audit.lua
 --
--- Per-edge audit of the hex outer transition table against the C++
--- source-of-truth documented in docs/THEOREM_STATUS.md. Each
--- of the 9 hexes has 6 expected (edge, neighbour, child) triples;
--- every segment of a given edge must map to the same neighbour and
--- child. Mirrors tests/test_spectre_transitions_audit.cpp.
+-- Per-edge audit of the hex outer transition table: each of the 9
+-- hexes has 6 expected (edge, neighbour, child) triples; every
+-- segment of a given edge must map to the same neighbour and child.
+-- This is a pure-Lua original -- there is no C++ counterpart (no
+-- `docs/THEOREM_STATUS.md` hex section, no `tests/test_spectre_
+-- transitions_audit.cpp`) anywhere in this repository's history;
+-- an earlier comment claiming otherwise was stale.
 
 local runner = require("ravel.tests.runner")
 local R = runner.make_runner()

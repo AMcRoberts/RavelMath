@@ -7,9 +7,9 @@
 -- to the destination hex kind and the parent hex edge that the
 -- Spectre edge sits on.
 --
--- The table is the lua_reimplementation equivalent of the C++
--- `build_spectre_transition_table()` function described in
--- docs/THEOREM_STATUS.md phase 2. For G and S the values come
+-- This is a pure-Lua original -- no C++ `build_spectre_transition_
+-- table()` function exists or ever existed in this repository, and
+-- `docs/THEOREM_STATUS.md` has no such phase. For G and S the values come
 -- from a geometric match against the preserved specmap SVG. For
 -- the other 7 hexes the values come from the closest-segment
 -- matching against the txt-fallback enriched files (the SVGs are

@@ -1,6 +1,8 @@
 -- lua/tests/test_hex.lua
 --
--- HexKind enum and child counts. Mirrors tests/test_spectre_hex.cpp.
+-- HexKind enum and child counts. Pure-Lua original; no
+-- `tests/test_spectre_hex.cpp` exists or ever existed in this
+-- repository.
 
 local runner = require("ravel.tests.runner")
 local R = runner.make_runner()

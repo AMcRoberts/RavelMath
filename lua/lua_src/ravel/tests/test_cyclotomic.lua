@@ -1,6 +1,8 @@
 -- lua/tests/test_cyclotomic.lua
 --
--- 12th cyclotomic ring identities. Mirrors tests/test_cyclotomic.cpp.
+-- 12th cyclotomic ring identities. There is no `tests/
+-- test_cyclotomic.cpp` in this repository -- this is the only test
+-- of `include/ravel/cyclotomic.hpp`'s arithmetic, not a mirror of one.
 -- All arithmetic goes through the C++ backend (libspectre_native.so);
 -- the test verifies that the ring is closed under multiplication,
 -- that d^4 = d^2 - 1 is the minimal polynomial, and that the

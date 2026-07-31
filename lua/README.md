@@ -1,20 +1,28 @@
-# SpectreTileProject — Lua reimplementation
+# RavelMathPub — Lua reimplementation
 
-A faithful reimplementation of the Spectre tiling project under
-`../` using **Lua** for data definitions, test orchestration, and
-pure-Lua logic, with a small **C/C++** shared library for the "heavy
-math": the Pisot spectral invariants, the contact-boundary /
-corona / ambient-graph construction, the exact `Q(β)` arithmetic,
-and the Hall–Branciard KL divergence (the CHSH-named helpers in
-`thermometer.hpp` and `tilt.hpp` are correlation diagnostics
-borrowed from the Bell-inequality literature; see the provenance
-notes in those headers).
+A Lua reimplementation of a genuine subset of `../` (RavelMathPub,
+the `ravel::` C++ project) using **Lua** for data definitions, test
+orchestration, and pure-Lua logic, with a small **C/C++** shared
+library for the "heavy math": the Pisot spectral invariants, the
+contact-boundary / corona / ambient-graph construction, the exact
+`Q(β)` arithmetic, and the Hall–Branciard KL divergence (the
+CHSH-named helpers in `thermometer.hpp` and `tilt.hpp` are correlation
+diagnostics borrowed from the Bell-inequality literature; see the
+provenance notes in those headers). This tree also carries a
+pure-Lua hex/tiling-coordinate layer with no C++ counterpart in this
+repository -- see "Why this split?" below.
 
-The goal is to mirror the C++ project's test surface (the original
-passes 47/47 cases across six test binaries) while moving every
-data table, every algorithm that does not need to be fast, and
-every test runner to Lua. Re-running the data tables or test files
-never invokes the C++ compiler; only the shared library is compiled.
+The goal is to mirror the C++ project's genuinely-shared machinery
+(cyclotomic arithmetic, spectral invariants, substitution rules,
+contact-boundary/corona/ambient-graph construction, the Pisot
+survey/classifier) while moving every data table, every algorithm
+that does not need to be fast, and every test runner to Lua. The
+hex/tiling-coordinate layer below (hex kinds, the outer transition
+table, vertex offsets, module lineage, the coordinate BFS) is a
+**pure-Lua original with no C++ counterpart** in this repository --
+comments elsewhere in this tree once claimed otherwise and were
+corrected 2026-07-31. Re-running the data tables or test files never
+invokes the C++ compiler; only the shared library is compiled.
 
 ## Why this split?
 
@@ -78,14 +86,14 @@ lua/
 │   └── ravel/
 │       ├── init.lua          composes the public ravel.* API
 │       ├── data/             static geometry/transition tables
-│       ├── tests/            14 Lua test suites
+│       ├── tests/            20 Lua test suites (see scripts/run_lua_tests.lua for the exact list)
 │       ├── coord_bfs.lua     BFS walker over the hex-coordinate graph
 │       ├── lineage.lua       lineage / LCA / tree distance
 │       ├── predict_dimension.lua  W1 + W5 closed-form dimension predictor
 │       └── substitution_rule.lua  SubstitutionRule + Parikh balanced-pair helper
 └── scripts/
     ├── run_lua_tests.lua     top-level test orchestrator
-    ├── coord_bfs.lua         mirror of src/spectre_coordinate_main.cpp
+    ├── coord_bfs.lua         pure-Lua BFS walker (no C++ counterpart)
     ├── contact_boundary_4x4.cpp  4-letter contact-boundary driver + in-process qbeta
     ├── cylinder_measure.cpp  empirical cylinder measure + factorization ratios
     ├── qbeta_eigenvalue.cpp  CLI wrapper for the in-process qbeta path
@@ -169,12 +177,12 @@ the "ALL SUITES PASSED" line is the canonical pass/fail signal.
 | `ravel.constants.*` | `ravel::k*` (cyclotomic.hpp) | Named decimal constants |
 | `ravel.spectral.*` | `ravel::spectral_invariants_*` | Perron root, β₂, n-1 bound |
 | `ravel.tilt.*` | `ravel::hb_mi_floor`, `tilt_correlator` | HB KL and cos(x-y) |
-| `ravel.hex_kind` | `ravel::HexKind` (spectre_hex.hpp) | Hex enum |
-| `ravel.outer` | `ravel::build_hex_outer_table` | 9x36 hex transition table |
-| `ravel.vertices` | `ravel::hex_vertex_offsets` | Unit hex shape |
+| `ravel.hex_kind` | *(pure Lua, no C++ counterpart)* | Hex enum |
+| `ravel.outer` | *(pure Lua, no C++ counterpart)* | 9x36 hex transition table |
+| `ravel.vertices` | *(pure Lua, no C++ counterpart)* | Unit hex shape |
 | `ravel.substitution_rule` | `ravel::SubstitutionRule`, balanced pairs | Sigma + Parikh refinement |
-| `ravel.lineage` | `ravel::lineage_of`, `common_ancestor_level` | Module lineage helpers |
-| `ravel.coord_bfs.walk` | `src/spectre_coordinate_main.cpp` | BFS over the hex map |
+| `ravel.lineage` | *(pure Lua, no C++ counterpart)* | Module lineage helpers |
+| `ravel.coord_bfs.walk` | *(pure Lua, no C++ counterpart)* | BFS over the hex map |
 | `ravel.contact_boundary.*` | `ravel::compute_contact_boundary*` | D_cont → ±C → G_B pipeline |
 | `ravel.contact_boundary.from_subst` | `ravel::compute_contact_boundary_from_subst` | Auto-derive D_cont geometrically |
 | `ravel.d_cont_check.*` | `ravel::is_in_D_cont`, `verify_D_cont_table` | Standalone geometric D_cont check |

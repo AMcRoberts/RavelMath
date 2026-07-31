@@ -3,7 +3,8 @@
 -- Unit hexagon vertex offsets, expressed as integer 12th cyclotomic
 -- tuples {a, b, c, e} for a + b*d + c*d^2 + e*d^3. The six vertices
 -- form a regular hexagon of unit circumradius, centred at the origin.
--- This matches include/ravel/spectre_coordinate.hpp::hex_vertex_offsets.
+-- Pure-Lua original; no `include/ravel/spectre_coordinate.hpp` exists
+-- or ever existed in this repository.
 --
 -- The conversion to (x, y) lives in ravel.cyclotomic.to_xy and is
 -- applied at the use site so that all arithmetic in the data layer

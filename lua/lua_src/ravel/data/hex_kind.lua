@@ -1,9 +1,9 @@
 -- lua/data/hex_kind.lua
 --
 -- HexKind enum (Tatham's Latin rebindings of the paper's Greek
--- letters). Mirrors include/ravel/spectre_hex.hpp in the C++
--- project. The integer indices match the C++ enum class order
--- exactly so the Lua data tables and C++ lookups are interchangeable.
+-- letters). Pure-Lua original; no `include/ravel/spectre_hex.hpp`
+-- exists or ever existed in this repository -- there is no C++
+-- enum to stay interchangeable with.
 
 local M = {}
 

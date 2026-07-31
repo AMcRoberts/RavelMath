@@ -1,7 +1,8 @@
 -- lua/ravel/lineage.lua
 --
--- Parent-tree lineage for the Module hierarchy. Mirrors
--- include/ravel/spectre_lineage.hpp.
+-- Parent-tree lineage for the Module hierarchy. Pure-Lua original;
+-- no `include/ravel/spectre_lineage.hpp` exists or ever existed in
+-- this repository.
 --
 -- A module is a Lua table with fields { id, level, parent, children,
 -- child_slot, hand, cluster_kind, cluster_id, state, weight, anchor }.

@@ -1,9 +1,10 @@
 -- scripts/coord_bfs.lua
 --
--- Standalone script that mirrors src/spectre_coordinate_main.cpp in
--- the C++ project. Walks the hex outer transition table from a root
--- key and reports generated / unique / self-loop counts plus a per-hex
--- distribution. Used by the verification recipe.
+-- Standalone script. Pure-Lua original; no `src/spectre_coordinate_
+-- main.cpp` exists or ever existed in this repository. Walks the hex
+-- outer transition table from a root key and reports generated /
+-- unique / self-loop counts plus a per-hex distribution. Used by the
+-- verification recipe.
 
 local script_dir = arg and arg[0] and arg[0]:match("(.*/)") or "./"
 if script_dir == "" then script_dir = "./" end
