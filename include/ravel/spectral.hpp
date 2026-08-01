@@ -282,8 +282,36 @@ inline SpectralInvariants spectral_invariants_general(
     if (std::abs(uv) > 1e-300) for (std::size_t i = 0; i < n; ++i) u[i] /= uv;
 
     // Wielandt deflation: M' = M - beta * v u^T has the same
-    // spectrum as M except beta -> 0, so power iteration on M'
-    // converges to (the modulus of) the next-largest eigenvalue.
+    // spectrum as M except beta -> 0, so the dominant eigenvalue of
+    // M' equals the second-largest eigenvalue (by modulus) of M.
+    //
+    // Real-vector power iteration ALONE is not enough to extract this
+    // reliably: if M's second-largest eigenvalue is part of a
+    // genuinely dominant COMPLEX-CONJUGATE pair, repeatedly applying
+    // the real matrix M' to a real vector makes the iterate's
+    // norm-growth ratio OSCILLATE with the pair's argument rather than
+    // converge to a single value -- taking whatever ratio happens to
+    // occur at a fixed iteration count (the previous version of this
+    // function) can silently return a value far from the true modulus.
+    // Found and confirmed 2026-08-01 (docs/DIRECTION_AND_OPEN_THREADS.md
+    // Item B1): for M=[[2,1,2,1],[3,2,1,0],[2,1,0,0],[0,3,2,2]], the old
+    // code reported beta2=0.926 (passing the Pisot filter below), but
+    // the true value, confirmed via an independent, precision-verified
+    // root finder, is 1.376 -- a real complex-conjugate pair, hidden.
+    //
+    // Fix: real power iteration still steers x into M''s dominant
+    // invariant subspace (it converges in DIRECTION to the real
+    // 2-dimensional invariant subspace a dominant complex pair spans,
+    // even though it never settles to a fixed vector within that
+    // subspace) -- then a small Rayleigh-Ritz step extracts the actual
+    // eigenvalue(s): build an orthonormal basis for span{x, M'x},
+    // project M' onto that 2D subspace as an explicit 2x2 matrix, and
+    // solve ITS eigenvalues directly via the quadratic formula. This is
+    // exact once the subspace has converged (regardless of any ongoing
+    // phase rotation within it), and correctly returns a
+    // complex-conjugate pair's modulus (sqrt(det) of the 2x2
+    // restriction, since det = product of eigenvalues for any 2x2
+    // matrix) when that pair is what's actually dominant.
     std::vector<std::vector<double>> Mp(n, std::vector<double>(n));
     for (std::size_t i = 0; i < n; ++i)
         for (std::size_t j = 0; j < n; ++j)
@@ -291,13 +319,46 @@ inline SpectralInvariants spectral_invariants_general(
 
     std::vector<double> x(n, 1.0);
     normalize(x);
-    double lambda2 = 0.0;
-    for (int it = 0; it < 20000; ++it) {
+    for (int it = 0; it < 2000; ++it) {
         std::vector<double> w = matvec(Mp, x, false);
-        double norm = normalize(w);
-        if (norm < 1e-300) { lambda2 = 0.0; break; }
-        if (it > 200) lambda2 = norm;  // once settled, ||M'x|| / ||x||=1 -> |lambda2|
+        if (normalize(w) < 1e-300) { x = w; break; }
         x = w;
+    }
+
+    std::vector<double> Mx = matvec(Mp, x, false);
+    double dot_e1_Mx = 0.0;
+    for (std::size_t i = 0; i < n; ++i) dot_e1_Mx += x[i] * Mx[i];
+    std::vector<double> e2(n);
+    for (std::size_t i = 0; i < n; ++i) e2[i] = Mx[i] - dot_e1_Mx * x[i];
+    double e2_norm = normalize(e2);
+
+    double lambda2 = 0.0;
+    if (e2_norm < 1e-9) {
+        // Degenerate: x is (numerically) already an eigenvector of M'
+        // -- the dominant secondary eigenvalue is real, and Mx =
+        // lambda*x exactly, so dot_e1_Mx IS that eigenvalue.
+        lambda2 = std::abs(dot_e1_Mx);
+    } else {
+        std::vector<double>& Me1 = Mx;  // M' * e1 = M' * x, already computed
+        std::vector<double> Me2 = matvec(Mp, e2, false);
+        double a11 = 0.0, a21 = 0.0, a12 = 0.0, a22 = 0.0;
+        for (std::size_t i = 0; i < n; ++i) {
+            a11 += x[i] * Me1[i];
+            a21 += e2[i] * Me1[i];
+            a12 += x[i] * Me2[i];
+            a22 += e2[i] * Me2[i];
+        }
+        double trace = a11 + a22;
+        double det = a11 * a22 - a12 * a21;
+        double disc = trace * trace - 4.0 * det;
+        if (disc < 0.0) {
+            // Complex-conjugate pair: modulus^2 = product of the pair = det.
+            lambda2 = std::sqrt(std::abs(det));
+        } else {
+            double sq = std::sqrt(disc);
+            double l1 = (trace + sq) / 2.0, l2 = (trace - sq) / 2.0;
+            lambda2 = std::max(std::abs(l1), std::abs(l2));
+        }
     }
     inv.beta2 = lambda2;
 

@@ -174,32 +174,48 @@ irreducible non-unit quartic candidates, only **1 reached a verdict**
 upstream, one still uninvestigated:
 
 - **4 cases, "secondary root modulus >= 1" in `check_property_f`.**
-  This is NOT a `check_property_f` precision bug -- traced further
+  This was NOT a `check_property_f` precision bug -- traced further
   (2026-08-01, same session) to the actual root cause, one layer up:
   `include/ravel/spectral.hpp`'s `spectral_invariants_general` (the
   `n>=4` matrix classifier `wide_random_pisot_survey` uses to decide
-  which candidates are Pisot in the first place) computes the
+  which candidates are Pisot in the first place) computed the
   second-largest eigenvalue's modulus via Wielandt-deflation power
-  iteration, which silently UNDERESTIMATES it when that eigenvalue is
-  part of a genuinely dominant complex-conjugate pair. Confirmed
-  directly for one such candidate (`rndW3_1`, matrix
-  `[[2,1,2,1],[3,2,1,0],[2,1,0,0],[0,3,2,2]]`): the survey's own
-  classifier reports `beta2=0.926` (passing the `<1` Pisot filter), but
-  an independent, precision-verified computation (`adelic::
-  find_roots_durand_kerner`, identical results at 200 vs 2000
-  iterations and 200 vs 500 bits -- genuinely converged, not a
-  precision artifact) finds the TRUE secondary pair has modulus
-  `1.376`. So `check_property_f`'s exception is doing its job
+  iteration, which silently UNDERESTIMATED it when that eigenvalue was
+  part of a genuinely dominant complex-conjugate pair (real-vector
+  power iteration on a matrix with a dominant complex pair never
+  settles to a fixed direction -- the norm-growth ratio oscillates with
+  the pair's argument, so reading it off at a fixed iteration count can
+  land on an arbitrary, wrong value). Confirmed directly for one such
+  candidate (`rndW3_1`, matrix `[[2,1,2,1],[3,2,1,0],[2,1,0,0],
+  [0,3,2,2]]`): the old code reported `beta2=0.926` (passing the `<1`
+  Pisot filter), but an independent, precision-verified computation
+  (`adelic::find_roots_durand_kerner`, identical results at 200 vs 2000
+  iterations and 200 vs 500 bits) found the TRUE secondary pair has
+  modulus `1.376`. So `check_property_f`'s exception was doing its job
   correctly, catching a non-Pisot matrix that should never have been
-  admitted -- the bug is `spectral_invariants_general` wrongly passing
-  it. Not yet fixed: the deflation approach needs either a proper 2D
-  subspace-iteration extension for complex dominant pairs, or
-  replacing with a call to the already-correct, already-tested
-  BigFloat Durand-Kerner root finder (which currently lives in
-  `adelic/`, not `ravel/`/`math/`, so reusing it directly would
-  introduce a new cross-library dependency -- the cleaner fix is
-  probably relocating a general polynomial root finder into `math/`
-  first, shared by both).
+  admitted.
+
+  **FIXED (2026-08-01, same session).** Replaced the naive power-
+  iteration norm-ratio with a Rayleigh-Ritz step: still use real power
+  iteration to steer the iterate `x` into `M'`'s dominant invariant
+  subspace (this DOES converge in direction even for a complex pair,
+  since that pair's combined real invariant subspace is 2-dimensional
+  and genuinely attracting), then build an orthonormal basis for
+  `span{x, M'x}`, project `M'` onto that 2D subspace as an explicit 2x2
+  matrix, and solve ITS eigenvalues directly via the quadratic formula
+  -- exact once the subspace has converged, regardless of any ongoing
+  phase rotation within it, and correctly returns a complex-conjugate
+  pair's modulus (`sqrt(det)`, since `det` = product of eigenvalues for
+  any 2x2 matrix) when that's what's actually dominant. Verified: the
+  fix reproduces `beta2=1.376` exactly for the `rndW3_1` matrix above
+  (now correctly `pisot=false`), and reproduces every PREVIOUSLY
+  correct case unchanged (Tribonacci, Tetrabonacci, `rnd13`, a 4-cycle
+  permutation matrix) -- `tests/spectral_general_test.cpp`, 12/12,
+  `make check` clean including the Lua survey suite. Since this
+  function is core, widely-used infrastructure (the Pisot filter for
+  every `n>=4` matrix this project's survey tools generate, not just
+  the 4-letter experiment above), this is a real correctness fix to
+  the project, not just an unblocking of one probe app.
 - **2 cases, "local_polynomial_cofactor: computed m_k has wrong
   degree"** in `include/adelic/local_field.hpp`'s Ore-polynomial
   cofactor computation, triggered by non-trivial ramification/inertia
@@ -207,14 +223,20 @@ upstream, one still uninvestigated:
   Genuinely not yet investigated.
 
 So the contact-boundary pipeline, combined p-adic bound, and spectral
-filter do NOT yet fully handle degree 4 -- one root cause is now
-precisely understood (the spectral filter itself is unsound for
-complex dominant secondary pairs at `n>=4`), the other remains open.
-Fixing the spectral filter is the actual next step before a
-wider-alphabet survey can be trusted at scale, not just a parameter
-change as previously assumed here. The smooth-relaxation search (B2)
-is a smarter candidate generator that targets Pisot-preserving
-perturbations specifically, once the pipeline itself is degree-4-solid.
+filter did NOT fully handle degree 4 when first tried -- not just a
+parameter change as previously assumed here. One root cause (the
+spectral filter's unsoundness for complex dominant secondary pairs at
+`n>=4`) is now fixed; the other (`local_polynomial_cofactor`'s
+degree-mismatch under non-trivial ramification/inertia) remains open.
+**After the spectral fix, re-running the same 4-letter batch: 6/7
+candidates now reach a verdict (all ESTABLISHED, tiles)** -- only one
+still hits the separate, unrelated `local_polynomial_cofactor`
+exception, which is the actual remaining next step before a
+wider-alphabet survey can be trusted at scale. The spectral fix alone
+unblocked the large majority of the degree-4 pipeline. The smooth-
+relaxation search (B2) is a smarter candidate generator that targets
+Pisot-preserving perturbations specifically, once the pipeline itself
+is fully degree-4-solid.
 
 **(B2) Smooth-relaxation search.** The natural way to generate
 new Item A and Item B candidates, replacing pure random sampling

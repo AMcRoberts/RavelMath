@@ -76,6 +76,25 @@ int main() {
         auto r = classify_matrix_spectral(M);
         CHECK(!r.pisot, "4-cycle permutation matrix correctly rejected as non-Pisot");
     }
+    {
+        // Regression guard (2026-08-01): this 4x4 matrix's true
+        // secondary eigenvalue is a genuinely dominant COMPLEX-CONJUGATE
+        // pair with modulus ~1.376 (confirmed independently via
+        // adelic::find_roots_durand_kerner, stable at 200 vs 2000
+        // iterations and 200 vs 500 bits precision -- not a precision
+        // artifact). The OLD spectral_invariants_general (naive
+        // real-vector power iteration on the Wielandt-deflated matrix,
+        // which oscillates rather than converges when the dominant
+        // deflated eigenvalue is a complex pair) silently reported
+        // beta2=0.926, wrongly passing this as Pisot. The fixed version
+        // (Rayleigh-Ritz on span{x, M'x}) must report the true modulus.
+        std::vector<std::vector<long long>> M = {{2,1,2,1},{3,2,1,0},{2,1,0,0},{0,3,2,2}};
+        auto r = classify_matrix_spectral(M);
+        CHECK_NEAR(r.beta, 5.41393129526574, 1e-9, "complex-secondary-pair case: beta");
+        CHECK_NEAR(r.b2, 1.37603270765471, 1e-6,
+                   "complex-secondary-pair case: b2 now finds the TRUE modulus (was 0.926, wrong)");
+        CHECK(!r.pisot, "complex-secondary-pair case correctly rejected as non-Pisot (b2 > 1)");
+    }
 
     std::printf("\n%d tests run, %d failed.\n", total_tests, failed);
     return failed == 0 ? 0 : 1;
