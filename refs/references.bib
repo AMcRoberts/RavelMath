@@ -141,7 +141,33 @@
   author={Loridant, Beno{\^i}t and Thuswaldner, J{\"o}rg M. and Zhang, Shu-Qin},
   title={Neighbors of self-affine tiles and {Rauzy} Fractals},
   year={2026}, eprint={2511.16442}, archivePrefix={arXiv},
-  note={Version dated 2026-03-22}}
+  note={Version dated 2026-03-22.  An earlier, independent
+    reimplementation branch of this project (predecessor tree
+    \texttt{PisotProjectOrig}, before the \texttt{RavelMathPub}
+    namespace) found and documented two genuine transcription errors
+    in the published worked-example $\mathfrak{D}_{\mathrm{cont}}$
+    tables for $\sigma_1$/$\sigma_2$ (a same-colour self-contact
+    entry mistranscribed as a different colour pair in both examples;
+    a dropped $-e_1$ term in $\sigma_2$'s list), found by computing
+    the sets from the geometric definition rather than trusting the
+    tables, plus a genuine notational ambiguity in the source's
+    overloaded use of ``$-$'' for two different operations (triple-
+    level swap-and-negate for node validity versus pair-level
+    negate-only for the $\sim_r$ connection relation and hence the
+    C-corona) that caused a real implementation bug (corona iteration
+    diverging to 139 nodes instead of converging to 26) before being
+    caught and fixed. Restated, corrected, and catalogued in
+    \texttt{refs/loridant\_thuswaldner\_zhang\_2026\_corrected\_
+    reference.tex} (self-authored working notes, not a copy of the
+    source). This project's own \texttt{search\_D\_cont} computes
+    $\mathfrak{D}_{\mathrm{cont}}$ from the geometric definition
+    directly rather than transcribing the paper's tables, so it was
+    never exposed to the transcription errors; \texttt{same\_letter\_H}
+    in \texttt{include/ravel/corona.hpp} already implements the
+    corrected pair-level ($\boxminus$) negation the source's C-corona
+    definition actually needs, independently re-deriving the same fix
+    the predecessor tree found. See \texttt{docs/LITERATURE_AUDIT_
+    CLASS_II.md} for the cross-reference.}}
 
 @article{ArnouxIto2001,
   author={Arnoux, Pierre and Ito, Shunji},

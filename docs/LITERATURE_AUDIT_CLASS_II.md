@@ -77,6 +77,35 @@ self-replicating boundary graph produced by corona and reduction.
 Therefore closure of the displayed eleven-state component does not
 prove universal dominance in the full boundary graph.
 
+**Errata found in this paper (archaeology note, 2026-07-31/08-01):** an
+earlier, independent reimplementation branch of this project
+(predecessor tree `PisotProjectOrig`, before the `RavelMathPub`
+namespace existed) found and documented two genuine transcription
+errors in the paper's own published worked-example
+`D_cont` tables (`sigma_1`/`sigma_2`) -- found by computing the sets
+from the geometric definition rather than trusting the tables, and
+confirmed because each replacement restores an otherwise-missing
+structural symmetry -- plus a real notational ambiguity (the source
+overloads `-` for two different operations: triple-level swap-and-
+negate for node validity versus pair-level negate-only for the
+connection relation and hence the C-corona) that caused a genuine
+implementation bug (corona iteration diverging to 139 nodes for
+`sigma_1` instead of converging to 26) before being caught and fixed.
+Full details, restated independently in this project's own words (not
+a copy of the source), are in `refs/loridant_thuswaldner_zhang_2026_
+corrected_reference.tex`. This project's own `search_D_cont` computes
+`D_cont` from the geometric definition directly, never from the
+published tables, so it was never exposed to the transcription errors;
+`same_letter_H` in `include/ravel/corona.hpp` already implements the
+corrected pair-level negation the source's C-corona definition needs
+(see that file's own header comment, "the reference's 'Tale of Pair-
+vs Triple-level Negation'") -- independently re-derived rather than
+inherited, but landing on the identical fix the predecessor tree found.
+Round 1's literature check earlier this session (see
+`docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md`) relied on this same
+paper's `±K:=K∪(-K)` notation and Algorithm 2, unaffected by either
+erratum (neither touches those specific passages).
+
 For graph-directed boundaries and dimension, also cite:
 
 - A. Siegel and J. M. Thuswaldner, *Topological properties of Rauzy

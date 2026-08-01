@@ -1,0 +1,334 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\usepackage{hyperref}
+\tcbuselibrary{skins,breakable}
+
+\newtheorem{definition}{Definition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{remark}{Remark}
+
+\newtcolorbox{correction}[1][]{%
+  colback=red!4,colframe=red!55!black,title=Correction,fonttitle=\bfseries,
+  breakable,#1}
+\newtcolorbox{clarify}[1][]{%
+  colback=blue!4,colframe=blue!45!black,title=Clarification,fonttitle=\bfseries,
+  breakable,#1}
+\newtcolorbox{nuance}[1][]{%
+  colback=yellow!8,colframe=orange!70!black,title=Implementation nuance (not a paper error),fonttitle=\bfseries,
+  breakable,#1}
+
+\title{Ambient, Contact, and Boundary Graphs for Rauzy Fractals:\\
+a Working Reference with Corrections}
+\author{Reverification branch notes\\
+\small Restated independently while reimplementing and testing the constructions of:\\
+\small A.~Loridant, J.~Thuswaldner, Y.~Zhang, \emph{Neighbors of self-affine tiles and Rauzy fractals},\\
+\small arXiv:2511.16442 (November 2025)}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This note restates, in our own words and notation, the parts of the cited paper
+needed to construct the ambient, contact, and self-replicating boundary graphs
+of a Pisot substitution, and to grow the boundary graph from the contact graph
+via the ``C-corona'' procedure (their Algorithm 2). It exists because an
+independent, from-scratch reimplementation of these constructions surfaced a
+handful of concrete transcription errors in the published worked examples, one
+genuinely easy-to-miss notational ambiguity that caused a real implementation
+bug, and one point where our own simplification (not the paper) was the source
+of an apparent discrepancy. All three are catalogued explicitly in
+Section~\ref{sec:errata}, each tied to how it was actually found: by
+independent computation from first principles, not by re-reading the source
+more carefully. Every claim below was checked computationally against the
+paper's own two worked examples ($\sigma_1$, $\sigma_2$) before being trusted;
+Section~\ref{sec:examples} gives the corrected data.
+\end{abstract}
+
+\section{Setup}
+
+Let $\sigma$ be a substitution on a finite alphabet $\mathcal{A}=\{1,\dots,d\}$,
+primitive, with an irreducible characteristic polynomial for its incidence
+matrix $\mathbf{M}$ (so $\mathbf{M}$ has a simple dominant eigenvalue $\beta>1$,
+the Pisot number associated to $\sigma$; the remaining eigenvalues are strictly
+smaller in modulus). Write $\mathbf{u}$ for the right Perron eigenvector,
+normalized to sum $1$ (letter frequencies), and $\mathbf{v}$ for the left
+Perron eigenvector, normalized however is convenient (any positive scalar
+multiple gives an equivalent construction below).
+
+For a word $w$ over $\mathcal{A}$, $l(w)\in\mathbb{Z}^d$ denotes its
+abelianization (the vector of letter counts).
+
+\begin{definition}[Prefix--suffix graph]
+The prefix--suffix data $\mathcal{P}$ is the set of triples $(p,i,s)$, with
+$p,s$ words over $\mathcal{A}$ and $i\in\mathcal{A}$, such that
+$\sigma(j)=p\,i\,s$ for some letter $j$. We record this as a directed edge
+$i\to j$, labelled $(p,i,s)$: informally, ``$j$ is a parent of $i$, and $i$
+occurs in $\sigma(j)$ preceded by $p$ and followed by $s$.''
+\end{definition}
+
+\begin{definition}[Stepped hyperplane $H_\sigma$]
+$$H_\sigma = \{\,[x,i]\in\mathbb{Z}^d\times\mathcal{A} \;:\; 0\le \langle x,\mathbf{v}\rangle < \langle e_i,\mathbf{v}\rangle\,\}.$$
+\end{definition}
+
+This is the coordinatization used throughout: a face of the stepped surface is
+identified by an integer vector $x$ (its position) together with a colour
+$i\in\mathcal{A}$ (which coordinate direction it omits). Testing membership in
+$H_\sigma$ therefore reduces to a single linear inequality in $\langle
+x,\mathbf{v}\rangle$; because $\mathbf{v}$ is generally irrational, we found it
+important to make this test genuinely exact rather than floating-point-with-a-tolerance
+(Remark~\ref{rem:exact} below).
+
+\begin{definition}[Dual substitution $\sigma^*$]
+For $[x,i]\in H_\sigma$,
+$$\sigma^*\{[x,i]\} = \{\,[\mathbf{M}^{-1}(x+l(p)),\,j]\;:\;i\to j \text{ an edge labelled } (p,i,s)\,\}.$$
+\end{definition}
+
+\begin{lemma}[Invariance]
+$\sigma^*$ maps $H_\sigma$ into $H_\sigma$, and the images arising from
+distinct source faces are pairwise disjoint; iterating $\sigma^*$ partitions
+$H_\sigma$ into ever finer pieces.
+\end{lemma}
+
+This invariance is the reason $\sigma^*$ never needs an ad hoc ``fold back into
+range'' step: boundedness is a theorem about the arithmetic, not something
+enforced after the fact. We flag this because a prior attempt at this
+implementation used a hand-rolled folding operation instead of routing
+everything through $\sigma^*$, and that fold turned out not to commute with
+the matrix recursion under iteration -- the single largest source of wasted
+effort before this reimplementation.
+
+\section{Graphs describing the tile boundary}
+
+Fix the set
+$$\mathfrak{D} = \{\,[i,x,j]\in\mathcal{A}\times H_\sigma \;:\; x=0 \Rightarrow i<j\,\}$$
+(here ``$[i,x,j]\in\mathcal{A}\times H_\sigma$'' means $i$ ranges freely over
+$\mathcal{A}$ while $[x,j]\in H_\sigma$; the ordering condition only bites when
+$x=0$, and exists purely to avoid double-counting $[i,0,j]$ and $[j,0,i]$,
+which denote the same object).
+
+\begin{definition}[Ambient graph]\label{def:ambient}
+The nodes of the ambient graph $G_\mathfrak{D}$ are the elements of
+$\mathfrak{D}$. There is an edge $[i,x,j]\to[i',x',j']$ whenever there exist
+$(p_1,i,s_1),(q_1,j,t_1)\in\mathcal{P}$ with either
+\begin{align*}
+\text{(type 1)}\quad &\sigma(i')=p_1\,i\,s_1,\ \ \sigma(j')=q_1\,j\,t_1,\ \ \mathbf{M}x' = x+l(q_1)-l(p_1),\\
+\text{(type 2)}\quad &\sigma(j')=p_1\,i\,s_1,\ \ \sigma(i')=q_1\,j\,t_1,\ -\mathbf{M}x' = x+l(q_1)-l(p_1).
+\end{align*}
+\end{definition}
+
+\begin{definition}[Self-replicating boundary graph, contact graph]
+Write $\mathrm{Red}(G)$ for the largest subgraph of $G$ with no node lacking
+an outgoing edge (remove zero-outdegree nodes repeatedly until none remain).
+The self-replicating boundary graph $G_B$ is the largest subgraph of
+$G_\mathfrak{D}$ in which every node lies on some walk that eventually enters
+a cycle. Separately, the (pre-)contact graph $G_P$ is the largest subgraph of
+$G_\mathfrak{D}$ in which \emph{every} walk eventually reaches a
+distinguished finite seed set $\mathfrak{D}_{\mathrm{cont}}$ (the ``contact
+set,'' geometrically: pairs of faces $[0,i]$, $[x,j]$ whose intersection is
+exactly $(d-2)$-dimensional); the contact graph is $G_C=\mathrm{Red}(G_P)$.
+$G_P$ -- and hence $G_C$ -- can be computed by starting from
+$\mathfrak{D}_{\mathrm{cont}}$ and repeatedly adjoining any node with an edge
+into the current set, which provably terminates.
+\end{definition}
+
+\subsection{The signed (``simple'') variants}
+
+Because $\mathfrak{D}$ only keeps one of $[i,x,j]$ and its mirror image for
+each geometric object, it is convenient to also work in the fully signed
+space, using
+$$-[i,x,j] := [j,-x,i]$$
+(swap the two colours and negate the offset). We will call this
+\textbf{triple-level negation}, written $\ominus$, to keep it visually distinct
+from a second, unrelated negation introduced just below.
+
+\begin{definition}[Simple ambient graph]
+Nodes are $\pm(\mathcal{A}\times H_\sigma)\setminus\{[i,0,i]:i\in\mathcal{A}\}$.
+Edges use \emph{only} the type-1 rule of Definition~\ref{def:ambient} (type 2
+is not needed separately: once both a node and its $\ominus$-image are
+present, a type-1 edge out of one plays the role type 2 played in the
+restricted graph). $\hat G_B$, $\hat G_P$, $\hat G_C=\mathrm{Red}(\hat G_P)$
+are defined exactly as before, now inside this larger signed space. Every node
+of $\mathfrak{D}$ gives rise to itself and its $\ominus$-image in the signed
+graphs, and conversely every signed node arises this way from some node of
+$\mathfrak{D}$ (possibly after $\ominus$).
+\end{definition}
+
+\begin{correction}
+\textbf{Verifying the type-1/type-2 correspondence.} It is tempting to guess
+that a type-2 edge $[i,x,j]\to[i',x',j']$ in the restricted graph simply
+corresponds to a type-1 edge from $\ominus[i,x,j]$ to $\ominus[i',x',j']$.
+Working the equations through carefully (matching which prefix attaches to
+which parent letter) shows this guess is \emph{false}: the correct
+correspondence is a type-1 edge from $[i,x,j]$ itself (unchanged) to
+$\ominus[i',x',j'] = [j',-x',i']$. We record this because the wrong guess is
+the more natural-looking one, and it would silently produce an internally
+self-consistent but semantically incorrect implementation -- self-consistency
+under an independent forward/backward differential test does \emph{not} rule
+this class of error out, since both directions can share the same mistaken
+correspondence.
+\end{correction}
+
+\subsection{Connections and the C-corona}
+
+\begin{definition}[Connections]
+An element $[i_1,x,i_2]\in\pm(\mathcal{A}\times H_\sigma)$ is regarded as a
+(symmetric) connection between $[y,i_1]$ and $[y+x,i_2]$, for any
+$y\in\mathbb{Z}^d$. Let $C=\mathrm{nodes}(G_C)$ be the contact set. Given
+$[x_1,i_1],[x_2,i_2]\in H_\sigma$, we say they are joined by $r$ subsequent
+$\pm C$-connections, written $[x_1,i_1]\sim_r[x_2,i_2]$, if there is a chain
+$[y_0,j_0]=[x_1,i_1],\dots,[y_r,j_r]=[x_2,i_2]$ with
+$[j_k,\,y_{k+1}-y_k,\,j_{k+1}]\in\pm C\cup\{[i,0,i]:i\in\mathcal{A}\}$ for each
+step.
+\end{definition}
+
+\begin{clarify}\label{clar:negation}
+\textbf{Two different negations, one overloaded symbol.} The relation
+$\sim_r$ is stated above for $[x_1,i_1],[x_2,i_2]\in H_\sigma$. The source
+material extends it to the case where both endpoints lie in $-H_\sigma$ by
+declaring $[x_1,i_1]\sim_r[x_2,i_2]$ to hold exactly when
+$[-x_1,i_1]\sim_r[-x_2,i_2]$ does. Notice what is negated: only the vector
+$x_1$, \emph{not} the colour $i_1$. This is a second, genuinely different
+operation from the $\ominus$ used to build the signed node space one
+subsection above -- it acts on a \emph{pair} $[x,i]$, keeps the letter fixed,
+and flips only the vector:
+$$\boxminus[x,i] := [-x,i], \qquad -H_\sigma := \{[x,i] : \boxminus[x,i]\in H_\sigma\}.$$
+We introduce the boxed-minus symbol here specifically because the source
+material uses the same ``$-$'' for both $\ominus$ (triple, swap-and-negate,
+used for node validity in $\pm(\mathcal{A}\times H_\sigma)$) and $\boxminus$
+(pair, negate-only, used inside the definition of $\sim_r$ and hence of the
+C-corona below). Conflating the two is exactly the bug we hit: filtering
+corona candidates by whether the whole triple was $\ominus$-valid (which is
+the right test for node membership) instead of by whether the relevant
+\emph{pair} was in $H_\sigma\cup\boxminus H_\sigma$ (the right test for
+whether a connection endpoint is well-formed) let in a large number of
+spurious candidates and made the corona iteration diverge instead of converge.
+Both endpoints of every $\pm C$-hop -- the one you are extending from and the
+one you land on -- need the $\boxminus$-style check, not the $\ominus$-style
+one.
+\end{clarify}
+
+\begin{definition}[C-corona]
+For a subgraph $\hat G$ of the simple ambient graph,
+$$\mathrm{C\text{-}Corona}(\hat G) = \Big\{[i_1,x,i_2]\in\pm(\mathcal{A}\times H_\sigma)\setminus\{[i,0,i]\} \;:\; \exists\,[i_1,y,j]\in\hat G \text{ with } [y,j]\sim_1[x,i_2]\Big\}.$$
+Concretely: for each node $[i_1,y,j]$ already present, and each connector
+$[j,\delta,i_2]\in\pm C\cup\{[k,0,k]\}$ whose starting colour matches $j$
+(after the $\boxminus$-validity check of Clarification~\ref{clar:negation} on
+both $[y,j]$ and $[y+\delta,i_2]$), adjoin $[i_1,\,y+\delta,\,i_2]$.
+\end{definition}
+
+\subsection{Algorithm 2}
+
+\begin{quote}
+$A_1 \leftarrow \hat G_C$. Repeat $A_{p} \leftarrow \mathrm{Red}(\mathrm{C\text{-}Corona}(A_{p-1}))$ until $A_p = A_{p-1}$; the fixed point is $\hat G_B$.
+\end{quote}
+
+\begin{nuance}\label{nuance:2826}
+\textbf{$\hat G_C$ is not simply $C\cup(-C)$ handled naively.} Building the
+starting set as the raw union of $C$ (the restricted contact set) with its
+$\ominus$-images is the natural first attempt, and it does produce a graph
+with the right nodes -- but applying $\mathrm{Red}$ to that raw union \emph{in
+isolation}, using only edges among those nodes, does not shrink it, even when
+(as for the example below) the truly-correct fixed-point size is smaller.
+This is not a defect in the raw union; it simply means node membership in
+$\hat G_C$, done properly, is a global property of the whole reachability
+structure, not something you can shortcut by looking only at the small
+seed set before the corona iteration has had a chance to explore outward and
+prune back. Running the full iteration (rather than trying to pre-trim the
+seed) resolves this correctly on its own -- we mention it only so a future
+implementer does not mistake a raw, unreduced union for a discrepancy with
+the literature.
+\end{nuance}
+
+\begin{remark}[On exact arithmetic]\label{rem:exact}
+Every quantity above that looks like it needs a numerical tolerance --
+membership in $H_\sigma$, chiefly -- can instead be decided exactly. Represent
+$\beta$ as a specific real root of the (irreducible) characteristic
+polynomial, and $\mathbf{u},\mathbf{v}$ as elements of the number field
+$\mathbb{Q}(\beta)$, i.e.\ as rational-coefficient polynomials in $\beta$ of
+degree less than $d$, reduced modulo the minimal polynomial. Any such element
+is exactly zero iff its reduced representative has all-zero coefficients --
+decidable purely over $\mathbb{Q}$, with no floating point at all. Only once a
+quantity is known to be nonzero does one need a numeric value, purely to read
+off its sign; at that point there is no remaining ambiguity to get wrong. We
+found this worth the extra machinery: it turns a family of ``is this exactly
+on the boundary'' bugs into a non-issue rather than a source of
+epsilon-tuning.
+\end{remark}
+
+\section{Worked examples}\label{sec:examples}
+
+Let $\sigma_1: 1\mapsto 1112,\ 2\mapsto 113,\ 3\mapsto 1$ and
+$\sigma_2: 1\mapsto 112,\ 2\mapsto 1113,\ 3\mapsto 1$, both cubic
+(characteristic polynomials $x^3-3x^2-2x-1$ and $x^3-2x^2-x-1$ respectively).
+
+\begin{correction}
+\textbf{Two transcription errors in the published contact sets.} Computing
+$\mathfrak{D}_{\mathrm{cont}}$ directly from the geometric definition (which
+face pairs intersect in an exactly $(d-2)$-dimensional cube), independently of
+the published lists, reproduces the published nine-element sets for both
+$\sigma_1$ and $\sigma_2$ to 8/9 and 7/9 respectively -- and in every
+mismatched slot, the independently-computed replacement differs from the
+published entry only in a single small, easy-to-typo way:
+\begin{itemize}[leftmargin=1.5em]
+\item $\sigma_1$: published $[2,e_3,1]$ should read $[2,e_3,2]$ (a same-colour
+self-contact, structurally parallel to the $[1,e_2,1]$ and $[1,e_3,1]$ entries
+already in the same list -- not a $2$-$1$ contact at all).
+\item $\sigma_2$: published $[2,e_3,1]$ should likewise read $[2,e_3,2]$; and
+published $[1,e_2,2]$ should read $[1,e_2-e_1,2]$ (an apparently dropped
+$-e_1$ term).
+\end{itemize}
+Corrected sets:
+$$\mathfrak{D}_{\mathrm{cont}}(\sigma_1)=\{[1,e_2,1],[1,e_3,1],[1,0,2],[1,0,3],[2,e_1{-}e_2,1],[2,e_3,2],[2,0,3],[3,e_1{-}e_3,1],[3,e_2{-}e_3,2]\}$$
+$$\mathfrak{D}_{\mathrm{cont}}(\sigma_2)=\{[1,e_2{-}e_1,2],[1,e_3,1],[1,0,2],[1,0,3],[2,e_3,2],[2,e_1,2],[2,0,3],[3,e_1{-}e_3,1],[3,e_2{-}e_3,2]\}$$
+\end{correction}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+& $|\mathfrak{D}_{\mathrm{cont}}|$ & $|C|=|G_C|$ & $|\hat G_C|$ & $|\hat G_B|$ & growth? \\
+\midrule
+$\sigma_1$ & 9 & 14 & 26 & 26 & none (matches source claim) \\
+$\sigma_2$ & 9 & 15 & 30 & 50 & yes \\
+\bottomrule
+\end{tabular}
+\caption{Corrected/reproduced example data. All four columns for $\sigma_1$
+were independently reproduced exactly from a from-scratch implementation,
+including the source's claim that the boundary graph and contact graph
+coincide for $\sigma_1$. $\sigma_2$'s $|\hat G_B|=50$ has no published number
+to check against (the source shows it only as a figure); it is reported here,
+not verified against the literature.}
+\end{table}
+
+\section{Errata and clarifications, at a glance}\label{sec:errata}
+
+\begin{enumerate}[leftmargin=1.5em]
+\item \textbf{Genuine transcription errors} (Section~\ref{sec:examples}):
+two single-character-scale slips in the published $\mathfrak{D}_{\mathrm{cont}}$
+lists, found by computing the sets from the geometric definition rather than
+trusting the tables, and confirmed by the fact that each replacement
+restores an otherwise-missing structural symmetry (a same-colour self-contact
+entry, or a plausible dropped term).
+\item \textbf{Genuine notational ambiguity} (Clarification~\ref{clar:negation}):
+the source overloads ``$-$'' for two different operations -- swap-and-negate
+on triples (for node validity) versus negate-only on pairs (for the $\sim_r$
+connection relation and hence the C-corona). The text is not, in the end,
+self-contradictory -- the pair-level convention is recoverable from a close
+reading of how $\sim_r$ extends to $-H_\sigma$ -- but the two are easy to
+conflate, and doing so produces code that passes an internal
+forward/backward consistency check while still being wrong, because both
+directions inherit the same mistake.
+\item \textbf{Our own implementation shortcut, not a paper error}
+(Nuance~\ref{nuance:2826}): building $\hat G_C$ as a raw union $C\cup\ominus C$
+and expecting it to already equal the correct fixed-point size is not
+justified; the full Algorithm~2 iteration is what actually determines
+membership, and running it resolves the apparent discrepancy on its own.
+\end{enumerate}
+
+\end{document}
