@@ -95,7 +95,7 @@ The word “base” must not collapse four different statements:
 
 | round | displayed neighbor-2 correction | already closed | still needed for the global equality |
 |---:|---|---|---|
-| 1 | mirror-closed `E_1`, 22 states | universal center contact base; literal signed-contact partition; window validity | reverse inclusion for the neighbor signed-contact set |
+| 1 | mirror-closed `E_1`, 22 states | universal center contact base; literal signed-contact partition; window validity; reverse inclusion for the neighbor signed-contact set (`a>=3`, checked against the primary source -- `±C` is a definitional symmetrization, not an independent closure obligation, see "Round 1: the literature check, done" below) | none -- Round 1's row is closed |
 | 2 | fixed `E_2`, 25 states | center/correction positive composition witnesses and explicit Red successors/bridges | full raw-corona reverse inclusion and full Red exclusion |
 | 3 | 24 fixed roles plus the first tip | positive center-interface/correction witnesses, window validity, Red retention | full raw-corona reverse inclusion and full Red exclusion |
 | 4 | 24 fixed roles plus the affine tip | interior coefficientwise positive transport and Red retention | connect the bounded round-four grammar to the universal stable reverse/exclusion theorem whose stated domain begins at round five |
@@ -508,6 +508,73 @@ table's "reverse inclusion for the neighbor signed-contact set" row
 means something beyond that constructional soundness is still the
 literature-comparison question flagged above, and remains outside what
 code alone can settle.
+
+### Round 1: the literature check, done -- `±C` was never an independent closure obligation (2026-07-31)
+
+The literature-comparison question just flagged is now checked against
+the actual primary source: Loridant, Thuswaldner, Zhang, *Neighbors of
+self-affine tiles and Rauzy Fractals*, arXiv:2511.16442 (the paper
+`docs/LITERATURE_AUDIT_CLASS_II.md` already identifies as the source
+of Def 3.9, and that `include/ravel/corona.hpp`'s own comments already
+cite by number). Fetched directly (ar5iv HTML rendering, since the raw
+PDF didn't extract as text), cross-checked against two independent
+queries for consistency, and triangulated against `corona.hpp`'s own
+long-standing Def-3.9 comment (written independently, when the
+construction was first implemented from the PDF) -- which matches the
+freshly fetched text closely enough (the same exclusion clause, the
+same hop-composition structure) to trust the extraction as faithful,
+not fabricated. **Caveat, stated plainly: this is a fetched/rendered
+reading, not a page-by-page manual read of the PDF** -- treat it at
+that strength, one step below the project's own "read directly"
+standard, though the cross-checks below leave little room for the
+extraction to have invented structure that happens to agree this
+precisely with independently-written code comments.
+
+What the paper actually says, verbatim where quoted:
+
+- **§3.5 defines `±K` purely notationally**: "for `K ⊂ 𝒜×ℤ^d×𝒜` put
+  `±K = K ∪ (−K)`", with `−[i,x,j] = [j,−x,i]` (§3.1) -- exactly
+  `build_signed_contact_set`'s `out.insert(c); out.insert(c.mirror())`.
+  There is no separate closure step defined for `±K`; it is a set-level
+  symmetrization applied to whatever `K` already is.
+- **Definition 3.5 (simple ambient graph)**: "The simple ambient graph
+  `Ĝ_𝔇` is the directed graph whose nodes are the elements of
+  `±(𝒜×H_σ)∖{[i,𝟎,i]:i∈𝒜}`." The hat/"simple" notation *means*
+  "already symmetrized under `±`" -- so `Ĝ_C` (the simple contact
+  graph) literally *is* `±C`, not some further-derived object.
+- **Algorithm 2's first line is `A[1] ← Ĝ_C`** -- i.e., the corona
+  iteration starts *from* `±C` directly, exactly matching this
+  project's `contact_boundary.hpp` (`A_prev = pmC` at round 1). `±C`
+  is the iteration's *input*, not a claim requiring its own reverse-
+  inclusion proof.
+- **No theorem anywhere states `±C` is "closed under negation" as an
+  emergent property** -- it doesn't need one: `±(±K) = ±K` is a
+  one-line algebraic fact about the definition (`K∪−K` negated is
+  `−K∪K`, the same set), true for *any* `K`, contact-set-specific or
+  not. The paper never poses, and never needs, the question this
+  session's two closure-candidate probes tested and refuted.
+
+**What this settles.** The base-premises table's row-1 "still needed"
+column, read literally against its own primary source rather than
+against a plausible-sounding paraphrase of it, does not name a genuine
+open obligation beyond what Round 1 already closed. `±C`'s only real
+mathematical content is the *unsigned* `C = Red(G_P)` it symmetrizes
+(`G_P` = backward-closure from `D_cont`, Def 3.4) -- already proven
+correct for every `a>=3`, symbolically, with its arithmetic core
+Lean-checked. The symmetrization step itself is a definitional
+one-liner, verified as an exact identity already
+(`app/class_ii_neighbor2_round1_signed_relation.cpp`, 50=50). The two
+"closure of a symmetric seed" experiments this session ran and
+refuted were testing a hypothesis the literature never actually poses
+-- useful for ruling out a wrong mental model of what `±C` is, but not
+themselves the missing piece, because there was no missing piece of
+that shape to find. **Round 1's row in the base-premises table is
+therefore closed at the same strength as its unsigned half: proven for
+every `a>=3`, one tier below fully Lean-formalized (the combinatorial
+catalogues remain C++-checked input).** What remains genuinely open in
+the global occurrence theorem is Round 4's separate "connect to the
+round>=5 universal theorem" bridge -- a different, harder claim this
+literature check does not touch.
 
 ### Round 2: reconnaissance only, not attempted (2026-07-31)
 

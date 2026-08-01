@@ -621,18 +621,42 @@ subset of `±C` missing exactly 18 states at every tested `a` in
 `{3..8,20,50}`, and that 32-state result is itself not self-mirror-
 closed. So `±C`'s correctness rests on the `c_corona`/`same_letter_H`
 construction argument, not on any closure-of-a-symmetric-seed
-characterization tried so far; whether the resulting `±C` union is
-itself the correct/complete signed-contact answer in the closure sense
-the base-premises table means remains open only insofar as it is a
-literature-comparison question now, not an untested closure candidate.
-See `docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md` §§ "Round 1:
+characterization tried so far.
+
+**The literature-comparison question, checked (2026-07-31).** Fetched
+the primary source directly -- Loridant, Thuswaldner, Zhang, *Neighbors
+of self-affine tiles and Rauzy Fractals*, arXiv:2511.16442 (already the
+paper `docs/LITERATURE_AUDIT_CLASS_II.md` names for Def 3.9, and
+`corona.hpp`'s own comments already cite) -- via ar5iv HTML rendering
+(the raw PDF didn't extract as text), cross-checked across two
+independent queries and against `corona.hpp`'s own long-standing,
+independently-written Def-3.9 comment for consistency (a fetched/
+rendered reading, not a manual page-by-page one, stated at that
+strength). It settles the question in the negative sense that matters
+most: **`±C` was never posed by the source as an independent closure
+target.** §3.5 defines `±K := K∪(−K)` purely notationally (matching
+`build_signed_contact_set` exactly), Definition 3.5's "simple ambient
+graph" `Ĝ_𝔇` *is* the `±`-symmetrized node set by definition (so
+`Ĝ_C = ±C`, not something derived from it), and Algorithm 2's first
+line is `A[1] ← Ĝ_C` -- the corona iteration starts *from* `±C`
+directly, rather than deriving it as a target needing its own reverse-
+inclusion proof. No theorem anywhere claims `±C` is "closed under
+negation" as an emergent property; it doesn't need one (`±(±K)=±K` is
+a one-line algebraic fact true for any `K`). **This closes Round 1's
+row in the base-premises table**: the only genuine mathematical content
+was always the *unsigned* `C`'s correctness, already proven for every
+`a>=3`. The two closure-of-a-symmetric-seed experiments above were
+worth running -- they ruled out a plausible-sounding wrong model of
+what `±C` is -- but were never going to find the missing piece, because
+the literature names no piece of that shape. See
+`docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md` §§ "Round 1:
 validated symbolic self-closure of the raw 27-state pre-Red set",
 "Round 1: window validity closed abstractly, not just at sampled `a`",
 "Round 1: the Red-pruned pair coincides with the D_cont-seed pair",
-"Round 1: Red pruning closed symbolically for `a>=3`", and "Round 1:
-the natural 'closure of a symmetric seed' candidate, tested and
-refuted" for the full account, including the precise scope note
-against the base-premises table.
+"Round 1: Red pruning closed symbolically for `a>=3`", "Round 1: the
+natural 'closure of a symmetric seed' candidate, tested and refuted",
+and "Round 1: the literature check, done" for the full account,
+including the precise scope note against the base-premises table.
 
 **Rounds 2/3/4, structural identities and exact finite Red-exclusion
 certificates (2026-07-31).** Each gets the identical treatment: exact

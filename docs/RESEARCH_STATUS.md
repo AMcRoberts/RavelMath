@@ -22,34 +22,45 @@ affine interior shell, exact non-base catalogues, universal window and
 ranked Red certificates on their stated domains, and a kernel-checked
 partition of every legal round for `a>=7` into five phases.
 
-The global occurrence theorem is not closed. Its remaining state-level
-seam consists of four exceptional base transitions:
+The global occurrence theorem is not closed. Of the four exceptional
+base transitions that made up its remaining state-level seam, three
+(items 1-3) are now fully closed and the fourth's raw-corona property
+(item 4) is closed too -- **the theorem's sole remaining gap is item
+4's separate round-five bridging claim**, described at the end of item
+4 below. Item 5 documents the shared argument that closes items 2-4;
+it names no open work of its own.
 
-1. signed-contact reverse inclusion at the neighbor base -- **partially
-   closed (2026-07-31)**: the *unsigned* raw 27-state self-closure and
-   its Red-pruning to 25 survivors are now proved for every `a>=3`
-   (window validity abstractly, Red pruning symbolically from `tau_a`'s
-   own fixed word forms), not just checked at sampled `a`. The exact
-   relationship to the full *signed* 50-state contact set is now a
-   verified identity (`class_ii_neighbor2_signed_contact_set()` equals
-   the unsigned survivors' mirror-closure, exactly) rather than an
-   assumption, though whether that identity is itself the complete
-   answer the base-premises table means remains open. The Red-pruning
-   argument's arithmetic core is now Lean-kernel-checked
-   (`lean/class_ii_round1_red_pruning.lean`, sorry-free, signed) --
-   the combinatorial exhaustiveness fact behind it is still taken as
-   given C++-checked input, not re-derived in Lean. The natural
-   remaining candidate for "does `±C` equal the closure of some
-   symmetric seed" -- seeding the same pipeline from `D_cont ∪
-   mirror(D_cont)` -- was tried and refuted (2026-07-31): it reproduces
-   the same 32-state result as the already-refuted mirror-only seed, a
-   strict 32-of-50 subset of `±C` that is not even itself self-mirror-
-   closed, checked at `a` in `{3..8,20,50}`. `±C`'s correctness rests
-   on the `c_corona`/`same_letter_H` construction argument, not on any
-   closure-of-a-symmetric-seed characterization. See
-   `docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md`'s Round 1 sections
-   for the full account, including a caught-and-corrected overclaim
-   about mirror-closure preserving correctness.
+1. signed-contact reverse inclusion at the neighbor base -- **closed
+   for every `a>=3` (2026-07-31)**: the *unsigned* raw 27-state
+   self-closure and its Red-pruning to 25 survivors are proved for
+   every `a>=3` (window validity abstractly, Red pruning symbolically
+   from `tau_a`'s own fixed word forms), not just checked at sampled
+   `a`. The full *signed* 50-state contact set is a verified identity
+   (`class_ii_neighbor2_signed_contact_set()` equals the unsigned
+   survivors' mirror-closure, exactly), and **checked directly against
+   the primary source (Loridant-Thuswaldner-Zhang, arXiv:2511.16442,
+   2026-07-31) that this identity is the whole obligation**: the
+   paper's own `±K := K∪(−K)` (§3.5) is a pure notational
+   symmetrization, never an independently-closed object, and its
+   corona iteration (Algorithm 2) starts *from* `±C` directly (`A[1] =
+   Ĝ_C`) rather than deriving it as a closure target. There is no
+   "reverse inclusion for `±C` as its own object" obligation in the
+   source material beyond the already-closed unsigned half. Two
+   candidate closure-of-a-symmetric-seed hypotheses were tried and
+   refuted first (mirror-only seed, and `D_cont ∪ mirror(D_cont)`,
+   both giving the same non-self-mirror-closed 32-state subset of
+   `±C` at `a` in `{3..8,20,50}`) before the literature check settled
+   that neither was actually the missing piece, because there was no
+   missing piece of that shape. The Red-pruning argument's arithmetic
+   core is Lean-kernel-checked (`lean/class_ii_round1_red_pruning.lean`,
+   sorry-free, signed) -- the combinatorial exhaustiveness fact behind
+   it is still taken as given C++-checked input, not re-derived in
+   Lean, so Round 1 sits at the same "proven, one tier below
+   Lean-formalized" strength as items 2-4. See `docs/GLOBAL_CATALOGUE_
+   OCCURRENCE_EXHAUSTION.md`'s Round 1 sections for the full account,
+   including a caught-and-corrected overclaim about mirror-closure
+   preserving correctness and the literature-check section that closed
+   this item.
 2. round-two raw reverse inclusion and Red exclusion -- **closed for
    every integer `a>=7` (2026-07-31)**: `T_2 = B_2 union E_2` exactly
    (literal identity), and Red exclusion (123 states across three
