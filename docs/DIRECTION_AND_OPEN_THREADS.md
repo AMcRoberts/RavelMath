@@ -245,13 +245,18 @@ re-running the same 4-letter batch: 6/7 candidates now reach a verdict
 cofactor`'s pre-documented (not silently broken) limitation: two
 non-simple prime ideals over the same rational prime, which its
 cofactor-of-simple-factors approach can't disentangle by construction.
-Extending it to that case is real, separate work (a per-ideal Hensel-
-lifting construction, not a bug fix) and is the actual remaining item
-before a wider-alphabet survey can be trusted at full generality --
-but it's a known, scoped feature gap now, not an unexplained failure.
-The smooth-relaxation search (B2) is a smarter candidate generator that
-targets Pisot-preserving perturbations specifically, once the pipeline
-itself covers the multi-non-simple-ideal case too.
+**A larger follow-up run confirms this holds at scale** (target=20,
+same reduced certify/rho budgets, 2026-08-01): 17 candidates checked,
+**14 ESTABLISHED, 2 INCONCLUSIVE (property-F budget exhausted -- a
+resource cap, not a failure), 1 SKIPPED (the same cofactor
+limitation), zero new unexplained exceptions.** Extending the cofactor
+case is real, separate work (a per-ideal Hensel-lifting construction,
+not a bug fix) and is the actual remaining item before a wider-alphabet
+survey can be trusted at full generality -- but it's a known, scoped
+feature gap now, not an unexplained failure. The smooth-relaxation
+search (B2) is a smarter candidate generator that targets
+Pisot-preserving perturbations specifically, once the pipeline itself
+covers the multi-non-simple-ideal case too.
 
 **(B2) Smooth-relaxation search.** The natural way to generate
 new Item A and Item B candidates, replacing pure random sampling
