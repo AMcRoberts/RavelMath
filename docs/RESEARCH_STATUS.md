@@ -349,6 +349,21 @@ are now complete; only class number/class group computation (#4,
 independently interesting, not on any critical path anymore) remains
 open from this initiative.
 
+Eleventh: task #4 itself, started. `include/adelic/quadratic_class_group.hpp`
+computes class numbers of imaginary quadratic fields via binary
+quadratic forms (Cohen Ch. 5), deliberately scoped to that case rather
+than general-degree-n class groups (which would need LLL/Buchmann-style
+machinery this project has no other use for). Checked against all nine
+Heegner numbers (the complete list of negative fundamental
+discriminants with class number 1) via an independently-constructed
+principal form, several tabulated `h>1` cases, and a cross-check
+between two different code paths -- `qform_reduce`'s iterative
+transformation against `enumerate_reduced_forms`'s direct search --
+which caught a real off-by-one bug in the reduction step's range
+formula before it shipped. Eleven for eleven. Class number is done;
+class *group* structure (Gauss composition, giving the actual group
+law rather than just its order) is the next piece.
+
 ## Research directions
 
 The direct next theorem work is the four-transition base seam, followed

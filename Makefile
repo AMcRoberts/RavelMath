@@ -291,6 +291,7 @@ TESTS_DEFAULT := \
 	general_order_radical_test \
 	golod_shafarevich_test \
 	sawin_exponent_test \
+	quadratic_class_group_test \
 	ambient_graph_test \
 	corona_test \
 	contact_boundary_test \
@@ -379,6 +380,11 @@ $(GOLOD_SHAFAREVICH_TEST_BIN): $(TESTDIR)/golod_shafarevich_test.cpp | $(BUILDDI
 SAWIN_EXPONENT_TEST_BIN := $(BUILDDIR)/sawin_exponent_test
 sawin_exponent_test: $(SAWIN_EXPONENT_TEST_BIN)
 $(SAWIN_EXPONENT_TEST_BIN): $(TESTDIR)/sawin_exponent_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+QUADRATIC_CLASS_GROUP_TEST_BIN := $(BUILDDIR)/quadratic_class_group_test
+quadratic_class_group_test: $(QUADRATIC_CLASS_GROUP_TEST_BIN)
+$(QUADRATIC_CLASS_GROUP_TEST_BIN): $(TESTDIR)/quadratic_class_group_test.cpp | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
 AMBIENT_GRAPH_TEST_BIN := $(BUILDDIR)/ambient_graph_test
