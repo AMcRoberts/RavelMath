@@ -788,6 +788,19 @@ $(CLASS_II_NEIGHBOR2_RECURRENT_EXHAUSTION_CHECK_BIN): $(APPDIR)/class_ii_neighbo
 		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# class_ii_neighbor2_round_stratified_transient_check: recurrent-SCC
+# exhaustion items 3+4. Assigns every boundary state a birth round
+# from the real corona trace, checks whether recurrent blocks have a
+# single consistent birth round, then scans real edges for an escape
+# witness per transient round-group (item 3) and zero returns to an
+# earlier transient stratum (item 4).
+CLASS_II_NEIGHBOR2_ROUND_STRATIFIED_TRANSIENT_CHECK_BIN := $(BUILDDIR)/class_ii_neighbor2_round_stratified_transient_check
+class_ii_neighbor2_round_stratified_transient_check: $(CLASS_II_NEIGHBOR2_ROUND_STRATIFIED_TRANSIENT_CHECK_BIN)
+	./$(CLASS_II_NEIGHBOR2_ROUND_STRATIFIED_TRANSIENT_CHECK_BIN)
+$(CLASS_II_NEIGHBOR2_ROUND_STRATIFIED_TRANSIENT_CHECK_BIN): $(APPDIR)/class_ii_neighbor2_round_stratified_transient_check.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 # class_ii_neighbor2_round1_red_forward_check: dense+sparse numeric
 # confirmation (a=3..200, then 500/1000/5000/20000) of the closed-form
 # forward images of the two Round-1 D_cont seeds, plus the exact bound

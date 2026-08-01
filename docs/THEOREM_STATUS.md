@@ -801,9 +801,28 @@ first-draft stronger check (zero edges of any kind between distinct
 recurrent blocks) was found false -- 8 such one-way edges every time,
 between the two ranks nearest the dominant core -- and corrected rather
 than left in as a false alarm; item 5 as actually stated (SCC-
-distinctness) does not require this and is unaffected. Items 3 and 4
-remain open, needing a round/rank ordering on transient states not yet
-constructed.
+distinctness) does not require this and is unaffected.
+
+**Items 3 and 4, closed at the same tested-value strength
+(2026-08-01).** `app/class_ii_neighbor2_round_stratified_transient_
+check.cpp` builds the round/rank ordering items 3 and 4 needed,
+directly from the trusted corona trace: `birth_round(state)` is the
+first round it is a Red survivor in, well-defined since a state never
+leaves a later round's survivor set once it has entered one. Checked
+at `a` in `{7,...,20,30}` (fifteen values, `a=30` well outside the
+cluster), zero exceptions throughout: every recurrent block has a single consistent birth round
+(rank and round correspond as `birth_round = a - rank`, with one small
+bounded tie at the two ranks nearest the dominant core), item 4 (no
+edge from a recurrent block to a strictly-earlier transient stratum)
+has zero violations, and item 3 (an escape witness from every
+transient round-group) holds once "escape" is corrected from "strictly
+later round" to "does not remain transient forever" -- a first,
+stricter version of the check found the terminal-round transient group
+apparently stuck, which turned out on inspection to feed directly into
+the recurrent block born the same round, the identical shape of
+correction as item 5's overclaim above. All five items of the
+recurrent-exhaustion checklist are therefore verified together at
+`a=7..20` plus `a=30`, exact-checked, not yet closed-form.
 
 Every displayed core, regular-shell, and exceptional-shell matrix is
 also universally irreducible: its minimum-parameter support is

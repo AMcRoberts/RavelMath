@@ -168,19 +168,32 @@ After layer occurrence is closed, recurrent-SCC exhaustion and dominance
 remain separate. Layer equality alone does not prove that a displayed
 block is exactly a recurrent SCC.
 
-**Progress on this (2026-07-31, night):** of the five support
-statements this needs, items 1 (core/shell/transient partition), 2
-(strong connectivity tied to the real graph), and 5 (recurrent-block
-distinctness) are now verified together for neighbor 2 at `a` in
-`{7,...,20,30}` (fifteen values, zero mismatches) -- the real,
-Tarjan-derived SCC decomposition of the fully-converged boundary graph
-matches the hand-catalogued recurrent blocks exactly, which is enough
-to establish all three by construction of what a Tarjan decomposition
-guarantees. Items 3 and 4 remain genuinely open; both need a round/rank
-ordering on transient states that doesn't exist yet. See
+**Progress on this (2026-07-31/08-01, night):** all five support
+statements are now verified together for neighbor 2 at `a` in
+`{7,...,20,30}` (fifteen values, `a=30` well outside the cluster), zero exceptions. Items 1
+(core/shell/transient partition), 2 (strong connectivity tied to the
+real graph), and 5 (recurrent-block distinctness) follow from an exact
+match between the real, Tarjan-derived SCC decomposition of the
+fully-converged boundary graph and the hand-catalogued recurrent
+blocks (also checked separately at `a=30`) -- a Tarjan decomposition
+guarantees all three by construction once the match is exact. Items 3
+and 4 needed a round/rank ordering on transient states, built directly
+from the trusted corona trace (`birth_round(state)` = the first round
+it survives Red in, well-defined since Red never re-removes a state
+from a later round once it has survived one). That ordering also
+answered the scoping question it was built to resolve: rank and round
+correspond cleanly (`birth_round = a - rank`, one small bounded tie
+near the dominant core), not messily. Item 4 (no return to an earlier
+transient stratum): zero violations. Item 3 (escape from every
+transient block): held once "escape" was corrected from "strictly
+later round" to "does not remain transient forever" (same-round
+absorption into a recurrent block counts) -- the strict version found
+one apparent gap (the terminal-round transient group) that turned out
+to escape into the same-round recurrent core instead, the same kind of
+over-strict-then-corrected pattern as item 5's "zero inter-block
+edges" earlier. All checked, not yet closed-form -- see
 `docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md`'s "Items 1, 2, and 5"
-section, including a caught overclaim about zero inter-block edges
-(false; the correct, weaker claim holds).
+and "Items 3 and 4" sections for the full account.
 
 ## Exact and formal machinery
 

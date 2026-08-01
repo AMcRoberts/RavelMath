@@ -1613,17 +1613,74 @@ clean, bounded structural fact (fixed edge *count* regardless of `a`,
 consistent with this project's already-documented "moving bridge"
 mechanism at the terminal end of the shell chain), not a defect.
 
-**What remains open.** Items 3 (an escape witness from every transient
-block toward a later block) and 4 (no return edge from a recurrent
-block to an *earlier* transient stratum) are not touched by this file.
-Both need a round/rank ordering assigned to the *transient* states --
-"earlier" is meaningless without one, and no such assignment exists
-yet in this codebase. This is a genuinely open scoping question, not
-merely unautomated: it likely requires connecting each transient state
-back to the specific round (base/stable/penultimate/terminal/repeated)
-where it is a legitimate pre-Red or post-Red survivor, using the
-existing round dispatchers, before "earlier" and "later" can even be
-asked as a computable question.
+**What remained open at that point.** Items 3 (an escape witness from
+every transient block toward a later block) and 4 (no return edge from
+a recurrent block to an *earlier* transient stratum) needed a round/
+rank ordering assigned to the *transient* states -- "earlier" is
+meaningless without one.
+
+### Items 3 and 4: closed at the same tested-value strength, 2026-08-01
+
+The needed ordering turned out to be constructible directly from the
+trusted corona trace, not from anything new: every state's **birth
+round** is just the first round `r` such that the state is a member of
+`A_r` (well-defined and unambiguous, since Red only prunes within a
+round's own raw candidates before that round's survivors are fixed --
+once a state enters `A_r` it stays in every later `A_{r'>=r}`).
+`app/class_ii_neighbor2_round_stratified_transient_check.cpp` computes
+this by keeping the *full* `CoronaTrace<3>` (not just its converged
+endpoint) from the same `algorithm2_trace` machinery used throughout
+this investigation.
+
+**Step 1, the genuine unknown flagged earlier: does "rank" line up
+with "round"?** Yes, cleanly, at every tested `a` in `{7,...,20,30}`
+(fifteen values, `a=30` well outside the cluster): every recurrent block has a single, consistent
+birth round across all its members (no block straddles two rounds).
+The correspondence itself is a clean, informative structural fact,
+not just a yes/no: the dominant core (rank `a`) is born at round `1`
+(it is effectively already present in `±C` itself), and birth round
+decreases monotonically as rank increases toward the newest, outermost
+shell (rank `0`, born at round `a`) -- `birth_round = a - rank` for
+every rank except the two nearest the core (`a-2` and `a-1`), which
+both land at round `2` (a small, bounded, `a`-independent tie, not a
+break in the pattern).
+
+**Step 2, item 4:** scanning every real edge from a recurrent-block
+state to a transient state, checking the target's birth round is never
+*strictly earlier* than the source block's own birth round: **zero
+violations at all fifteen tested `a`** (edge counts checked:
+111/138/169/.../774/1744, one value per `a`).
+
+**Step 3, item 3, with a correction along the way.** A first version
+checked for an edge to a *strictly later* round from every transient
+round-group, and found one consistent exception: the transient states
+born at the terminal round (`round=a`, always exactly `22` states) had
+no such edge. Before treating that as a real gap -- the same discipline
+that caught item 5's overclaim a few hours earlier -- the check was
+refined to ask what those states' edges actually do: **all of them
+feed directly into the recurrent block born the very same round**
+(6 edges, hitting exactly 1 recurrent rank, at every tested `a` including `a=30`). That
+is exactly the "escape toward a later block" item 3 wants -- transience
+ending by absorption into recurrence -- just happening in the same
+numbered round as the transient states' own birth rather than a
+strictly later one. The strict-round-only definition was simply too
+narrow, not wrong about the underlying graph. With "escape" corrected
+to mean "does not remain transient forever" (a later round, or a
+same-round recurrent block), **every transient group has an escape
+witness at all fifteen tested `a`, zero exceptions.**
+
+**Current strength.** Items 1, 2, 3, 4, and 5 -- the full recurrent-
+exhaustion checklist -- are now verified together at `a` in
+`{7,8,...,20,30}`, all fifteen values, zero exceptions across every
+sub-check. This is the same tier as most of this investigation's other
+results before their closed-form upgrades: exact-checked at a dense,
+consecutive range plus outliers, not yet a symbolic proof for every
+integer `a>=7`. The birth-round/rank correspondence
+(`birth_round = a - rank`, with the one bounded tie near the core) is
+a clean enough closed form that a genuine proof -- rather than a wider
+checked range -- looks like the natural next step, in the same spirit
+as this session's earlier "prove even the counterexamples" upgrades to
+Rounds 2/3/4.
 
 ## Neighbor scope
 
