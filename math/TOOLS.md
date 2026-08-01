@@ -151,7 +151,10 @@ non-Pisot work.  Each is a factory-friendly tool, not a one-off.
   internally, verified integral output, free Cayley-Hamilton self-check;
   `math/tests/test_charpoly.cpp`, 24 tests). `barge.hpp`'s existing
   ravel::-level copy is untouched.
-- [ ] **Matrix inverse** over Q (general)
+- [x] **Matrix inverse** over Q (general).
+  **DONE**: already covered by `mat_q.hpp`'s `inverse` (see MatQ entry
+  above, line 136) — this Work List item was stale, duplicating a
+  capability that already shipped.
 
 ### Real approximation
 - [x] **MPFR-style high-precision float** — for tight numerical bounds.
@@ -189,7 +192,13 @@ non-Pisot work.  Each is a factory-friendly tool, not a one-off.
 - [ ] **Pisot polynomial classifier** (already in `exact_pisot.c`) — lift to C++
 - [ ] **Salem polynomial classifier** — complement of Pisot
 - [ ] **Substitution → matrix → charpoly** pipeline — already in `barge.hpp`
-- [ ] **Exact eigenvalue** via Q(β) + Cramer (already done)
+- [x] **Exact eigenvalue** via Q(β) + Cramer.
+  **DONE**: `linalg_qbeta.hpp`'s `right_eigenvector_via_qbeta` and
+  `left_eigenvector_via_qbeta` (both Cramer's-rule solves over exact
+  `Q(β)`, the left one a dedicated computation, not a transpose/relabel
+  of the right one's coordinates). This Work List item's own
+  parenthetical already said "(already done)" — it was just never
+  checked off.
 
 ## Factory / Pipeline Pattern
 
