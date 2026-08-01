@@ -765,6 +765,18 @@ $(CLASS_II_NEIGHBOR2_SYMMETRIC_SEED_CLOSURE_BIN): $(APPDIR)/class_ii_neighbor2_s
 		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# class_ii_round4_stable_bridge_check: the actual remaining base-
+# premises gap. Checks whether the generic stable-machinery source
+# formula at round 4 (class_ii_center_layer_candidate(a,4) union
+# class_ii_neighbor2_layer_extension(a,4)) equals the independently
+# ground-truth-computed round-4 post-Red survivor set.
+CLASS_II_ROUND4_STABLE_BRIDGE_CHECK_BIN := $(BUILDDIR)/class_ii_round4_stable_bridge_check
+class_ii_round4_stable_bridge_check: $(CLASS_II_ROUND4_STABLE_BRIDGE_CHECK_BIN)
+	./$(CLASS_II_ROUND4_STABLE_BRIDGE_CHECK_BIN)
+$(CLASS_II_ROUND4_STABLE_BRIDGE_CHECK_BIN): $(APPDIR)/class_ii_round4_stable_bridge_check.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 # class_ii_neighbor2_round1_red_forward_check: dense+sparse numeric
 # confirmation (a=3..200, then 500/1000/5000/20000) of the closed-form
 # forward images of the two Round-1 D_cont seeds, plus the exact bound

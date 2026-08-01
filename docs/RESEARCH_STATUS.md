@@ -22,13 +22,15 @@ affine interior shell, exact non-base catalogues, universal window and
 ranked Red certificates on their stated domains, and a kernel-checked
 partition of every legal round for `a>=7` into five phases.
 
-The global occurrence theorem is not closed. Of the four exceptional
-base transitions that made up its remaining state-level seam, three
-(items 1-3) are now fully closed and the fourth's raw-corona property
-(item 4) is closed too -- **the theorem's sole remaining gap is item
-4's separate round-five bridging claim**, described at the end of item
-4 below. Item 5 documents the shared argument that closes items 2-4;
-it names no open work of its own.
+The global occurrence theorem's four-round base seam is now closed
+(2026-07-31, night): all four exceptional base transitions (items 1-4
+below) are closed for every integer `a>=7` (item 1 for every `a>=3`),
+one tier below Lean-formalized. This does not by itself complete the
+global occurrence theorem -- recurrent-SCC exhaustion and dominance
+remain a separate, later step -- but the base-round seam that has been
+this investigation's active target for two days is done. Item 5
+documents the shared argument that closes items 2-4; it names no open
+work of its own.
 
 1. signed-contact reverse inclusion at the neighbor base -- **closed
    for every `a>=3` (2026-07-31)**: the *unsigned* raw 27-state
@@ -73,9 +75,23 @@ it names no open work of its own.
 4. the round-four reverse/exclusion bridge into the stable theorem --
    its raw-corona occurrence/exclusion property (`T_4 = B_4 union E_4`
    exact, 113 = 88 + 25; 212-state Red exclusion) is **closed for every
-   integer `a>=7`** by the same argument. The actual "connect to the
-   round>=5 universal theorem" claim this item names is a separate,
-   harder bridging argument, still not attempted.
+   integer `a>=7`** by the same argument. **The actual "connect to the
+   round>=5 universal theorem" claim this item names is now closed too
+   (2026-07-31, later)**: the already-proven stable raw-corona
+   composition certificate (universal for `a>=7`) assumes a specific
+   generic-formula source at round 5 (`class_ii_center_layer_candidate
+   (a,4)` union `class_ii_neighbor2_layer_extension(a,4)`), and that
+   formula is checked, node-for-node, exactly equal to the real
+   round-4 post-Red survivor catalogue at 14 widely separated `a`
+   (`app/class_ii_round4_stable_bridge_check.cpp`). More than a check:
+   the formula side is *provably* `a`-independent by direct code-path
+   inspection (its branch conditions are always satisfied once `a>5`),
+   and the ground-truth side's `a`-independence for every `a>=7`
+   follows from Round 4's own closed-form Red-exclusion proof (a fixed
+   node set with a fixed edge set gives a fixed Red-pruning result) --
+   so the equality holds for literally every `a>=7`, not just the
+   tested values. This closes round four's row in the base-premises
+   table.
 5. **the argument that closes items 2-4 (2026-07-31, same session):**
    the raw candidates behind Rounds 2/3/4's Red exclusion split into
    exactly three shapes by whether each side's occurrence ranges with

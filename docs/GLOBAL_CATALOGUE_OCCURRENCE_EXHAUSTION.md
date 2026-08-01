@@ -96,9 +96,9 @@ The word “base” must not collapse four different statements:
 | round | displayed neighbor-2 correction | already closed | still needed for the global equality |
 |---:|---|---|---|
 | 1 | mirror-closed `E_1`, 22 states | universal center contact base; literal signed-contact partition; window validity; reverse inclusion for the neighbor signed-contact set (`a>=3`, checked against the primary source -- `±C` is a definitional symmetrization, not an independent closure obligation, see "Round 1: the literature check, done" below) | none -- Round 1's row is closed |
-| 2 | fixed `E_2`, 25 states | center/correction positive composition witnesses and explicit Red successors/bridges | full raw-corona reverse inclusion and full Red exclusion |
-| 3 | 24 fixed roles plus the first tip | positive center-interface/correction witnesses, window validity, Red retention | full raw-corona reverse inclusion and full Red exclusion |
-| 4 | 24 fixed roles plus the affine tip | interior coefficientwise positive transport and Red retention | connect the bounded round-four grammar to the universal stable reverse/exclusion theorem whose stated domain begins at round five |
+| 2 | fixed `E_2`, 25 states | center/correction positive composition witnesses, explicit Red successors/bridges, and (2026-07-31) full raw-corona reverse inclusion (`T_2=B_2∪E_2` exact) and full Red exclusion for every `a>=7` via the closed-form shape argument | none -- Round 2's row is closed |
+| 3 | 24 fixed roles plus the first tip | positive center-interface/correction witnesses, window validity, Red retention, and (2026-07-31) full raw-corona reverse inclusion (`T_3=B_3∪E_3` exact) and full Red exclusion for every `a>=7`, same argument as round two | none -- Round 3's row is closed |
+| 4 | 24 fixed roles plus the affine tip | interior coefficientwise positive transport and Red retention; (2026-07-31) `T_4=B_4∪E_4` exact and full Red exclusion for every `a>=7`, same argument; (2026-07-31, later) the round-four to round-five bridge itself, see "Round 4: the stable bridge, closed" below | none -- Round 4's row is closed |
 
 These are occurrence/exhaustion gaps, not missing endpoint-validity or
 survival lemmas. In particular, the `7+4` center-interface witnesses
@@ -793,6 +793,85 @@ groundwork, since it means round four is not structurally exceptional
 in the way that would block a round-five-style argument from reaching
 backward to cover it, but the actual bridging theorem asked for in the
 table is a separate, harder claim not attempted here.
+
+### Round 4: the stable bridge, closed (2026-07-31, later)
+
+The actual gap the base-premises table names for round four -- "connect
+the bounded round-four grammar to the universal stable reverse/
+exclusion theorem whose stated domain begins at round five" -- is now
+closed, not merely narrowed.
+
+The stable machinery's own composition witnesses
+(`class_ii_neighbor2_stable_pre_red_composition_witnesses(a, round)`,
+`include/ravel/class_ii_neighbor2_pruning.hpp`) compute their sources
+at round 5 using the *generic* formula
+`class_ii_center_layer_candidate(a, 4)` union
+`class_ii_neighbor2_layer_extension(a, 4)` -- the same generic formula
+used for every stable round, not a round-4-specific hardcoded object.
+THEOREM_STATUS.md already records the stable raw-corona composition
+certificate built from exactly this source formula as "universal for
+`a>=7`". The bridge question is therefore just: does this generic
+formula's round-4 output equal the *real* round-4 post-Red survivor
+catalogue (the `T_4=B_4∪E_4`, 113-state object closed earlier tonight)?
+
+`app/class_ii_round4_stable_bridge_check.cpp`
+(`make class_ii_round4_stable_bridge_check`) checks this directly, by
+computing the real round-4 survivor set via the independent, trusted
+ground-truth pipeline (`search_D_cont -> backward_closure -> corona
+iteration -> Red`, no stable-machinery code involved) and comparing it
+node-for-node against the generic formula's prediction:
+
+- **Exact match, zero extra, zero missing, at every tested `a` in
+  `{7,8,9,10,11,...,20,30,50}`** (14 distinct values).
+- The "predicted" side is provably `a`-independent for every `a>=6`,
+  by direct code-path inspection rather than sampling:
+  `class_ii_center_layer_candidate(a,4)`'s `last_interior` is always
+  literally `4` once `a>4` (so it always adds exactly
+  `class_ii_interior_shell(4)`, a fixed shell-index-parametrized
+  object, to the fixed `class_ii_stable_base()`), and
+  `class_ii_neighbor2_layer_extension(a,4)` always takes the
+  `round<a-1` branch once `a>5`, returning the fixed
+  `class_ii_neighbor2_interior_extension_states(4)`. Checked
+  byte-identical (not just same cardinality) at `a` in
+  `{7,8,9,10,20,50,200,1000}`.
+- The ground-truth side's own `a`-independence for every integer
+  `a>=7` (not just the tested values) follows from Round 4's own
+  closure earlier tonight, made explicit here for the first time: the
+  raw candidate pool `T_4=B_4∪E_4` is itself definitionally
+  `a`-independent (a literal identity, not sampled), and the
+  closed-form Red-exclusion proof
+  (`class_ii_both_fixed_full_proof.cpp` /
+  `class_ii_round234_shape_closure.lean`) shows every slope-nonzero
+  candidate edge among `T_4`'s shape categories requires `a<7` to
+  exist -- so for `a>=7` the only edges present are the (trivially
+  `a`-independent) slope-zero ones. A fixed node set with a fixed edge
+  set gives a fixed Red-pruning result under a deterministic pruning
+  algorithm, so the survivor set `A_4` is provably constant for every
+  `a>=7`, not merely observed to be constant at the tested values.
+  Given that, the many tested values above are redundant confirmation
+  of a fact already following from work already on record, not the
+  load-bearing evidence by themselves -- but redundant confirmation
+  that comes back clean is still worth having, and the check was run
+  before this argument was written down, not after.
+
+**What this closes.** The already-proven, `a>=7`-universal stable
+raw-corona composition certificate now applies unconditionally to the
+*real* round 4 -> round 5 transition, because its assumed round-4
+predecessor state is proven identical to the real one. Combined with
+the Lean-kernel-checked round-partition router
+(`class_ii_global_round_stitch`,
+`lean/class_ii_global_round_partition.lean`) and the already-closed
+stable/penultimate/terminal/repeated certificates covering every round
+from 5 through `a+1`, **round four's row in the base-premises table is
+closed for every integer `a>=7`**, at the same "closed, one tier below
+Lean-formalized" strength as the other three rows. With Round 1 closed
+via the literature check earlier tonight and Rounds 2/3 closed via the
+shared closed-form argument, **all four rows of the base-premises table
+are now closed.** This does not by itself complete the global
+occurrence theorem -- recurrent-SCC exhaustion and dominance remain a
+separate, later step (see "What 'stitching' still means" above) -- but
+the four-round base seam that has been this investigation's active
+target is done.
 
 ### All four base rounds: the a-independence hypothesis, resolved (2026-07-31)
 

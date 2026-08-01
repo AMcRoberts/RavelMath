@@ -737,6 +737,37 @@ re-derived in Lean, so the overall Rounds 2/3/4 closure remains one
 tier below fully Lean-formalized even though its shared arithmetic
 engine now is.
 
+**Round 4's stable bridge, closed (2026-07-31, later).** The above
+closes rounds 2/3/4's own raw-corona/Red-exclusion property, but round
+four's row in the base-premises table names a separate, harder claim:
+"connect the bounded round-four grammar to the universal stable
+reverse/exclusion theorem whose stated domain begins at round five."
+This is now closed too. The stable machinery's own proven-universal
+composition certificate assumes its round-5 predecessor state equals
+the generic formula `class_ii_center_layer_candidate(a,4) union
+class_ii_neighbor2_layer_extension(a,4)`.
+`app/class_ii_round4_stable_bridge_check.cpp` checks this formula
+against the real, independently ground-truth-computed round-4
+survivor catalogue: exact match, zero extra, zero missing, at 14
+widely separated `a` from `7` to `50`. More than a check: the formula
+side is provably `a`-independent by direct branch-condition inspection
+(both underlying functions' `a`-dependent branches are already fixed
+for any `a>5`), and the ground-truth side's `a`-independence for every
+integer `a>=7` follows from the closed-form Red-exclusion proof above
+applied to round 4 specifically -- a fixed node set (`T_4=B_4∪E_4`,
+literal identity) with a fixed edge set (slope-nonzero edges proven
+absent for `a>=7`, slope-zero edges trivially fixed) gives a fixed
+Red-pruning result under a deterministic algorithm. So the equality
+holds for literally every `a>=7`, not just the tested values, and the
+already-proven stable composition certificate now applies
+unconditionally to the real round 4 -> round 5 transition. Combined
+with the Lean-checked round-partition router
+(`class_ii_global_round_stitch`) and the already-closed stable/
+penultimate/terminal/repeated certificates covering every round from 5
+through `a+1`, **all four rows of the base-premises table are now
+closed for every integer `a>=7`** (round 1 for every `a>=3`), one tier
+below Lean-formalized throughout.
+
 For the four non-base phases, C++ now exposes named pre-Red, ordered
 rank, and post-Red catalogue dispatchers. A structural sweep over 429
 instances (`7<=a<=32`) checks rank containment/disjointness and exact
@@ -745,10 +776,13 @@ plus its ranks. Base rounds are rejected by construction rather than
 filled with an unproved guess.
 
 Lean kernel-checks the candidate shell bounds and core-polynomial
-signs. Universal membership of all catalogue states in the reduced
-boundary graph, and exhaustion of every other recurrent state, remain
-open. The result therefore must not yet be stated as universal
-contact-boundary dominance.
+signs. With all four base rounds now closed, the global occurrence
+theorem's remaining obligations are recurrent-SCC exhaustion and
+dominance (see `docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md`'s
+"What 'stitching' still means" section) -- universal membership of all
+catalogue states in the reduced boundary graph and exhaustion of every
+other recurrent state remain open. The result therefore must not yet
+be stated as universal contact-boundary dominance.
 
 Every displayed core, regular-shell, and exceptional-shell matrix is
 also universally irreducible: its minimum-parameter support is
