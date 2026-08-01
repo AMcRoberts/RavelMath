@@ -140,6 +140,130 @@ int main() {
               "lands back on a form enumerate_reduced_forms also found -- for all 3 forms");
     }
 
+    fprintf(stderr, "\n=== group structure: qform_compose, checked against the group axioms directly ===\n");
+    // Deliberately NOT checked against a memorized "D=X has structure Y"
+    // table (too easy to misremember and ship a wrong-but-plausible
+    // assertion) -- instead every check below is a group-theoretic fact
+    // that must hold for ANY valid group law, verifiable from first
+    // principles, so a bug in qform_compose has nowhere to hide behind
+    // a coincidentally-matching hardcoded expectation.
+    {
+        std::vector<long long> test_discriminants = {-23, -20, -15, -47};
+        for (long long D : test_discriminants) {
+            BigInt Dz(D);
+            auto forms = enumerate_reduced_forms(Dz);
+            QuadForm id = qform_reduce(qform_principal(Dz));
+
+            bool identity_is_identity = true;
+            for (const auto& f : forms) {
+                if (!forms_equal(qform_compose(id, f, Dz), f)) identity_is_identity = false;
+                if (!forms_equal(qform_compose(f, id, Dz), f)) identity_is_identity = false;
+            }
+            CHECK(identity_is_identity, "the principal form acts as the identity for every element");
+
+            bool has_inverse = true;
+            for (const auto& f : forms) {
+                bool found = false;
+                for (const auto& g : forms) {
+                    if (forms_equal(qform_compose(f, g, Dz), id)) { found = true; break; }
+                }
+                if (!found) has_inverse = false;
+            }
+            CHECK(has_inverse, "every element has a two-sided inverse within the enumerated set");
+
+            bool closed = true;
+            for (const auto& f : forms) {
+                for (const auto& g : forms) {
+                    if (!contains(forms, qform_compose(f, g, Dz))) closed = false;
+                }
+            }
+            CHECK(closed, "composition is closed: every product is itself one of the enumerated reduced forms");
+
+            bool commutative = true;
+            for (const auto& f : forms) {
+                for (const auto& g : forms) {
+                    if (!forms_equal(qform_compose(f, g, Dz), qform_compose(g, f, Dz))) commutative = false;
+                }
+            }
+            CHECK(commutative, "composition is commutative (the class group is abelian)");
+
+            bool lagrange = true;
+            long long h = static_cast<long long>(forms.size());
+            for (const auto& f : forms) {
+                long long ord = qform_order(f, Dz, h);
+                if (h % ord != 0) lagrange = false;
+            }
+            CHECK(lagrange, "every element's order divides the class number (Lagrange's theorem)");
+        }
+    }
+    {
+        // Associativity, spot-checked over every triple for D=-23 (h=3,
+        // so 27 triples -- small enough to check exhaustively rather
+        // than sampling).
+        BigInt D(-23);
+        auto forms = enumerate_reduced_forms(D);
+        bool associative = true;
+        for (const auto& f : forms)
+            for (const auto& g : forms)
+                for (const auto& h : forms) {
+                    QuadForm lhs = qform_compose(qform_compose(f, g, D), h, D);
+                    QuadForm rhs = qform_compose(f, qform_compose(g, h, D), D);
+                    if (!forms_equal(lhs, rhs)) associative = false;
+                }
+        CHECK(associative, "composition is associative over all 27 triples for D=-23 (h=3)");
+    }
+    {
+        // Prime class number forces cyclicity with no external data
+        // needed: every non-identity element's order must divide 3
+        // (Lagrange) and can't be 1 (it isn't the identity), so it must
+        // be exactly 3 -- a fact provable from group theory alone, not
+        // from a memorized "D=-23 is cyclic" claim.
+        BigInt D(-23);
+        auto forms = enumerate_reduced_forms(D);
+        QuadForm id = qform_reduce(qform_principal(D));
+        bool all_order_3_or_1 = true;
+        int order3_count = 0;
+        for (const auto& f : forms) {
+            long long ord = qform_order(f, D, 3);
+            if (forms_equal(f, id)) { if (ord != 1) all_order_3_or_1 = false; }
+            else { if (ord != 3) all_order_3_or_1 = false; else ++order3_count; }
+        }
+        CHECK(all_order_3_or_1 && order3_count == 2,
+              "D=-23's class group is forced cyclic of order 3 by prime-order Lagrange logic alone");
+    }
+    {
+        // Search (not assume) for a non-cyclic example among small
+        // discriminants: a class group is non-cyclic iff no element
+        // reaches the full class number as its order. If this search
+        // finds one, it demonstrates qform_compose can actually detect
+        // non-cyclic structure, not just reproduce h via enumeration.
+        bool found_noncyclic = false;
+        long long noncyclic_D = 0;
+        for (long long D = -4; D >= -200 && !found_noncyclic; D -= 1) {
+            long long dm4 = ((D % 4) + 4) % 4;
+            if (dm4 != 0 && dm4 != 1) continue;
+            BigInt Dz(D);
+            long long h;
+            try { h = quadratic_class_number(Dz); } catch (...) { continue; }
+            // Non-cyclic abelian groups of order <= 8 only exist at
+            // h==4 (Z/2 x Z/2, vs cyclic Z/4) or h==8 (several options)
+            // -- h==2,3,5,6,7 are forced cyclic by group theory alone
+            // (prime order, or order 6 = 2*3 coprime), so skip them.
+            if (h != 4 && h != 8) continue;
+            auto forms = enumerate_reduced_forms(Dz);
+            bool any_full_order = false;
+            for (const auto& f : forms) {
+                if (qform_order(f, Dz, h) == h) { any_full_order = true; break; }
+            }
+            if (!any_full_order) { found_noncyclic = true; noncyclic_D = D; }
+        }
+        CHECK(found_noncyclic, "a non-cyclic class group was actually found by search among small discriminants "
+                                "(demonstrates qform_compose distinguishes group structure, not just order)");
+        if (found_noncyclic) {
+            fprintf(stderr, "  (found: D=%lld has a non-cyclic class group)\n", noncyclic_D);
+        }
+    }
+
     fprintf(stderr, "\n=== error handling ===\n");
     {
         bool threw = false;

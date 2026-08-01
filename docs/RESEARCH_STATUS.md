@@ -360,9 +360,24 @@ principal form, several tabulated `h>1` cases, and a cross-check
 between two different code paths -- `qform_reduce`'s iterative
 transformation against `enumerate_reduced_forms`'s direct search --
 which caught a real off-by-one bug in the reduction step's range
-formula before it shipped. Eleven for eleven. Class number is done;
-class *group* structure (Gauss composition, giving the actual group
-law rather than just its order) is the next piece.
+formula before it shipped. Class number is done. Twelfth: class *group*
+structure too, now -- `qform_compose` gives the actual group law, via
+the ideal correspondence (`a*Z + ((-b+sqrt(D))/2)*Z`, reusing
+`ideal_arithmetic.hpp`'s already-tested general ideal multiplication)
+rather than a hand-derived, easy-to-misremember Gauss/Dirichlet
+composition formula. Checked directly against the group axioms
+(identity, two-sided inverses, closure, commutativity, associativity
+over all 27 triples for D=-23, Lagrange's theorem) across four test
+discriminants, deliberately NOT against a memorized "D=X has structure
+Y" table -- a real sign/conjugation bug was caught this way during
+development (identity composed with a form gave that form's inverse
+instead of itself), and the group-theoretic prime-order argument (a
+group of prime order 3 must be cyclic) confirmed D=-23's structure with
+zero external data needed. A search across small discriminants for a
+non-cyclic example (skipping h in {2,3,5,6,7}, which group theory alone
+forces cyclic) found D=-84 has a non-cyclic class group -- discovered,
+not asserted from possibly-misremembered reference tables. Twelve for
+twelve so far.
 
 ## Research directions
 
