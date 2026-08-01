@@ -272,10 +272,22 @@ computes cleanly and passes an independent sanity check --
 `disc(O)/disc(O') = 262144 = 512^2`, a perfect square, exactly as the
 discriminant-under-enlargement identity requires
 (`tests/maximal_order_bigint_test.cpp`). A `needs_another_round`
-necessary-condition check is included; true multi-round iteration for
-a possibly non-monogenic intermediate order needs the general
-p-radical-from-structure-constants algorithm (Cohen §6.1.3/Ore's
-method) and is explicitly not attempted.
+necessary-condition check is included. Fifth: that general
+p-radical-from-structure-constants algorithm (Cohen §6.1.3, Ore's
+Frobenius method) is now built (`GeneralOrder`,
+`p_radical_from_structure_constants`) and available as a genuine C++
+overload of `enlarge_order_round2_bigint` -- the fast, monogenic-
+shortcut path stays default for round 1 (Z(β) is always monogenic
+there), and the more expensive general path is what round 2+ would
+need once the enlarged order may no longer have a single generator.
+Cross-checked against the trusted monogenic-shortcut answer on the
+same Dedekind cubic, at `p=2, n=3` (the harder `p<=n` regime a
+trace-form shortcut wouldn't even cover): exact agreement, `-2012 ->
+-503`, computed without ever factoring a defining polynomial
+(`tests/general_order_radical_test.cpp`). One honest gap remains:
+deriving a new `GeneralOrder`'s own structure constants from an
+enlarged order's HNF basis, the piece that would let a caller actually
+chain rounds to a fixed point rather than compute one round at a time.
 
 Remaining pieces (class number/class group computation, and only then
 Golod-Shafarevich verification) are tracked as an ordered task list;
