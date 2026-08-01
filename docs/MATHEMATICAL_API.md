@@ -587,6 +587,70 @@ The composed classifier reports hypotheses, caps, and inconclusive
 states separately. Use its `TilingVerdict`; do not infer a tiling
 theorem from a single successful subcheck.
 
+### General number fields and the class-field-tower initiative
+
+```cpp
+#include "math/primality.hpp"
+
+bool p = mathlib::is_prime(BigInt(97));
+BigInt next = mathlib::next_prime(BigInt(100));
+auto primes_up_to_200 = mathlib::sieve_of_eratosthenes(200);
+int sym = mathlib::kronecker_symbol(BigInt(2), BigInt(7));  // Legendre/Jacobi/Kronecker
+```
+
+`is_prime` is BPSW plus deterministic Miller-Rabin (mini-gmp's own
+`mpz_probab_prime_p`), fully reproducible, no random state anywhere.
+`kronecker_symbol` handles any integers, not just odd positive moduli.
+
+```cpp
+#include "adelic/maximal_order.hpp"
+
+auto round1 = adelic::enlarge_order_round2_bigint(charpoly_high_to_low, p);        // monogenic, fast, default
+auto O = adelic::monogenic_structure_constants(charpoly_high_to_low);
+auto round2 = adelic::enlarge_order_round2_bigint(O, p);                          // general, explicit overload
+```
+
+Pohst-Zassenhaus `p`-maximal-order enlargement: the monogenic overload
+factors a single defining polynomial mod `p` (cheap, round-1-only,
+since only `Z[beta]` is guaranteed monogenic); the `GeneralOrder`
+overload uses Ore's Frobenius-map `p`-radical from an order's own
+structure constants (more expensive, needed once an order may no
+longer have a single generator, i.e. round 2 onward).
+`structure_constants_from_basis_change` derives a new order's own
+structure constants from an enlarged order's HNF basis, letting a
+caller chain rounds.
+
+```cpp
+#include "adelic/quadratic_class_group.hpp"
+
+long long h = adelic::quadratic_class_number(BigInt(-23));         // class number
+QuadForm f3 = adelic::qform_compose(f1, f2, BigInt(-23));          // the group law
+long long order = adelic::qform_order(f, BigInt(-23), h);
+```
+
+Class number AND class group structure for imaginary quadratic fields
+`Q(sqrt(D))`, `D<0`, via binary quadratic forms. `qform_compose` uses
+the ideal correspondence (`ideal_arithmetic.hpp`'s ideal
+multiplication), not a hand-derived Gauss/Dirichlet composition
+formula.
+
+```cpp
+#include "adelic/golod_shafarevich.hpp"
+#include "adelic/sawin_exponent.hpp"
+#include "adelic/sawin_lemma9.hpp"
+
+auto check = adelic::check_golod_shafarevich(T, S_Q);               // Lemma 11
+auto delta = adelic::compute_sawin_delta(prod_T, R, S_Q_terms);     // Proposition 10
+bool holds = adelic::sawin_lemma9_holds(D);                         // Lemma 9 (base case)
+```
+
+Verification of Sawin's Golod-Shafarevich unit-distance construction
+(arXiv 2605.20579): Lemma 11's inequality, Proposition 10's exponent
+formula (reproduces the paper's own published `delta=0.014114`
+exactly), and Lemma 9's class-number bound (specialized to `F=Q`, `K`
+imaginary quadratic, the one case this project's own class-group code
+can check directly).
+
 ## Finite Fibonacci and packed dynamics
 
 ```cpp
