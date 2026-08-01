@@ -1,15 +1,13 @@
 // include/adelic/fp_poly_factor.hpp
 //
-// General F_p[x] polynomial factoring, for arbitrary degree -- the
-// upgrade dedekind_factorization.hpp's own header comment names as
-// "left as future work": that file's factor_fp only extracts LINEAR
-// factors by root-testing, then assumes whatever degree>=2 remains is
-// a SINGLE irreducible factor. That assumption is simply wrong
-// whenever the residual is a product of two-or-more irreducibles of
-// the same degree with no roots in F_p (e.g. a product of two
-// irreducible quadratics for a degree-4 residual) -- the file's own
-// comment gestures at "a Cantor-Zassenhaus-style split" for exactly
-// this case but the code never implements it. This file does.
+// General F_p[x] polynomial factoring, for arbitrary degree. Provides
+// factor_fp_general, which dedekind_factorization.hpp's factor_fp is
+// now literally defined in terms of -- see that file's own header
+// comment for the bug this replaced (an earlier version of factor_fp
+// only extracted linear factors by root-testing and assumed whatever
+// degree>=2 remained was a single irreducible, which is wrong
+// whenever that residual is a product of two-or-more irreducibles of
+// the same degree with no roots in F_p).
 //
 // Standard three-stage algorithm (Cohen, "A Course in Computational
 // Algebraic Number Theory" ch. 3.4, the same reference this project's
@@ -28,6 +26,11 @@
 //      divides by 2 in the exponent, which isn't meaningful mod 2);
 //      both are implemented, since this project's own test cases
 //      already include p=2 (the sigma_1 Dedekind-cubic example).
+//
+// Depends only on fp_poly.hpp (the shared FpPoly/FpFactor primitives),
+// not on dedekind_factorization.hpp -- that file depends on THIS one
+// (for factor_fp's implementation), so depending on it back here would
+// be circular.
 
 #pragma once
 
@@ -37,7 +40,7 @@
 #include <utility>
 #include <vector>
 
-#include "adelic/dedekind_factorization.hpp"
+#include "adelic/fp_poly.hpp"
 #include "math/bigint.hpp"
 
 namespace adelic {
@@ -77,9 +80,10 @@ inline FpPoly fp_derivative(const FpPoly& f) {
     return r;
 }
 
-inline FpPoly fp_mulmod(const FpPoly& a, const FpPoly& b, const FpPoly& modulus) {
-    return fp_divmod(fp_mul(a, b), modulus).second;
-}
+// fp_mulmod lives in fp_poly.hpp (this file's own dependency), not
+// here -- avoids the duplicate-definition collision that used to
+// happen once dedekind_factorization.hpp included both this file and
+// maximal_order.hpp (which had its own separate copy).
 
 // x^e mod (p, modulus), e a BigInt (exponents like p^d overflow long
 // long quickly for even modest p, d). Square-and-multiply via raw
@@ -299,51 +303,6 @@ inline std::vector<FpFactor> factor_fp_general(const FpPoly& f_in) {
                 result.push_back(fac);
             }
         }
-    }
-    return result;
-}
-
-// Full Dedekind factorization using factor_fp_general instead of
-// dedekind_factorization.hpp's factor_fp. A deliberately separate
-// entry point rather than swapping factor_prime_in_qbeta's internals
-// in place: factor_fp is already relied upon by shipped, tested code,
-// and this project's own current Pisot substitutions never reach the
-// degree/shape where factor_fp's bug actually fires (degree<=4 chars
-// give at most a degree-2 residual after root extraction, and a
-// rootless quadratic is automatically irreducible), so there is no
-// urgency to touch working code in place. This is the strictly-more-
-// correct version, available for any future degree>=4 use (the
-// "hyperpyramid"/simplex non-cube-tile direction docs/FAMILY_OF_
-// FAMILIES.md already names) or any number field outside this
-// project's own Pisot substitutions (the class-field-tower work
-// docs/RESEARCH_STATUS.md's Adelic section now tracks).
-inline DedekindFactorization factor_prime_in_qbeta_general(
-        const mathlib::PolyZ& charpoly, long long p) {
-    if (p < 2) {
-        throw std::invalid_argument("factor_prime_in_qbeta_general: p must be prime and >= 2");
-    }
-    long long n = charpoly.degree();
-    if (n < 1) {
-        throw std::invalid_argument("factor_prime_in_qbeta_general: charpoly degree < 1");
-    }
-    mathlib::PolyQ charpoly_q(charpoly);
-    FpPoly f_p = reduce_to_fp(charpoly_q, p);
-    if (f_p.c.size() == 1 && f_p.c[0] == 0) {
-        throw std::invalid_argument(
-            "factor_prime_in_qbeta_general: charpoly is 0 mod p");
-    }
-    std::vector<FpFactor> factors = factor_fp_general(f_p);
-    DedekindFactorization result;
-    result.p = p;
-    result.maximal = is_p_maximal(charpoly, p, factors);
-    result.prime_ideals.reserve(factors.size());
-    for (const auto& fac : factors) {
-        PrimeIdeal pi;
-        pi.p = p;
-        pi.e = fac.mult;
-        pi.f = static_cast<long long>(fac.g.c.size()) - 1;
-        pi.g = lift_fp_factor_to_z(fac.g);
-        result.prime_ideals.push_back(pi);
     }
     return result;
 }

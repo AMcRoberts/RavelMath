@@ -71,14 +71,9 @@ namespace adelic {
 // Small self-contained F_p and Z linear algebra (long long, small n).
 // ===================================================================
 
-// Multiply two F_p[x] polynomials and reduce modulo f_p (all
-// arithmetic mod p).  Reuses fp_mul (unreduced product) and
-// fp_divmod (division with remainder) from dedekind_factorization.hpp.
-inline FpPoly fp_mulmod(const FpPoly& a, const FpPoly& b, const FpPoly& f_monic) {
-    FpPoly prod = fp_mul(a, b);
-    auto dm = fp_divmod(prod, f_monic);
-    return dm.second;
-}
+// fp_mulmod (multiply two F_p[x] polynomials and reduce modulo a
+// third) now lives in fp_poly.hpp -- the single canonical definition,
+// available here via dedekind_factorization.hpp's include of it.
 
 // The squarefree radical of f_p mod p: the product of the DISTINCT
 // irreducible factors (each taken once, regardless of multiplicity

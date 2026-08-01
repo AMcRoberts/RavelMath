@@ -15,21 +15,27 @@
 //   4. The degree of the p-adic extension is ef_i = e_i · f_i.
 //
 // All arithmetic is exact (rationals for the char poly, modular
-// arithmetic for the F_p reductions).  factor_fp below only extracts
-// LINEAR factors by root-testing and assumes whatever degree>=2
-// residual remains is a single irreducible -- correct for this
-// project's own degree<=4 Pisot substitutions (whose residuals are at
-// most degree 2, and a rootless quadratic is automatically
-// irreducible) but WRONG in general (found: a degree-4 residual that
-// is a product of two irreducible quadratics gets reported as one
-// wrong quartic factor). include/adelic/fp_poly_factor.hpp's
-// factor_fp_general / factor_prime_in_qbeta_general fix this properly
-// (squarefree + distinct-degree + Cantor-Zassenhaus equal-degree
-// factorization, any degree) -- see that file for the fix and
-// tests/fp_poly_factor_test.cpp for the demonstrated bug case. Not
-// swapped in here in place, since factor_fp/factor_prime_in_qbeta are
-// already relied upon by shipped, tested code that never reaches the
-// shape where the bug fires.
+// arithmetic for the F_p reductions). factor_fp below (any degree,
+// any prime) is fp_poly_factor.hpp's factor_fp_general under the
+// name every existing caller already uses -- squarefree factorization
+// + distinct-degree factorization + Cantor-Zassenhaus equal-degree
+// factorization (Cohen ch. 3.4). An earlier version of this file
+// implemented only linear-factor (root) extraction and assumed any
+// degree>=2 residual was a single irreducible, which is wrong
+// whenever that residual is a product of two-or-more irreducibles of
+// the same degree with no roots in F_p (demonstrated concretely:
+// x^4+1 mod 5 = (x^2+2)(x^2+3), which the old code reported as one
+// wrong quartic factor, and which propagated to factor_prime_in_qbeta
+// wrongly reporting one prime above 5 with residue degree 4 instead
+// of two primes with residue degree 2 each -- see
+// tests/fp_poly_factor_test.cpp for the demonstration and reconstruc-
+// tion-based verification). This project's own degree<=4 Pisot
+// substitutions never reach the shape where that bug fired (their
+// residuals are at most degree 2, and a rootless quadratic is
+// automatically irreducible), so nothing that shipped was ever wrong
+// in practice -- but factor_fp itself is now the corrected algorithm,
+// not a parallel one, so every caller (direct or via
+// factor_prime_in_qbeta) gets the fix with no call-site changes.
 //
 // Test cases: the worked example from §2.7 of the adelic
 // tiling plan: σ(1)=1113, σ(2)=11, σ(3)=2, char poly
@@ -44,6 +50,8 @@
 #include <utility>
 #include <vector>
 
+#include "adelic/fp_poly.hpp"
+#include "adelic/fp_poly_factor.hpp"
 #include "math/bigint.hpp"
 #include "math/poly_z.hpp"
 #include "math/poly_q.hpp"
@@ -75,277 +83,17 @@ struct DedekindFactorization {
     std::vector<PrimeIdeal> prime_ideals;
 };
 
-// ===================================================================
-// F_p[x] polynomial arithmetic helpers
-// ===================================================================
-//
-// All operations are exact mod p.  We represent F_p[x] polynomials
-// as std::vector<long long> of length degree+1, with coefficients
-// in {0, 1, ..., p-1}.
-
-struct FpPoly {
-    long long p;            // The prime
-    std::vector<long long> c;  // Coefficients c[0] + c[1] x + c[2] x^2 + ...
-};
-
-// Reduce a PolyQ to F_p[x] (assume all coefficients are integers;
-// clear denominators if needed, then reduce each coefficient mod p).
-// Throws if any coefficient has denominator not coprime to p.
-inline FpPoly reduce_to_fp(const mathlib::PolyQ& q, long long p) {
-    FpPoly f;
-    f.p = p;
-    f.c.assign(q.coeffs_.size(), 0);
-    for (std::size_t i = 0; i < q.coeffs_.size(); ++i) {
-        // Get numerator and denominator as mpz_ptr (pointers to the
-        // underlying __mpz_struct).  Note: mpq_numref / mpq_denref
-        // are C macros in the global namespace (not in mathlib::),
-        // so we use them directly without the mathlib:: prefix.
-        const mpz_ptr num = mpq_numref(q.coeffs_[i].get());
-        const mpz_ptr den = mpq_denref(q.coeffs_[i].get());
-        // Denominator must be exactly 1 (i.e., the poly has integer
-        // coefficients; PolyQ is over Q, not Z, so we need to verify).
-        if (mpz_cmp_ui(den, 1) != 0) {
-            throw std::invalid_argument("reduce_to_fp: non-integer coefficient");
-        }
-        // Reduce numerator mod p.  Use mpz_fdiv_ui to get a
-        // non-negative result.
-        unsigned long n = mpz_fdiv_ui(num, static_cast<unsigned long>(p));
-        f.c[i] = static_cast<long long>(n);
-    }
-    // Trim trailing zeros
-    while (f.c.size() > 1 && f.c.back() == 0) f.c.pop_back();
-    return f;
-}
-
-// Add two F_p[x] polynomials (mod p).
-inline FpPoly fp_add(const FpPoly& a, const FpPoly& b) {
-    if (a.p != b.p) throw std::invalid_argument("fp_add: mismatched primes");
-    FpPoly r;
-    r.p = a.p;
-    r.c.assign(std::max(a.c.size(), b.c.size()), 0);
-    for (std::size_t i = 0; i < a.c.size(); ++i) {
-        r.c[i] = (r.c[i] + a.c[i]) % a.p;
-    }
-    for (std::size_t i = 0; i < b.c.size(); ++i) {
-        r.c[i] = (r.c[i] + b.c[i]) % a.p;
-    }
-    while (r.c.size() > 1 && r.c.back() == 0) r.c.pop_back();
-    return r;
-}
-
-// Subtract.
-inline FpPoly fp_sub(const FpPoly& a, const FpPoly& b) {
-    if (a.p != b.p) throw std::invalid_argument("fp_sub: mismatched primes");
-    FpPoly r;
-    r.p = a.p;
-    r.c.assign(std::max(a.c.size(), b.c.size()), 0);
-    for (std::size_t i = 0; i < a.c.size(); ++i) {
-        r.c[i] = (r.c[i] + a.c[i]) % a.p;
-    }
-    for (std::size_t i = 0; i < b.c.size(); ++i) {
-        r.c[i] = (r.c[i] - b.c[i]) % a.p;
-        if (r.c[i] < 0) r.c[i] += a.p;
-    }
-    while (r.c.size() > 1 && r.c.back() == 0) r.c.pop_back();
-    return r;
-}
-
-// Multiply (convolution mod p).
-inline FpPoly fp_mul(const FpPoly& a, const FpPoly& b) {
-    if (a.p != b.p) throw std::invalid_argument("fp_mul: mismatched primes");
-    if (a.c.size() == 0 || b.c.size() == 0) {
-        FpPoly r; r.p = a.p; r.c = {0}; return r;
-    }
-    FpPoly r;
-    r.p = a.p;
-    r.c.assign(a.c.size() + b.c.size() - 1, 0);
-    for (std::size_t i = 0; i < a.c.size(); ++i) {
-        for (std::size_t j = 0; j < b.c.size(); ++j) {
-            r.c[i + j] = (r.c[i + j] + a.c[i] * b.c[j]) % a.p;
-        }
-    }
-    while (r.c.size() > 1 && r.c.back() == 0) r.c.pop_back();
-    return r;
-}
-
-// Divide a by b in F_p[x].  Returns (q, r) with a = q*b + r and
-// deg(r) < deg(b).  Throws if b is the zero polynomial.
-inline std::pair<FpPoly, FpPoly> fp_divmod(const FpPoly& a, const FpPoly& b) {
-    if (a.p != b.p) throw std::invalid_argument("fp_divmod: mismatched primes");
-    if (b.c.size() == 1 && b.c[0] == 0) {
-        throw std::invalid_argument("fp_divmod: division by zero");
-    }
-    long long p = a.p;
-    long long db = static_cast<long long>(b.c.size()) - 1;
-    long long da = static_cast<long long>(a.c.size()) - 1;
-    if (da < db) return {FpPoly{p, {0}}, a};
-    // Compute inverse of leading coefficient of b mod p.
-    long long b_lc = b.c.back() % p;
-    if (b_lc < 0) b_lc += p;
-    // Find b_lc^(-1) mod p.
-    long long inv = 0;
-    for (long long k = 1; k < p; ++k) {
-        if ((b_lc * k) % p == 1) { inv = k; break; }
-    }
-    FpPoly q; q.p = p; q.c.assign(static_cast<std::size_t>(da - db + 1), 0);
-    FpPoly r = a;
-    for (long long i = da; i >= db; --i) {
-        if (r.c[static_cast<std::size_t>(i)] == 0) continue;
-        long long shift = i - db;
-        long long qc = (r.c[static_cast<std::size_t>(i)] * inv) % p;
-        q.c[static_cast<std::size_t>(shift)] = qc;
-        // Subtract qc * x^shift * b from r
-        for (long long j = 0; j <= db; ++j) {
-            long long rj = r.c[static_cast<std::size_t>(shift + j)]
-                          - qc * b.c[static_cast<std::size_t>(j)];
-            rj %= p;
-            if (rj < 0) rj += p;
-            r.c[static_cast<std::size_t>(shift + j)] = rj;
-        }
-    }
-    while (r.c.size() > 1 && r.c.back() == 0) r.c.pop_back();
-    while (q.c.size() > 1 && q.c.back() == 0) q.c.pop_back();
-    return {q, r};
-}
-
-// Evaluate F_p[x] polynomial at a in F_p.  Horner's method.
-inline long long fp_eval(const FpPoly& f, long long a) {
-    if (f.c.empty()) return 0;
-    long long r = f.c.back() % f.p;
-    if (r < 0) r += f.p;
-    for (long long i = static_cast<long long>(f.c.size()) - 2; i >= 0; --i) {
-        r = (r * a + f.c[static_cast<std::size_t>(i)]) % f.p;
-        if (r < 0) r += f.p;
-    }
-    return r;
-}
-
-// Greatest common divisor of two F_p[x] polynomials (monic).
-inline FpPoly fp_gcd(const FpPoly& a, const FpPoly& b) {
-    if (a.p != b.p) throw std::invalid_argument("fp_gcd: mismatched primes");
-    FpPoly x = a, y = b;
-    while (!(y.c.size() == 1 && y.c[0] == 0)) {
-        auto dm = fp_divmod(x, y);
-        x = y;
-        y = dm.second;
-    }
-    // Make monic.
-    if (x.c.empty() || x.c.back() == 0) {
-        FpPoly r; r.p = a.p; r.c = {1}; return r;
-    }
-    long long inv = 0;
-    for (long long k = 1; k < a.p; ++k) {
-        if ((x.c.back() * k) % a.p == 1) { inv = k; break; }
-    }
-    for (auto& ci : x.c) ci = (ci * inv) % a.p;
-    return x;
-}
-
-// Make a F_p[x] polynomial from a monic (x - a) factor.
-inline FpPoly fp_linear(long long p, long long a) {
-    // (x - a) = -a + 1·x  (in low-first coefficients, the constant
-    // term is -a, the leading is 1)
-    FpPoly f;
-    f.p = p;
-    long long ca = ((-a) % p + p) % p;
-    f.c = {ca, 1};
-    return f;
-}
-
-// ===================================================================
-// Factoring f_p in F_p[x] (small degree, root extraction)
-// ===================================================================
-//
-// For f_p of degree n ≤ 4, factor by:
-//   1. For each a in F_p, check if (x - a) divides f_p; if so,
-//      record the multiplicity and divide out.
-//   2. If anything remains, it's a product of irreducible factors
-//      of degree ≥ 2.  For degree 2, a rootless residual is
-//      automatically irreducible.  For degree 4, this function does
-//      NOT attempt the Cantor-Zassenhaus split a residual product of
-//      two quadratics would need (an earlier version of this comment
-//      claimed it did; it never actually did) -- it just reports the
-//      whole residual as one (possibly wrong) irreducible factor. See
-//      fp_poly_factor.hpp's factor_fp_general for the actual fix.
-//
-// Returns the list of (irreducible factor, multiplicity) pairs.
-// All factors are returned in monic form.
-
-struct FpFactor {
-    FpPoly g;       // Monic irreducible factor
-    long long mult; // Multiplicity
-};
-
+// Factor f in F_p[x], any degree, any prime -- see this file's own
+// header comment above for what "any degree" fixes relative to an
+// earlier, degree<=4-only version of this function. Implemented in
+// fp_poly_factor.hpp (squarefree + distinct-degree + Cantor-
+// Zassenhaus equal-degree factorization); re-exposed under this name
+// here so every existing caller (this file's factor_prime_in_qbeta,
+// and the direct callers in local_field.hpp, maximal_order.hpp,
+// coincidence_and_property_f.hpp) gets the corrected algorithm with
+// no call-site changes.
 inline std::vector<FpFactor> factor_fp(const FpPoly& f) {
-    std::vector<FpFactor> result;
-    if (f.c.size() == 1 && f.c[0] == 0) return result;  // zero polynomial
-    long long p = f.p;
-    // Ensure f is monic
-    FpPoly f_monic = f;
-    if (f_monic.c.back() != 1) {
-        long long inv = 0;
-        for (long long k = 1; k < p; ++k) {
-            if ((f_monic.c.back() * k) % p == 1) { inv = k; break; }
-        }
-        for (auto& ci : f_monic.c) ci = (ci * inv) % p;
-    }
-    // Try each a in F_p as a root
-    for (long long a = 0; a < p; ++a) {
-        if (fp_eval(f_monic, a) != 0) continue;
-        // (x - a) is a factor; find its multiplicity
-        FpPoly linear = fp_linear(p, a);
-        long long mult = 0;
-        FpPoly cur = f_monic;
-        while (cur.c.size() > 0 && !(cur.c.size() == 1 && cur.c[0] == 0)) {
-            auto dm = fp_divmod(cur, linear);
-            if (!(dm.second.c.size() == 1 && dm.second.c[0] == 0)) break;
-            cur = dm.first;
-            ++mult;
-        }
-        FpFactor fac;
-        fac.g = linear;  // (x - a) is already monic
-        fac.mult = mult;
-        result.push_back(fac);
-        f_monic = cur;
-    }
-    // Whatever remains is a product of irreducible factors of
-    // degree ≥ 2.  For small degree (≤ 4) this is at most one
-    // irreducible factor or a product of two irreducibles.
-    if (!(f_monic.c.size() == 1 && f_monic.c[0] == 0) && f_monic.c.size() > 1) {
-        FpFactor fac;
-        fac.g = f_monic;  // monic
-        fac.mult = 1;
-        result.push_back(fac);
-    }
-    return result;
-}
-
-// ===================================================================
-// Lift an F_p[x] irreducible factor to Z[x] (with coefficients
-// in {0, 1, ..., p-1}, except leading = 1).
-// ===================================================================
-inline mathlib::PolyZ lift_fp_factor_to_z(const FpPoly& g) {
-    mathlib::PolyZ r;
-    r.ensure_size(g.c.size());
-    for (std::size_t i = 0; i < g.c.size(); ++i) {
-        mathlib::set_si(r.coeff(i), g.c[i]);
-    }
-    return r;
-}
-
-// ===================================================================
-// Reduce a PolyZ (over Z) to F_p[x] directly (no PolyQ round-trip).
-// ===================================================================
-inline FpPoly reduce_z_to_fp(const mathlib::PolyZ& z, long long p) {
-    FpPoly f;
-    f.p = p;
-    f.c.assign(z.coeffs_.size(), 0);
-    for (std::size_t i = 0; i < z.coeffs_.size(); ++i) {
-        unsigned long n = mpz_fdiv_ui(z.coeff(i).get(), static_cast<unsigned long>(p));
-        f.c[i] = static_cast<long long>(n);
-    }
-    while (f.c.size() > 1 && f.c.back() == 0) f.c.pop_back();
-    return f;
+    return factor_fp_general(f);
 }
 
 // ===================================================================

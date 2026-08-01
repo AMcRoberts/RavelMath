@@ -2,20 +2,22 @@
 //
 // Property test for include/adelic/fp_poly_factor.hpp's general F_p[x]
 // factoring (squarefree factorization + distinct-degree factorization
-// + Cantor-Zassenhaus equal-degree factorization), against:
-//   1. Agreement with the existing (root-extraction-only, degree<=4
-//      scoped) factor_fp on every case that old function actually
-//      gets right.
-//   2. A genuine, previously-undetected bug in factor_fp, found (not
-//      sought out) while scoping this file: factor_fp assumes any
-//      degree>=2 residual after root extraction is a SINGLE
-//      irreducible factor, which is simply false whenever that
-//      residual is a product of two-or-more irreducibles of the same
-//      degree with no roots in F_p. Demonstrated with an explicit
-//      degree-4 example (product of two irreducible quadratics mod 5)
-//      where factor_fp returns one wrong quartic "factor" and
-//      factor_fp_general correctly returns two quadratics,
-//      cross-checked by multiplying the found factors back together.
+// + Cantor-Zassenhaus equal-degree factorization). dedekind_
+// factorization.hpp's factor_fp is now DEFINED as factor_fp_general
+// (same algorithm, one name), so every check below that compares them
+// is a same-function sanity check, not old-vs-new -- kept because it
+// still documents, precisely, the bug this algorithm fixed:
+//   1. Regression: factor_fp/factor_fp_general still agree with what
+//      the OLD (pre-fix) root-extraction-only implementation got
+//      right, on every such case.
+//   2. The actual bug, found (not sought out) while scoping this
+//      file: the old factor_fp assumed any degree>=2 residual after
+//      root extraction was a SINGLE irreducible factor, which is
+//      simply false whenever that residual is a product of two-or-
+//      more irreducibles of the same degree with no roots in F_p.
+//      Demonstrated with an explicit degree-4 example (product of two
+//      irreducible quadratics mod 5), cross-checked by multiplying the
+//      found factors back together to reproduce the original.
 //   3. A char-2 equal-degree-factorization case (product of two
 //      irreducible cubics mod 2) -- the odd-p and p=2 splitting
 //      polynomials in Cantor-Zassenhaus are genuinely different
@@ -46,7 +48,6 @@ using adelic::FpFactor;
 using adelic::factor_fp;
 using adelic::factor_fp_general;
 using adelic::factor_prime_in_qbeta;
-using adelic::factor_prime_in_qbeta_general;
 using adelic::fp_mul;
 using adelic::fp_eval;
 using adelic::fp_degree;
@@ -102,23 +103,20 @@ int main() {
               "both reconstruct exactly to the original polynomial");
     }
 
-    fprintf(stderr, "\n=== a real bug in factor_fp, found while scoping this file ===\n");
+    fprintf(stderr, "\n=== the bug this algorithm fixed, demonstrated directly ===\n");
     {
         // x^4+1 mod 5 = (x^2+2)(x^2+3), a product of two DISTINCT
         // irreducible quadratics with no roots in F_5 -- found by
         // direct search (see the file's own commit for the search),
-        // not picked to look nice.
+        // not picked to look nice. An earlier, pre-fix version of
+        // factor_fp reported this as one WRONG degree-4 "irreducible"
+        // factor; factor_fp/factor_fp_general (now the same algorithm)
+        // correctly find two degree-2 factors.
         FpPoly f; f.p = 5; f.c = {1, 0, 0, 0, 1};
         CHECK(!has_root(f), "x^4+1 mod 5 has no roots");
 
-        auto old_f = factor_fp(f);
-        CHECK(old_f.size() == 1,
-              "factor_fp WRONGLY reports a single degree-4 factor (the bug)");
-        CHECK(fp_degree(old_f[0].g) == 4,
-              "that single wrong factor has degree 4 (should have split into two degree-2 factors)");
-
-        auto new_f = factor_fp_general(f);
-        CHECK(new_f.size() == 2, "factor_fp_general correctly finds two factors");
+        auto new_f = factor_fp(f);
+        CHECK(new_f.size() == 2, "factor_fp correctly finds two factors (not the old bug's one wrong quartic)");
         bool both_degree_2 = new_f.size() == 2 &&
             fp_degree(new_f[0].g) == 2 && fp_degree(new_f[1].g) == 2;
         CHECK(both_degree_2, "both factors have degree 2, as expected for a product of two irreducible quadratics");
@@ -126,7 +124,9 @@ int main() {
             CHECK(!has_root(fac.g), "each found quadratic factor is itself irreducible (no root)");
         }
         CHECK(same_poly(reconstruct(new_f, 5), f),
-              "factor_fp_general's factors multiply back to exactly x^4+1 mod 5");
+              "factor_fp's factors multiply back to exactly x^4+1 mod 5");
+        CHECK(same_poly(reconstruct(factor_fp_general(f), 5), f),
+              "factor_fp_general (the same algorithm, called by its other name) agrees");
     }
 
     fprintf(stderr, "\n=== char-2 equal-degree factorization (odd-p formula doesn't apply) ===\n");
@@ -183,12 +183,18 @@ int main() {
               "both report multiplicity 2 for the repeated root at x=1");
     }
 
-    fprintf(stderr, "\n=== full Dedekind-level integration: the bug at the actual entry point ===\n");
+    fprintf(stderr, "\n=== full Dedekind-level integration: the fix at the actual entry point ===\n");
     {
         // x^4+1 (the 8th cyclotomic polynomial, a genuine irreducible
         // quartic over Q -- not picked for being a Pisot minimal
         // polynomial, just for reducing mod 5 to exactly the bug case
         // demonstrated above). PolyZ low-first: 1 + 0x + 0x^2 + 0x^3 + x^4.
+        // factor_prime_in_qbeta is now defined in terms of the fixed
+        // factor_fp, so this is the SAME entry point every existing
+        // caller already uses, now producing the correct answer: two
+        // primes above 5 with residue degree 2 each (an earlier,
+        // pre-fix version wrongly reported one prime with residue
+        // degree 4).
         mathlib::PolyZ charpoly;
         charpoly.ensure_size(5);
         mathlib::set_si(charpoly.coeff(0), 1);
@@ -197,20 +203,14 @@ int main() {
         mathlib::set_si(charpoly.coeff(3), 0);
         mathlib::set_si(charpoly.coeff(4), 1);
 
-        auto old_dedekind = factor_prime_in_qbeta(charpoly, 5);
-        CHECK(old_dedekind.prime_ideals.size() == 1,
-              "factor_prime_in_qbeta (old, at the Dedekind level) WRONGLY reports one prime above 5");
-        CHECK(old_dedekind.prime_ideals.size() == 1 && old_dedekind.prime_ideals[0].f == 4,
-              "that one wrong prime ideal has residue degree f=4 (should be two primes with f=2 each)");
-
-        auto new_dedekind = factor_prime_in_qbeta_general(charpoly, 5);
-        CHECK(new_dedekind.prime_ideals.size() == 2,
-              "factor_prime_in_qbeta_general correctly reports two primes above 5");
-        bool both_f2 = new_dedekind.prime_ideals.size() == 2 &&
-            new_dedekind.prime_ideals[0].f == 2 && new_dedekind.prime_ideals[1].f == 2;
+        auto dedekind = factor_prime_in_qbeta(charpoly, 5);
+        CHECK(dedekind.prime_ideals.size() == 2,
+              "factor_prime_in_qbeta correctly reports two primes above 5 (not the old bug's one, f=4)");
+        bool both_f2 = dedekind.prime_ideals.size() == 2 &&
+            dedekind.prime_ideals[0].f == 2 && dedekind.prime_ideals[1].f == 2;
         CHECK(both_f2, "both primes above 5 have residue degree f=2, as expected");
         long long total_ef = 0;
-        for (const auto& pi : new_dedekind.prime_ideals) total_ef += pi.e * pi.f;
+        for (const auto& pi : dedekind.prime_ideals) total_ef += pi.e * pi.f;
         CHECK(total_ef == 4, "sum of e_i*f_i over both primes equals the field degree 4 (sanity)");
     }
 
