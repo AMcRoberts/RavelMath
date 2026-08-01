@@ -1702,11 +1702,31 @@ before the exact values were checked. This precise, two-piece closed
 form (linear on `[0,a-2]`, two named point values at `a-1` and `a`) is
 a real refinement over the vague "bounded tie" phrasing, and a much
 more attackable target for an actual proof than "somewhere near the
-core, something happens" -- the natural next step is explaining
-`rank=a-1`'s +1 bump structurally (plausibly the same "moving bridge"
-mechanism already documented at the terminal end of the shell chain),
-in the same spirit as this session's earlier "prove even the
-counterexamples" upgrades to Rounds 2/3/4. Not yet attempted.
+core, something happens."
+
+**A sensible mechanism found (2026-08-01, later the same day), not yet
+a proof.** Dumped the raw round-1 (`A[1]`, the seed `plus_minus_C`
+itself) and round-2 (`A[2] = Red(C-Corona(A[1]))`) node sets directly
+at `a=10` and checked membership for both `rank=a-1`'s and `rank=a-2`'s
+states explicitly (not inferred from the birth-round table): **neither
+rank's states are in `A[1]` at all; both appear for the first time in
+`A[2]`.** So there is no delay specific to `rank=a-1` -- the real fact
+is that a SINGLE `c_corona` step from the seed reaches both shells at
+once. The "linear formula" (`birth_round=a-rank`) was never a
+mechanism, just a curve fit to ranks `0..a-2`, and naively extending it
+backward to `rank=a-1` (predicting round `1`, i.e. membership in the
+seed itself) was never actually justified -- `rank=a` (the core) is the
+only rank truly IN the seed by construction; every other rank needs at
+least one corona step, so round `2` is the earliest ANY non-core rank
+can appear, and `rank=a-1` simply achieves that earliest-possible round
+alongside `rank=a-2` rather than being "one round late." What remains
+open is WHY one corona step from the seed reaches exactly two shells'
+worth of new territory rather than one -- plausibly because `plus_minus_
+C` itself already has some geometric width spanning what the abstract
+shell numbering calls two ranks, which would need tracing `c_corona`'s
+own edge-generation rule against the explicit shell coordinate formulas
+in `class_ii_neighbor_regular_shell_states` to confirm. Not yet
+attempted; a smaller, better-defined target than before.
 
 ## Neighbor scope
 
