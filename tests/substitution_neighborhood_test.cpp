@@ -1,6 +1,7 @@
 #include <array>
 #include <cstddef>
 #include <cstdio>
+#include <set>
 
 #include "ravel/class_ii_neighbor_family.hpp"
 #include "ravel/class_ii_neighbor2_pruning.hpp"
@@ -184,6 +185,20 @@ int main() {
         && class_ii_neighbor2_initial_extension_states().size() == 22
         && class_ii_neighbor2_signed_contact_set().size() == 50
         && class_ii_neighbor2_second_extension_states().size() == 25;
+    // Proven 2026-08-01 (app/class_ii_neighbor2_round1_union_hypothesis.cpp):
+    // the Round-1 target decomposes exactly as plus_minus_C(sigma_a) union
+    // E_1 -- class_ii_contact_set(), its mirror, and E_1 are all
+    // parameter-free, so this is a single universal set-equality check,
+    // not a per-a sweep. Enrolled here for permanent regression coverage.
+    {
+        const auto contact = class_ii_contact_set();
+        const auto e1 = class_ii_neighbor2_initial_extension_states();
+        std::set<SNode<3>> decomposed;
+        for (const auto& s : contact) decomposed.insert(s);
+        for (const auto& s : contact) decomposed.insert(s.mirror());
+        for (const auto& s : e1) decomposed.insert(s);
+        ok = ok && decomposed == class_ii_neighbor2_signed_contact_set();
+    }
     const auto initial_extension =
         class_ii_neighbor2_initial_extension_states();
     for (const auto& node : initial_extension) {
