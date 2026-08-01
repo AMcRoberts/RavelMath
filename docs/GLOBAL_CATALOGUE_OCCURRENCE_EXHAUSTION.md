@@ -1729,3 +1729,32 @@ category classification of the raw backward-closure branches for
 `tau_a` specifically, reduced via the Class-II cubic to a bounded
 number of `x0` slices, then closed by affine endpoint classification.
 No such construction for `tau_a` (as opposed to `sigma_a`) exists yet.
+
+**One piece of that goal formula proven outright (2026-08-01), the
+rest still open.** The formula above names TWO separate facts: (A) the
+*target itself* really does decompose as `plus_minus_C(sigma_a) union
+E_1` (i.e. `class_ii_neighbor2_signed_contact_set()` literally equals
+`class_ii_contact_set() union mirror(class_ii_contact_set()) union
+class_ii_neighbor2_initial_extension_states()`), and (B) that this
+50-state target is the *correct* reverse-inclusion closure of `tau_a`'s
+own `D_cont` seeds, for every `a`. Fact (A) is now proven completely
+and universally, by a single set-equality check (not a sweep): all
+three named catalogues are parameter-free (no `a` in any of their
+signatures), so once checked, the identity holds for literally every
+`a` simultaneously -- there is nothing left to sweep. Fact (B) remains
+open and is exactly what `class_ii_neighbor2_first_missing_premise(a)`
+still correctly reports as `open_reverse_inclusion`; proving it is
+still the real next step this section's first paragraph describes.
+
+Found via `app/class_ii_neighbor2_symmetric_seed_closure.cpp`'s own
+breakdown data (a=3..6): a third, auxiliary object -- the
+`backward_closure`/`red_anode` result seeded from `D_cont(tau_a) union
+mirror(D_cont(tau_a))`, 32 states, itself checked `a`-independent from
+a=3 to a=1000 (64 values, zero exceptions) -- already contains all 14
+states of `class_ii_contact_set()`, plus exactly half of `E_1` (11/22)
+and half of `mirror(class_ii_contact_set())` (7/14). `11+7=18` matched
+that app's own "missing" count, and `32+18=50` matched the target's
+size -- checked as the literal sets, not just the counts, before the
+much simpler fact-(A) identity above was tried directly and confirmed.
+See `app/class_ii_neighbor2_round1_union_hypothesis.cpp` for both
+checks (`make class_ii_neighbor2_round1_union_hypothesis`).

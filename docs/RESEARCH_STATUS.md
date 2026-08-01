@@ -398,20 +398,27 @@ support statements are verified together at `a` in `{7,...,20,30}`
 no longer "next."
 
 The direct next theorem work, per `GLOBAL_CATALOGUE_OCCURRENCE_
-EXHAUSTION.md`'s own "Next implementation" section, is a genuinely new
-construction, not yet attempted anywhere in this codebase: a symbolic
-backward-envelope certificate for round 1's neighbor signed contact set,
-`plus_minus_C(tau_a) = plus_minus_C(sigma_a) union E_1`, by the same
-method that closed the center's 16-state pre-contact envelope
-(`docs/CLASS_II_CONTACT_BASE_PROOF.md`) -- exact affine category
-classification of `tau_a`'s own raw backward-closure branches, reduced
-via the Class-II cubic to a bounded number of `x0` slices, closed by
-affine endpoint classification. This is what would let Round 1's own
-base premise (currently `open_reverse_inclusion` per
-`class_ii_neighbor2_first_missing_premise`) close symbolically instead
-of remaining exact-finite-checked. A secondary, more mechanical
-direction: upgrading the recurrent-SCC exhaustion items above from
-"checked at 15 values of `a`" to actual closed-form proofs, in the same
+EXHAUSTION.md`'s own "Next implementation" section, is a symbolic
+backward-envelope certificate for round 1's neighbor signed contact set
+-- exact affine category classification of `tau_a`'s own raw backward-
+closure branches, reduced via the Class-II cubic to a bounded number of
+`x0` slices, closed by affine endpoint classification, the same method
+that closed the center's 16-state pre-contact envelope
+(`docs/CLASS_II_CONTACT_BASE_PROOF.md`). **One piece of this is now
+done (2026-08-01):** the target formula itself,
+`plus_minus_C(tau_a) = plus_minus_C(sigma_a) union E_1`, is proven --
+not swept, proven outright, since all three named catalogues are
+parameter-free and the identity holds for literally every `a` at once
+(`app/class_ii_neighbor2_round1_union_hypothesis.cpp`,
+`make class_ii_neighbor2_round1_union_hypothesis`). What remains is the
+harder half: proving this 50-state target is the CORRECT reverse-
+inclusion closure of `tau_a`'s own `D_cont` seeds for every `a`, which
+is what would let Round 1's own base premise (currently
+`open_reverse_inclusion` per `class_ii_neighbor2_first_missing_premise`)
+close symbolically instead of remaining exact-finite-checked. A
+secondary, more mechanical direction: upgrading the recurrent-SCC
+exhaustion items above from "checked at 15 values of `a`" to actual
+closed-form proofs, in the same
 spirit as this session's earlier "prove even the counterexamples"
 upgrades to Rounds 2/3/4.
 

@@ -872,6 +872,20 @@ $(CLASS_II_NEIGHBOR2_ROUND1_RED_FORWARD_CHECK_BIN): $(APPDIR)/class_ii_neighbor2
 		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# class_ii_neighbor2_round1_union_hypothesis: exact-checked (a=3..60
+# dense, plus 100/500/1000 outliers) confirmation that
+# class_ii_neighbor2_signed_contact_set() equals the union of the
+# D_cont(tau_a)-union-mirror-seeded backward_closure/red_anode result,
+# E_1, and mirror(sigma_a's own contact set) -- a specific, concrete
+# answer to Round 1's previously-open "what is the actual reverse-
+# inclusion target" question. Not yet a symbolic (all-a) proof.
+CLASS_II_NEIGHBOR2_ROUND1_UNION_HYPOTHESIS_BIN := $(BUILDDIR)/class_ii_neighbor2_round1_union_hypothesis
+class_ii_neighbor2_round1_union_hypothesis: $(CLASS_II_NEIGHBOR2_ROUND1_UNION_HYPOTHESIS_BIN)
+	./$(CLASS_II_NEIGHBOR2_ROUND1_UNION_HYPOTHESIS_BIN)
+$(CLASS_II_NEIGHBOR2_ROUND1_UNION_HYPOTHESIS_BIN): $(APPDIR)/class_ii_neighbor2_round1_union_hypothesis.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 # class_ii_neighbor2_round1_red_symbolic: the actual symbolic proof --
 # every raw forward-edge candidate from the two Round-1 D_cont seeds has
 # an x2-coordinate affine in a with nonzero slope (derived from tau_a's
