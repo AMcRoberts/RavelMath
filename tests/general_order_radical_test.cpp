@@ -79,6 +79,38 @@ int main() {
     CHECK(old_r.needs_another_round == new_r.needs_another_round,
           "needs_another_round agrees (both false: -503 is odd, so p=2 is certainly done)");
 
+    fprintf(stderr, "\n=== the full chain: enlarge, derive structure constants, enlarge again ===\n");
+    // The piece maximal_order.hpp's header comment used to name as the
+    // one remaining gap: structure_constants_from_basis_change turns
+    // round 1's HNF basis (relative to O1's own basis, not necessarily
+    // the power basis -- this test happens to start from the power
+    // basis, but the derivation itself does not assume that) into a
+    // GeneralOrder in its own right, so round 2 can run the general
+    // method again without ever needing a defining polynomial for it.
+    {
+        auto O2 = adelic::structure_constants_from_basis_change(O, new_r.basis, 2);
+        CHECK(O2.n == 3, "derived order has the same rank");
+
+        auto disc_O2 = adelic::discriminant_from_structure_constants(O2);
+        CHECK(mathlib::cmp(disc_O2, new_r.disc_after) == 0,
+              "O2's discriminant, computed FRESH from its own derived structure constants, "
+              "agrees with round 1's disc_after -- a real cross-check, not the same number "
+              "carried forward unexamined");
+
+        auto round2 = adelic::enlarge_order_round2_bigint(O2, 2);
+        CHECK(!round2.enlarged,
+              "round 2 (general method, on the DERIVED order, no defining polynomial anywhere) "
+              "correctly finds O2 already 2-maximal -- the fixed point, reached by actually "
+              "computing a second round, not merely inferred from needs_another_round");
+        CHECK(mathlib::cmp(round2.disc_after, new_r.disc_after) == 0,
+              "round 2's discriminant is unchanged, as it must be when nothing enlarges");
+    }
+    fprintf(stderr,
+        "  NOTE: this demonstrates the chain correctly recognizes a fixed point after one\n"
+        "  round (the only case a textbook single-round example can exercise). It does NOT\n"
+        "  demonstrate a genuine 2-round enlargement -- no such worked example was available\n"
+        "  to test against, and none was constructed. That remains open.\n");
+
     fprintf(stderr, "\n%d/%d checks passed\n", n_pass, n_pass + n_fail);
     return n_fail == 0 ? 0 : 1;
 }

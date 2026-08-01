@@ -40,13 +40,24 @@
 // on the trusted textbook case (tests/general_order_radical_test.cpp)
 // at p=2, n=3 -- the harder p<=n regime, not the easier one.
 //
-// What is STILL not done, honestly: deriving a NEW GeneralOrder's own
-// structure constants from an enlarged order's HNF basis (currently
-// expressed relative to the power basis with an implicit denominator
-// p), which is the remaining piece that would let a caller actually
-// CHAIN rounds -- enlarge once, re-derive structure constants for the
-// result, enlarge again, repeat to a fixed point. Every piece needed
-// for that chaining exists now except that one basis-change step.
+// That last basis-change step is done too now: structure_constants_
+// from_basis_change turns an enlarged order's HNF basis (relative to
+// whatever basis the INPUT order had, via Cramer's rule, checked exact
+// at every coordinate) into a GeneralOrder in its own right, so the
+// chain enlarge -> derive structure constants -> enlarge again
+// (general method) -> repeat runs to a fixed point with no defining
+// polynomial anywhere past round 1. tests/general_order_radical_test.cpp
+// demonstrates the full chain on the trusted textbook case: round 1
+// enlarges (disc -2012 -> -503), the derived order's OWN discriminant
+// (computed fresh from its own structure constants, not carried
+// forward) agrees, and round 2 correctly finds it already 2-maximal.
+//
+// HONEST LIMIT of that demonstration: the only case checked is a
+// single-round textbook example, so the chain is verified to correctly
+// detect a fixed point after one round, not verified against a case
+// that genuinely needs two or more. No such worked example was
+// available or constructed -- that remains open if a concrete
+// substitution ever needs it.
 //
 // Algorithm (Cohen, "A Course in Computational Algebraic Number
 // Theory", §6.1, specialized to a monogenic starting order Z[beta]):
@@ -898,6 +909,110 @@ inline GeneralRound2Result enlarge_order_round2_bigint(const GeneralOrder& O, lo
     out.needs_another_round = mathlib::is_zero(disc_rem);
 
     return out;
+}
+
+// ===================================================================
+// The last piece: deriving a NEW GeneralOrder's own structure
+// constants from an enlarged order's HNF basis (as returned in
+// enlarge_order_round2_bigint's .basis field, relative to the INPUT
+// order's own basis, with implicit denominator p) -- the piece the
+// header comment at the top of this file names as the one remaining
+// gap between "the general method works" and "a caller can chain
+// multiple rounds to a fixed point." With this, that chain is
+// complete: enlarge -> derive structure constants for the result ->
+// enlarge again (general method, since the result may no longer be
+// monogenic) -> repeat until enlarged==false.
+// ===================================================================
+
+// Solve Y*H = C for the row vector Y (H an n x n invertible integer
+// matrix, C an integer row vector), via Cramer's rule: Y[k] =
+// det(H with row k replaced by C) / det(H). Returns Y's numerator
+// (i.e. Y*1, already exact) -- callers needing Y/p (this file's own
+// use) divide afterward and check exactness themselves, since "exact"
+// means different things depending on what the caller is solving for.
+inline std::vector<mathlib::BigInt> solve_row_system_cramer(
+        const std::vector<std::vector<mathlib::BigInt>>& H,
+        const mathlib::BigInt& det_H,
+        const std::vector<mathlib::BigInt>& C,
+        std::size_t n) {
+    std::vector<mathlib::BigInt> Y(n);
+    for (std::size_t k = 0; k < n; ++k) {
+        auto H_mod = H;
+        H_mod[k] = C;
+        mathlib::BigInt num = mathlib::integer_determinant_bigint(H_mod);
+        mathlib::BigInt q, rem;
+        mpz_tdiv_qr(q.get(), rem.get(), num.get(), det_H.get());
+        if (!mathlib::is_zero(rem)) {
+            throw std::runtime_error("solve_row_system_cramer: Y*H=C has no integer solution -- "
+                                      "H is not invertible over this system, or C is not in its "
+                                      "row space (bug, not a math result, when H is a genuine "
+                                      "order basis)");
+        }
+        Y[k] = q;
+    }
+    return Y;
+}
+
+// Structure constants for the order with basis rows H[i]/p (relative
+// to O's own basis w_0..w_{n-1}), derived from O's structure
+// constants. Derivation: if v_i = (1/p) sum_k H[i][k] w_k, then
+// v_i*v_j = (1/p^2) sum_m C_m w_m where C_m = sum_{k,l}
+// H[i][k]*H[j][l]*O.mult[k][l][m] (exact integers, straight from O's
+// own table). Re-expressing that product in the v-basis instead of
+// the w-basis needs c_v solving c_v * H = C/p, i.e. (p*c_v) solving
+// Y*H=C via Cramer's rule above, then c_v = Y/p -- checked exact at
+// every coordinate, since v_i*v_j MUST be an integer combination of
+// v_0..v_{n-1} for H to actually be a ring's basis (this is a
+// property of the construction, not assumed: enlarge_order_round2_
+// bigint's own O'=O+(1/p)I_p formula is exactly what guarantees it).
+inline GeneralOrder structure_constants_from_basis_change(
+        const GeneralOrder& O,
+        const std::vector<std::vector<mathlib::BigInt>>& H,
+        long long p) {
+    std::size_t n = static_cast<std::size_t>(O.n);
+    mathlib::BigInt det_H = mathlib::integer_determinant_bigint(H);
+    if (mathlib::is_zero(det_H)) {
+        throw std::invalid_argument(
+            "structure_constants_from_basis_change: H is singular, not a valid basis");
+    }
+    GeneralOrder O2;
+    O2.n = O.n;
+    O2.mult.assign(n, std::vector<std::vector<mathlib::BigInt>>(n));
+    mathlib::BigInt p_bi(p);
+    for (std::size_t i = 0; i < n; ++i) {
+        for (std::size_t j = 0; j < n; ++j) {
+            std::vector<mathlib::BigInt> C(n, mathlib::BigInt(0));
+            for (std::size_t k = 0; k < n; ++k) {
+                if (mathlib::is_zero(H[i][k])) continue;
+                for (std::size_t l = 0; l < n; ++l) {
+                    if (mathlib::is_zero(H[j][l])) continue;
+                    mathlib::BigInt coeff;
+                    mathlib::mul(coeff, H[i][k], H[j][l]);
+                    for (std::size_t m = 0; m < n; ++m) {
+                        mathlib::BigInt term;
+                        mathlib::mul(term, coeff, O.mult[k][l][m]);
+                        mathlib::add(C[m], C[m], term);
+                    }
+                }
+            }
+            // Y solves Y*H = C; c_v = Y/p, exact.
+            auto Y = solve_row_system_cramer(H, det_H, C, n);
+            std::vector<mathlib::BigInt> c_v(n);
+            for (std::size_t k = 0; k < n; ++k) {
+                mathlib::BigInt q, rem;
+                mpz_tdiv_qr(q.get(), rem.get(), Y[k].get(), p_bi.get());
+                if (!mathlib::is_zero(rem)) {
+                    throw std::runtime_error(
+                        "structure_constants_from_basis_change: v_i*v_j has a non-integer "
+                        "coordinate -- construction invariant violated (bug, not a math "
+                        "result, if H is a genuine order basis)");
+                }
+                c_v[k] = q;
+            }
+            O2.mult[i][j] = std::move(c_v);
+        }
+    }
+    return O2;
 }
 
 }  // namespace adelic
