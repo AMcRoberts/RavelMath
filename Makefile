@@ -287,6 +287,7 @@ TESTS_DEFAULT := \
 	number_field_parity_test \
 	poly_discriminant_bigint_test \
 	fp_poly_factor_test \
+	maximal_order_bigint_test \
 	ambient_graph_test \
 	corona_test \
 	contact_boundary_test \
@@ -355,6 +356,11 @@ $(POLY_DISCRIMINANT_BIGINT_TEST_BIN): $(TESTDIR)/poly_discriminant_bigint_test.c
 FP_POLY_FACTOR_TEST_BIN := $(BUILDDIR)/fp_poly_factor_test
 fp_poly_factor_test: $(FP_POLY_FACTOR_TEST_BIN)
 $(FP_POLY_FACTOR_TEST_BIN): $(TESTDIR)/fp_poly_factor_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+MAXIMAL_ORDER_BIGINT_TEST_BIN := $(BUILDDIR)/maximal_order_bigint_test
+maximal_order_bigint_test: $(MAXIMAL_ORDER_BIGINT_TEST_BIN)
+$(MAXIMAL_ORDER_BIGINT_TEST_BIN): $(TESTDIR)/maximal_order_bigint_test.cpp | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
 AMBIENT_GRAPH_TEST_BIN := $(BUILDDIR)/ambient_graph_test

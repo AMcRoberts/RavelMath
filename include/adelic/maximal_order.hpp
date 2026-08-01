@@ -12,19 +12,23 @@
 // the well-known textbook numbers for that example) that the
 // resulting order's discriminant matches the true field discriminant.
 //
-// SCOPE, STATED HONESTLY: this implements ONE enlargement round using
-// `long long` arithmetic throughout (not mpz_t/exact big-integer
-// arithmetic), which is enough for the small alphabet sizes (n <= 4)
-// and small primes this project's Pisot substitutions actually
-// produce, and enough to resolve the Dedekind cubic test case in a
-// single round (as it does classically).  It is NOT a general
-// arbitrary-precision, iterate-to-fixed-point Round 2/Round 4
-// implementation -- a substitution whose order needs multiple rounds,
-// or whose intermediate quantities overflow 64-bit integers, is
-// out of scope for this version.  Extending to mpz_t and iterating
-// to a fixed point (checking is_p_maximal again on the enlarged
-// order and repeating if still not maximal) is the natural next step
-// once a concrete Pisot substitution actually needs it.
+// SCOPE, STATED HONESTLY: enlarge_order_round2 below implements ONE
+// enlargement round using `long long` arithmetic throughout, which is
+// enough for the small alphabet sizes (n <= 4) and small primes this
+// project's Pisot substitutions actually produce. That function's
+// intermediate quantities silently overflow for larger inputs --
+// CONFIRMED, not hypothetical: for x^10-2 at p=2, it doesn't just lose
+// precision, it throws a spurious "construction invariant violated"
+// exception, an int64 overflow masquerading as a math bug (see
+// tests/maximal_order_bigint_test.cpp). enlarge_order_round2_bigint,
+// near the end of this file, is the arbitrary-precision fix for
+// exactly that -- same single-round algorithm, mathlib::BigInt
+// throughout the integer-lattice arithmetic. It is still NOT the
+// general, iterate-to-a-fixed-point Round 2 algorithm for an arbitrary
+// (possibly non-monogenic) intermediate order -- see that function's
+// own comment for precisely what that would need and why it isn't
+// attempted here, and what `needs_another_round` does provide instead
+// (a necessary-condition check, not a resolution).
 //
 // Algorithm (Cohen, "A Course in Computational Algebraic Number
 // Theory", §6.1, specialized to a monogenic starting order Z[beta]):
@@ -63,6 +67,8 @@
 #include <vector>
 
 #include "adelic/dedekind_factorization.hpp"
+#include "math/bigint.hpp"
+#include "math/poly_discriminant.hpp"
 #include "math/poly_z.hpp"
 
 namespace adelic {
@@ -432,6 +438,184 @@ inline MaximalOrderRound2Result enlarge_order_round2(
                                   "construction invariant violated (bug, not a math result)");
     }
     out.disc_after = numer / denom;
+    return out;
+}
+
+// ===================================================================
+// Arbitrary-precision version, for degrees/discriminants beyond what
+// `long long` can safely hold. Same algorithm as enlarge_order_round2
+// above (same scope: one enlargement round, from a monogenic starting
+// order Z[beta] with a single defining polynomial), ported to
+// mathlib::BigInt throughout the integer-lattice arithmetic --
+// integer_hnf_bigint here, and integer_determinant_bigint /
+// poly_discriminant_bigint reused from math/poly_discriminant.hpp
+// (the same functions math/poly_discriminant_bigint_test.cpp already
+// validates and which already caught a real overflow bug in this
+// file's own poly_discriminant_ll). fp_row_span's mod-p linear algebra
+// stays `long long` deliberately -- every value there lives in [0,p),
+// never grows, so BigInt would add cost without fixing anything real.
+//
+// SCOPE, STATED HONESTLY (still): this is arbitrary precision for a
+// SINGLE round starting from a monogenic order. It is NOT the general,
+// iterate-to-a-fixed-point Round 2 algorithm for an arbitrary
+// (possibly non-monogenic) intermediate order -- that needs the
+// p-radical computed from an order's structure constants directly
+// (Cohen §6.1.3/Ore's method), not from factoring a single defining
+// polynomial mod p, since the enlarged order O' in general is no
+// longer Z[gamma] for any single gamma. What this DOES provide instead
+// of pretending to iterate: `needs_another_round`, a NECESSARY (not
+// sufficient) condition check -- if p^2 does not divide disc(O'), p is
+// certainly maximal now and no second round is needed; if p^2 DOES
+// divide disc(O'), the question is genuinely open (could still be
+// maximal, e.g. from ramification) and answering it needs the general
+// algorithm this file does not implement. Reporting "don't know, here
+// is precisely what would resolve it" is the honest answer here, not
+// a guess either way.
+struct MaximalOrderRound2ResultBigInt {
+    bool enlarged = false;
+    std::vector<std::vector<mathlib::BigInt>> basis;
+    mathlib::BigInt det_over_p_n_numerator;
+    mathlib::BigInt disc_before;
+    mathlib::BigInt disc_after;
+    // Necessary-condition check only -- see the file comment above.
+    // Meaningless (left false) when !enlarged, since then disc_after
+    // == disc_before and no enlargement was attempted in the first
+    // place.
+    bool needs_another_round = false;
+};
+
+// Integer HNF, BigInt version of integer_hnf above -- same pairwise
+// extended-Euclid combination structure (the same termination
+// argument applies verbatim: strictly decreasing nonzero-row count
+// per column, independent of entry magnitude).
+inline std::vector<std::vector<mathlib::BigInt>> integer_hnf_bigint(
+    std::vector<std::vector<mathlib::BigInt>> rows, std::size_t n) {
+    std::size_t r = 0;
+    for (std::size_t col = 0; col < n && r < rows.size(); ++col) {
+        for (;;) {
+            std::size_t i1 = rows.size();
+            for (std::size_t i = r; i < rows.size(); ++i) {
+                if (!mathlib::is_zero(rows[i][col])) { i1 = i; break; }
+            }
+            if (i1 == rows.size()) break;
+            std::size_t i2 = rows.size();
+            for (std::size_t i = i1 + 1; i < rows.size(); ++i) {
+                if (!mathlib::is_zero(rows[i][col])) { i2 = i; break; }
+            }
+            if (i2 == rows.size()) {
+                std::swap(rows[r], rows[i1]);
+                break;
+            }
+            // Extended Euclid on (a, b) = (rows[i1][col], rows[i2][col]).
+            const mathlib::BigInt& a = rows[i1][col];
+            const mathlib::BigInt& b = rows[i2][col];
+            mathlib::BigInt g, s, t;
+            mpz_gcdext(g.get(), s.get(), t.get(), a.get(), b.get());
+            mathlib::BigInt bg(0), ag(0);
+            if (!mathlib::is_zero(g)) {
+                mathlib::divexact(bg, b, g);
+                mathlib::divexact(ag, a, g);
+            }
+            std::vector<mathlib::BigInt> new1(n), new2(n);
+            for (std::size_t j = 0; j < n; ++j) {
+                mathlib::BigInt t1, t2, t3, t4;
+                mathlib::mul(t1, s, rows[i1][j]);
+                mathlib::mul(t2, t, rows[i2][j]);
+                mathlib::add(new1[j], t1, t2);
+                mathlib::mul(t3, bg, rows[i1][j]);
+                mathlib::mul(t4, ag, rows[i2][j]);
+                mathlib::sub(new2[j], t3, t4);
+            }
+            rows[i1] = std::move(new1);
+            rows[i2] = std::move(new2);
+        }
+        if (mathlib::sgn(rows[r][col]) < 0) {
+            for (std::size_t j = 0; j < n; ++j) mathlib::neg(rows[r][j]);
+        }
+        if (!mathlib::is_zero(rows[r][col])) ++r;
+    }
+    rows.resize(n);
+    return rows;
+}
+
+inline MaximalOrderRound2ResultBigInt enlarge_order_round2_bigint(
+    const std::vector<long long>& charpoly_high_to_low, long long p) {
+    MaximalOrderRound2ResultBigInt out;
+    long long n = static_cast<long long>(charpoly_high_to_low.size()) - 1;
+    out.disc_before = mathlib::poly_discriminant_bigint(charpoly_high_to_low);
+
+    FpPoly f_p;
+    f_p.p = p;
+    f_p.c.assign(static_cast<std::size_t>(n + 1), 0);
+    for (long long i = 0; i <= n; ++i) {
+        long long coeff = charpoly_high_to_low[static_cast<std::size_t>(n - i)];
+        long long m = ((coeff % p) + p) % p;
+        f_p.c[static_cast<std::size_t>(i)] = m;
+    }
+    while (f_p.c.size() > 1 && f_p.c.back() == 0) f_p.c.pop_back();
+
+    auto factors = factor_fp(f_p);
+    FpPoly rad = squarefree_radical_fp(factors, p);
+
+    std::size_t nn = static_cast<std::size_t>(n);
+    std::vector<std::vector<long long>> mult_columns;
+    for (std::size_t i = 0; i < nn; ++i) {
+        FpPoly xi;
+        xi.p = p;
+        xi.c.assign(i + 1, 0);
+        xi.c[i] = 1;
+        FpPoly prod = fp_mulmod(xi, rad, f_p);
+        mult_columns.push_back(fp_poly_to_vector(prod, nn));
+    }
+
+    auto nilradical_basis = fp_row_span(mult_columns, p);
+    if (nilradical_basis.empty()) {
+        out.enlarged = false;
+        out.disc_after = out.disc_before;
+        return out;
+    }
+
+    std::vector<std::vector<mathlib::BigInt>> rows;
+    for (std::size_t i = 0; i < nn; ++i) {
+        std::vector<mathlib::BigInt> e(nn, mathlib::BigInt(0));
+        e[i] = mathlib::BigInt(p);
+        rows.push_back(std::move(e));
+    }
+    for (const auto& v : nilradical_basis) {
+        std::vector<mathlib::BigInt> row(nn);
+        for (std::size_t j = 0; j < nn; ++j) row[j] = mathlib::BigInt(v[j]);
+        rows.push_back(std::move(row));
+    }
+
+    auto H = integer_hnf_bigint(rows, nn);
+    mathlib::BigInt det = mathlib::integer_determinant_bigint(H);
+
+    out.enlarged = true;
+    out.basis = H;
+    out.det_over_p_n_numerator = det;
+    mathlib::BigInt p_pow_n(1);
+    for (long long i = 0; i < n; ++i) mathlib::mul_si(p_pow_n, p_pow_n, p);
+
+    mathlib::BigInt numer, tmp;
+    mathlib::mul(tmp, det, det);
+    mathlib::mul(numer, out.disc_before, tmp);
+    mathlib::BigInt denom;
+    mathlib::mul(denom, p_pow_n, p_pow_n);
+
+    mathlib::BigInt q, rem;
+    mpz_tdiv_qr(q.get(), rem.get(), numer.get(), denom.get());
+    if (!mathlib::is_zero(rem)) {
+        throw std::runtime_error("enlarge_order_round2_bigint: disc(O') not an integer -- "
+                                  "construction invariant violated (bug, not a math result)");
+    }
+    out.disc_after = q;
+
+    mathlib::BigInt p_sq(p);
+    mathlib::mul_si(p_sq, p_sq, p);
+    mathlib::BigInt disc_rem;
+    mpz_tdiv_r(disc_rem.get(), out.disc_after.get(), p_sq.get());
+    out.needs_another_round = mathlib::is_zero(disc_rem);
+
     return out;
 }
 
