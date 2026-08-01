@@ -1565,6 +1565,66 @@ Only after these support statements are tied to the globally
 identified boundary graph may the universal polynomial/dominance
 results be promoted from catalogue theorems to graph theorems.
 
+### Items 1, 2, and 5: verified together, at a=7 through 30 (2026-07-31, night)
+
+`app/class_ii_neighbor_probe.cpp` already checked, for neighbor 2 at
+`a=3..8`, that the real, Tarjan-derived recurrent components of the
+fully-converged boundary graph (`WeightedDigraph::from_dense(gb_matrix)`,
+`tarjan_scc`, `is_recurrent_scc` -- genuine, generic SCC machinery, not
+special-purpose to this investigation) match the hand-catalogued
+`class_ii_neighbor_recurrent_component_states` node for node -- but
+this was folded into a much larger probe checking many other things at
+once, capped at `a<=8`, and never framed as answering this specific
+checklist.
+
+`app/class_ii_neighbor2_recurrent_exhaustion_check.cpp`
+(`make class_ii_neighbor2_recurrent_exhaustion_check`) extracts exactly
+that comparison as its own focused check and extends it well past the
+old ceiling: **exact match, node for node, at `a` in
+`{7,8,9,10,11,...,20,30}`** (fifteen distinct values), with the corona
+round cap scaled to `a+4` so larger `a` actually reach the true fixed
+point (`converged=1` confirmed at every value -- an earlier run at
+`a=15,20` with the old fixed cap of `12` silently under-converged and
+produced a spurious mismatch, caught by checking the `converged` flag
+rather than trusting the block count).
+
+Because a Tarjan SCC decomposition is, by construction, (a) internally
+strongly connected using the real graph's own edges and (b) pairwise
+non-mutually-reachable across distinct components, an exact match
+against the catalogue at a given `a` establishes **items 1, 2, and 5
+together** at that `a` -- not merely suggestive of them, since Tarjan's
+algorithm is a simple, well-audited piece of general graph theory doing
+the actual work, not a bespoke procedure built to agree with the
+catalogue.
+
+**A caught overclaim, same file.** A first draft additionally checked
+something *stronger* than item 5 literally requires: zero edges, either
+direction, between any two distinct recurrent blocks. That check
+failed -- found, not assumed -- exactly 8 such edges every time, always
+between the two ranks nearest the dominant core: rank `a -> a-1`
+(weight `6`, constant) and rank `a-1 -> a-2` (weight `2a-2`, growing
+with `a`). This does **not** violate item 5 as actually stated: a
+one-way edge between distinct SCCs is ordinary condensation-graph
+structure and does not threaten SCC-distinctness, which only forbids a
+*cycle* spanning two claimed-separate blocks. The over-strict version
+of the check was testing the wrong property; corrected in the file
+rather than left in as a standing false alarm. The finding itself is a
+clean, bounded structural fact (fixed edge *count* regardless of `a`,
+consistent with this project's already-documented "moving bridge"
+mechanism at the terminal end of the shell chain), not a defect.
+
+**What remains open.** Items 3 (an escape witness from every transient
+block toward a later block) and 4 (no return edge from a recurrent
+block to an *earlier* transient stratum) are not touched by this file.
+Both need a round/rank ordering assigned to the *transient* states --
+"earlier" is meaningless without one, and no such assignment exists
+yet in this codebase. This is a genuinely open scoping question, not
+merely unautomated: it likely requires connecting each transient state
+back to the specific round (base/stable/penultimate/terminal/repeated)
+where it is a legitimate pre-Red or post-Red survivor, using the
+existing round dispatchers, before "earlier" and "later" can even be
+asked as a computable question.
+
 ## Neighbor scope
 
 Neighbor 2 has the detailed layer grammar needed for the stitching

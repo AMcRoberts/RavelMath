@@ -777,6 +777,17 @@ $(CLASS_II_ROUND4_STABLE_BRIDGE_CHECK_BIN): $(APPDIR)/class_ii_round4_stable_bri
 		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# class_ii_neighbor2_recurrent_exhaustion_check: recurrent-SCC
+# exhaustion, the layer of work after the base-premises seam. Extends
+# the existing (a<=8) catalogue-vs-Tarjan comparison into the a>=7
+# regime and adds an explicit zero-cross-block-edge check.
+CLASS_II_NEIGHBOR2_RECURRENT_EXHAUSTION_CHECK_BIN := $(BUILDDIR)/class_ii_neighbor2_recurrent_exhaustion_check
+class_ii_neighbor2_recurrent_exhaustion_check: $(CLASS_II_NEIGHBOR2_RECURRENT_EXHAUSTION_CHECK_BIN)
+	./$(CLASS_II_NEIGHBOR2_RECURRENT_EXHAUSTION_CHECK_BIN)
+$(CLASS_II_NEIGHBOR2_RECURRENT_EXHAUSTION_CHECK_BIN): $(APPDIR)/class_ii_neighbor2_recurrent_exhaustion_check.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 # class_ii_neighbor2_round1_red_forward_check: dense+sparse numeric
 # confirmation (a=3..200, then 500/1000/5000/20000) of the closed-form
 # forward images of the two Round-1 D_cont seeds, plus the exact bound

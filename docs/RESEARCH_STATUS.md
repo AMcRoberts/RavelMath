@@ -168,6 +168,20 @@ After layer occurrence is closed, recurrent-SCC exhaustion and dominance
 remain separate. Layer equality alone does not prove that a displayed
 block is exactly a recurrent SCC.
 
+**Progress on this (2026-07-31, night):** of the five support
+statements this needs, items 1 (core/shell/transient partition), 2
+(strong connectivity tied to the real graph), and 5 (recurrent-block
+distinctness) are now verified together for neighbor 2 at `a` in
+`{7,...,20,30}` (fifteen values, zero mismatches) -- the real,
+Tarjan-derived SCC decomposition of the fully-converged boundary graph
+matches the hand-catalogued recurrent blocks exactly, which is enough
+to establish all three by construction of what a Tarjan decomposition
+guarantees. Items 3 and 4 remain genuinely open; both need a round/rank
+ordering on transient states that doesn't exist yet. See
+`docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md`'s "Items 1, 2, and 5"
+section, including a caught overclaim about zero inter-block edges
+(false; the correct, weaker claim holds).
+
 ## Exact and formal machinery
 
 The native math library provides arbitrary-precision integer and

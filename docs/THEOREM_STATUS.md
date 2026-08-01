@@ -784,6 +784,27 @@ catalogue states in the reduced boundary graph and exhaustion of every
 other recurrent state remain open. The result therefore must not yet
 be stated as universal contact-boundary dominance.
 
+**Recurrent-SCC exhaustion, items 1/2/5 verified together
+(2026-07-31, night).** `app/class_ii_neighbor2_recurrent_exhaustion_check.cpp`
+runs the real (generic, not bespoke) `tarjan_scc`/`is_recurrent_scc`
+machinery against neighbor 2's fully-converged boundary graph at `a` in
+`{7,...,20,30}` and compares the result node-for-node against the
+hand-catalogued recurrent blocks: exact match at all fifteen tested
+values, corona convergence confirmed explicitly (an earlier run with a
+too-small round cap silently under-converged at larger `a` and
+produced a spurious mismatch, caught by checking the `converged` flag).
+Since Tarjan SCCs are automatically internally-connected via real edges
+and pairwise non-mutually-reachable, this exact match establishes items
+1 (partition), 2 (strong connectivity tied to the real graph), and 5
+(recurrent-block distinctness) together, at the tested values. A
+first-draft stronger check (zero edges of any kind between distinct
+recurrent blocks) was found false -- 8 such one-way edges every time,
+between the two ranks nearest the dominant core -- and corrected rather
+than left in as a false alarm; item 5 as actually stated (SCC-
+distinctness) does not require this and is unaffected. Items 3 and 4
+remain open, needing a round/rank ordering on transient states not yet
+constructed.
+
 Every displayed core, regular-shell, and exceptional-shell matrix is
 also universally irreducible: its minimum-parameter support is
 strongly connected, and all parameter-varying weights are
