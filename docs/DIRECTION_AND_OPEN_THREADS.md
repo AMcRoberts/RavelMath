@@ -65,42 +65,47 @@ is summarized inline below where it's relevant to Item A or Item B.
   a particular β-substitution case, not a new result against the
   classical Pisot conjecture.
 
-**What's open (Item A research targets, in priority order)**:
+**What's open (Item A research targets) — SUPERSEDED, corrected
+2026-08-01**: A1 and A2 below are answered, not open — this section
+was never updated after the `Decomposition classification` section
+further down (line ~348) resolved them. Read that section, and
+`FINDINGS_FOR_CITATION.md` Finding 5, for the actual current state:
+`app/probe_a1_a2_unimodular.cpp` + `app/tabulate_pisot_properties.cpp`
+already ran A1 and A2 across 10 unimodular Pisot substitutions and
+found the n-bonacci mechanism does NOT generalize — Pisot
+substitutions split into 3 structural classes (constant-factor +
+Arnoux-Rauzy complexity), and only Class I (n-bonacci) has the full
+x^k cofactor + exact involution. The live open threads are named
+**Thread A3** (find Class II's cofactor mechanism — the
+small-group-action branch is already closed negatively, per Finding 6
+and `app/class_ii_symmetry_probe.cpp`'s rigidity result), **Thread
+A4** (Class III structure, via Pisot continued-fraction period), and
+**Thread A5** (extend the 10-candidate data set: 4-letter, β-substitutions,
+a wider random survey) — kept below in their original numbering only
+for historical/citation purposes:
 
-**(A1) Generalize the n-bonacci nilpotent-cofactor finding to all
-unimodular Pisot substitutions.** The pure-`x^k` cofactor structure
-(`charpoly(Q_sym_GB) / charpoly(Q_sym_BP) = x^k`, exact) is currently
-verified for n-bonacci at n=3,4,5. Does this structure persist for
-all unimodular Pisot substitutions, or is it specific to the
-n-bonacci family? If it persists, the conjecture is on its way to
-being proven in general (the pure-`x^k` cofactor has only the
-eigenvalue 0, and `BP-ρ_nc` is always strictly positive, so the
-cofactor's eigenvalues can never be dominant — giving
-`λ(G_B) = ρ_nc` directly, with no node bijection anywhere). If
-it doesn't, the structural reason for the n-bonacci match is
-specific to the n-bonacci family, and Item A becomes a
-classification problem (which substitutions have the
-nilpotent-cofactor structure, and which don't).
+**(A1, ANSWERED — see above) Generalize the n-bonacci nilpotent-cofactor
+finding to all unimodular Pisot substitutions.** The pure-`x^k` cofactor
+structure (`charpoly(Q_sym_GB) / charpoly(Q_sym_BP) = x^k`, exact) is
+verified for n-bonacci at n=3,4,5, and does NOT persist beyond it —
+specific to Class I only, per Finding 5.
 
-**(A2) Apply the involution machinery to non-n-bonacci unimodular
-Pisot substitutions.** The n-bonacci involution φ is a Z/2
-automorphism of `G_B`'s dominant recurrent core. Does the same
-construction work for σ_{a,b}-style substitutions (constant-suffix
-Jacobi–Perron / Brun)? For σ₁-style substitutions (the proven
-counterexamples)? For random unimodular Pisot candidates from
-`wide_random_pisot_survey`? The involution either exists (in which
-case the same charpoly-divisibility argument should apply) or it
-doesn't (in which case the n-bonacci match is genuinely
-family-specific).
+**(A2, ANSWERED — see above) Apply the involution machinery to
+non-n-bonacci unimodular Pisot substitutions.** The n-bonacci
+involution φ is EXACT (14/14) for Class I only; PARTIAL (6/11 to
+30/44) for Class II and III, per Finding 5, and confirmed
+independently rigid (automorphism group = identity only) for
+σ_{1,1}/σ_{2,1}/σ_{3,1} via exact digraph-automorphism enumeration
+(Finding 6).
 
-**(A3) Build a smooth-relaxation search** (cross-listed with Item B,
-see (B2) below) — the natural generator of new candidates to
-test (A1) and (A2) on, beyond the random-survey candidates already
-tested. A closed-form differentiable objective (the closed-form
-`spectral_invariants_3x3` Cardano solver) plus a Pisot-preserving
-gradient step on the matrix entries.
+**(A-relax, cross-listed as B2 below) Build a smooth-relaxation
+search** — the natural generator of new candidates to test Thread A5
+on, beyond the random-survey candidates already tested. A closed-form
+differentiable objective (the closed-form `spectral_invariants_3x3`
+Cardano solver) plus a Pisot-preserving gradient step on the matrix
+entries.
 
-**(A4) Check the classical Pisot conjecture via the project's
+**(A-settled) Check the classical Pisot conjecture via the project's
 machinery on the same substitutions where the unimodular
 `ρ_nc = λ(G_B)` conjecture fails (σ₁, σ₂, and 11 other random
 unimodular mismatches in the project's 87-candidate batch).** Per
