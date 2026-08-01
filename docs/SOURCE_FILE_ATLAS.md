@@ -83,6 +83,7 @@ Most `ravel` headers are header-oriented; `src/rauzy_fractal.cpp` and
 | `math/tests/test_mat_q.cpp` | Rational matrix operations. |
 | `math/tests/test_perron_frobenius.cpp` | Exact Perron–Frobenius certificates. |
 | `math/tests/test_poly.cpp` | Integer/rational polynomial arithmetic. |
+| `math/tests/test_primality.cpp` | Primality testing and the Kronecker symbol, including a full cross-check of `kronecker_symbol` against Euler's criterion for every odd prime <=97. |
 | `math/tests/test_qbeta.cpp` | Quotient-ring arithmetic. |
 | `math/tests/test_sturm.cpp` | Root counts, isolation, and algebraic sign tests. |
 
@@ -238,6 +239,7 @@ repository root unless the file itself states otherwise.
 | `app/class_ii_neighbor2_round1_red_forward_check.cpp` | Round 1: dense/sparse numeric confirmation of the forward-image closed forms. |
 | `app/class_ii_neighbor2_round1_red_symbolic.cpp` | Round 1: the symbolic Red-pruning proof for `a>=3`, derived from `tau_a`'s own fixed word forms. |
 | `app/class_ii_neighbor2_round1_signed_relation.cpp` | Round 1: verifies the signed 50-state contact set is the unsigned survivors' exact mirror-closure (and that a naive mirror-and-rerun shortcut is false). |
+| `app/class_ii_neighbor2_round1_union_hypothesis.cpp` | Round 1: proves the neighbor-2 signed contact set equals `class_ii_contact_set()` union its mirror union the initial reach-2 extension states -- a single, parameter-free identity holding for every `a` at once, enrolled as a permanent regression check (`tests/substitution_neighborhood_test.cpp`). |
 | `app/class_ii_abstract_window_classify_regression.cpp` | Regression test for the extracted `class_ii_abstract_window_classify` header function against Round 1's own result. |
 | `app/class_ii_round2_recon.cpp` | Round 2: confirms `E_1..E_4` sizes via the trusted `algorithm2_trace` pipeline. |
 | `app/class_ii_round2_ccorona_stability.cpp` | Round 2: confirms `T_1 = ±C` and stable 195-candidate raw corona output across `a`. |
