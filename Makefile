@@ -286,6 +286,7 @@ TESTS_DEFAULT := \
 	tile_faces_test \
 	number_field_parity_test \
 	poly_discriminant_bigint_test \
+	fp_poly_factor_test \
 	ambient_graph_test \
 	corona_test \
 	contact_boundary_test \
@@ -349,6 +350,11 @@ $(NUMBER_FIELD_PARITY_TEST_BIN): $(TESTDIR)/number_field_parity_test.cpp | $(BUI
 POLY_DISCRIMINANT_BIGINT_TEST_BIN := $(BUILDDIR)/poly_discriminant_bigint_test
 poly_discriminant_bigint_test: $(POLY_DISCRIMINANT_BIGINT_TEST_BIN)
 $(POLY_DISCRIMINANT_BIGINT_TEST_BIN): $(TESTDIR)/poly_discriminant_bigint_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+FP_POLY_FACTOR_TEST_BIN := $(BUILDDIR)/fp_poly_factor_test
+fp_poly_factor_test: $(FP_POLY_FACTOR_TEST_BIN)
+$(FP_POLY_FACTOR_TEST_BIN): $(TESTDIR)/fp_poly_factor_test.cpp | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
 AMBIENT_GRAPH_TEST_BIN := $(BUILDDIR)/ambient_graph_test

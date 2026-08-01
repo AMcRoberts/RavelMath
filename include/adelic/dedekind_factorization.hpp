@@ -15,11 +15,21 @@
 //   4. The degree of the p-adic extension is ef_i = e_i · f_i.
 //
 // All arithmetic is exact (rationals for the char poly, modular
-// arithmetic for the F_p reductions).  This implementation
-// handles factoring of f_p in F_p[x] for polynomials of degree
-// up to 4 over small primes (the typical case for Pisot
-// substitutions in this project); higher-degree factoring is
-// the Round 2 / Round 4 case per the spec, left as future work.
+// arithmetic for the F_p reductions).  factor_fp below only extracts
+// LINEAR factors by root-testing and assumes whatever degree>=2
+// residual remains is a single irreducible -- correct for this
+// project's own degree<=4 Pisot substitutions (whose residuals are at
+// most degree 2, and a rootless quadratic is automatically
+// irreducible) but WRONG in general (found: a degree-4 residual that
+// is a product of two irreducible quadratics gets reported as one
+// wrong quartic factor). include/adelic/fp_poly_factor.hpp's
+// factor_fp_general / factor_prime_in_qbeta_general fix this properly
+// (squarefree + distinct-degree + Cantor-Zassenhaus equal-degree
+// factorization, any degree) -- see that file for the fix and
+// tests/fp_poly_factor_test.cpp for the demonstrated bug case. Not
+// swapped in here in place, since factor_fp/factor_prime_in_qbeta are
+// already relied upon by shipped, tested code that never reaches the
+// shape where the bug fires.
 //
 // Test cases: the worked example from §2.7 of the adelic
 // tiling plan: σ(1)=1113, σ(2)=11, σ(3)=2, char poly
@@ -250,10 +260,13 @@ inline FpPoly fp_linear(long long p, long long a) {
 //   1. For each a in F_p, check if (x - a) divides f_p; if so,
 //      record the multiplicity and divide out.
 //   2. If anything remains, it's a product of irreducible factors
-//      of degree ≥ 2.  For degree 2, check discriminant.  For
-//      higher degree (capped at 4 in this implementation), if the
-//      residual degree is 2, return it; if it's a product of two
-//      quadratics, we attempt a Cantor-Zassenhaus-style split.
+//      of degree ≥ 2.  For degree 2, a rootless residual is
+//      automatically irreducible.  For degree 4, this function does
+//      NOT attempt the Cantor-Zassenhaus split a residual product of
+//      two quadratics would need (an earlier version of this comment
+//      claimed it did; it never actually did) -- it just reports the
+//      whole residual as one (possibly wrong) irreducible factor. See
+//      fp_poly_factor.hpp's factor_fp_general for the actual fix.
 //
 // Returns the list of (irreducible factor, multiplicity) pairs.
 // All factors are returned in monic form.
