@@ -57,10 +57,16 @@
 // docs/DIRECTION_AND_OPEN_THREADS.md Item B1 for the full trace.
 //
 // SECOND RUN, after the fix: 6/7 candidates now reach a verdict (all
-// ESTABLISHED, tiles) -- only rndW3_5 still hits the SEPARATE,
-// unrelated local_polynomial_cofactor exception, which remains
-// genuinely open (not investigated). The spectral-filter fix alone
-// unblocked the large majority of the 4-letter pipeline.
+// ESTABLISHED, tiles) -- only rndW3_5 still hits local_polynomial_
+// cofactor, and THAT is understood precisely too (not a hidden bug):
+// rndW3_5 has TWO non-simple prime ideals above p=3 (e=1,f=2 and
+// e=2,f=1), and local_polynomial_cofactor's own header comment already
+// documents that its cofactor-of-simple-factors approach only isolates
+// a SINGLE non-simple ideal correctly. It throws rather than returning
+// a silently-wrong answer -- safe, working-as-designed, a real feature
+// gap (needs per-ideal Hensel lifting to extend), not a bug to chase.
+// The spectral-filter fix alone unblocked the large majority of the
+// 4-letter pipeline.
 //
 // Build (unregistered probe, matching sibling
 // app/sweep_nonunit_property_f.cpp's own convention):
