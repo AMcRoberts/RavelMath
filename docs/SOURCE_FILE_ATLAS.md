@@ -46,7 +46,7 @@ Most `ravel` headers are header-oriented; `src/rauzy_fractal.cpp` and
 | `math/include/math/sturm.hpp` | Sturm chains, exact real-root counts and isolation, Cauchy bounds, and exact sign determination of `Q(beta)` elements. |
 | `math/include/math/charpoly.hpp` | Exact Faddeev–LeVerrier characteristic polynomial with an integral-output and Cayley–Hamilton check. |
 | `math/include/math/linalg_qbeta.hpp` | Linear solve, determinant, and left/right eigenvectors over `Q(beta)`, with exact verification. |
-| `math/include/math/in_h_sigma.hpp` | Exact evaluation of the stepped-hyperplane predicate `0 <= <x,v> < v_j`. |
+| `math/include/math/in_h_sigma.hpp` | Exact evaluation of the stepped-hyperplane predicate `0 <= <x,v> < v_j`, plus `in_h_sigma_general_bound` for an arbitrary bound vector (`0 <= <x,v> < <bound,v>`), the exact-arithmetic side of `core.hpp`'s tile-shape generalization. |
 | `math/include/math/ball.hpp` | Closed rational intervals; exact interval arithmetic; Collatz–Wielandt Perron brackets and comparisons. |
 | `math/include/math/bigfloat.hpp` | Tunable binary floating point `mantissa * 2^exponent` and bounded-precision Perron iteration. |
 | `math/include/math/bigfloat_trig.hpp` | Trigonometric, inverse-trigonometric, hyperbolic, exponential, and logarithmic functions for `BigFloat`. |
@@ -55,6 +55,7 @@ Most `ravel` headers are header-oriented; `src/rauzy_fractal.cpp` and
 | `math/include/math/fft_strong.hpp` | Policy-driven fixed-size FFT wrapper with normalization and direction encoded by `FFTMode`. |
 | `math/include/math/pisot_numeration_topology.hpp` | Pisot recurrences, finite patches, bifix extraction, group addition, and toroidal projection experiments. |
 | `math/include/math/qexpansion.hpp` | Explicit asymptotic `Q`-expansions and margin checks used by Class-II estimates. |
+| `math/include/math/poly_discriminant.hpp` | Arbitrary-precision polynomial discriminant (Sylvester matrix + Bareiss elimination, `BigInt` throughout) -- the fix for `include/adelic/maximal_order.hpp`'s `poly_discriminant_ll`, which silently overflows past degree 8 (confirmed, not hypothetical: a spurious "invariant violated" exception at degree 10, not just imprecision). |
 | `math/include/mini-gmp/mini-gmp.h` | Vendored arbitrary-precision integer C API. |
 | `math/include/mini-gmp/mini-mpq.h` | Project rational extension over mini-gmp. |
 | `math/include/exact_pisot.h` | C ABI for exact cubic/quartic Pisot classification and generic real-root isolation. |
@@ -147,9 +148,11 @@ Most `ravel` headers are header-oriented; `src/rauzy_fractal.cpp` and
 |---|---|
 | `include/adelic/padic.hpp` | Truncated `Z_p` arithmetic and totally ramified `Q_p` extensions. |
 | `include/adelic/local_field.hpp` | Polynomial arithmetic over `Z/p^N Z`, Hensel lifting, unramified/residue-degree extensions, valuations, and local integrality. |
-| `include/adelic/dedekind_factorization.hpp` | Polynomial factorization over finite fields and Dedekind factorization of rational primes in `Q(beta)`. |
+| `include/adelic/fp_poly.hpp` | `FpPoly`/`FpFactor` and the shared `F_p[x]` arithmetic primitives (add/sub/mul/divmod/eval/gcd), plus `Z[x] <-> F_p[x]` reduction/lift -- the common base `dedekind_factorization.hpp` and `fp_poly_factor.hpp` both depend on, extracted to avoid a circular include between them. |
+| `include/adelic/fp_poly_factor.hpp` | General `F_p[x]` factoring, any degree, any prime: squarefree factorization (with the characteristic-p `f'=0` Frobenius-identity wrinkle), distinct-degree factorization, and Cantor-Zassenhaus equal-degree factorization (odd-`p` and `p=2` splitting polynomials both implemented). `dedekind_factorization.hpp`'s `factor_fp` is literally this file's `factor_fp_general` under that name. |
+| `include/adelic/dedekind_factorization.hpp` | Dedekind factorization of rational primes in `Q(beta)`, using `fp_poly_factor.hpp`'s general (any-degree) `F_p[x]` factoring -- an earlier, degree<=4-only, root-extraction-only version had a real bug for degree>=4 residuals that are a product of same-degree irreducibles, found and fixed (`tests/fp_poly_factor_test.cpp`). |
 | `include/adelic/ideal_arithmetic.hpp` | Ideals as HNF lattices, ideal products/powers, norms, containment, and valuation cross-checks. |
-| `include/adelic/maximal_order.hpp` | Finite-field kernels, integer HNF/determinant, discriminants, and a round-two order-enlargement test. |
+| `include/adelic/maximal_order.hpp` | Pohst-Zassenhaus Round 2 `p`-maximal-order enlargement: a fast monogenic shortcut (`long long` and `BigInt` versions, the latter fixing a confirmed silent-overflow bug in the former -- not just imprecision, a spurious runtime exception) for round 1, plus a general, structure-constants-based method (`GeneralOrder`, Ore's Frobenius-method `p`-radical, Cohen Sec. 6.1.3) for round 2 onward, where the enlarged order may no longer have a single defining polynomial. `structure_constants_from_basis_change` closes the loop, letting a caller chain rounds to a fixed point; demonstrated end to end on Dedekind's own non-monogenic cubic. |
 | `include/adelic/prefix_automaton.hpp` | Prefix-labelled substitution automaton and its finite digit alphabet. |
 | `include/adelic/csy_carry_automaton.hpp` | Exact Pisot powers, CSY-style bounded prefix states, carry exploration, and memory accounting. |
 | `include/adelic/coincidence_and_property_f.hpp` | Strong coincidence and geometric property-(F) checks, including archimedean and non-archimedean bounds. |

@@ -91,8 +91,22 @@ These are general techniques that would compose into future Pisot and
 non-Pisot work.  Each is a factory-friendly tool, not a one-off.
 
 ### Algebra
-- [ ] **Resultant** `res(p, q)` for polynomials — discriminant, common factors
-- [ ] **Discriminant** of a polynomial — algebraic number field discriminant
+- [x] **Discriminant** of a polynomial — algebraic number field discriminant.
+  **DONE**: `poly_discriminant.hpp`'s `poly_discriminant_bigint` (Sylvester
+  matrix + Bareiss elimination, `BigInt` throughout — arbitrary precision,
+  no overflow). Built as the fix for a confirmed silent-overflow bug in
+  `include/adelic/maximal_order.hpp`'s pre-existing `long long` version
+  (`poly_discriminant_ll`), which threw a spurious "invariant violated"
+  exception past degree 8; see `tests/poly_discriminant_bigint_test.cpp`
+  and `docs/RESEARCH_STATUS.md`. Also underlies
+  `discriminant_from_structure_constants` in `include/adelic/maximal_order.hpp`,
+  which computes the same quantity from an order's multiplication table
+  rather than a single defining polynomial (needed once an order is no
+  longer monogenic, i.e. from round 2 of Pohst-Zassenhaus enlargement
+  onward).
+- [ ] **Resultant** `res(p, q)` for polynomials — common factors of two
+  polynomials (the discriminant above is `res(p, p')`, a special case;
+  this entry is for the general two-polynomial resultant, still unbuilt).
 - [ ] **Subresultant PRS** (preferred over pseudo-remainder for GCD) — keeps coefficients bounded
 - [ ] **Polynomial composition** `p(q(x))` — useful for substitution iterates
 
@@ -101,13 +115,35 @@ non-Pisot work.  Each is a factory-friendly tool, not a one-off.
 - [ ] **Continued fraction expansion** of algebraic numbers — Pisot/Salem classification
 - [ ] **CF for quadratic irrationals** — simpler than general CF
 - [ ] **Algebraic number recognition** — given a decimal approximation, find the minimal polynomial
+- [ ] **Primality testing / prime enumeration** (e.g. Miller-Rabin, sieve of
+  Eratosthenes, `next_prime`) and the **Legendre/Kronecker symbol** —
+  confirmed absent from the codebase entirely (checked both `math/` and
+  `include/adelic/` — no `is_prime`/`miller_rabin`/`sieve_of_eratosthenes`/
+  `mpz_probab_prime`/`mpz_nextprime`, no inline trial division, no
+  hardcoded prime table, anywhere). Everything currently touching primes
+  (`include/adelic/dedekind_factorization.hpp`'s `factor_prime_in_qbeta`,
+  `ideal_arithmetic.hpp`) takes a specific rational prime `p` as a caller-
+  supplied `long long` and factors *within* it — nothing in the codebase
+  generates or verifies primality of a candidate integer. This is the
+  blocking gap for the Golod-Shafarevich class-field-tower criterion
+  (Sawin's Lemma 11), which needs both to enumerate `S_Q` and to test
+  whether primes split (a Legendre/Kronecker-symbol question for the
+  quadratic subfields involved).
 
 ### Linear algebra
 - [x] **MatQ** (Q^(n×n) with full operations) — for general linear algebra.
   **DONE**: `mat_q.hpp` (constructor, add/sub/neg, scalar mul, matrix mul,
   transpose, determinant, inverse; `math/tests/test_mat_q.cpp`, 17 tests).
 - [ ] **Smith normal form** of integer matrices — for divisibility lattices
-- [ ] **Hermite normal form** — for integer linear systems
+- [x] **Hermite normal form** — for integer linear systems.
+  **DONE, but NOT in `math/` proper** — lives in `include/adelic/` instead:
+  `ideal_arithmetic.hpp`'s `hnf_reduce` (used for ideal lattices) and
+  `maximal_order.hpp`'s `integer_hnf` / `integer_hnf_bigint` (used for
+  order enlargement). Noting the location honestly rather than checking
+  this off as if it were a `math/`-level generic tool — nobody has yet
+  lifted it out of `adelic/`'s order/ideal-specific call sites into a
+  standalone `math/` header the way `charpoly.hpp` was lifted from
+  `barge.hpp`.
 - [x] **Characteristic polynomial** via Faddeev-LeVerrier (in `barge.hpp` — lift to mathlib).
   **DONE**: `charpoly.hpp`'s `charpoly_faddeev_leverrier` (exact over Q
   internally, verified integral output, free Cayley-Hamilton self-check;
