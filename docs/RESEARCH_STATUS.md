@@ -387,17 +387,52 @@ thirteen so far.
 
 ## Research directions
 
-The direct next theorem work is the four-transition base seam, followed
-by recurrent-SCC exhaustion/dominance. Parallel directions include:
+Stale as of an earlier pass; corrected here (2026-08-01) against
+`GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md`'s actual current state, not
+carried forward unchecked. The four-transition base seam AND recurrent-
+SCC exhaustion/dominance (both named below as "next" in the previous
+version of this section) are done: the base seam closed 2026-07-31
+night (see "Class-II family" above), and all five recurrent-exhaustion
+support statements are verified together at `a` in `{7,...,20,30}`
+(fifteen values, zero exceptions) -- checked, not yet closed-form, but
+no longer "next."
 
-- explaining the sparse Class-II boundary-layer slope structurally;
-- extending contact-side family proofs to neighboring substitutions;
-- constructing finite local carry quotients and bounded corrections;
+The direct next theorem work, per `GLOBAL_CATALOGUE_OCCURRENCE_
+EXHAUSTION.md`'s own "Next implementation" section, is a genuinely new
+construction, not yet attempted anywhere in this codebase: a symbolic
+backward-envelope certificate for round 1's neighbor signed contact set,
+`plus_minus_C(tau_a) = plus_minus_C(sigma_a) union E_1`, by the same
+method that closed the center's 16-state pre-contact envelope
+(`docs/CLASS_II_CONTACT_BASE_PROOF.md`) -- exact affine category
+classification of `tau_a`'s own raw backward-closure branches, reduced
+via the Class-II cubic to a bounded number of `x0` slices, closed by
+affine endpoint classification. This is what would let Round 1's own
+base premise (currently `open_reverse_inclusion` per
+`class_ii_neighbor2_first_missing_premise`) close symbolically instead
+of remaining exact-finite-checked. A secondary, more mechanical
+direction: upgrading the recurrent-SCC exhaustion items above from
+"checked at 15 values of `a`" to actual closed-form proofs, in the same
+spirit as this session's earlier "prove even the counterexamples"
+upgrades to Rounds 2/3/4.
+
+Parallel directions include:
+
+- extending contact-side family proofs to neighboring substitutions
+  (neighbors 0 and 1 currently lack the complete raw-corona/Red grammar
+  neighbor 2 has -- a separate, earlier-stage problem);
+- constructing finite local carry quotients and bounded corrections
+  (the current `CSYAutomaton` is a bounded absolute-position prefix
+  object, not yet the finite local carry quotient of the cited
+  construction);
 - comparing geometric windows, labelled dynamics, twisted operators,
   zeta/L-function packages, and spectral embeddings with an explicit
   preservation/forgetting ledger;
 - retiring Python prototypes only after bounded native parity or a
-  documented correction.
+  documented correction;
+- porting the still-C++-only combinatorial-exhaustiveness inputs behind
+  Round 1's Red-pruning and Rounds 2/3/4's shape-closure arguments to
+  Lean, to bring the whole base seam up from "one tier below
+  Lean-formalized" to fully formalized.
 
 ## Validation commands
 
