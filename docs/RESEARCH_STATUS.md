@@ -224,7 +224,7 @@ The current `CSYAutomaton` is a bounded absolute-position prefix object,
 not yet the finite local carry quotient of the cited construction.
 Depth exhaustion is reported as truncation.
 
-**General number-field machinery, scoped and started (2026-08-01).**
+**General number-field machinery, scoped and started (2026-07-31).**
 Separate from the Class-II seam: after correcting an earlier bib note
 that falsely connected OpenAI/Sawin's unit-distance disproof to this
 project's Pisot/Rauzy-fractal machinery (see `refs/references.bib`'s
@@ -248,12 +248,42 @@ silently returns wrong values (not merely too-large-to-hold ones)
 starting at degree 9, from intermediate Bareiss-elimination overflow,
 confirmed against an independent closed-form re-derivation
 (`tests/poly_discriminant_bigint_test.cpp`, documented directly in
-`maximal_order.hpp`). Remaining pieces (higher-degree F_p[x]
-factoring, multi-round maximal-order enlargement, class number/class
-group computation, and only then Golod-Shafarevich verification) are
-tracked as an ordered task list; class number/class group computation
-does not exist anywhere in this codebase yet and is the largest
-remaining piece.
+`maximal_order.hpp`). Third: `include/adelic/dedekind_
+factorization.hpp`'s `factor_fp` (linear-factor root extraction only,
+assuming any degree>=2 residual is a single irreducible) is replaced
+with `fp_poly_factor.hpp`'s general, any-degree algorithm (squarefree
++ distinct-degree + Cantor-Zassenhaus equal-degree factorization,
+Cohen ch. 3.4) under the same name -- every caller gets the fix with
+no call-site changes. Found and fixed a real bug this same way: `x^4+1
+mod 5` factors as two irreducible quadratics, which the old code
+reported as one wrong quartic, propagating to `factor_prime_in_qbeta`
+wrongly reporting one prime above 5 (residue degree 4) instead of two
+(residue degree 2 each) -- demonstrated at both levels in
+`tests/fp_poly_factor_test.cpp`. `FpPoly`/`FpFactor` and the shared
+primitives were extracted to a new `fp_poly.hpp` to avoid a circular
+include between the two files. Fourth: `maximal_order.hpp`'s
+Pohst-Zassenhaus Round 2 enlargement gets the same arbitrary-precision
+treatment (`enlarge_order_round2_bigint`), and the long-long path's
+overflow risk turns out to have a concrete, ugly consequence: for
+`x^10-2` at `p=2` it doesn't just lose precision, it throws a
+*spurious* runtime exception (an int64 overflow masquerading as a
+"construction invariant violated" math bug). The bigint version
+computes cleanly and passes an independent sanity check --
+`disc(O)/disc(O') = 262144 = 512^2`, a perfect square, exactly as the
+discriminant-under-enlargement identity requires
+(`tests/maximal_order_bigint_test.cpp`). A `needs_another_round`
+necessary-condition check is included; true multi-round iteration for
+a possibly non-monogenic intermediate order needs the general
+p-radical-from-structure-constants algorithm (Cohen §6.1.3/Ore's
+method) and is explicitly not attempted.
+
+Remaining pieces (class number/class group computation, and only then
+Golod-Shafarevich verification) are tracked as an ordered task list;
+class number/class group computation does not exist anywhere in this
+codebase yet and is the largest remaining piece. Four for four so far:
+every property test either confirmed existing machinery was more
+general than it had been exercised as, or found a real, previously
+undetected bug in already-shipped code.
 
 ## Research directions
 

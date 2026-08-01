@@ -296,7 +296,7 @@ inline long long integer_determinant(std::vector<std::vector<long long>> M) {
 // for monic f.  `long long` throughout; fine for the small
 // coefficients this project's characteristic polynomials have.
 //
-// CONFIRMED OVERFLOW, not just a theoretical risk (2026-08-01,
+// CONFIRMED OVERFLOW, not just a theoretical risk (2026-07-31,
 // math/tests/poly_discriminant_bigint_test.cpp -- now
 // tests/poly_discriminant_bigint_test.cpp): for x^n-2, this function
 // silently returns a WRONG value starting at n=9 -- not merely unable

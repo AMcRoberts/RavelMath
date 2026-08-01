@@ -804,7 +804,7 @@ than left in as a false alarm; item 5 as actually stated (SCC-
 distinctness) does not require this and is unaffected.
 
 **Items 3 and 4, closed at the same tested-value strength
-(2026-08-01).** `app/class_ii_neighbor2_round_stratified_transient_
+(2026-07-31).** `app/class_ii_neighbor2_round_stratified_transient_
 check.cpp` builds the round/rank ordering items 3 and 4 needed,
 directly from the trusted corona trace: `birth_round(state)` is the
 first round it is a Red survivor in, well-defined since a state never

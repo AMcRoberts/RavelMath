@@ -1619,7 +1619,7 @@ a recurrent block to an *earlier* transient stratum) needed a round/
 rank ordering assigned to the *transient* states -- "earlier" is
 meaningless without one.
 
-### Items 3 and 4: closed at the same tested-value strength, 2026-08-01
+### Items 3 and 4: closed at the same tested-value strength, 2026-07-31
 
 The needed ordering turned out to be constructible directly from the
 trusted corona trace, not from anything new: every state's **birth

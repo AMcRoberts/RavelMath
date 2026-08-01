@@ -316,7 +316,7 @@ The generalization to non-unit polytope shapes is the
 rule together determine the structure, and the Pisot number is
 fixed by the substitution.
 
-### The acceptance-window half, done (2026-08-01)
+### The acceptance-window half, done (2026-07-31)
 
 `Substitution<d>` now carries `tile_faces` (`include/ravel/core.hpp`):
 `d` face vectors `f_0..f_{d-1}`, one per letter, defaulting to the
