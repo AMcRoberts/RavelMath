@@ -307,4 +307,49 @@ inline std::vector<FpFactor> factor_fp_general(const FpPoly& f_in) {
     return result;
 }
 
+// ===================================================================
+// Rigorous (not heuristic) sufficient condition for irreducibility
+// over Q: if f's reduction mod some prime p (not dividing the leading
+// coefficient) is itself irreducible over F_p -- one factor, full
+// degree, multiplicity 1 -- then f is irreducible over Q. This is the
+// classical fact that factorization over Z can only ever coarsen when
+// reduced mod p (a Z[x] factorization into pieces of degrees d1,d2,...
+// reduces to an F_p[x] factorization refining that same degree
+// partition, for all but finitely many p), so a single full-degree
+// F_p[x] factor rules out any nontrivial Z[x]/Q[x] factorization.
+//
+// NOT a necessary condition: a genuinely irreducible-over-Q polynomial
+// can still factor mod EVERY prime (x^4+1 is the classical example --
+// irreducible over Q, reducible mod every prime). A `false` return
+// here means "inconclusive with these primes," not "reducible" --
+// callers needing a definitive negative should use a different method
+// (e.g. the rational-root theorem only rules out linear factors).
+//
+// Built for generalizing app/sweep_nonunit_property_f.cpp's cubic-only
+// `charpoly_is_irreducible_cubic` (which works for degree 3 specifically
+// because "no rational root" DOES imply irreducibility exactly at
+// degree 3, but not at degree >= 4 -- e.g. (x^2-2)(x^2-3) has no
+// rational roots yet factors) to arbitrary degree, for a wider
+// (4-letter, 5-letter, ...) non-unimodular Pisot survey.
+inline bool is_irreducible_over_q_via_small_primes(
+        const mathlib::PolyZ& f,
+        const std::vector<long long>& primes = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43}) {
+    long long deg = f.degree();
+    if (deg <= 0) return false;
+    for (long long p : primes) {
+        FpPoly fp;
+        try {
+            fp = reduce_z_to_fp(f, p);
+        } catch (...) {
+            continue;
+        }
+        if (fp_degree(fp) != deg) continue;  // leading coeff vanished mod p, skip
+        auto factors = factor_fp_general(fp);
+        if (factors.size() == 1 && factors[0].mult == 1 && fp_degree(factors[0].g) == deg) {
+            return true;
+        }
+    }
+    return false;
+}
+
 }  // namespace adelic

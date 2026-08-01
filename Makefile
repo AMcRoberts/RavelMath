@@ -293,6 +293,7 @@ TESTS_DEFAULT := \
 	sawin_exponent_test \
 	quadratic_class_group_test \
 	sawin_lemma9_test \
+	irreducibility_test \
 	ambient_graph_test \
 	corona_test \
 	contact_boundary_test \
@@ -391,6 +392,11 @@ $(QUADRATIC_CLASS_GROUP_TEST_BIN): $(TESTDIR)/quadratic_class_group_test.cpp | $
 SAWIN_LEMMA9_TEST_BIN := $(BUILDDIR)/sawin_lemma9_test
 sawin_lemma9_test: $(SAWIN_LEMMA9_TEST_BIN)
 $(SAWIN_LEMMA9_TEST_BIN): $(TESTDIR)/sawin_lemma9_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+IRREDUCIBILITY_TEST_BIN := $(BUILDDIR)/irreducibility_test
+irreducibility_test: $(IRREDUCIBILITY_TEST_BIN)
+$(IRREDUCIBILITY_TEST_BIN): $(TESTDIR)/irreducibility_test.cpp | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
 AMBIENT_GRAPH_TEST_BIN := $(BUILDDIR)/ambient_graph_test
