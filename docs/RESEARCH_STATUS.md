@@ -376,8 +376,14 @@ group of prime order 3 must be cyclic) confirmed D=-23's structure with
 zero external data needed. A search across small discriminants for a
 non-cyclic example (skipping h in {2,3,5,6,7}, which group theory alone
 forces cyclic) found D=-84 has a non-cyclic class group -- discovered,
-not asserted from possibly-misremembered reference tables. Twelve for
-twelve so far.
+not asserted from possibly-misremembered reference tables. Thirteenth:
+Sawin's Lemma 9 class-number bound itself, checked (not just Lemma 11
+and Proposition 10 that USE it) -- `include/adelic/sawin_lemma9.hpp`,
+specialized to the base case (F=Q, K imaginary quadratic), confirms the
+bound holds for the nine Heegner numbers and several `h>1`
+discriminants using this session's own independently-computed class
+numbers, not an assumed or trusted-from-the-paper value. Thirteen for
+thirteen so far.
 
 ## Research directions
 

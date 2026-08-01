@@ -24,9 +24,10 @@
 // computation is now verified separately, in
 // include/adelic/sawin_exponent.hpp (it needed math/bigfloat_trig.hpp's
 // bigfloat_log, which didn't exist until this was written). Lemma 9's
-// class-number bound itself (used inside Proposition 10's proof, not
-// its formula) still needs class-group machinery this project doesn't
-// have yet -- that remains a separate, unimplemented piece.
+// class-number bound itself is now checked too, for the base case (F=Q,
+// K imaginary quadratic), in include/adelic/sawin_lemma9.hpp -- it
+// needed include/adelic/quadratic_class_group.hpp's class number
+// computation, which also didn't exist until this session.
 //
 // Splitting test: for p odd and not dividing the fundamental
 // discriminant Delta_Q, p splits in Q(sqrt(N)) iff the Kronecker symbol
