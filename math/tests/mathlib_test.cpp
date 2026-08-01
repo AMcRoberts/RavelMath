@@ -59,6 +59,10 @@
 #include "test_perron_frobenius.cpp"
 #undef main
 
+#define main test_primality_main
+#include "test_primality.cpp"
+#undef main
+
 int main() {
     int total_pass = 0, total_fail = 0;
     struct { const char* name; int (*fn)(); } tests[] = {
@@ -74,6 +78,7 @@ int main() {
         {"BigFloat (tunable-precision float) + switchable Perron certification", test_bigfloat_main},
         {"charpoly (Faddeev-LeVerrier)", test_charpoly_main},
         {"Perron-Frobenius certificate (irreducibility, primitivity, exact eigenvector)", test_perron_frobenius_main},
+        {"primality (is_prime, next_prime, sieve, Kronecker symbol)", test_primality_main},
     };
     for (const auto& t : tests) {
         std::printf("\n== mathlib tier: %s ==\n", t.name);

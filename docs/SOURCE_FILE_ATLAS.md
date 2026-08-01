@@ -56,6 +56,7 @@ Most `ravel` headers are header-oriented; `src/rauzy_fractal.cpp` and
 | `math/include/math/pisot_numeration_topology.hpp` | Pisot recurrences, finite patches, bifix extraction, group addition, and toroidal projection experiments. |
 | `math/include/math/qexpansion.hpp` | Explicit asymptotic `Q`-expansions and margin checks used by Class-II estimates. |
 | `math/include/math/poly_discriminant.hpp` | Arbitrary-precision polynomial discriminant (Sylvester matrix + Bareiss elimination, `BigInt` throughout) -- the fix for `include/adelic/maximal_order.hpp`'s `poly_discriminant_ll`, which silently overflows past degree 8 (confirmed, not hypothetical: a spurious "invariant violated" exception at degree 10, not just imprecision). |
+| `math/include/math/primality.hpp` | Primality testing (`is_prime`, BPSW + deterministic Miller-Rabin via mini-gmp's `mpz_probab_prime_p`, no random state), prime enumeration (`next_prime`, `sieve_of_eratosthenes`), and the Legendre/Jacobi/Kronecker symbol (`kronecker_symbol`, Cohen Algorithm 1.4.10, written from scratch -- mini-gmp has none of these). Closes the confirmed gap blocking the Golod-Shafarevich class-field-tower criterion (Sawin's Lemma 11): enumerating `S_Q` and testing whether primes split in a quadratic subfield. |
 | `math/include/mini-gmp/mini-gmp.h` | Vendored arbitrary-precision integer C API. |
 | `math/include/mini-gmp/mini-mpq.h` | Project rational extension over mini-gmp. |
 | `math/include/exact_pisot.h` | C ABI for exact cubic/quartic Pisot classification and generic real-root isolation. |

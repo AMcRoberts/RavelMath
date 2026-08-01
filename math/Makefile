@@ -55,7 +55,8 @@ MATH_TEST_TIER_SRCS := \
 	$(TESTDIR)/test_bigfloat.cpp \
 	$(TESTDIR)/test_charpoly.cpp \
 	$(TESTDIR)/test_perron_frobenius.cpp \
-	$(TESTDIR)/test_fft.cpp
+	$(TESTDIR)/test_fft.cpp \
+	$(TESTDIR)/test_primality.cpp
 
 MATH_HEADERS := \
 	$(INCDIR)/math/bigint.hpp \
@@ -71,6 +72,7 @@ MATH_HEADERS := \
 	$(INCDIR)/math/bigfloat.hpp \
 	$(INCDIR)/math/charpoly.hpp \
 	$(INCDIR)/math/perron_frobenius.hpp \
+	$(INCDIR)/math/primality.hpp \
 	$(INCDIR)/exact_pisot.h \
 	$(INCDIR)/mini-gmp/mini-gmp.h \
 	$(INCDIR)/mini-gmp/mini-mpq.h

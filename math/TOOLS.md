@@ -115,20 +115,22 @@ non-Pisot work.  Each is a factory-friendly tool, not a one-off.
 - [ ] **Continued fraction expansion** of algebraic numbers — Pisot/Salem classification
 - [ ] **CF for quadratic irrationals** — simpler than general CF
 - [ ] **Algebraic number recognition** — given a decimal approximation, find the minimal polynomial
-- [ ] **Primality testing / prime enumeration** (e.g. Miller-Rabin, sieve of
-  Eratosthenes, `next_prime`) and the **Legendre/Kronecker symbol** —
-  confirmed absent from the codebase entirely (checked both `math/` and
-  `include/adelic/` — no `is_prime`/`miller_rabin`/`sieve_of_eratosthenes`/
-  `mpz_probab_prime`/`mpz_nextprime`, no inline trial division, no
-  hardcoded prime table, anywhere). Everything currently touching primes
-  (`include/adelic/dedekind_factorization.hpp`'s `factor_prime_in_qbeta`,
-  `ideal_arithmetic.hpp`) takes a specific rational prime `p` as a caller-
-  supplied `long long` and factors *within* it — nothing in the codebase
-  generates or verifies primality of a candidate integer. This is the
-  blocking gap for the Golod-Shafarevich class-field-tower criterion
-  (Sawin's Lemma 11), which needs both to enumerate `S_Q` and to test
-  whether primes split (a Legendre/Kronecker-symbol question for the
-  quadratic subfields involved).
+- [x] **Primality testing / prime enumeration** and the
+  **Legendre/Kronecker symbol**.
+  **DONE**: `primality.hpp`'s `is_prime` (wraps mini-gmp's
+  `mpz_probab_prime_p` — a full BPSW test plus deterministic
+  Miller-Rabin rounds, not a naive fixed-rep check; no random state
+  needed anywhere, fully reproducible), `next_prime`,
+  `sieve_of_eratosthenes`, and `kronecker_symbol` (Cohen Algorithm
+  1.4.10, written from scratch since mini-gmp has no Jacobi/Kronecker
+  symbol at all). `math/tests/test_primality.cpp`, 58 checks, including
+  a full cross-check of `kronecker_symbol` against Euler's criterion for
+  every odd prime <=97 — an independent characterization of the
+  Legendre symbol, not another call to the same reciprocity algorithm.
+  This was the confirmed blocking gap for the Golod-Shafarevich
+  class-field-tower criterion (Sawin's Lemma 11), which needs both to
+  enumerate `S_Q` and to test whether primes split (a Kronecker-symbol
+  question for the quadratic subfields involved).
 
 ### Linear algebra
 - [x] **MatQ** (Q^(n×n) with full operations) — for general linear algebra.
