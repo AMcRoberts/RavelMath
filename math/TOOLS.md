@@ -159,6 +159,24 @@ non-Pisot work.  Each is a factory-friendly tool, not a one-off.
   round-to-nearest, explicit `precision_bits` parameter per operation) plus
   `certify_perron_bracket_bigfloat` / `certify_perron` (the switchable
   `PerronCertifyMethod::{ExactRationalBracket,TunedBigFloat}` entry point).
+- [ ] **`bigfloat_log`** (natural log at fixed BigFloat precision) — needed
+  by Sawin's Proposition 10 exponent formula (task #6, verifying the
+  paper's published unit-distance exponent). `bigfloat_trig.hpp`'s own
+  header comment has claimed "exp, log" for a while, but `bigfloat_log`
+  was never actually implemented -- confirmed while starting task #6.
+  A Newton's-method-on-`bigfloat_exp` implementation was written and
+  then DELIBERATELY REVERTED (not committed) after it showed genuine
+  run-to-run nondeterminism on the identical compiled binary (a real
+  bug, not a threshold/precision issue -- an AddressSanitizer/UBSan
+  build came back clean across four runs, which points toward an
+  uninitialized-but-in-bounds read somewhere in `BigFloat`/`BigInt`
+  rather than a bounds violation, but that's a hypothesis, not a
+  diagnosis). Next attempt should reach for `valgrind --memcheck
+  --track-origins=yes` or MSan (not installed in this environment as of
+  2026-07-31) before re-attempting the Newton-iteration approach, or
+  should investigate whether the nondeterminism is reproducible in
+  isolation (without the rest of `mathlib_test.cpp`'s other tiers
+  running first in the same process) as a first narrowing step.
 - [ ] **Mignotte-style root bounds** — for tighter Cauchy-style bounds
 - [x] **Interval arithmetic** over Q — for safe numerical computation.
   **DONE**: `ball.hpp`'s `Ball` (exact `Rat` endpoints) predates this
