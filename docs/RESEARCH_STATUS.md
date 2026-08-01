@@ -315,10 +315,27 @@ ramified/split/inert partition of `S_Q` it describes
 (`tests/golod_shafarevich_test.cpp`, 16 checks). Class number/class
 group computation remains unbuilt but is no longer on the critical
 path to this verification; it stays independently interesting as its
-own piece. Eight for eight so far: every property test either confirmed
-existing machinery was more general than it had been exercised as,
-found a real bug in already-shipped code, or produced a genuine,
-independent reproduction of a published result.
+own piece. Ninth: while starting task #6 (verifying Sawin's
+Proposition 10 exponent formula, which needs logarithms), built
+`bigfloat_log` and in doing so found a real, previously-undetected bug
+in the pre-existing `bigfloat_exp` -- no argument reduction despite its
+own header comment claiming otherwise, so `bigfloat_exp(-20)` (and
+anything with `|x| >~ 20`) silently hit a hardcoded 1000-term
+Taylor-series cap before converging. First looked like genuine
+run-to-run nondeterminism in the shared math-library test binary; an
+isolated reproducer showed it was fully deterministic once separated
+from the rest of that binary's tiers, at which point the mechanism was
+easy to see and fix with the standard `exp(x) = exp(x/2^k)^(2^k)`
+range-reduction trick (mirroring `bigfloat_sin`/`bigfloat_cos`'s
+existing reduction). `bigfloat_exp` had zero callers anywhere in the
+repo before this, so the fix is purely an accuracy improvement, not a
+behavior change any caller could depend on. Fifteen repeated runs of
+the full test binary after the fix, all clean. Task #6 itself (the
+full Proposition 10 numeric verification) remains open. Nine for nine
+so far: every property test either confirmed existing machinery was
+more general than it had been exercised as, found a real bug in
+already-shipped code, or produced a genuine, independent reproduction
+of a published result.
 
 ## Research directions
 
