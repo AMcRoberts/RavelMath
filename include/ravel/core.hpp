@@ -84,6 +84,30 @@ public:
     // Pisot constant β (the dominant eigenvalue, in R^1).
     double beta;
 
+    // Tile face vectors f_0..f_{d-1}, one per letter: [x, j]'s
+    // acceptance-window upper bound is <f_j, v> (generalizing
+    // Eq 2.2's <e_j, v>). Default is the standard basis, exactly
+    // recovering the unit-cube case with zero behavior change --
+    // see docs/FAMILY_OF_FAMILIES.md's "Generalization to non-cube
+    // shapes" for the motivating non-cube (simplex/"hyperpyramid")
+    // case this exists for.
+    //
+    // SCOPE, stated precisely: this generalizes in_H_sigma /
+    // in_H_sigma_exact only (the acceptance-window test), which is a
+    // clean re-parametrization of an existing formula. It does NOT
+    // generalize faces.hpp's face-intersection-dimension geometry,
+    // which is a genuinely different (and unit-cube-specific) piece
+    // of geometry -- "face [x,i] extends by the unit interval
+    // [x[k],x[k]+1) in every direction k != i" is a fact about cube
+    // faces specifically, not a trivial reparametrization, and this
+    // project's own faces.py/faces.hpp docstring is explicit that
+    // hand-deriving "obvious" geometry here has repeatedly been wrong
+    // -- so it is deliberately left unattempted rather than guessed.
+    // is_unit_cube_tile() lets D_cont search (which depends on
+    // face-intersection geometry) refuse non-default tile shapes
+    // explicitly instead of silently computing something wrong.
+    std::array<IVec<d>, d> tile_faces{};
+
     Substitution(const std::array<std::vector<long long>, d>& images_0indexed,
                  double pisot_beta)
         : beta(pisot_beta) {
@@ -96,7 +120,27 @@ public:
         for (std::size_t c = 0; c < d; ++c)
             for (auto r : images[c])
                 M[static_cast<std::size_t>(r)][c] += 1;
+        for (std::size_t i = 0; i < d; ++i) {
+            for (std::size_t k = 0; k < d; ++k) tile_faces[i][k] = 0;
+            tile_faces[i][i] = 1;  // standard basis e_i by default
+        }
         compute_right_eigenvector();
+    }
+
+    // Override the default unit-cube tile with an arbitrary set of
+    // face vectors (one per letter). Invalidates any cached exact-
+    // Q(beta) state from a prior in_H_sigma_exact call, since that
+    // cache does not depend on tile_faces but is safest to recompute
+    // fresh rather than reason about staleness.
+    void set_tile_faces(const std::array<IVec<d>, d>& faces) {
+        tile_faces = faces;
+    }
+
+    bool is_unit_cube_tile() const {
+        for (std::size_t i = 0; i < d; ++i)
+            for (std::size_t k = 0; k < d; ++k)
+                if (tile_faces[i][k] != (k == i ? 1 : 0)) return false;
+        return true;
     }
 
     // Compute v via power iteration on M^T, normalizing v[0] = 1.
@@ -181,7 +225,12 @@ public:
         double xv = dot_v(x);
         const double upper_tol = 1e-10;  // tighten vs. pipeline
                                           // over-accepting near-boundary
-        return xv >= -1e-9 && xv < v[j] - upper_tol;
+        // dot_v(tile_faces[j]) == v[j] exactly when tile_faces[j] is
+        // the default standard basis vector e_j (dot_v(e_j) = v[j] by
+        // definition of the dot product) -- bit-identical to the old
+        // hardcoded "v[j]" for every existing caller.
+        const double bound = dot_v(tile_faces[j]);
+        return xv >= -1e-9 && xv < bound - upper_tol;
     }
 
     // Exact in_H_sigma via the math library (math/).
@@ -200,32 +249,16 @@ public:
     bool in_H_sigma_exact(const IVec<d>& x, std::size_t j) const {
         ensure_exact_qbeta();
         if (!exact_qbeta_initialized_) return in_H_sigma(x, j);  // fallback
-        // exact_qbeta_v_ is a std::vector<QElem> of size d, with
-        // v[d-1] = 1 (the math-library convention).  We need to
-        // convert back to IVec-friendly access: the math-library
-        // uses the same basis (1, β, β^2, ...) so coeffs[i] is
-        // the coefficient of β^i.
         std::vector<long long> x_ll(x.begin(), x.end());
-        // v[j] is a Q(β) element.  In the basis (1, β, β^2, ...),
-        // it's just the (d-1)-th component of exact_qbeta_v_ if
-        // we use Cramer's rule with v[d-1]=1.  The math library
-        // already encodes the eigenvector this way.
-        mathlib::QElem v_j_for_check = exact_qbeta_v_[j];
-        // We compute <x, v> as a Q(β) element: sum_i x[i] * v[i].
-        mathlib::QElem dot_qb(exact_d_);
-        for (std::size_t i = 0; i < d; ++i) {
-            mathlib::QElem term = exact_R_.from_int(x[i]);
-            term = exact_R_.mul(term, exact_qbeta_v_[i]);
-            dot_qb = exact_R_.add(dot_qb, term);
-        }
-        // Test dot_qb - v[j] < 0 (and dot_qb >= 0).  We use the
-        // math library's exact sign test (Sturm-isolated β).
-        // The math library's in_h_sigma takes the Q(β) eigenvector
-        // and the upper bound v[j], and checks both signs.
-        // dot_qb is the <x,v> element; v_j_for_check is v[j].
-        // We want to check if 0 <= dot_qb < v_j_for_check.
-        return mathlib::in_h_sigma(x_ll, j, exact_qbeta_v_,
-                                    exact_R_, exact_beta_interval_);
+        // General-bound path: <x,v> < <tile_faces[j],v>, which is
+        // bit-identical to the old <x,v> < v[j] test when tile_faces[j]
+        // is the default e_j (dot_qbeta(e_j,v,R) == v[j] exactly, by
+        // the same reasoning as in_H_sigma's double-precision path
+        // above).
+        std::vector<long long> bound_ll(
+            tile_faces[j].begin(), tile_faces[j].end());
+        return mathlib::in_h_sigma_general_bound(
+            x_ll, bound_ll, exact_qbeta_v_, exact_R_, exact_beta_interval_);
     }
 
 private:

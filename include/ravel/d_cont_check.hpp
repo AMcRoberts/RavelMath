@@ -52,6 +52,19 @@ struct DCandidate {
 template <std::size_t d>
 bool is_in_D_cont(const Substitution<d>& subst,
                   const DCandidate<d>& c) {
+    // The face-intersection-dimension geometry below (faces.hpp) is
+    // unit-cube-specific: "face [x,i] extends by the unit interval
+    // [x[k],x[k]+1) in every direction k != i" is a fact about cube
+    // faces, not a trivial reparametrization of Eq 2.2 the way
+    // in_H_sigma's tile_faces generalization is. Refuse explicitly
+    // for a non-default tile rather than silently computing a wrong
+    // D_cont -- see core.hpp's Substitution::tile_faces comment.
+    if (!subst.is_unit_cube_tile()) {
+        throw std::domain_error(
+            "is_in_D_cont: face-intersection geometry is not yet "
+            "generalized beyond the unit-cube tile (subst.tile_faces "
+            "is non-default); see core.hpp's tile_faces comment");
+    }
     // 1. (i < j) if x = 0 (anti-symmetrization at origin)
     bool all_zero = true;
     for (std::size_t k = 0; k < d; ++k)
@@ -113,6 +126,14 @@ std::size_t verify_D_cont_table(const Substitution<d>& subst,
 template <std::size_t d>
 std::vector<DCandidate<d>> search_D_cont(const Substitution<d>& subst,
                                           long long bound = 2) {
+    // See is_in_D_cont's identical guard: face-intersection geometry
+    // is unit-cube-specific and not yet generalized.
+    if (!subst.is_unit_cube_tile()) {
+        throw std::domain_error(
+            "search_D_cont: face-intersection geometry is not yet "
+            "generalized beyond the unit-cube tile (subst.tile_faces "
+            "is non-default); see core.hpp's tile_faces comment");
+    }
     std::vector<DCandidate<d>> found;
     for (std::size_t i = 0; i < d; ++i) {
         for (std::size_t j = 0; j < d; ++j) {

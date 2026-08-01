@@ -316,6 +316,34 @@ The generalization to non-unit polytope shapes is the
 rule together determine the structure, and the Pisot number is
 fixed by the substitution.
 
+### The acceptance-window half, done (2026-08-01)
+
+`Substitution<d>` now carries `tile_faces` (`include/ravel/core.hpp`):
+`d` face vectors `f_0..f_{d-1}`, one per letter, defaulting to the
+standard basis `e_i` (so every existing caller is unaffected -- this
+is a clean reparametrization of Eq 2.2, not a new geometric fact).
+`in_H_sigma`/`in_H_sigma_exact` now test `0 <= <x,v> < <f_j,v>`
+instead of the hardcoded `<x,v> < v[j]`; `set_tile_faces()` overrides
+the default. `tests/tile_faces_test.cpp` checks this is bit-identical
+to the old formula at every tested `(x,j)` for the default tile, and
+that a genuinely non-cube tile changes acceptance in the expected
+direction.
+
+**What this does not yet cover, deliberately.** `faces.hpp`'s
+face-intersection-dimension geometry (used by `search_D_cont`/
+`is_in_D_cont` to find `D_cont`) is a *different*, unit-cube-specific
+fact -- "face `[x,i]` extends by the unit interval `[x[k],x[k]+1)` in
+every direction `k != i`" describes a cube face, not a
+reparametrization of a formula that already covers arbitrary
+polytopes. Hand-deriving the analogous fact for a general polytope
+without literature grounding is exactly the mistake this project's own
+`faces.py`/`faces.hpp` docstring already warns against. So
+`search_D_cont`/`is_in_D_cont` now check `is_unit_cube_tile()` and
+throw explicitly for any other tile, rather than silently computing a
+wrong `D_cont`. Generalizing face-intersection to the simplex case
+needs the actual Minervino-Thuswaldner/Arnoux-Ito construction read
+properly first, not guessed.
+
 ## First pilot result
 
 `app/class_ii_neighbor_probe.cpp` executes the first layer of that

@@ -76,7 +76,7 @@ TRANSITION_FILES := $(addprefix $(TRANSITIONS_DIR)/spectre_transitions_,$(addsuf
 
 .PHONY: all build check clean
 .PHONY: math apps tests lua data tables lean-check
-.PHONY: d_cont_check_test ambient_graph_test corona_test
+.PHONY: d_cont_check_test tile_faces_test ambient_graph_test corona_test
 .PHONY: contact_boundary_test exact_pisot_test spectral_general_test
 .PHONY: survey_test qbeta_eigenvalue_test qbeta_eigenvalue
 .PHONY: rational_transcendentals_test gkw_sturm_certify gkw_fully_rigorous
@@ -283,6 +283,7 @@ $(HYPERPLANE_PROGRESSION_BIN): $(APPDIR)/hyperplane_progression.cpp \
 
 TESTS_DEFAULT := \
 	d_cont_check_test \
+	tile_faces_test \
 	ambient_graph_test \
 	corona_test \
 	contact_boundary_test \
@@ -331,6 +332,11 @@ tests: $(TESTS_DEFAULT)
 D_CONT_TEST_BIN := $(BUILDDIR)/d_cont_check_test
 d_cont_check_test: $(D_CONT_TEST_BIN)
 $(D_CONT_TEST_BIN): $(TESTDIR)/d_cont_check_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+TILE_FACES_TEST_BIN := $(BUILDDIR)/tile_faces_test
+tile_faces_test: $(TILE_FACES_TEST_BIN)
+$(TILE_FACES_TEST_BIN): $(TESTDIR)/tile_faces_test.cpp | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
 AMBIENT_GRAPH_TEST_BIN := $(BUILDDIR)/ambient_graph_test

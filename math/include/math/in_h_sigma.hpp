@@ -77,4 +77,25 @@ inline bool in_h_sigma(const std::vector<long long>& x, std::size_t j,
     return true;
 }
 
+// General-tile version of in_h_sigma: 0 <= <x, v> < <bound, v>, for an
+// ARBITRARY integer bound vector (Eq 2.2 generalized from <e_j, v> to
+// <f_j, v> for a non-unit-cube tile's face vector f_j). Setting
+// bound = e_j (the j-th standard basis vector) reproduces in_h_sigma
+// above exactly, since dot_qbeta(e_j, v, R) == v[j].
+inline bool in_h_sigma_general_bound(const std::vector<long long>& x,
+                                      const std::vector<long long>& bound,
+                                      const QBetaVec& v, const QBetaRing& R,
+                                      const RootInterval& beta_interval) {
+    QElem x_dot_v = dot_qbeta(x, v, R);
+    int sg_xv = qbeta_sign(x_dot_v, R, beta_interval);
+    if (sg_xv < 0) return false;  // <x, v> < 0
+    QElem bound_dot_v = dot_qbeta(bound, v, R);
+    int sg_bound = qbeta_sign(bound_dot_v, R, beta_interval);
+    if (sg_bound <= 0) return false;  // <bound, v> <= 0
+    QElem diff = R.sub(x_dot_v, bound_dot_v);
+    int sg_diff = qbeta_sign(diff, R, beta_interval);
+    if (sg_diff >= 0) return false;  // <x, v> >= <bound, v>
+    return true;
+}
+
 }  // namespace mathlib
