@@ -292,9 +292,17 @@ pre-contact states have no outgoing restricted edge. Thus backward
 closure is exactly 16 states and one Red rank leaves exactly 14 for
 every `a>=2`.
 The terminal and repeated-terminal raw-corona/Red exhaustion steps are
-now universal; global catalogue occurrence and recurrent exhaustion
-remain open. Once those facts are established, disjointness
-immediately gives an unbounded lower bound for the boundary family.
+now universal. **Update, 2026-08-01 (this line was stale):** the
+four-transition base seam of global catalogue occurrence closed
+2026-07-31 night (every base transition proven for every `a>=7`, item 1
+for every `a>=3`); recurrent-SCC exhaustion and dominance are verified
+together at `a` in `{7,...,20,30}` (fifteen values, zero exceptions)
+but not yet closed-form for every `a`. See `docs/RESEARCH_STATUS.md`'s
+"Class-II family" section and `docs/GLOBAL_CATALOGUE_OCCURRENCE_
+EXHAUSTION.md` for the current, detailed state -- "remain open" here
+understated how far this had actually progressed. Once recurrent
+exhaustion is closed-form too, disjointness immediately gives an
+unbounded lower bound for the boundary family.
 
 ## Formalization queue
 
@@ -550,7 +558,16 @@ recovering the same 25 non-seed target states for literally every `a`
 rather than six sampled values. Cross-checked against the concrete
 numeric method at `a = 9, 10, 15, 20, 30, 50, 80, 120` with identical
 results. This closes the window-validity half of Round 1's raw
-self-closure universally; Red pruning (`27 -> 25`) remains open.
+self-closure universally. **Red pruning (`27 -> 25`) is now ALSO
+closed** (2026-07-31, later that session; this line was left stale
+until 2026-08-01): `app/class_ii_neighbor2_round1_red_symbolic.cpp`
+proves symbolically, for every integer `a>=3`, that the two D_cont-seed
+states have no forward edge into the 27-state raw target -- derived
+directly from `tau_a`'s own fixed word forms (letter 1 occurs exactly
+once and letter 2 exactly twice across its three images, for every
+`a`), not sampled. See
+`docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md`'s Round 1 sections for
+the full account, including the Lean-kernel-checked arithmetic core.
 
 **Round 1, Red-pruned pair identified (checked, not proved; 2026-07-31).**
 `app/class_ii_neighbor2_round1_red_identity.cpp`
