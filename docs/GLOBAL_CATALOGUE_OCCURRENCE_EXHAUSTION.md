@@ -1725,8 +1725,28 @@ worth of new territory rather than one -- plausibly because `plus_minus_
 C` itself already has some geometric width spanning what the abstract
 shell numbering calls two ranks, which would need tracing `c_corona`'s
 own edge-generation rule against the explicit shell coordinate formulas
-in `class_ii_neighbor_regular_shell_states` to confirm. Not yet
-attempted; a smaller, better-defined target than before.
+in `class_ii_neighbor_regular_shell_states` to confirm.
+
+**Confirmed a few minutes later, same day.** `c_corona`'s own rule is:
+for each state `[i1,y,j]` in the previous round and each hop
+`[j,delta,i2]` drawn from `plus_minus_C` itself (plus trivial identity
+hops), the new candidate is `[i1, y+delta, i2]` -- every corona step
+shifts a state's position by whatever `delta` a hop in the FIXED seed
+provides. Checked the seed's own coordinate range directly: the maximum
+`|coordinate|` appearing anywhere in
+`class_ii_neighbor2_signed_contact_set()`'s 50 states is exactly **2**,
+not 1. Since the shell parametrization encodes "distance from the core"
+directly in a coordinate (`class_ii_neighbor_regular_shell_states`'s
+`m = a - parameter + 1` appears literally as `{-m, m, ...}`), a hop of
+magnitude 2 lets a single corona step move a core-adjacent state's
+position by 2 units at once -- exactly enough to reach what the
+abstract rank numbering calls "two shells out" in one step, i.e.
+exactly `rank=a-1` and `rank=a-2` both appearing at round 2. Not yet a
+full symbolic proof (that would trace a SPECIFIC hop's `delta` to a
+SPECIFIC target state's coordinates for every `a`, not just observe
+that the magnitude range is consistent with the effect), but the
+mechanism -- "the seed's own hop set has reach 2, not 1" -- is now a
+confirmed, concrete fact rather than a guess.
 
 ## Neighbor scope
 
