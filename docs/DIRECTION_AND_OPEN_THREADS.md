@@ -158,19 +158,31 @@ itself. This is a settled point; mentioned here for completeness.
 (corrected 2026-08-01, was wrongly stated as 4-letter -- see the
 "What's known" correction above), `|det|` already varying (2, 3, or
 both) rather than fixed, `K_max=3`, `seed=11`. The natural extensions
-are: wider alphabet size (4-letter, 5-letter, 6-letter -- the code
-currently hardcodes 3 via an explicit 3x3 determinant and
-`alphabet_size=3`, so this genuinely needs a small code change, not
-just a different seed/target), wider `|det|` beyond what random
-sampling already turns up (a deliberate 4, 6, 8, ... target rather than
-whatever the survey happens to generate), and wider `K_max` (5, 7). The
-contact-boundary pipeline, the combined p-adic bound, and the spectral
-filter already handle all these — it's mostly a parameter change (the
-alphabet-size generalization needs templating the hardcoded 3x3
-determinant to `d`, following the note in Thread A5 below about
-`compute_gb_sym_quotient<d>` already being d-templated elsewhere). The
+are: wider alphabet size (4-letter, 5-letter, 6-letter), wider `|det|`
+beyond what random sampling already turns up, and wider `K_max` (5, 7).
+
+**4-letter attempted (2026-08-01), and the "already handles all these"
+assumption was wrong.** `app/sweep_nonunit_property_f_4letter.cpp`
+generalizes the 3-letter driver (general `adelic::integer_determinant`
+instead of a hand-expanded 3x3 formula; `adelic::
+is_irreducible_over_q_via_small_primes` -- a real, rigorous,
+any-degree replacement for the 3-letter driver's rational-root-only
+check, which is correct at degree 3 but not degree 4). Running it (8
+candidates, reduced certify/rho budgets for tractability): of 7
+irreducible non-unit quartic candidates, only **1 reached a verdict**
+(ESTABLISHED). The other 6 hit real exceptions in PRE-EXISTING
+machinery, not the new driver's own code -- a root-finder precision
+issue in `check_property_f` (4 cases: "secondary root modulus >= 1")
+and a degree-mismatch in `local_polynomial_cofactor` (2 cases,
+triggered by non-trivial ramification/inertia patterns among the prime
+ideals above a single rational prime). So the contact-boundary
+pipeline, combined p-adic bound, and spectral filter do NOT yet fully
+handle degree 4 -- both gaps are real and unexplored, and closing them
+is the actual next step before a wider-alphabet survey can be trusted
+at scale, not just a parameter change as previously assumed here. The
 smooth-relaxation search (B2) is a smarter candidate generator that
-targets Pisot-preserving perturbations specifically.
+targets Pisot-preserving perturbations specifically, once the pipeline
+itself is degree-4-solid.
 
 **(B2) Smooth-relaxation search.** The natural way to generate
 new Item A and Item B candidates, replacing pure random sampling
