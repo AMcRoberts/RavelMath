@@ -79,7 +79,8 @@ x^k cofactor + exact involution. The live open threads are named
 **Thread A3** (find Class II's cofactor mechanism — the
 small-group-action branch is already closed negatively, per Finding 6
 and `app/class_ii_symmetry_probe.cpp`'s rigidity result), **Thread
-A4** (Class III structure, via Pisot continued-fraction period), and
+A4** (Class III structure — its originally proposed beta-expansion-
+period invariant is refuted, see Finding 6.5; still open), and
 **Thread A5** (extend the 10-candidate data set: 4-letter, β-substitutions,
 a wider random survey) — kept below in their original numbering only
 for historical/citation purposes:
@@ -404,10 +405,19 @@ consecutive characters, because σ(0) = (1, 2) and the orbit always
 crosses through 1, 2 before returning. The A1 cofactor is not x^k
 (not Arnoux-Rauzy), and A2 involution is partial (30/44).
 
-First step: compute the Pisot continued fraction of 1/β_{0,1}
-where β_{0,1} is the unique real root of x^3 - x - 1. The Pisot
-continued fraction is periodic for all Pisot numbers; the period
-length is an invariant that distinguishes Class I/II/III.
+**First step attempted and refuted (2026-08-01) — see
+`FINDINGS_FOR_CITATION.md` Finding 6.5.** The original proposal here
+("compute the Pisot continued fraction of 1/β_{0,1}... periodic for
+all Pisot numbers, period length distinguishes Class I/II/III") was
+mathematically wrong as stated: by Lagrange's theorem, a classical
+continued fraction is eventually periodic iff the number is a
+quadratic irrational, and β_{0,1} is cubic. The real nearby theorem
+(Bertrand/Schmidt) concerns the Rényi/Parry beta-expansion `d_β(1)`,
+not a continued fraction. Computed `d_β(1)` exactly for 12
+candidates: termination turns out NOT to distinguish the classes
+(Class I, most of Class II, and the tested Class III example all
+terminate). Thread A4 is still open; this specific invariant doesn't
+work. A different approach is needed.
 
 ### Thread A5 — extend the data
 

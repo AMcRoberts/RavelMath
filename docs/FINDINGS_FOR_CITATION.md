@@ -653,6 +653,80 @@ For every tested `2<=a<=6`, the contact quotient polynomial is
 not yet a theorem: proving it requires a symbolic parameterization of
 the 11 contact-core states and their nine equitable classes.
 
+## Finding 6.5 — Thread A4's proposed invariant refuted; beta-expansion termination is not class-distinguishing
+
+**Status: NEGATIVE RESULT, empirically checked on 12 candidates
+(exact characteristic polynomials, 3000-digit precision, near-integer
+snapping to resolve the greedy algorithm's algebraic boundary steps).
+Corrects a mathematical error in `DIRECTION_AND_OPEN_THREADS.md`
+Thread A4's proposed first step.**
+
+Thread A4 proposed computing "the Pisot continued fraction of
+1/β_{0,1}," on the premise that "the Pisot continued fraction is
+periodic for all Pisot numbers." As literally stated this is false:
+by Lagrange's theorem, a real number's *classical* continued fraction
+is eventually periodic if and only if it is a quadratic irrational.
+β_{0,1} (root of `x^3-x-1`, the plastic number) is a cubic
+irrational, so its classical continued fraction is provably **not**
+eventually periodic. No "Pisot continued fraction" construct distinct
+from the classical one exists anywhere in this codebase.
+
+The actual true theorem in this vicinity (Bertrand 1977 / Schmidt
+1980) concerns the **Rényi/Parry beta-expansion** `d_β(1)` — the
+greedy digit expansion of 1 in base β — which genuinely is eventually
+periodic for every Pisot β. This is a different object from a
+continued fraction (a digit expansion, not a fraction), and the
+project already has partial beta-expansion machinery
+(`find_expansion_at_phase` in `math/pisot_numeration_topology.hpp`).
+
+Computed `d_β(1)` exactly (companion-matrix characteristic
+polynomials via `sympy`, roots via `mpmath.polyroots` at 3000-digit
+precision, near-integer snapping to correctly resolve steps that
+algebraically land exactly on an integer — a first attempt at lower
+precision without snapping gave a **wrong** answer for `sigma_{0,1}`,
+mistaking a finite expansion for a period-5 one; corrected before
+trusting it, per the session's standing debugging discipline):
+
+| Candidate | Class | `d_β(1)` | termination |
+|---|---|---|---|
+| Tribonacci (n=3) | I | `111` | finite, len 3 |
+| Tetrabonacci (n=4) | I | `1111` | finite, len 4 |
+| Pentanacci (n=5) | I | `11111` | finite, len 5 |
+| σ_{0,1} (plastic number) | III | `10001` | finite, len 5 |
+| σ_{1,1} | II | `20011` | finite, len 5 |
+| σ_{2,1} | II | `30021` | finite, len 5 |
+| σ_{3,1} | II | `40031` | finite, len 5 |
+| σ_{4,1} | II | `50041` | finite, len 5 |
+| σ_{5,1} | II | `60051` | finite, len 5 |
+| σ_1 (3-letter) | II | `211` | finite, len 3 |
+| σ_2 (3-letter) | II | `221` | finite, len 3 |
+| σ_{0,2} (non-unimodular, `b=2`) | III | (unresolved) | no termination found in 400 digits |
+
+**Finding: termination (i.e. period trivially = 1, all zeros) is NOT
+a Class I/II/III distinguishing signal.** Every tested Class I
+substitution terminates; so does the one Class III unimodular example
+tested (σ_{0,1}); so does every tested Class II example. The only
+outlier, σ_{0,2}, is also the only *non-unimodular* candidate tested
+(`det = b = 2`) — its irregular behavior may correlate with
+unimodularity rather than with the Class I/II/III split at all, or it
+may simply need more than 400 digits/more precision to resolve
+(Schmidt's theorem guarantees SOME eventual period exists; it doesn't
+bound how long).
+
+A secondary, unconfirmed observation: the Class II family σ_{a,1}
+(a=1..5) has a strikingly uniform digit pattern `[a+1, 0, 0, a, 1]` —
+worth checking algebraically (it likely falls straight out of the
+defining relation `β^3 = (a+1)β^2 + aβ + 1`... rearranged) rather than
+being a new invariant, but not yet done.
+
+**What this means for Thread A4**: the proposed first step doesn't
+work as stated and needs a different approach — beta-expansion
+termination-length isn't the invariant that separates Class III from
+I/II. Thread A4 (Class III structure) remains genuinely open;
+this finding narrows what *won't* work rather than closing the
+thread. `DIRECTION_AND_OPEN_THREADS.md` Thread A4 should be corrected
+to remove the periodicity-invariant claim as stated.
+
 ## Finding 7 — explicit Class-II balanced-pair core family
 
 **Status: PROVED recurrent BP core and characteristic polynomial for
