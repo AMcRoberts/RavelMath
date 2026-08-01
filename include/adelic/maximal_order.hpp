@@ -294,6 +294,25 @@ inline long long integer_determinant(std::vector<std::vector<long long>> M) {
 // Sylvester matrix of (f, f') -- disc(f) = (-1)^{n(n-1)/2} * Res(f,f')
 // for monic f.  `long long` throughout; fine for the small
 // coefficients this project's characteristic polynomials have.
+//
+// CONFIRMED OVERFLOW, not just a theoretical risk (2026-08-01,
+// math/tests/poly_discriminant_bigint_test.cpp -- now
+// tests/poly_discriminant_bigint_test.cpp): for x^n-2, this function
+// silently returns a WRONG value starting at n=9 -- not merely unable
+// to hold a too-large final answer (disc(x^10-2) is only ~5*10^12,
+// nowhere near int64's ~9*10^18 ceiling), but genuinely wrong, because
+// Bareiss elimination's INTERMEDIATE entries can overflow even when
+// the final determinant fits. Confirmed by disagreement with an
+// independent from-scratch closed-form re-derivation of disc(x^n-a)
+// (see that test file) AND with math/poly_discriminant.hpp's
+// arbitrary-precision poly_discriminant_bigint, which agrees with the
+// closed form exactly at every tested n. This project's own current
+// Pisot-substitution use (degree <=4, small coefficients) is very
+// likely safe -- the Sylvester matrix stays small (at most 7x7) and
+// entries stay modest -- but this is now a demonstrated, not
+// hypothetical, failure mode for anything of higher degree. Use
+// poly_discriminant_bigint for anything beyond this project's own
+// small-alphabet substitutions.
 inline long long poly_discriminant_ll(const std::vector<long long>& f_high_to_low) {
     // f given highest-degree-first, e.g. x^3 - x^2 - 2x - 8 => {1,-1,-2,-8}.
     long long n = static_cast<long long>(f_high_to_low.size()) - 1;
