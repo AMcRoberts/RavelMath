@@ -284,18 +284,41 @@ Cross-checked against the trusted monogenic-shortcut answer on the
 same Dedekind cubic, at `p=2, n=3` (the harder `p<=n` regime a
 trace-form shortcut wouldn't even cover): exact agreement, `-2012 ->
 -503`, computed without ever factoring a defining polynomial
-(`tests/general_order_radical_test.cpp`). One honest gap remains:
-deriving a new `GeneralOrder`'s own structure constants from an
-enlarged order's HNF basis, the piece that would let a caller actually
-chain rounds to a fixed point rather than compute one round at a time.
+(`tests/general_order_radical_test.cpp`). Sixth: the one remaining gap
+in that chain -- deriving a new `GeneralOrder`'s own structure constants
+from an enlarged order's HNF basis -- is now closed
+(`structure_constants_from_basis_change`), letting a caller chain
+rounds to a fixed point rather than compute one round at a time
+(validated only for a single-round-then-fixed-point case; a genuine
+2+-round worked example was not available to test against and remains
+open).
 
-Remaining pieces (class number/class group computation, and only then
-Golod-Shafarevich verification) are tracked as an ordered task list;
-class number/class group computation does not exist anywhere in this
-codebase yet and is the largest remaining piece. Four for four so far:
-every property test either confirmed existing machinery was more
-general than it had been exercised as, or found a real, previously
-undetected bug in already-shipped code.
+An earlier task dependency wrongly assumed Golod-Shafarevich
+verification needed class number/class group computation first;
+rereading Sawin's paper directly showed neither Lemma 11 (the
+Golod-Shafarevich inequality itself) nor its use in the paper's main
+construction needs a computed class group -- only primality testing,
+prime enumeration, and the Legendre/Kronecker symbol, all of which were
+also confirmed genuinely absent from the codebase (a real first-time
+gap, not documentation drift). Seventh: `math/primality.hpp` now
+provides `is_prime` (mini-gmp's own unused BPSW + deterministic
+Miller-Rabin test), `next_prime`, `sieve_of_eratosthenes`, and
+`kronecker_symbol` (Cohen Algorithm 1.4.10, written from scratch, since
+mini-gmp has no Jacobi/Kronecker symbol at all), validated against
+Euler's criterion for every odd prime <=97
+(`math/tests/test_primality.cpp`, 58 checks). Eighth:
+`include/adelic/golod_shafarevich.hpp` uses that machinery to check the
+Lemma 11 inequality directly, and reproduces Sawin's own published
+parameters (`T` of 13 primes, `S_Q` of 22 primes) exactly, including
+the equality `36 <= 36` the paper reports and the precise
+ramified/split/inert partition of `S_Q` it describes
+(`tests/golod_shafarevich_test.cpp`, 16 checks). Class number/class
+group computation remains unbuilt but is no longer on the critical
+path to this verification; it stays independently interesting as its
+own piece. Eight for eight so far: every property test either confirmed
+existing machinery was more general than it had been exercised as,
+found a real bug in already-shipped code, or produced a genuine,
+independent reproduction of a published result.
 
 ## Research directions
 

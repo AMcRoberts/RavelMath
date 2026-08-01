@@ -289,6 +289,7 @@ TESTS_DEFAULT := \
 	fp_poly_factor_test \
 	maximal_order_bigint_test \
 	general_order_radical_test \
+	golod_shafarevich_test \
 	ambient_graph_test \
 	corona_test \
 	contact_boundary_test \
@@ -367,6 +368,11 @@ $(MAXIMAL_ORDER_BIGINT_TEST_BIN): $(TESTDIR)/maximal_order_bigint_test.cpp | $(B
 GENERAL_ORDER_RADICAL_TEST_BIN := $(BUILDDIR)/general_order_radical_test
 general_order_radical_test: $(GENERAL_ORDER_RADICAL_TEST_BIN)
 $(GENERAL_ORDER_RADICAL_TEST_BIN): $(TESTDIR)/general_order_radical_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+GOLOD_SHAFAREVICH_TEST_BIN := $(BUILDDIR)/golod_shafarevich_test
+golod_shafarevich_test: $(GOLOD_SHAFAREVICH_TEST_BIN)
+$(GOLOD_SHAFAREVICH_TEST_BIN): $(TESTDIR)/golod_shafarevich_test.cpp | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
 AMBIENT_GRAPH_TEST_BIN := $(BUILDDIR)/ambient_graph_test
