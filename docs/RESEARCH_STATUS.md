@@ -330,12 +330,24 @@ range-reduction trick (mirroring `bigfloat_sin`/`bigfloat_cos`'s
 existing reduction). `bigfloat_exp` had zero callers anywhere in the
 repo before this, so the fix is purely an accuracy improvement, not a
 behavior change any caller could depend on. Fifteen repeated runs of
-the full test binary after the fix, all clean. Task #6 itself (the
-full Proposition 10 numeric verification) remains open. Nine for nine
-so far: every property test either confirmed existing machinery was
-more general than it had been exercised as, found a real bug in
-already-shipped code, or produced a genuine, independent reproduction
-of a published result.
+the full test binary after the fix, all clean. Tenth: with
+`bigfloat_log` actually working, task #6 itself is now done --
+`include/adelic/sawin_exponent.hpp` implements Proposition 10's own
+exponent formula (equation 11) directly and reproduces, independently
+(not via Sage or any external CAS), the paper's own published
+intermediate values for its worked example: numerator `3.8822...`,
+denominator `275.055...`, and `delta = 0.014114...`, giving Theorem 1's
+published exponent `1.014114` exactly to the paper's own stated
+precision (`tests/sawin_exponent_test.cpp`, 8/8 checks, confirmed
+deterministic across ten repeated runs given the earlier scare with
+`bigfloat_exp`). Ten for ten so far: every property test either
+confirmed existing machinery was more general than it had been
+exercised as, found a real bug in already-shipped code, or produced a
+genuine, independent reproduction of a published result. Both tasks
+directly aimed at the OpenAI/Sawin unit-distance construction (#5, #6)
+are now complete; only class number/class group computation (#4,
+independently interesting, not on any critical path anymore) remains
+open from this initiative.
 
 ## Research directions
 

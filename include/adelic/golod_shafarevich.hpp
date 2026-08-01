@@ -20,10 +20,13 @@
 // (math/primality.hpp). Neither piece needs a computed class group --
 // an earlier, wrong task dependency assumed it did; rereading the paper
 // directly (Lemma 9's class-number bound, used inside Proposition 10,
-// not Lemma 11 itself) corrected that. This file does NOT verify
-// Proposition 10's exponent computation (needs real/interval arithmetic
-// for a logarithm-heavy formula) or Lemma 9's class-number bound (needs
-// class-group machinery) -- those remain separate, unimplemented pieces.
+// not Lemma 11 itself) corrected that. Proposition 10's own exponent
+// computation is now verified separately, in
+// include/adelic/sawin_exponent.hpp (it needed math/bigfloat_trig.hpp's
+// bigfloat_log, which didn't exist until this was written). Lemma 9's
+// class-number bound itself (used inside Proposition 10's proof, not
+// its formula) still needs class-group machinery this project doesn't
+// have yet -- that remains a separate, unimplemented piece.
 //
 // Splitting test: for p odd and not dividing the fundamental
 // discriminant Delta_Q, p splits in Q(sqrt(N)) iff the Kronecker symbol
