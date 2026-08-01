@@ -35,21 +35,31 @@
 // combined p-adic bound, and the spectral filter already handle all
 // these"). Of 7 non-unit quartic candidates that passed irreducibility
 // and got this far, only 1 reached a verdict (ESTABLISHED, tiles); the
-// other 6 hit real exceptions from PRE-EXISTING machinery, not this
-// driver's own new code:
+// other 6 hit real exceptions:
 //   - "check_property_f: secondary root modulus >= 1" (4 cases) --
-//     a root-finder precision issue in include/adelic/
-//     coincidence_and_property_f.hpp, not previously exercised at
-//     quartic degree.
+//     traced further (same session) to its ACTUAL root cause, one
+//     layer up, not a check_property_f bug at all:
+//     include/ravel/spectral.hpp's spectral_invariants_general (the
+//     n>=4 Pisot classifier wide_random_pisot_survey itself uses)
+//     underestimates the second-largest eigenvalue's modulus via
+//     Wielandt-deflation power iteration when it's part of a
+//     genuinely dominant complex-conjugate pair -- confirmed directly
+//     for rndW3_1 (survey reports beta2=0.926, an independent
+//     precision-verified Durand-Kerner computation finds the true
+//     value is 1.376). check_property_f's exception is correctly
+//     catching a non-Pisot matrix that never should have been admitted
+//     by the survey. See docs/DIRECTION_AND_OPEN_THREADS.md Item B1
+//     for the full trace and the not-yet-attempted fix options.
 //   - "local_polynomial_cofactor: computed m_k has wrong degree" (2
 //     cases) -- in include/adelic/local_field.hpp's Ore-polynomial
 //     cofactor computation, triggered by non-trivial (e,f) ramification/
 //     inertia patterns among the prime ideals above a single rational
 //     prime (e.g. e=1,f=2 together with e=2,f=1 for the same prime).
-// Both are real, reproducible gaps in the p-adic/local-field layer at
-// degree 4, not bugs in this driver -- neither has been investigated
-// further; that is the actual next step before Item B1's "wider
-// alphabet" survey can be trusted at scale.
+//     Genuinely not yet investigated.
+// Neither is a bug in this driver. The spectral-filter bug is the
+// actual next step before Item B1's "wider alphabet" survey can be
+// trusted at scale -- it affects candidate GENERATION itself, not just
+// this driver's downstream classification.
 //
 // Build (unregistered probe, matching sibling
 // app/sweep_nonunit_property_f.cpp's own convention):
