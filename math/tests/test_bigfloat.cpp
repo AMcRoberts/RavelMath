@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "math/bigfloat.hpp"
+#include "math/bigfloat_trig.hpp"
 
 #include "test_common.hpp"
 
@@ -269,6 +270,58 @@ int main() {
                "precision_in_bounds(4097) is false");
         EXPECT(!precision_in_bounds(0),
                "precision_in_bounds(0) is false (0 is meaningless, not even 'zero bits')");
+    }
+
+    {
+        std::printf("== BigFloat: bigfloat_exp range reduction + bigfloat_log ==\n");
+        // The bug this session found and fixed: exp(-20) used to hit
+        // bigfloat_exp's 1000-term Taylor cap before converging. Direct
+        // regression check, independent of bigfloat_log.
+        BigFloat e20 = bigfloat_exp(bigfloat_from_ll(20));
+        EXPECT(std::fabs(bigfloat_to_double(e20) - std::exp(20.0)) / std::exp(20.0) < 1e-12,
+               "bigfloat_exp(20) matches std::exp(20) closely (range reduction actually engages)");
+        BigFloat em20 = bigfloat_exp(bigfloat_from_ll(-20));
+        EXPECT(std::fabs(bigfloat_to_double(em20) - std::exp(-20.0)) / std::exp(-20.0) < 1e-9,
+               "bigfloat_exp(-20) matches std::exp(-20) closely (previously hit the term cap here)");
+
+        auto close = [](double a, double b) { return std::fabs(a - b) < 1e-12; };
+        double l2 = bigfloat_to_double(bigfloat_log(bigfloat_from_ll(2), 200));
+        EXPECT(close(l2, std::log(2.0)), "bigfloat_log(2) matches std::log(2) to 1e-12");
+        double l100 = bigfloat_to_double(bigfloat_log(bigfloat_from_ll(100), 200));
+        EXPECT(close(l100, std::log(100.0)), "bigfloat_log(100) matches std::log(100)");
+        EXPECT(bigfloat_is_zero(bigfloat_log(bigfloat_from_ll(1), 200)), "bigfloat_log(1) == 0 exactly");
+
+        // Round-trip at full BigFloat precision (not through a lossy
+        // double comparison), including x=20 -- exactly the case that
+        // used to fail because of bigfloat_exp's missing range
+        // reduction.
+        for (long long xv : {1LL, 5LL, 20LL, -3LL}) {
+            BigFloat x = bigfloat_from_ll(xv);
+            BigFloat ex = bigfloat_exp(x);
+            BigFloat back = bigfloat_log(ex, 200);
+            BigFloat diff = bigfloat_sub(back, x, 200);
+            BigFloat tiny(BigInt(1), -180);
+            EXPECT(bigfloat_cmp(bigfloat_abs(diff), tiny) <= 0,
+                   "bigfloat_log(bigfloat_exp(x)) round-trips x to near full 200-bit precision");
+        }
+
+        // The large-magnitude case relevant to Golod-Shafarevich's own
+        // Proposition 10 formula: log of a ~14-digit product of primes.
+        BigInt big_n(1);
+        for (long long p : {3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43}) {
+            BigInt r; mul_si(r, big_n, p); big_n = r;
+        }
+        BigFloat log_big = bigfloat_log(bigfloat_from_bigint(big_n), 200);
+        double expected = std::log(mpz_get_d(big_n.get()));
+        EXPECT(std::fabs(bigfloat_to_double(log_big) - expected) < 1e-6,
+               "bigfloat_log of a large BigInt (product of Sawin's T) matches std::log(double) closely");
+
+        bool threw = false;
+        try { bigfloat_log(bigfloat_from_ll(0), 200); } catch (const std::invalid_argument&) { threw = true; }
+        EXPECT(threw, "bigfloat_log(0) throws");
+        threw = false;
+        try { bigfloat_log(bigfloat_from_ll(-5), 200); } catch (const std::invalid_argument&) { threw = true; }
+        EXPECT(threw, "bigfloat_log(negative) throws");
     }
 
     std::printf("\n%d passed, %d failed\n", mathlib_test::n_pass, mathlib_test::n_fail);

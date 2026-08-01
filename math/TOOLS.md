@@ -159,24 +159,26 @@ non-Pisot work.  Each is a factory-friendly tool, not a one-off.
   round-to-nearest, explicit `precision_bits` parameter per operation) plus
   `certify_perron_bracket_bigfloat` / `certify_perron` (the switchable
   `PerronCertifyMethod::{ExactRationalBracket,TunedBigFloat}` entry point).
-- [ ] **`bigfloat_log`** (natural log at fixed BigFloat precision) — needed
+- [x] **`bigfloat_log`** (natural log at fixed BigFloat precision) — needed
   by Sawin's Proposition 10 exponent formula (task #6, verifying the
-  paper's published unit-distance exponent). `bigfloat_trig.hpp`'s own
-  header comment has claimed "exp, log" for a while, but `bigfloat_log`
-  was never actually implemented -- confirmed while starting task #6.
-  A Newton's-method-on-`bigfloat_exp` implementation was written and
-  then DELIBERATELY REVERTED (not committed) after it showed genuine
-  run-to-run nondeterminism on the identical compiled binary (a real
-  bug, not a threshold/precision issue -- an AddressSanitizer/UBSan
-  build came back clean across four runs, which points toward an
-  uninitialized-but-in-bounds read somewhere in `BigFloat`/`BigInt`
-  rather than a bounds violation, but that's a hypothesis, not a
-  diagnosis). Next attempt should reach for `valgrind --memcheck
-  --track-origins=yes` or MSan (not installed in this environment as of
-  2026-07-31) before re-attempting the Newton-iteration approach, or
-  should investigate whether the nondeterminism is reproducible in
-  isolation (without the rest of `mathlib_test.cpp`'s other tiers
-  running first in the same process) as a first narrowing step.
+  paper's published unit-distance exponent).
+  **DONE**: `bigfloat_trig.hpp`'s `bigfloat_log` (Newton's method on
+  `bigfloat_exp`), plus a real fix to `bigfloat_exp` itself: it had no
+  argument reduction despite its own header comment claiming otherwise,
+  so `bigfloat_exp(-20)` (and anything with |x| >~ 20) silently hit the
+  hardcoded 1000-term Taylor-series cap before converging, returning an
+  imprecise result rather than erroring. First looked like genuine
+  run-to-run nondeterminism in the shared `mathlib_test` binary; an
+  isolated reproducer showed it was fully deterministic (`n > 1000` hit
+  every time) once separated from that binary's other tiers, at which
+  point the actual mechanism (no range reduction, series cap) was easy
+  to see and fix by the standard `exp(x) = exp(x/2^k)^(2^k)` halving
+  trick. Zero existing call sites depended on the old behavior (grepped
+  the whole repo -- `bigfloat_exp` had no callers anywhere before
+  tonight), so this was a pure accuracy fix. 8 new checks in
+  `math/tests/test_bigfloat.cpp`, including a direct regression check
+  on `bigfloat_exp(-20)` itself and a full-precision round-trip through
+  exactly the case that used to fail. 15/15 repeated runs clean.
 - [ ] **Mignotte-style root bounds** — for tighter Cauchy-style bounds
 - [x] **Interval arithmetic** over Q — for safe numerical computation.
   **DONE**: `ball.hpp`'s `Ball` (exact `Rat` endpoints) predates this

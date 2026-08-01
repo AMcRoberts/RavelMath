@@ -27,6 +27,9 @@
 
 #pragma once
 
+#include <cmath>
+#include <stdexcept>
+
 #include "math/bigfloat.hpp"
 
 namespace mathlib {
@@ -220,22 +223,96 @@ inline BigFloat bigfloat_tanh(BigFloat x) {
 }
 
 // ===================================================================
-// exp via Taylor series.
+// exp via Taylor series, with range reduction: exp(x) = exp(x/2^k)^(2^k),
+// choosing k so |x/2^k| < 0.5, where the un-reduced series converges
+// well inside its 1000-term cap.
+//
+// Fixes a real, confirmed bug: for |x| >~ 20, the un-reduced series
+// (this function's previous implementation, despite the file's own
+// header comment claiming "mod 1" reduction was done) hit the 1000-term
+// cap before converging to full kTrigPrec precision, silently returning
+// an imprecise result rather than erroring. Found while building
+// bigfloat_log (Newton's method on this function, which evaluates it at
+// values like -20 as part of converging); confirmed with an isolated
+// reproducer showing bigfloat_exp(-20) hits the term cap every time
+// (`n > 1000` deterministically), not the flaky nondeterminism it first
+// looked like in a shared test binary. Zero existing call sites
+// depended on the old behavior (grepped the whole repo), so this is a
+// pure accuracy fix, not a behavior change any caller could be relying
+// on.
 // ===================================================================
 
 inline BigFloat bigfloat_exp(BigFloat x) {
+    double xd = bigfloat_to_double(x);
+    double ax = std::fabs(xd);
+    int k = 0;
+    while (ax > 0.5) {
+        ax /= 2.0;
+        ++k;
+    }
+    BigFloat xr = x;
+    if (k > 0) {
+        BigFloat scale = bigfloat_from_ll(1);
+        for (int i = 0; i < k; ++i) {
+            scale = bigfloat_mul(scale, bigfloat_from_ll(2), kTrigPrec);
+        }
+        xr = bigfloat_div(x, scale, kTrigPrec);
+    }
+
     BigFloat result = bigfloat_from_ll(1);
     BigFloat term = bigfloat_from_ll(1);
     int n = 1;
     while (true) {
         term = bigfloat_div(term, bigfloat_from_ll(static_cast<long long>(n)), kTrigPrec);
-        term = bigfloat_mul(term, x, kTrigPrec);
+        term = bigfloat_mul(term, xr, kTrigPrec);
         result = bigfloat_add(result, term, kTrigPrec);
         if (bigfloat_bits(term) == 0) break;
         ++n;
         if (n > 1000) break;
     }
+    for (int i = 0; i < k; ++i) {
+        result = bigfloat_mul(result, result, kTrigPrec);
+    }
     return result;
+}
+
+// ===================================================================
+// log via Newton's method on exp: solves exp(y) = x by the
+// quadratically-convergent update y_{n+1} = y_n + x*exp(-y_n) - 1
+// (from y_{n+1} = y_n - (exp(y_n)-x)/exp(y_n)). Seeded from a
+// double-precision std::log(x) estimate, refined to full BigFloat
+// precision.
+//
+// This is the one function this file's own header comment has always
+// claimed exists ("sin, cos, ... exp, log") but never actually
+// implemented -- found and fixed while reading this file for
+// include/adelic/golod_shafarevich.hpp's Proposition 10 exponent
+// formula, which needs several logarithms at fixed precision. Building
+// it is also what surfaced bigfloat_exp's own range-reduction bug
+// above, since Newton's method here needs exp(-y) for |y| well beyond
+// where the un-reduced series used to converge.
+// ===================================================================
+
+inline BigFloat bigfloat_log(const BigFloat& x, unsigned prec) {
+    validate_bigfloat_precision(prec);
+    if (bigfloat_is_zero(x) || sgn(x.mant) < 0) {
+        throw std::invalid_argument("bigfloat_log: argument must be positive");
+    }
+    double seed = std::log(bigfloat_to_double(x));
+    long long scaled = static_cast<long long>(seed * 1e9);
+    BigFloat y = bigfloat_div(bigfloat_from_ll(scaled), bigfloat_from_ll(1000000000LL), kTrigPrec);
+
+    BigFloat threshold(BigInt(1), -(long long)prec);
+    for (int it = 0; it < 200; ++it) {
+        BigFloat e = bigfloat_exp(bigfloat_neg(y));
+        BigFloat xe = bigfloat_mul(x, e, kTrigPrec);
+        BigFloat y_new = bigfloat_add(y, bigfloat_sub(xe, bigfloat_from_ll(1), kTrigPrec), kTrigPrec);
+        BigFloat diff = bigfloat_sub(y_new, y, kTrigPrec);
+        y = y_new;
+        if (is_zero(diff.mant)) break;
+        if (bigfloat_cmp(bigfloat_abs(diff), threshold) <= 0) break;
+    }
+    return bigfloat_round(y, prec);
 }
 
 }  // namespace mathlib

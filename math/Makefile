@@ -70,6 +70,7 @@ MATH_HEADERS := \
 	$(INCDIR)/math/in_h_sigma.hpp \
 	$(INCDIR)/math/ball.hpp \
 	$(INCDIR)/math/bigfloat.hpp \
+	$(INCDIR)/math/bigfloat_trig.hpp \
 	$(INCDIR)/math/charpoly.hpp \
 	$(INCDIR)/math/perron_frobenius.hpp \
 	$(INCDIR)/math/primality.hpp \
