@@ -224,6 +224,37 @@ The current `CSYAutomaton` is a bounded absolute-position prefix object,
 not yet the finite local carry quotient of the cited construction.
 Depth exhaustion is reported as truncation.
 
+**General number-field machinery, scoped and started (2026-08-01).**
+Separate from the Class-II seam: after correcting an earlier bib note
+that falsely connected OpenAI/Sawin's unit-distance disproof to this
+project's Pisot/Rauzy-fractal machinery (see `refs/references.bib`'s
+`Williams2026OpenAIUnitDistance` correction -- that construction needs
+a Golod-Shafarevich class-field-tower argument with no substitution or
+tile shape anywhere in it), a genuine, tracked initiative to build the
+general number-field layer that construction would need was started,
+in bounded pieces validated by property/parity tests rather than
+assumed correct. First finding: `include/adelic/dedekind_
+factorization.hpp` and `ideal_arithmetic.hpp`'s existing Dedekind-
+criterion and HNF-ideal machinery, built and tested only against Pisot
+substitution characteristic polynomials, turns out to be genuinely
+field-generic -- checked against Q(sqrt(-5)), a totally imaginary
+field with no real embedding at all, reproducing the classical
+`6=2*3=(1+sqrt(-5))(1-sqrt(-5))` non-unique-factorization example with
+zero code changes (`tests/number_field_parity_test.cpp`). Second:
+`math/poly_discriminant.hpp` extends `maximal_order.hpp`'s
+long-long-only discriminant computation to arbitrary precision, and in
+doing so found a real, previously undetected bug -- the long-long path
+silently returns wrong values (not merely too-large-to-hold ones)
+starting at degree 9, from intermediate Bareiss-elimination overflow,
+confirmed against an independent closed-form re-derivation
+(`tests/poly_discriminant_bigint_test.cpp`, documented directly in
+`maximal_order.hpp`). Remaining pieces (higher-degree F_p[x]
+factoring, multi-round maximal-order enlargement, class number/class
+group computation, and only then Golod-Shafarevich verification) are
+tracked as an ordered task list; class number/class group computation
+does not exist anywhere in this codebase yet and is the largest
+remaining piece.
+
 ## Research directions
 
 The direct next theorem work is the four-transition base seam, followed
