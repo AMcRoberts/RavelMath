@@ -70,19 +70,34 @@
   year={2026}, month={Jun},
   howpublished={Ars Technica},
   note={Source: \texttt{https://arstechnica.com/ai/2026/06/openais-math-breakthrough-played-to-ais-strengths/}.
-    The OpenAI model disproved the Erdős unit distance conjecture by
-    constructing an algebraic-integer grid in higher dimensions and
-    projecting to 2D.  This is the cut-and-project construction applied
-    with a non-trivial tile (algebraic integer lattice, not the unit
-    cube), showing that the unit-distance count grows as n^1.014 rather
-    than n^{1 + c/log log n} (Erdős's lower bound).  The relevant
-    connection to this project: the family-of-families machinery in
-    \texttt{docs/FAMILY\_OF\_FAMILIES.md} now has a concrete reason
-    to look at non-unit-cube tile shapes (algebraic integer tiles,
-    simplices, cross-polytopes) rather than just the unit cube.  The
-    Pisot number is unchanged; the boundary compactness is the gain.
-    Local copy of the underlying arXiv / OpenAI PDFs lives under
-    \texttt{refs/} alongside this bibtex.}}
+    The OpenAI model disproved the Erdős unit distance conjecture,
+    showing the unit-distance count grows as $n^{1.014}$ rather than
+    $n^{1+c/\log\log n}$ (Erdős's lower bound).
+    \textbf{Correction (2026-08-01), checked against the actual
+    construction (Sawin's explicit-lower-bound writeup) rather than
+    left as this note's original framing:} this is \emph{not} a
+    cut-and-project construction with a swapped tile shape, and there
+    is no direct connection to this project's substitution/Pisot
+    machinery.  The construction has no substitution, no self-
+    similarity, and no Perron-Frobenius matrix anywhere: it builds a
+    CM number field $K$ of unbounded degree via a Golod-Shafarevich
+    class-field-tower argument (bounded root discriminant, not a fixed
+    tile), embeds a fractional ideal as a lattice in $K$'s full set of
+    archimedean places, intersects a Euclidean ball of fixed radius,
+    and projects via a single chosen place; ``distance exactly 1''
+    comes from the algebraic norm condition $\beta c(\beta)=\alpha$,
+    not from any acceptance-window geometry. The earlier framing here
+    (``the Pisot number is unchanged; the boundary compactness is the
+    gain'') was a superficial pattern-match on ``projects a
+    higher-dimensional algebraic lattice to 2D'' that does not survive
+    contact with the actual paper -- see
+    \texttt{docs/FAMILY\_OF\_FAMILIES.md} for the real, separate,
+    still-unstarted generalization this project does have on record
+    (non-unit-cube \emph{polytope} tile shapes for a Pisot substitution
+    that still has a companion matrix and a Perron eigenvector -- a
+    different generalization axis entirely from this construction's
+    unbounded-degree number field). Local copy of the underlying arXiv
+    / OpenAI PDFs lives under \texttt{refs/} alongside this bibtex.}}
 
 @misc{OpenAIUnitDistance2026,
   author={{OpenAI Research}},
@@ -98,11 +113,14 @@
     dimensional algebraic-integer grid projected to 2D, bringing
     algebraic number theory (Golod-Shafarevich, Ellenberg-Venkatesh,
     Hajir-Maire-Ramakrishna) to bear on an elementary geometric
-    problem.  Connection to the Rauzy-fractal machinery in this
-    project: the unit-distance count of the projected Rauzy fractal
-    depends on the tile shape; algebraic-integer tiles give a strictly
-    more compact Rauzy fractal than unit-cube tiles, while the Pisot
-    contraction rate is the same.
+    problem.
+    \textbf{Correction (2026-08-01):} see the corrected note on
+    \texttt{Williams2026OpenAIUnitDistance} above -- there is no
+    Rauzy-fractal or Pisot-substitution connection here; that framing
+    was checked against the actual construction and found to be a
+    superficial pattern-match, not a real one. No tile shape,
+    substitution, or Pisot contraction rate appears anywhere in this
+    construction.
     Local PDF: \texttt{refs/OpenAI-Research-2026\_unit-distance-proof.pdf};
     companion human-verified remarks: \texttt{refs/OpenAI-Research-2026\_
     unit-distance-remarks.pdf}.}}
