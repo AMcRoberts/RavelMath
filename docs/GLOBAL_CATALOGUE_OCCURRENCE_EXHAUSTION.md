@@ -1675,12 +1675,38 @@ exhaustion checklist -- are now verified together at `a` in
 sub-check. This is the same tier as most of this investigation's other
 results before their closed-form upgrades: exact-checked at a dense,
 consecutive range plus outliers, not yet a symbolic proof for every
-integer `a>=7`. The birth-round/rank correspondence
-(`birth_round = a - rank`, with the one bounded tie near the core) is
-a clean enough closed form that a genuine proof -- rather than a wider
-checked range -- looks like the natural next step, in the same spirit
-as this session's earlier "prove even the counterexamples" upgrades to
-Rounds 2/3/4.
+integer `a>=7`.
+
+**The birth-round/rank correspondence, made exact (2026-08-01).**
+Earlier phrasing here ("birth_round = a - rank, with the one bounded
+tie near the core") was vague about which rank(s) are exceptional and
+what value they actually take -- checked directly (dumping every
+`(rank, birth_round)` pair at `a=7` and `a=10` via
+`app/class_ii_neighbor2_round_stratified_transient_check.cpp`) rather
+than re-describing from memory. The real pattern, exact at both tested
+values:
+
+```text
+birth_round(rank) = a - rank,   for 0 <= rank <= a-2
+birth_round(a-1)  = 2  (NOT a-(a-1)=1, a genuine +1 bump)
+birth_round(a)    = 1  (the dominant core, its own fixed starting point)
+```
+
+So the "tie" isn't really a tie between two equally-irregular ranks --
+`rank=a-2` obeys the plain linear formula exactly (it naturally lands
+on round 2 too), and only `rank=a-1` is the actual exception, bumped
+one round later than the linear pattern would give. `rank=a-2` and
+`rank=a-1` merely happen to land on the *same* round number (2) for two
+different reasons, which is what made them look like a symmetric pair
+before the exact values were checked. This precise, two-piece closed
+form (linear on `[0,a-2]`, two named point values at `a-1` and `a`) is
+a real refinement over the vague "bounded tie" phrasing, and a much
+more attackable target for an actual proof than "somewhere near the
+core, something happens" -- the natural next step is explaining
+`rank=a-1`'s +1 bump structurally (plausibly the same "moving bridge"
+mechanism already documented at the terminal end of the shell chain),
+in the same spirit as this session's earlier "prove even the
+counterexamples" upgrades to Rounds 2/3/4. Not yet attempted.
 
 ## Neighbor scope
 
