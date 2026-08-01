@@ -127,11 +127,18 @@ itself. This is a settled point; mentioned here for completeness.
   `set_precision`/`extend_to`/`truncate_to` methods) closed the
   heap-buffer-overflow that was intermittently crashing
   `make_combined_padic_bound`. ASan run clean.
-- A fresh 4×4 non-unimodular Pisot survey (`app/sweep_nonunit_property_f.cpp`,
+- A fresh non-unimodular Pisot survey (`app/sweep_nonunit_property_f.cpp`,
   24 candidates, seed=11) gives **24/24 ESTABLISHED, 0
   INCONCLUSIVE, 0 FAILED, 0 skipped** — the multi-prime skip is
   gone (multi-PRIME cases now go through the unified combined
   bound, which has been correct since the 3-bug close-out).
+  Corrected here (2026-08-01, re-ran the app directly rather than
+  trusting this line): the batch is **3-letter** (cubic charpolys,
+  explicit 3x3 determinant in the source), not 4x4 as previously
+  stated, and `|det|` **varies** across candidates (2, 3, or both --
+  e.g. `2`, `3`, `2 3` appear as "primes dividing det" in the actual
+  output), not fixed at 2. `K_max=3`, `seed=11`, `alphabet_size=3` are
+  the only fixed parameters, matching the source's own `main()`.
 - The 39-/87-candidate non-unimodular survey's "11/87 differ by
   10-40%" row from Finding 1 was flagged as provisional
   (`FINDINGS_FOR_CITATION.md` line 199-207) because the pipeline
@@ -147,15 +154,23 @@ itself. This is a settled point; mentioned here for completeness.
 
 **What's open (Item B research targets, in priority order)**:
 
-**(B1) Wider non-unimodular survey.** The 24/24 batch is 4-letter,
-|det|=2, K_max=3, seed=11. The natural extensions are: wider
-alphabet size (3-letter, 5-letter, 6-letter), wider |det|
-(3, 4, 6, 8, ...), and wider K_max (5, 7). The contact-boundary
-pipeline, the combined p-adic bound, and the spectral filter
-already handle all these — it's a parameter change, not a
-machinery change. The smooth-relaxation search (B2) is a
-smarter candidate generator that targets Pisot-preserving
-perturbations specifically.
+**(B1) Wider non-unimodular survey.** The 24/24 batch is **3-letter**
+(corrected 2026-08-01, was wrongly stated as 4-letter -- see the
+"What's known" correction above), `|det|` already varying (2, 3, or
+both) rather than fixed, `K_max=3`, `seed=11`. The natural extensions
+are: wider alphabet size (4-letter, 5-letter, 6-letter -- the code
+currently hardcodes 3 via an explicit 3x3 determinant and
+`alphabet_size=3`, so this genuinely needs a small code change, not
+just a different seed/target), wider `|det|` beyond what random
+sampling already turns up (a deliberate 4, 6, 8, ... target rather than
+whatever the survey happens to generate), and wider `K_max` (5, 7). The
+contact-boundary pipeline, the combined p-adic bound, and the spectral
+filter already handle all these — it's mostly a parameter change (the
+alphabet-size generalization needs templating the hardcoded 3x3
+determinant to `d`, following the note in Thread A5 below about
+`compute_gb_sym_quotient<d>` already being d-templated elsewhere). The
+smooth-relaxation search (B2) is a smarter candidate generator that
+targets Pisot-preserving perturbations specifically.
 
 **(B2) Smooth-relaxation search.** The natural way to generate
 new Item A and Item B candidates, replacing pure random sampling
