@@ -288,6 +288,7 @@ TESTS_DEFAULT := \
 	poly_discriminant_bigint_test \
 	fp_poly_factor_test \
 	maximal_order_bigint_test \
+	general_order_radical_test \
 	ambient_graph_test \
 	corona_test \
 	contact_boundary_test \
@@ -361,6 +362,11 @@ $(FP_POLY_FACTOR_TEST_BIN): $(TESTDIR)/fp_poly_factor_test.cpp | $(BUILDDIR) $(M
 MAXIMAL_ORDER_BIGINT_TEST_BIN := $(BUILDDIR)/maximal_order_bigint_test
 maximal_order_bigint_test: $(MAXIMAL_ORDER_BIGINT_TEST_BIN)
 $(MAXIMAL_ORDER_BIGINT_TEST_BIN): $(TESTDIR)/maximal_order_bigint_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+GENERAL_ORDER_RADICAL_TEST_BIN := $(BUILDDIR)/general_order_radical_test
+general_order_radical_test: $(GENERAL_ORDER_RADICAL_TEST_BIN)
+$(GENERAL_ORDER_RADICAL_TEST_BIN): $(TESTDIR)/general_order_radical_test.cpp | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
 AMBIENT_GRAPH_TEST_BIN := $(BUILDDIR)/ambient_graph_test
