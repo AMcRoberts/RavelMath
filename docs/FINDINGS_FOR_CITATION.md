@@ -197,12 +197,15 @@ point, and is the §C / Finding 2 case below.
 **Scope of the claim**: 11 data points, one alphabet size (4), one
 `|det|` (2), narrow entry range (0–3). Not evidence about unimodular
 Pisot in general, non-unimodular Pisot at other alphabet sizes, or
-non-unimodular Pisot with `|det| > 2`. **Not yet re-audited**: this
-row's `G_B` graphs are comparable in size to or larger than
-Hexanacci's, which is exactly where the largest-SCC-vs-dominant-SCC
-distinction above bites (see `docs/DIRECTION_AND_OPEN_THREADS.md`) —
-this row has not been re-checked with `extract_dominant_recurrent_core`
-and should be treated as provisional pending that check.
+non-unimodular Pisot with `|det| > 2`. **Re-audited and confirmed
+(2026-08-01)**: `app/reaudit_gb_dominant_scc.cpp` checked a fresh
+batch (target=4, then target=20; combined 24 candidates checked, 14
+clean/converged) with `extract_dominant_recurrent_core` against the
+original `extract_recurrent_core` (largest-by-node-count) side by
+side. **14/14 clean candidates agree exactly** (dominant-SCC ==
+largest-SCC, `λ` values identical to within `1.1e-9`), zero SCC
+splits. The largest-SCC-vs-dominant-SCC distinction does NOT affect
+this row's original `λ(G_B)` values; no longer provisional.
 
 **Literature connection**: consistent with Barge, Bruin, Jones &
 Sadun (2010) on non-unimodular Pisot substitutions failing to tile,
@@ -286,10 +289,11 @@ now gives **24/24 ESTABLISHED, 0 INCONCLUSIVE, 0 FAILED, 0
 skipped**, deterministic across 5+ runs, ASan-clean — the 4
 previously-skipped multi-PRIME cases all ESTABLISH. The 39-/87-
 candidate non-unimodular row's "11/87 differ by 10-40%" claim was
-re-audited (`app/reaudit_gb_dominant_scc.cpp`, started this session)
-with the dominant-SCC extractor; the pilot indicates the
-largest-SCC and dominant-SCC always agree on the surveyed batch's
-G_B, so the original's λ values are NOT affected by the largest-
+re-audited (`app/reaudit_gb_dominant_scc.cpp`) with the dominant-SCC
+extractor and **confirmed, not just piloted**: 14/14 clean candidates
+across two runs (target=4, target=20) agree exactly between the
+largest-SCC and dominant-SCC extractors, zero disagreements, zero SCC
+splits — the original's λ values are NOT affected by the largest-
 vs-dominant distinction.
 
 **Why "not yet independently hand-verified" rather than a flat claim
