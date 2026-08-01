@@ -247,6 +247,10 @@ repository root unless the file itself states otherwise.
 | `app/class_ii_round2_red_exclusion_check.cpp` | Round 2: independent exact finite certificate for Red exclusion (123 pruned states, `simple_forward_targets_exact` vs `red_anode`'s ranks). |
 | `app/class_ii_round2_pruned_states_a_independence_probe.cpp` | Round 2: confirms the 123 pruned states are the literal same coordinate set across `a`. |
 | `app/class_ii_round3_structure.cpp` | Round 3: the same `T_3 = B_3 union E_3` identity and independent Red-exclusion certificate (163 pruned states). |
+| `app/class_ii_round4_stable_bridge_check.cpp` | Round 4: checks whether the stable machinery's generic round>=5 source formula, evaluated at round 4, actually reproduces `A_4` from the independent ground-truth corona/Red pipeline -- the remaining named gap connecting the bounded round-4 grammar to the universal round>=5 theorem. |
+| `app/class_ii_neighbor2_recurrent_exhaustion_check.cpp` | Recurrent-SCC exhaustion (`GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md`'s "Recurrent exhaustion after layer equality"): partitions the real boundary graph by core/regular-shell/special-shell/transient and checks strong connectivity, escape edges, and absence of return edges against the real graph, not just the abstract catalogue matrix. |
+| `app/class_ii_neighbor2_round_stratified_transient_check.cpp` | Recurrent-SCC exhaustion, items 3-4: builds a `birth_round(state)` assignment directly from the full (not just converged) corona trace, giving every state an "earlier"/"later" ordering needed to check escape edges and absence of return paths. |
+| `app/class_ii_neighbor2_symmetric_seed_closure.cpp` | Tests whether the hardcoded 50-state signed contact set is the `backward_closure`/`red_anode` result of the symmetric seed `D_cont union mirror(D_cont)`, after ruling out `mirror(D_cont)` alone (which reproduces only 32 of the needed states). |
 
 ### Adelic and non-unit probes
 
