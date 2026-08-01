@@ -182,18 +182,39 @@ from the trusted corona trace (`birth_round(state)` = the first round
 it survives Red in, well-defined since Red never re-removes a state
 from a later round once it has survived one). That ordering also
 answered the scoping question it was built to resolve: rank and round
-correspond cleanly (`birth_round = a - rank`, one small bounded tie
-near the dominant core), not messily. Item 4 (no return to an earlier
-transient stratum): zero violations. Item 3 (escape from every
-transient block): held once "escape" was corrected from "strictly
-later round" to "does not remain transient forever" (same-round
-absorption into a recurrent block counts) -- the strict version found
-one apparent gap (the terminal-round transient group) that turned out
-to escape into the same-round recurrent core instead, the same kind of
-over-strict-then-corrected pattern as item 5's "zero inter-block
-edges" earlier. All checked, not yet closed-form -- see
-`docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md`'s "Items 1, 2, and 5"
-and "Items 3 and 4" sections for the full account.
+correspond cleanly. **Made exact (2026-08-01, was "one small bounded
+tie near the dominant core"):** `birth_round(rank) = a - rank` for
+`0<=rank<=a-2`, `birth_round(a-1)=2` (not `1`, a genuine +1 exception,
+not a tie with `a-2`), `birth_round(a)=1` (the core). Traced to a
+confirmed mechanism, not yet a full symbolic proof: the corona
+construction's own seed (`plus_minus_C`, 50 fixed states) has hop
+coordinates of magnitude up to 2, not 1, so a single expansion step
+from the core reaches two shells' worth of new territory at once --
+which is exactly why `rank=a-1` and `rank=a-2` both first appear one
+round after the core rather than `a-1` needing an extra round. Item 4
+(no return to an earlier transient stratum): zero violations. Item 3
+(escape from every transient block): held once "escape" was corrected
+from "strictly later round" to "does not remain transient forever"
+(same-round absorption into a recurrent block counts) -- the strict
+version found one apparent gap (the terminal-round transient group)
+that turned out to escape into the same-round recurrent core instead,
+the same kind of over-strict-then-corrected pattern as item 5's "zero
+inter-block edges" earlier. All checked, not yet fully closed-form --
+see `docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md`'s "Items 1, 2, and
+5" and "Items 3 and 4" sections for the full account.
+
+**Separately (2026-08-01): Round 1's target-set decomposition is now
+proven outright, not swept.** `class_ii_neighbor2_signed_contact_set()`
+(the 50-state target) equals exactly `class_ii_contact_set()` union its
+own mirror union `class_ii_neighbor2_initial_extension_states()` --
+all three parameter-free, so the identity holds for literally every
+integer `a` at once (`app/class_ii_neighbor2_round1_union_hypothesis.cpp`,
+enrolled permanently in `tests/substitution_neighborhood_test.cpp`).
+This is the target formula's own internal decomposition (proven); it
+does NOT yet prove that this target is the correct reverse-inclusion
+closure of `tau_a`'s own `D_cont` seeds, which remains open and is
+still what `class_ii_neighbor2_first_missing_premise` correctly reports
+as such.
 
 ## Exact and formal machinery
 
