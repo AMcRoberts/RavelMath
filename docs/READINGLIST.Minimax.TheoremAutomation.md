@@ -415,6 +415,13 @@ small grammar plus tail slack. The next implementation should attach the
 slack weight to descriptors and compare its induced rank with the exact shell
 DAG.
 
+Also inspect `predicted_distance_from_previous_shadow` and
+`predicted_distance_to_previous_shadow` in that header. Their values are the
+existing exact local slack labels (`1/2/3` outward and `1/2` inward). The next
+automation should test whether their accumulated sum bounds the shell-return
+rank; this is a much smaller target than inventing another global affine
+potential.
+
 For proof-mining experiments, emit the terminal Z3 proof object:
 
 ```sh

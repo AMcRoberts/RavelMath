@@ -33,6 +33,16 @@ this Root/AlternatingTriple grammar; the missing theorem should be stated on
 this descriptor automaton with the tail slack as its weight, rather than on
 raw coefficient tuples.
 
+There is already a candidate slack coordinate in the same header:
+`predicted_distance_from_previous_shadow` assigns the new descriptor a crossing
+distance `1`, `2`, or `3`, while `predicted_distance_to_previous_shadow`
+assigns the return distance `1` or `2`. These are not heuristic norms; they are
+index-gap formulas for exactly the cases that survive the descriptor grammar.
+The concrete next proof task is therefore to prove that the accumulated
+crossing distance dominates the shell survival rank. If that comparison is
+established, the existing finite shadow induction becomes the sought
+dimension-parametric escape certificate.
+
 ## Where it lives
 
 The exact implementation is in `include/ravel/nbonacci_margin_invariant.hpp`:
