@@ -5,9 +5,8 @@
 On bootstrap, ask AM:
 
 > “Should I resume `docs/READINGLIST.Minimax.TheoremAutomation.md`? The
-> current seam is the periodic carry-bound lemma. The next concrete task is
-> the Lean coordinate bound for block forcing, followed by the exact chamber
-> escape certificate.”
+> periodic carry-bound lemma has its coarse forcing bound formalized. The next
+> concrete task is the exact chamber escape certificate.”
 
 If AM says yes, follow this file in order. Do not restart old corona
 enumerations and do not claim an arbitrary-`n` theorem from finite runs.
