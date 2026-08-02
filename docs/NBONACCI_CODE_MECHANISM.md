@@ -557,3 +557,54 @@ carry update -> boundary shift -> tail-reset branches
              -> finite slack automaton -> strict shell rank
              -> no periodic exterior orbit
 ```
+
+## p-adic ramification fingerprint (graduate the prime sieve)
+
+`app/nbonacci_padic_fingerprint.cpp` (Makefile target
+`nbonacci_padic_fingerprint`) is the C++ p-adic probe: for
+`n in 2..8` and primes `p in [2, 113]`, factor the n-bonacci
+polynomial `P_n(x) = x^n - x^{n-1} - ... - x - 1` and its
+reciprocal `nbonacciCharpoly n` over `F_p`, and compute the
+ramification index `e_p` (max factor multiplicity) and residue
+degree `f_p` (min factor degree) for each `(n, p)`.
+
+The probe also computes and trial-factorizes the discriminant
+`disc(P_n)` (a single integer per n whose p-adic factorization
+encodes all ramification info) up to 100000, then reports the
+"next prime" — the smallest prime that ramifies P_n — per n.
+
+**Findings (n=2..8):**
+
+| n | disc(P_n)              | smallest ramified prime |
+|---|------------------------|--------------------------|
+| 2 | 5                      | 5                        |
+| 3 | -44 = -2² · 11         | 2                        |
+| 4 | -563                   | 563                      |
+| 5 | 9584 = 2⁴ · 599        | 2                        |
+| 6 | 205937 (prime)         | 205937                   |
+| 7 | -5390272 = -2⁶ · 84223 | 2                        |
+| 8 | -167398247 = -1319 · 126913 | 1319                |
+
+**Pattern (the "graduation" data):**
+- **Odd n (3, 5, 7):** smallest ramified prime is 2, always. The
+  2-adic structure of the dominant root β is a universal
+  feature of odd-n Pisot polynomials in this set.
+- **Even n (2, 4, 6, 8):** smallest ramified prime varies wildly
+  (5, 563, 205937, 1319) and is not monotone with n. The even-n
+  Pisot polynomials are "more uniform" p-adically (no small
+  prime ramifies except n=2 with 5).
+- The conjecture "ramified primes ⊂ {2, 3}" (which would have
+  explained the 1/2- and 1/3-denominators in the simplest
+  covering witness's free parameters) is **FALSE** for n=2..8:
+  the ramified set is actually {2, 5, 11, 563, 599, 1319, ...}.
+- The discriminant grows by ~1 order of magnitude per n (log10:
+  1, 2, 3, 4, 6, 7, 9 for n=2..8), so the "next prime" sieve has
+  to keep climbing.
+
+**Memory and cost:** p-adic factorization of P_n mod p for
+n=2..8 and p in [2, 113] runs in ~2.4s wall time on the dev
+host. The discriminant factorization (up to 100000) is sub-second
+per n. Extend to n=2..12 and p in [2, 1000] for the next shake:
+total cost roughly proportional to `n_max * pi(p_max) * n^2`, so
+~5s for the current n=2..8, p=2..113 range, and ~1min for
+n=2..12, p=2..1000.
