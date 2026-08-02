@@ -124,19 +124,19 @@ The combined refinement is now testable as `--mode=gaps-mod --modulus=auto`
 the chamber records signs, exact coordinate-wise gaps from the smallest
 absolute value, and that smallest value modulo four. Its transient quotient is
 The quotient itself is not stable as the box grows: at `n=3,B=8` it has small
-cycles again. The stronger `--rank-min` check assigns an integer offset to each
-chamber and verifies that
-`R(x)=min_i |x_i| + offset(chamber(x))` increases on every transient edge.
-The dimension-matched modulus passes the affine rank for `n=3,B=30`, `n=4,B=6`,
-`n=5,B=4`, `n=6,B=3`, `n=7,B=2`, and `n=8,B=2`. The earlier fixed modulus
-four fails at `n=4,B=6`, while modulus five repairs it, which is evidence for
-the `n+1` prefix-period rather than an accidental universal residue. This is
-still a finite-box certificate: the same rank fails again at `n=4,B=8`, while
-`n=5,B=5` passes. It converts many quotient cycles into measurable outward
-drift and identifies the relevant period, but a second residue/drift component
-is still needed for a uniform theorem. The promotion target is now an explicit
-multi-component chamber offset (or a bounded gap alphabet), not quotient
-acyclicity.
+cycles again. The stronger affine check assigns an integer offset to each
+chamber and verifies that a radial statistic plus that offset increases on
+every transient edge. The `--rank-min` statistic
+`min_i |x_i| + offset(chamber(x))` passes several small boxes but fails at
+`n=4,B=8`. The `--rank-base=sum` statistic
+`sum_i |x_i| + offset(chamber(x))` repairs that failure and passes under the
+memory cap for `n=3,B=30`, `n=4,B=10`, `n=5,B=6`, and `n=6,B=4`.
+
+The dimension-matched residue (`modulus=auto`, meaning `n+1`) remains part of
+the chamber phase. Modulus four fails at `n=4,B=6`, while modulus five repairs
+it, supporting the `n+1` prefix-period signal. This is still finite-box
+evidence, but it has now produced a concrete two-layer target: a bounded
+sign/gap/residue phase plus an `L1` radial drift certificate.
 
 For regression, the unrestricted carry automaton at `B=2` leaves the following
 numbers of cyclic states (all ternary):

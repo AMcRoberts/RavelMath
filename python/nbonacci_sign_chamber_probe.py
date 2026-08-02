@@ -200,7 +200,7 @@ def affine_min_rank_feasible(
     return True
 
 
-def run(n: int, bound: int, mode: str, modulus: int, rank_min: bool) -> int:
+def run(n: int, bound: int, mode: str, modulus: int, rank_base: str | None) -> int:
     base = 2 * bound + 1
     states = base**n
     outgoing = [[] for _ in range(states)]
@@ -241,21 +241,37 @@ def run(n: int, bound: int, mode: str, modulus: int, rank_min: bool) -> int:
             continue
         source_state = decode(source, n, base, bound)
         source_chamber = chamber(source_state, mode, modulus)
-        source_minimum = min(abs(value) for value in source_state)
+        source_magnitudes = tuple(abs(value) for value in source_state)
+        if rank_base == "min":
+            source_level = min(source_magnitudes)
+        elif rank_base == "max":
+            source_level = max(source_magnitudes)
+        elif rank_base == "sum":
+            source_level = sum(source_magnitudes)
+        else:
+            source_level = 0
         for destination in outgoing[source]:
             if removed[destination]:
                 destination_state = decode(destination, n, base, bound)
                 destination_chamber = chamber(destination_state, mode, modulus)
                 edges[source_chamber].add(destination_chamber)
-                destination_minimum = min(abs(value) for value in destination_state)
+                destination_magnitudes = tuple(abs(value) for value in destination_state)
+                if rank_base == "min":
+                    destination_level = min(destination_magnitudes)
+                elif rank_base == "max":
+                    destination_level = max(destination_magnitudes)
+                elif rank_base == "sum":
+                    destination_level = sum(destination_magnitudes)
+                else:
+                    destination_level = 0
                 weighted_edges_by_name.add(
                     (source_chamber, destination_chamber,
-                     source_minimum - destination_minimum + 1)
+                     source_level - destination_level + 1)
                 )
     self_loops = sum(node in values for node, values in edges.items())
     nontrivial = quotient_scc_sizes(edges)
     rank_text = ""
-    if rank_min:
+    if rank_base is not None:
         names = sorted(set(edges) | {value for values in edges.values() for value in values})
         index = {name: k for k, name in enumerate(names)}
         weighted_edges = {
@@ -263,7 +279,8 @@ def run(n: int, bound: int, mode: str, modulus: int, rank_min: bool) -> int:
             for source, destination, weight in weighted_edges_by_name
         }
         feasible = affine_min_rank_feasible(weighted_edges, len(names))
-        rank_text = f" affine_min_rank={'PASS' if feasible is True else 'FAIL' if feasible is False else 'INCONCLUSIVE'}"
+        rank_text = (f" affine_{rank_base}_rank="
+                     f"{'PASS' if feasible is True else 'FAIL' if feasible is False else 'INCONCLUSIVE'}")
     print(
         f"sign chamber probe: n={n} bound={bound} mode={mode} "
         f"modulus={modulus} "
@@ -288,6 +305,7 @@ def main() -> int:
         help="minimum magnitude residue modulus, or 'auto' for n+1",
     )
     parser.add_argument("--rank-min", action="store_true")
+    parser.add_argument("--rank-base", choices=("min", "max", "sum"))
     args = parser.parse_args()
     if args.n < 2 or args.bound < 1:
         parser.error("require n>=2, bound>=1, and modulus>=2")
@@ -297,7 +315,10 @@ def main() -> int:
         parser.error("modulus must be an integer or 'auto'")
     if modulus < 2:
         parser.error("require modulus>=2")
-    return run(args.n, args.bound, args.mode, modulus, args.rank_min)
+    if args.rank_min and args.rank_base is not None:
+        parser.error("choose at most one of --rank-min and --rank-base")
+    rank_base = "min" if args.rank_min else args.rank_base
+    return run(args.n, args.bound, args.mode, modulus, rank_base)
 
 
 if __name__ == "__main__":
