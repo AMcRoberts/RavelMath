@@ -53,10 +53,16 @@
 //
 // Items 3 and 4 (an escape witness from every transient block to a
 // later one; no return edge from a recurrent block to an EARLIER
-// transient stratum) are NOT checked here. Both need a round/rank
-// assignment for transient states that doesn't exist yet -- "earlier"
-// is meaningless without one. That is genuinely open, not merely
-// unautomated.
+// transient stratum) are NOT checked in THIS file. They were open when
+// this file was first written, but were closed the same day (2026-07-31,
+// ~46 minutes later) by `app/class_ii_neighbor2_round_stratified_
+// transient_check.cpp`, using exactly the round/rank assignment this
+// comment describes as missing: a state's birth round, the first round
+// r such that it is a member of A_r in the full `CoronaTrace<3>` (see
+// `docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md`'s "Items 3 and 4:
+// closed at the same tested-value strength" section). This comment had
+// gone stale -- left claiming "genuinely open" after the actual closure
+// -- until caught and corrected here (2026-08-02, cadence cycle).
 
 #include <cstdio>
 #include <set>
