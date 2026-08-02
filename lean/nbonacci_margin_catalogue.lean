@@ -214,6 +214,13 @@ theorem nbonacci_geomSum_of_charpoly {ι : Type} [Fintype ι]
   rw [← hsum] at hc
   exact sub_eq_zero.mp hc
 
+theorem nbonacci_block_identity_of_charpoly {ι : Type} [Fintype ι]
+    [DecidableEq ι] (A : Matrix ι ι ℤ) (n : ℕ)
+    (hchar : A.charpoly = nbonacciCharpoly n) :
+    A ^ (n + 1) = 2 * A - 1 := by
+  exact nbonacci_block_identity_matrix A n
+    (nbonacci_geomSum_of_charpoly A n hchar)
+
 /-! A concrete, executable bridge for the carry map.  The finite instances
 below are intentionally small: they are kernel-checked witnesses that the
 matrix hypothesis is the actual inverse-incidence matrix, rather than an
