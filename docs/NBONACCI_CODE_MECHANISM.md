@@ -43,6 +43,15 @@ crossing distance dominates the shell survival rank. If that comparison is
 established, the existing finite shadow induction becomes the sought
 dimension-parametric escape certificate.
 
+The existing executable test confirms this interpretation, rather than merely
+suggesting it. `make nbonacci_margin_core_graph_test` followed by
+`out/nbonacci_margin_core_graph_test` checks the direct descriptor graph through
+`n=32` with zero failures. For every `n>=4`, the new alphabet layer has exact
+outward distance at most `3` and return distance at most `2`; the canonical hub
+has graph radius exactly `3n-1` in both directions. Thus the descriptor slack
+is already a verified bounded local rank, and the remaining bridge is to relate
+that graph layer to the coefficient shell-return graph.
+
 ## Where it lives
 
 The exact implementation is in `include/ravel/nbonacci_margin_invariant.hpp`:

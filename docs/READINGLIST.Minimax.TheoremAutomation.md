@@ -422,6 +422,18 @@ automation should test whether their accumulated sum bounds the shell-return
 rank; this is a much smaller target than inventing another global affine
 potential.
 
+Run the existing descriptor-graph regression before mining new shell features:
+
+```sh
+make nbonacci_margin_core_graph_test
+out/nbonacci_margin_core_graph_test
+```
+
+The current run checks `n=3..32` with `0` failures. It verifies exact layer
+distances `out<=3`, `in<=2`, and hub radius `3n-1`. This is the strongest
+available evidence that the Root/AlternatingTriple slack labels are the right
+finite rank; the remaining theorem seam is the coefficient-to-descriptor lift.
+
 For proof-mining experiments, emit the terminal Z3 proof object:
 
 ```sh
