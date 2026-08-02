@@ -239,3 +239,64 @@ example : nbonacciGeomSum (inverseCarryMatrix 5) 5 = 1 := by native_decide
 example : nbonacciGeomSum (inverseCarryMatrix 6) 6 = 1 := by native_decide
 example : nbonacciGeomSum (inverseCarryMatrix 7) 7 = 1 := by native_decide
 example : nbonacciGeomSum (inverseCarryMatrix 8) 8 = 1 := by native_decide
+
+
+/-! ### A coordinate bound for block forcing
+
+The forcing formula has only two-term differences in interior coordinates and
+one three-term endpoint. This gives a uniform coordinate bound before any
+spectral or chamber argument is invoked. -/
+
+def nbonacciBlockDigit (n : ℕ) (digits : Fin (n + 1) → ℤ) (i : Fin n) : ℤ :=
+  digits (Fin.castLE (Nat.le_succ n) i)
+
+def nbonacciBlockForcing (n : ℕ) (hn : 0 < n)
+    (digits : Fin (n + 1) → ℤ) (i : Fin n) : ℤ :=
+  if hzero : i.val = 0 then
+    -digits ⟨0, by omega⟩ + digits ⟨1, by omega⟩
+  else if hinterior : i.val + 1 < n then
+    nbonacciBlockDigit n digits i -
+      nbonacciBlockDigit n digits ⟨i.val + 1, hinterior⟩
+  else
+    2 * digits ⟨0, by omega⟩ - nbonacciBlockDigit n digits i +
+      digits ⟨n, Nat.lt_succ_self n⟩
+
+theorem nbonacciBlockForcing_coord_bound (n : ℕ) (hn : 0 < n)
+    (digits : Fin (n + 1) → ℤ)
+    (hdigits : ∀ k, -1 ≤ digits k ∧ digits k ≤ 1) (i : Fin n) :
+    -4 ≤ nbonacciBlockForcing n hn digits i ∧
+      nbonacciBlockForcing n hn digits i ≤ 4 := by
+  by_cases hzero : i.val = 0
+  · simp only [nbonacciBlockForcing, dif_pos hzero]
+    have hzero := hdigits (⟨0, by omega⟩ : Fin (n + 1))
+    have hone := hdigits (⟨1, by omega⟩ : Fin (n + 1))
+    omega
+  · by_cases hinterior : i.val + 1 < n
+    · simp only [nbonacciBlockForcing, dif_neg hzero, dif_pos hinterior,
+        nbonacciBlockDigit]
+      have hleft := hdigits (Fin.castLE (Nat.le_succ n) i)
+      have hright := hdigits (Fin.castLE (Nat.le_succ n)
+        ⟨i.val + 1, by omega⟩)
+      omega
+    · simp only [nbonacciBlockForcing, dif_neg hzero, dif_neg hinterior,
+        nbonacciBlockDigit]
+      have hzero := hdigits (⟨0, by omega⟩ : Fin (n + 1))
+      have hlast := hdigits (Fin.castLE (Nat.le_succ n) i)
+      have hend := hdigits (⟨n, Nat.lt_succ_self n⟩ : Fin (n + 1))
+      omega
+
+
+theorem nbonacciBlockForcing_l1_bound (n : ℕ) (hn : 0 < n)
+    (digits : Fin (n + 1) → ℤ)
+    (hdigits : ∀ k, -1 ≤ digits k ∧ digits k ≤ 1) :
+    (∑ i : Fin n, |nbonacciBlockForcing n hn digits i|) ≤ 4 * n := by
+  calc
+    (∑ i : Fin n, |nbonacciBlockForcing n hn digits i|) ≤
+        ∑ _i : Fin n, (4 : ℤ) := by
+      apply Finset.sum_le_sum
+      intro i hi
+      exact (abs_le).2 (nbonacciBlockForcing_coord_bound n hn digits
+        hdigits i)
+    _ = 4 * n := by
+      simp
+      ring

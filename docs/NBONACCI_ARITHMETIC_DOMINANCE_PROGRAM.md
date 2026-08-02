@@ -276,9 +276,10 @@ Automation plan and acceptance gates:
 - `python/nbonacci_block_forcing_probe.py` is now the exact digit-word
   enumerator for sublemma 2 (via `make nbonacci_block_forcing_probe`). It checks
   every word through `n=10`, finds maximum coordinate `4`, and observes the
-  sharp `L1` bound `2n+2` for even `n` and `2n` for odd `n`. The next promotion
-  step is the matching Lean inequality; every reported extremizer is already
-  replayable from the closed forcing formula.
+  sharp `L1` bound `2n+2` for even `n` and `2n` for odd `n`. The coarse Lean
+  promotion is now complete: it proves `-4 <= F_i <= 4` and
+  `sum_i |F_i| <= 4*n`. Every reported extremizer is replayable from the
+  closed forcing formula; the sharp parity refinement remains optional.
 - Extend `nbonacci_sign_chamber_probe.py` to emit a canonical chamber table,
   exact transition deltas, and a machine-readable difference-constraints
   certificate for sublemma 3. The certificate must pass at increasing boxes

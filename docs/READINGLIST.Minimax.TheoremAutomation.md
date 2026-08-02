@@ -118,7 +118,7 @@ polynomial, geometric sum, block power identity, and forcing formula for
 `2 <= n <= 40`. Do not silently replace the universal characteristic
 polynomial calculation with those finite checks.
 
-## Next task: Lean forcing bound
+## Completed subtask: Lean forcing bound
 
 Prove the coordinate statement:
 
@@ -130,7 +130,15 @@ under `-1 <= d_r <= 1`. Use this signed interval form before introducing
 absolute values. Then prove `sum_i |F_i| <= 4*n`; the sharp
 parity-dependent L1 formula is optional.
 
-Recommended order:
+The definitions `nbonacciBlockDigit` and `nbonacciBlockForcing` and the
+theorems `nbonacciBlockForcing_coord_bound` and
+`nbonacciBlockForcing_l1_bound` now compile in the enrolled Lean file. The
+coarse bound is the accepted one for the escape proof:
+`-4 <= F_i <= 4` and `sum_i |F_i| <= 4*n`. The sharper parity-dependent bound
+from the Python enumerator is optional.
+
+The original implementation order, useful if this lemma must be reconstructed
+on another substrate, was:
 
 1. define a `Fin (n+1) -> Z` digit word;
 2. define first, interior, and last coordinates with dependent `if`
@@ -139,6 +147,8 @@ Recommended order:
 4. prove the L1 bound with `Finset.sum_le_sum` and `abs_le.2`;
 5. add executable examples for `n=2,3`;
 6. run `make lean-check` before committing.
+
+The next live task is the exact chamber escape certificate below.
 
 If `Fin` bookkeeping blocks progress, first prove the inequality over natural
 indices with explicit bounds, then add a thin `Fin` conversion lemma.
@@ -256,4 +266,3 @@ Keep long probes under the 10 GiB cap and background runs likely to exceed five
 minutes. Commit a coherent checkpoint after each proof seam. End each session
 by naming the exact next uncompleted step. On bootstrap, ask about this file
 before starting unrelated experiments.
-
