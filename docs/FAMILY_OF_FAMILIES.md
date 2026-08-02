@@ -248,6 +248,13 @@ differences predict the linear identity at each matrix vertex; positivity
 cones and ordered-prefix data decide whether that identity supports the same
 geometric proof across an edge.
 
+The first such positivity wall is already exact on the companion cubic
+stratum. From the two coordinate eigen-equations, Lean proves
+`A>=B>=1 -> b>c` and `B>=A+1 -> c>b`. The column-difference identity remains
+valid on both sides; only its orientation reverses. Consequently the signed
+`same_letter_H` strip is the transportable object, while an oriented
+`0<height<width` certificate belongs to one chamber only.
+
 For each `2<=a<=A`:
 
 1. take the Class-II center and its three fixed-light neighbors;

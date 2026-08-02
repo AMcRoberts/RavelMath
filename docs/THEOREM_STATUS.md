@@ -816,6 +816,16 @@ matrix itself. Pisot/unimodular hypotheses belong to the subsequent
 contracting geometry, integral lattice, and window-positivity steps,
 not to this algebraic identity.
 
+The same Lean file locates the first positivity/orientation chamber for
+companion incidence matrices using only their two coordinate eigen-equations
+and positivity of the Perron coordinate: `A>=B>=1` implies `b>c`, whereas
+`B>=A+1` implies `c>b`. For integer nonnegative companion coefficients these
+are the two adjacent regimes (apart from separately handled zero cases).
+Thus the algebraic column identity persists across the matrix hop while the
+orientation of the gap used by `same_letter_H` genuinely reverses; the signed
+strip `H_sigma union (-H_sigma)` is exactly the convention that survives this
+wall.
+
 Lean kernel-checks the candidate shell bounds and core-polynomial
 signs. With all four base rounds now closed, the global occurrence
 theorem's remaining obligations are recurrent-SCC exhaustion and

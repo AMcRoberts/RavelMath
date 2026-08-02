@@ -66,7 +66,11 @@ matching private material lives in `~/claude/.ravel/keys/`. See
   corollaries give the Class-II `b*(b-c)=c` and Tribonacci
   `b*(b-c)=c-1` forms once their column differences are supplied. The
   theorem needs no Pisot, unimodularity, primitivity, or positivity
-  hypothesis; those enter only in the later geometric application.
+  hypothesis; those enter only in the later geometric application. The same
+  file also proves the companion-stratum orientation wall from the two
+  coordinate eigen-equations: for positive coordinates and integer-style
+  coefficient chambers, `A>=B>=1` forces `b>c`, while `B>=A+1` forces
+  `c>b`.
 
 ## Incomplete extension
 

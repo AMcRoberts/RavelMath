@@ -1343,6 +1343,16 @@ columns of the multiplication-by-`beta` tensor to equal `M` exactly before
 checking the derived column differences; current result is
 `Full multiplication-by-beta tensors equal M: ALL EXACT`.
 
+**The first geometric wall after the universal algebra (Lean-checked).** For
+the companion incidence stratum, the same two left-eigenvector coordinate
+equations prove `b>c` throughout `A>=B>=1`, but `c>b` throughout
+`B>=A+1`. For integer positive coefficients these regimes meet without an
+unclassified integer band. The identity does not break at this wall; its
+orientation does. This explains why neighbor 0's earlier signed-strip
+correction was structural rather than cosmetic: `same_letter_H` uses
+`H_sigma union (-H_sigma)`, so it can transport across an orientation reversal
+that would invalidate an oriented `0<height<width` proof.
+
 **Rolled forward automatically to rounds 3-5, confirming the "family
 of families" framing rather than asserting it** (`app/class_ii_
 neighbor2_interior_regime_structure_check.cpp`): the enumeration and

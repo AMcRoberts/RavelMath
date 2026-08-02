@@ -60,3 +60,32 @@ theorem tribonacci_column_difference
     b * (b - c) = c - 1 := by
   subst b
   nlinarith [h0, h1]
+
+/-- On the companion incidence stratum, if `A ≥ B ≥ 1`, the first Perron
+coordinate is strictly larger than the second.  This is the positive-gap
+chamber containing Tribonacci (`A=B=1`). -/
+theorem companion_perron_gap_positive
+    (A B b c : ℝ) (hb : 0 < b) (hB : 1 ≤ B) (hAB : B ≤ A)
+    (h0 : A * b + c = b * b)
+    (h1 : B * b + 1 = b * c) :
+    c < b := by
+  have hc1 : 1 < c := by
+    nlinarith [mul_nonneg (sub_nonneg.mpr hB) (le_of_lt hb)]
+  have hdiff : 0 < b * b - b * c := by
+    nlinarith [mul_nonneg (sub_nonneg.mpr hAB) (le_of_lt hb)]
+  nlinarith [mul_pos hb (sub_pos.mpr hdiff)]
+
+/-- In the next companion chamber, `B ≥ A+1`, the orientation reverses:
+the second Perron coordinate is strictly larger than the first. -/
+theorem companion_perron_gap_negative
+    (A B b c : ℝ) (hb : 0 < b) (hBA : A + 1 ≤ B)
+    (h0 : A * b + c = b * b)
+    (h1 : B * b + 1 = b * c) :
+    b < c := by
+  by_contra hnot
+  have hcb : c ≤ b := le_of_not_gt hnot
+  have hbA : b ≤ A + 1 := by
+    nlinarith [mul_nonneg (sub_nonneg.mpr hcb) (le_of_lt hb)]
+  have hbB : b ≤ B := le_trans hbA hBA
+  nlinarith [mul_nonneg (sub_nonneg.mpr hcb) (le_of_lt hb),
+    mul_nonneg (sub_nonneg.mpr hbB) (le_of_lt hb)]
