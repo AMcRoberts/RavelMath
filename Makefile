@@ -87,7 +87,7 @@ TRANSITION_FILES := $(addprefix $(TRANSITIONS_DIR)/spectre_transitions_,$(addsuf
 .PHONY: rnd13_factor_probe rnd13_prefix_automaton_probe classify_adelic_tiling test_bp_gb_divisor adelic_boundary_spectral_radius gb_bp_involution_check
 .PHONY: class_ii_symmetry_probe class_ii_boundary_family_test substitution_neighborhood_test
 .PHONY: class_ii_corona_literature_probe
-.PHONY: nbonacci_periodic_carry_probe nbonacci_carry_cycle_probe nbonacci_sign_chamber_probe nbonacci_chamber_stability nbonacci_chamber_merge nbonacci_rank_feature_search nbonacci_sector_gap_rank nbonacci_block_spectrum_probe nbonacci_block_forcing_probe nbonacci_block_l1_growth_probe nbonacci_max_shell_return_probe nbonacci_max_shell_return_stability nbonacci_shell_word_probe nbonacci_conjugate_height_probe nbonacci_conjugate_height_bound nbonacci_dominance_theorem_pipeline nbonacci_homogeneous_shell_smt nbonacci_homogeneous_shell_unsat_core nbonacci_shell_covering_search nbonacci_shell_covering_proof nbonacci_covering_witness_enumerator nbonacci_covering_witness_enumerate nbonacci_data_shaker nbonacci_padic_fingerprint nbonacci_homogeneous_shell_core_enumerate
+.PHONY: nbonacci_periodic_carry_probe nbonacci_carry_cycle_probe nbonacci_sign_chamber_probe nbonacci_chamber_stability nbonacci_chamber_merge nbonacci_rank_feature_search nbonacci_sector_gap_rank nbonacci_block_spectrum_probe nbonacci_block_forcing_probe nbonacci_block_l1_growth_probe nbonacci_max_shell_return_probe nbonacci_max_shell_return_stability nbonacci_shell_word_probe nbonacci_conjugate_height_probe nbonacci_conjugate_height_bound nbonacci_dominance_theorem_pipeline nbonacci_homogeneous_shell_smt nbonacci_homogeneous_shell_unsat_core nbonacci_shell_covering_search nbonacci_shell_covering_proof nbonacci_covering_witness_enumerator nbonacci_covering_witness_enumerate nbonacci_data_shaker nbonacci_padic_fingerprint nbonacci_csy_state_count nbonacci_csy_dynamics nbonacci_homogeneous_shell_core_enumerate
 .PHONY: class_ii_neighbor_probe
 .PHONY: return_contact_lift_probe
 .PHONY: class_ii_terminal_transport_probe
@@ -406,6 +406,43 @@ nbonacci_padic_fingerprint: $(NBONACCI_PADIC_FINGERPRINT_BIN)
 	./$(NBONACCI_PADIC_FINGERPRINT_BIN) --n-min=2 --n-max=8 \
 		--primes=2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101,103,107,109,113 \
 		--out=out/nbonacci_padic_fingerprint.json
+
+# nbonacci_csy_state_count: build the CSY finite zero-expansion
+# automaton on the n-bonacci PisotPoly and report the state count.
+# A finite state count is the direct test of CSY Theorem 3 (the
+# "preserves zeros" / Frougny-Solomyak Condition F for the
+# n-bonacci Pisot β-numeration); a state count > n+1 means CSY
+# Theorem 3's bound is coarser than the homogeneous-shell
+# covering witness.
+NBONACCI_CSY_STATE_COUNT_BIN := $(BUILDDIR)/nbonacci_csy_state_count
+$(NBONACCI_CSY_STATE_COUNT_BIN): \
+		$(APPDIR)/nbonacci_csy_state_count.cpp \
+		$(INCDIR)/adelic/csy_carry_automaton.hpp \
+		$(INCDIR)/adelic/csy_finite_carry_automaton.hpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+nbonacci_csy_state_count: $(NBONACCI_CSY_STATE_COUNT_BIN)
+	./$(NBONACCI_CSY_STATE_COUNT_BIN) --n-min=2 --n-max=8 \
+		--max-prefix=8 --bound-bits=14 \
+		--out=out/nbonacci_csy_state_count.json
+
+# nbonacci_csy_dynamics: the "complete classification and
+# dynamics" of the CSY state count for the n-bonacci Pisot
+# numeration.  For each (n, max_prefix), report states, raw_nodes,
+# transitions, truncated.  Run at multiple max_prefixes per n to
+# extract the saturation pattern and the "what does the state
+# count converge to" question.
+NBONACCI_CSY_DYNAMICS_BIN := $(BUILDDIR)/nbonacci_csy_dynamics
+$(NBONACCI_CSY_DYNAMICS_BIN): \
+		$(APPDIR)/nbonacci_csy_dynamics.cpp \
+		$(INCDIR)/adelic/csy_carry_automaton.hpp \
+		$(INCDIR)/adelic/csy_finite_carry_automaton.hpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+nbonacci_csy_dynamics: $(NBONACCI_CSY_DYNAMICS_BIN)
+	./$(NBONACCI_CSY_DYNAMICS_BIN) --n-min=2 --n-max=8 \
+		--max-prefixes=4,6,8,10 \
+		--bound-bits=10 --out=out/nbonacci_csy_dynamics.json
 
 NBONACCI_COVERING_ENUM_DIR ?= out/nbonacci_covering_enumerator
 nbonacci_covering_witness_enumerate: $(NBONACCI_COVERING_WITNESS_ENUMERATOR_BIN)

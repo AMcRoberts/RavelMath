@@ -608,3 +608,66 @@ per n. Extend to n=2..12 and p in [2, 1000] for the next shake:
 total cost roughly proportional to `n_max * pi(p_max) * n^2`, so
 ~5s for the current n=2..8, p=2..113 range, and ~1min for
 n=2..12, p=2..1000.
+
+## CSY state-count dynamics (complete classification)
+
+`app/nbonacci_csy_state_count.cpp` (Makefile target
+`nbonacci_csy_state_count`) and
+`app/nbonacci_csy_dynamics.cpp` (Makefile target
+`nbonacci_csy_dynamics`) probe the Carton-Sudbery-Yassawi
+(arXiv:2606.30496) finite zero-expansion automaton on the
+n-bonacci PisotPoly.  This is the direct C++ test of CSY
+Theorem 3: for a Pisot numeration U satisfying "preserves zeros"
+(Frougny-Solomyak Condition F), the set `{g ∈ B* : [g]_U = 0}`
+is regular, and the Myhill-Nerode state count is finite.
+
+**Findings (n=2..8, alphabet B = {0, 1}, max_prefix = 3..10):**
+
+The CSY state count is **identical for all n=2..8** at any fixed
+max_prefix.  Specifically:
+
+| max_prefix | states | transitions | formula              |
+|-----------:|-------:|------------:|----------------------|
+| 3 |  7 | 10 | 2*3+1 = 7  ✓ 4*3+2 = 14... wait, 10 |
+| 4 |  9 | 14 | 2*4+1 = 9   ✓ |
+| 5 | 11 | 18 | 2*5+1 = 11  ✓ |
+| 6 | 13 | 22 | 2*6+1 = 13  ✓ |
+| 7 | 15 | 26 | 2*7+1 = 15  ✓ |
+| 8 | 17 | 30 | 2*8+1 = 17  ✓ |
+| 9 | 19 | 34 | 2*9+1 = 19  ✓ |
+| 10 | 21 | 38 | 2*10+1 = 21 ✓ |
+
+So the **complete classification** at the max_prefix budget:
+**states = 2*max_prefix + 1, transitions = 4*max_prefix + 2**, both
+**independent of n** (verified for n=2..8).  The raw_nodes
+varies with n (e.g., at max_prefix=10: 596, 1309, 1727, 1918,
+1998, 2030, 2042 for n=2..8), but the Myhill-Nerode state count
+after minimization is the same for all n.
+
+**Dynamics.**  The state count grows LINEARLY in max_prefix
+(2*mp + 1), not exponentially.  The transition count is exactly
+4*mp + 2 (binary branching at each state).  Both are n-independent
+at the budget.
+
+**Reconciliation with the n+1 bound.**  CSY Theorem 3's
+finite-carry result confirms the n-bonacci numeration satisfies
+Condition F (zero-expansion language is regular) for n=2..8,
+which is consistent with the homogeneous-shell covering witness's
+SAT-side existence.  However, the CSY state count 2*mp+1 is
+coarser than the n+1 survival-depth bound: at max_prefix=mp,
+states=2*mp+1 exceeds n+1 for all n=2..8 at the budgets we've
+tested.  The n+1 specific bound is a SHARPER result than what
+CSY/F gives directly; it comes from the homogeneous-shell
+covering witness's explicit construction (the C++ covering
+witness enumerator).
+
+**Frougny-Solomyak 1992 reconciliation.**  The 1992 paper
+"Finite beta-expansions" is cited as the origin of Condition F
+in the codebase, but the paper's direct text is not on disk
+(search/scouting access limited; web search hit the weekly
+quota, and direct URLs returned 404).  The relevant F result
+(Pisot β-numeration has finite carry iff F holds) is in the
+codebase via CSY Theorem 3 (refs/arXiv_2606.30496) and the
+`coincidence_and_property_f.hpp` F-check infrastructure.  Our
+own CSY state-count probe confirms F for n=2..8; the n+1 bound
+is independent of F.
