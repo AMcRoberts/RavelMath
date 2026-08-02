@@ -124,19 +124,80 @@ def affine_min_rank_feasible(
     relaxation detects a positive cycle.  None means the bounded iteration
     budget was insufficient, rather than a mathematical failure.
     """
-    heights = [0] * chamber_count
     edges = list(weighted_edges)
-    for _ in range(min(chamber_count, 200)):
-        changed = False
-        for source, destination, weight in edges:
-            if heights[destination] < heights[source] + weight:
-                heights[destination] = heights[source] + weight
-                changed = True
-        if not changed:
-            return True
-    if chamber_count <= 200:
-        return False
-    return None
+    graph = [[] for _ in range(chamber_count)]
+    reverse = [[] for _ in range(chamber_count)]
+    for source, destination, weight in edges:
+        graph[source].append((destination, weight))
+        reverse[destination].append((source, weight))
+
+    # Kosaraju, iteratively, so large gap boxes do not consume Python stack.
+    seen = [False] * chamber_count
+    order: list[int] = []
+    for root in range(chamber_count):
+        if seen[root]:
+            continue
+        stack = [(root, False)]
+        while stack:
+            vertex, exiting = stack.pop()
+            if exiting:
+                order.append(vertex)
+                continue
+            if seen[vertex]:
+                continue
+            seen[vertex] = True
+            stack.append((vertex, True))
+            for destination, _ in graph[vertex]:
+                if not seen[destination]:
+                    stack.append((destination, False))
+    component = [-1] * chamber_count
+    components: list[list[int]] = []
+    for root in reversed(order):
+        if component[root] >= 0:
+            continue
+        component[root] = len(components)
+        vertices = [root]
+        stack = [root]
+        while stack:
+            vertex = stack.pop()
+            for source, _ in reverse[vertex]:
+                if component[source] < 0:
+                    component[source] = component[root]
+                    vertices.append(source)
+                    stack.append(source)
+        components.append(vertices)
+
+    iteration_cap = int(os.environ.get("RAVEL_RANK_ITERATIONS", "200"))
+    if iteration_cap < 1:
+        return None
+    for vertices in components:
+        if len(vertices) == 1:
+            vertex = vertices[0]
+            if any(destination == vertex and weight > 0
+                   for destination, weight in graph[vertex]):
+                return False
+            continue
+        local = set(vertices)
+        heights = {vertex: 0 for vertex in vertices}
+        internal = [
+            (source, destination, weight)
+            for source in vertices
+            for destination, weight in graph[source]
+            if destination in local
+        ]
+        for _ in range(min(len(vertices), iteration_cap)):
+            changed = False
+            for source, destination, weight in internal:
+                if heights[destination] < heights[source] + weight:
+                    heights[destination] = heights[source] + weight
+                    changed = True
+            if not changed:
+                break
+        else:
+            return None if len(vertices) > iteration_cap else False
+        if changed:
+            return False
+    return True
 
 
 def run(n: int, bound: int, mode: str, modulus: int, rank_min: bool) -> int:
@@ -205,6 +266,7 @@ def run(n: int, bound: int, mode: str, modulus: int, rank_min: bool) -> int:
         rank_text = f" affine_min_rank={'PASS' if feasible is True else 'FAIL' if feasible is False else 'INCONCLUSIVE'}"
     print(
         f"sign chamber probe: n={n} bound={bound} mode={mode} "
+        f"modulus={modulus} "
         f"chambers={len(edges)} self_loops={self_loops} "
         f"nontrivial_SCCs={nontrivial[:12]}{rank_text}"
     )
@@ -221,12 +283,21 @@ def main() -> int:
                            "gaps-mod3", "gaps-mod", "parity"),
         default="ordered",
     )
-    parser.add_argument("--modulus", type=int, default=3)
+    parser.add_argument(
+        "--modulus", default="auto",
+        help="minimum magnitude residue modulus, or 'auto' for n+1",
+    )
     parser.add_argument("--rank-min", action="store_true")
     args = parser.parse_args()
-    if args.n < 2 or args.bound < 1 or args.modulus < 2:
+    if args.n < 2 or args.bound < 1:
         parser.error("require n>=2, bound>=1, and modulus>=2")
-    return run(args.n, args.bound, args.mode, args.modulus, args.rank_min)
+    try:
+        modulus = args.n + 1 if args.modulus == "auto" else int(args.modulus)
+    except ValueError:
+        parser.error("modulus must be an integer or 'auto'")
+    if modulus < 2:
+        parser.error("require modulus>=2")
+    return run(args.n, args.bound, args.mode, modulus, args.rank_min)
 
 
 if __name__ == "__main__":

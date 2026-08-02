@@ -119,17 +119,22 @@ large run. The corresponding Make targets cap the native carry probe at the
 same limit with `ulimit`, so failed synthesis attempts terminate as bounded
 experiments rather than destabilizing the workshop process.
 
-The combined refinement is now testable as `--mode=gaps-mod --modulus=4`:
+The combined refinement is now testable as `--mode=gaps-mod --modulus=auto`
+(which selects modulus `n+1`):
 the chamber records signs, exact coordinate-wise gaps from the smallest
 absolute value, and that smallest value modulo four. Its transient quotient is
 The quotient itself is not stable as the box grows: at `n=3,B=8` it has small
 cycles again. The stronger `--rank-min` check assigns an integer offset to each
 chamber and verifies that
 `R(x)=min_i |x_i| + offset(chamber(x))` increases on every transient edge.
-That affine rank passes for `n=3,B=8`, `n=3,B=20`, `n=4,B=4`, `n=5,B=3`, and
-`n=6,B=3`. This is still a finite-box certificate, but it converts the
-quotient cycles into measurable outward drift; the promotion target is now a
-parametric offset rule (or a bounded gap alphabet), not quotient acyclicity.
+The dimension-matched modulus passes the affine rank for `n=3,B=30`, `n=4,B=6`,
+`n=5,B=4`, `n=6,B=3`, `n=7,B=2`, and `n=8,B=2`. The earlier fixed modulus
+four fails at `n=4,B=6`, while modulus five repairs it, which is evidence for
+the `n+1` prefix-period rather than an accidental universal residue. This is
+still a finite-box certificate, but it converts quotient cycles into measurable
+outward drift with a dimension-parametric residue. The promotion target is now
+an explicit formula for the chamber offset (or a bounded gap alphabet), not
+quotient acyclicity.
 
 For regression, the unrestricted carry automaton at `B=2` leaves the following
 numbers of cyclic states (all ternary):
