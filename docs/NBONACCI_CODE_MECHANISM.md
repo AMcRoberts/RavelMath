@@ -85,6 +85,22 @@ automaton has survival depth exactly `n+1`.  The remaining work is to extract a
 generic Farkas/induction proof of that fact and then quantify the perturbation
 from `q=0` to `q=1/M`.
 
+The algebra explains why this is the right limit.  Writing
+`S_t = a_t+...+a_{t+n-1}`, the carry identity gives
+`S_{t+1}=a_t+d_t` and hence
+`a_{t+n}=2a_t-S_t+d_t`.  Eliminating `S_t` one step later yields the exact
+block defect
+
+```text
+a_{t+n+1} - 2*a_{t+1} + a_t = d_{t+1} - d_t,
+```
+
+For normalized states the digit is `q d_t`, so the right side is
+`q(d_{t+1}-d_t)`, with magnitude at most `2q`.  At `q=0` it vanishes; finite
+`q=1/M` shells are therefore a bounded perturbation of the homogeneous
+`(n+1)`-block recurrence.  This is the algebraic interface the next
+certificate generator should use instead of expanding all coefficient paths.
+
 There is a useful asymptotic reduction already exposed by the same code. After
 normalizing by `M`, the digit contribution is `q=1/M`. At `q=0` the machine is
 the homogeneous shift/tail map. Exhaustive canonical-word search for
