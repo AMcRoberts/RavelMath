@@ -72,7 +72,8 @@ matching private material lives in `~/claude/.ravel/keys/`. See
   coefficient chambers, `A>=B>=1` forces `b>c`, while `B>=A+1` forces
   `c>b`. It also proves the dimension-independent local `n`-bonacci gap
   recursion and its Tetrabonacci first-gap specialization
-  `b*(b-c)=c-d`.
+  `b*(b-c)=c-d`; the complete four-letter chain then proves the strict
+  covector ordering `b>c>d>1` from `beta>0`.
 
 ## Incomplete extension
 

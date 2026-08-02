@@ -110,3 +110,31 @@ theorem tetrabonacci_first_gap
     b * (b - c) = c - d := by
   subst b
   nlinarith [h0, h1]
+
+/-- The complete Tetrabonacci gap chain is positive.  Its three consecutive
+column differences give nested exact gaps ending at `1/beta`, hence the
+strict acceptance-covector order `b>c>d>1`. -/
+theorem tetrabonacci_gap_order
+    (beta b c d : ℝ) (hbeta : b = beta) (hpos : 0 < beta)
+    (h0 : b + c = beta * b)
+    (h1 : b + d = beta * c)
+    (h2 : b + 1 = beta * d) :
+    1 < d ∧ d < c ∧ c < b := by
+  subst b
+  have hd : 1 < d := by
+    by_contra hnot
+    have hdle : d ≤ 1 := le_of_not_gt hnot
+    nlinarith [mul_nonneg (le_of_lt hpos) (sub_nonneg.mpr hdle)]
+  have hcd : d < c := by
+    have hgap : 0 < beta * (c - d) := by
+      nlinarith [h1, h2]
+    rcases (mul_pos_iff.mp hgap) with h | h
+    · exact sub_pos.mp h.2
+    · exact False.elim ((not_lt_of_ge (le_of_lt hpos)) h.1)
+  have hbc : c < beta := by
+    have hgap : 0 < beta * (beta - c) := by
+      nlinarith [h0, h1]
+    rcases (mul_pos_iff.mp hgap) with h | h
+    · exact sub_pos.mp h.2
+    · exact False.elim ((not_lt_of_ge (le_of_lt hpos)) h.1)
+  exact ⟨hd, hcd, hbc⟩

@@ -832,6 +832,10 @@ The theorem also extends beyond three letters. Lean proves the local
 coordinate eigen-equations, and the explicit Tetrabonacci first-gap identity
 `b(b-c)=c-d`. Tribonacci's `c-1` right-hand side is therefore the terminal
 case of a coordinate-gap chain, not a cubic-only phenomenon.
+For Tetrabonacci the file additionally proves the full first chain
+`beta(b-c)=c-d`, `beta(c-d)=d-1`, `beta(d-1)=1` forces
+`b>c>d>1` whenever `beta>0`, closing its covector ordering directly from the
+four coordinate equations.
 
 Lean kernel-checks the candidate shell bounds and core-polynomial
 signs. With all four base rounds now closed, the global occurrence

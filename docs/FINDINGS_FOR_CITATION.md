@@ -1362,6 +1362,11 @@ instance is `b(b-c)=c-d`. `lean/perron_column_difference.lean`
 kernel-checks both the arbitrary local recursion and the explicit
 Tetrabonacci corollary. This is a genuine direction toward broader families,
 not another cubic-coordinate coincidence.
+Lean also checks the complete four-letter first chain:
+`beta(b-c)=c-d`, `beta(c-d)=d-1`, `beta(d-1)=1`; hence for positive
+`beta`, `b>c>d>1`. This is already a genuine stepped-hyperplane width
+ordering obtained from incidence columns, bridging the universal algebra to
+the positivity side rather than stopping at a formal identity.
 
 **Rolled forward automatically to rounds 3-5, confirming the "family
 of families" framing rather than asserting it** (`app/class_ii_
