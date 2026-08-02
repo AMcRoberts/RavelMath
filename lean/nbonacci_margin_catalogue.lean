@@ -161,6 +161,12 @@ theorem carryUpdate_sum_digit_bound {x : List ℤ} (hx : x ≠ [])
   rw [carryUpdate_sum (x := x) hx d]
   constructor <;> omega
 
+theorem carryUpdate_take_prefix (x : List ℤ) (d : ℤ) :
+    (carryUpdate x d).take (x.length - 1) = x.tail := by
+  cases x with
+  | nil => rfl
+  | cons x xs => simp [carryUpdate]
+
 def nbonacciGeomSum {R : Type} [Ring R] (a : R) : ℕ → R
   | 0 => 0
   | k + 1 => nbonacciGeomSum a k + a ^ (k + 1)
