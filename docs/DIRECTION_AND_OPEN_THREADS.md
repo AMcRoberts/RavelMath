@@ -64,6 +64,27 @@ is summarized inline below where it's relevant to Item A or Item B.
   literature**. The n-bonacci work is a structural explanation of
   a particular β-substitution case, not a new result against the
   classical Pisot conjecture.
+- The dominant-core window target is now an exact finite certificate for
+  n=3..7, not a floating survey. `make item1_per_pair_check` verifies exact
+  left-covector heights, the sparse argmax witness in every face-pair group,
+  every positive residual margin, the global worst `2/beta-1`, and exact
+  transition-record agreement on core nodes. Core sizes are
+  14/46/108/210/362; all failure counts are zero.
+
+**Current general-n margin seam (sharpened 2026-08-02).** The algebraic half
+is uniform: n-bonacci parent decompositions give prefix height 0 for letter 0
+and 1 for every other letter, hence every forward edge obeys
+
+`t' = (t + delta)/beta`, `delta=[j>=1]-[i>=1] in {-1,0,1}`.
+
+The candidate global worst `e_0-e_{n-1}` already has exact positive margin
+`2/beta_n-1`. The finite n=3..7 cores now also show, exactly, that every
+face-pair maximum is the sparse row witness. What remains is not numerical
+root or transition control: it is to classify the delta words of arbitrary-n
+dominant recurrent cycles (or give an invariant trapping interval for them)
+strongly enough to prove that no recurrent height exceeds its row witness.
+Equivariance under `[i,x,j] -> [j,-x,i]` is already algebraic for all n; use it
+to quotient the cycle classification before attempting raw-state exhaustion.
 
 **What's open (Item A research targets) — SUPERSEDED, corrected
 2026-08-01**: A1 and A2 below are answered, not open — this section
