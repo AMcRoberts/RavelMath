@@ -136,6 +136,7 @@ chambers; peak RSS about 3.3 GiB). The earlier 1 GiB `MEMORY_LIMIT` was
 therefore only a Python representation boundary, not a rank failure.
 The next-dimensional run `n=5,B=8` passes as well (855,564 chambers; largest
 quotient SCC 14). The first higher shell at `n=6,B=5` also passes (1,043,824
+chambers; no nontrivial quotient SCC). The `n=7,B=3` run passes too (491,178
 chambers; no nontrivial quotient SCC).
 
 The dimension-matched residue (`modulus=auto`, meaning `n+1`) remains part of
