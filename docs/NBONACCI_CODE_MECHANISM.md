@@ -154,8 +154,23 @@ refuses to classify a timeout as a proof, so higher-dimensional runs remain
 explicitly inconclusive when the arithmetic solver does not finish.
 
 The homogeneous limit can now be checked independently with
-`python/nbonacci_homogeneous_shell_smt.py`.  Exact rational SMT gives the
-following stable pattern for every tested dimension `2<=n<=10`:
+`python/nbonacci_homogeneous_shell_smt.py` (`make
+nbonacci_homogeneous_shell_smt`, now an explicit regression target that
+fails if the pattern below breaks at any tested `n`). Exact rational SMT
+gives the following stable pattern for every tested dimension `2<=n<=14`
+(extended from the previously-checked `n<=10`; the Z3 witnesses printed
+per `n` are not canonical -- Z3 returns *some* satisfying assignment, not
+an extremal or otherwise structurally meaningful one, so do not read
+patterns into the specific witness values). A scattershot spot check well
+past the enrolled regression range -- `n=18` (0.21s), `n=25` (0.37s),
+`n=40` (7.35s), each an isolated single-query run, not a systematic
+sweep -- confirms the same `n+1` SAT / `n+2` UNSAT pattern holds with
+solve times that stay cheap far beyond where a case-by-case exhaustive
+box check (the strong ternary closure route, `docs/
+NBONACCI_CONJUGATE_HEIGHT_BOUND.md`) becomes intractable. This is
+evidence the pattern is robust, not evidence it is proven for literal
+every `n`: SMT confirms finitely many instances exactly, it does not
+substitute for the still-missing symbolic induction.
 
 ```text
  n+1 transitions: SAT
@@ -168,6 +183,27 @@ strongly identifies the missing symbolic lemma: the homogeneous boundary
 automaton has survival depth exactly `n+1`.  The remaining work is to extract a
 generic Farkas/induction proof of that fact and then quantify the perturbation
 from `q=0` to `q=1/M`.
+
+**A concrete algebraic lead for that proof, found and verified but not yet
+carried through**: the homogeneous block recurrence itself,
+`a_{t+n+1} = 2*a_{t+1} - a_t` (see the block-defect identity above with the
+forcing term set to zero), has characteristic polynomial `x^(n+1) - 2x + 1`.
+This factors as `(x-1)` times the *reciprocal* of the n-bonacci polynomial:
+writing `P(x) = x^n - x^(n-1) - ... - x - 1` for the n-bonacci polynomial,
+`x^(n+1) - 2x + 1 = (x-1) * (-x^n * P(1/x))`, i.e. its roots are exactly
+`{1} union {1/beta_k : beta_k a root of P}`. Verified both symbolically
+(direct polynomial division for `n=2,3` by hand, matching for general `n` by
+the reciprocal-polynomial identity) and numerically (root-by-root match to
+`1e-15` for `n=3,4,5,6`, `python3` + `numpy.roots`). Since the n-bonacci
+polynomial is Pisot (one root `beta>1`, every other root `|beta_k|<1`), this
+means the homogeneous block map has exactly `n-1` *unstable* eigen-directions
+(the reciprocals `1/beta_k` of the small conjugates, now `>1` in modulus),
+one marginal direction (eigenvalue exactly `1`, the constant sequences), and
+one stable direction (`1/beta<1`). A map with only one contracting direction
+out of `n+1` is a plausible mechanism for why a bounded (shell-confined)
+orbit cannot survive more than a bounded number of steps -- but this has not
+yet been turned into the actual `n+1` survival-depth bound; it explains why
+survival should be short, not yet the exact constant `n+1`.
 
 For inspection, the probe can emit Z3's proof object for the terminal query:
 

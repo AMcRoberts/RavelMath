@@ -55,6 +55,7 @@ def main() -> int:
         # Proof production is a context-wide Z3 option and must be enabled
         # before the first solver is constructed.
         z3.set_param("proof", True)
+    failures = 0
     for n in dimensions:
         short_status, model, _ = check(n, n + 1)
         long_status, _, long_solver = check(n, n + 2)
@@ -64,8 +65,12 @@ def main() -> int:
         if model is not None:
             witness = " witness=" + ",".join(str(model.eval(z3.Real(f"x_{i}")))
                                                for i in range(n))
+        pattern_holds = short_status == z3.sat and long_status == z3.unsat
+        if not pattern_holds:
+            failures += 1
         print(f"homogeneous-shell: n={n} transitions={n+1} status={short}"
-              f"; transitions={n+2} status={long}{witness}")
+              f"; transitions={n+2} status={long} "
+              f"pattern={'PASS' if pattern_holds else 'FAIL'}{witness}")
         if args.emit_proof and n == args.n and long_status == z3.unsat:
             # Rerun this one query under the proof-enabled context.
             _, _, proof_solver = check(n, n + 2)
@@ -73,7 +78,9 @@ def main() -> int:
                 stream.write(str(proof_solver.proof()))
                 stream.write("\n")
             print(f"  proof={args.emit_proof}")
-    return 0
+    print(f"homogeneous-shell: {len(list(dimensions))} dimensions checked, "
+          f"{failures} pattern failures")
+    return 0 if failures == 0 else 1
 
 
 if __name__ == "__main__":

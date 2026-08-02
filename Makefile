@@ -87,7 +87,7 @@ TRANSITION_FILES := $(addprefix $(TRANSITIONS_DIR)/spectre_transitions_,$(addsuf
 .PHONY: rnd13_factor_probe rnd13_prefix_automaton_probe classify_adelic_tiling test_bp_gb_divisor adelic_boundary_spectral_radius gb_bp_involution_check
 .PHONY: class_ii_symmetry_probe class_ii_boundary_family_test substitution_neighborhood_test
 .PHONY: class_ii_corona_literature_probe
-.PHONY: nbonacci_periodic_carry_probe nbonacci_carry_cycle_probe nbonacci_sign_chamber_probe nbonacci_chamber_stability nbonacci_chamber_merge nbonacci_rank_feature_search nbonacci_sector_gap_rank nbonacci_block_spectrum_probe nbonacci_block_forcing_probe nbonacci_block_l1_growth_probe nbonacci_max_shell_return_probe nbonacci_max_shell_return_stability nbonacci_shell_word_probe nbonacci_conjugate_height_probe nbonacci_conjugate_height_bound
+.PHONY: nbonacci_periodic_carry_probe nbonacci_carry_cycle_probe nbonacci_sign_chamber_probe nbonacci_chamber_stability nbonacci_chamber_merge nbonacci_rank_feature_search nbonacci_sector_gap_rank nbonacci_block_spectrum_probe nbonacci_block_forcing_probe nbonacci_block_l1_growth_probe nbonacci_max_shell_return_probe nbonacci_max_shell_return_stability nbonacci_shell_word_probe nbonacci_conjugate_height_probe nbonacci_conjugate_height_bound nbonacci_dominance_theorem_pipeline nbonacci_homogeneous_shell_smt
 .PHONY: class_ii_neighbor_probe
 .PHONY: return_contact_lift_probe
 .PHONY: class_ii_terminal_transport_probe
@@ -424,6 +424,16 @@ nbonacci_conjugate_height_bound: $(NBONACCI_CARRY_CYCLE_PROBE_BIN)
 	ulimit -v 10485760; ./out/nbonacci_carry_cycle_probe --n=5 --bound=4
 	ulimit -v 10485760; ./out/nbonacci_carry_cycle_probe --n=6 --bound=5
 	ulimit -v 10485760; ./out/nbonacci_carry_cycle_probe --n=7 --bound=6
+
+nbonacci_homogeneous_shell_smt:
+	RAVEL_PROBE_MEMORY_MB=4096 python3 python/nbonacci_homogeneous_shell_smt.py --n=14 --max-n
+
+nbonacci_dominance_theorem_pipeline: $(NBONACCI_CARRY_CYCLE_PROBE_BIN) $(NBONACCI_ARITHMETIC_HULL_BIN)
+	python3 python/nbonacci_dominance_theorem_pipeline.py --n-min=3 --n-max=8 --carry-timeout=120 --dominance-timeout=120
+
+nbonacci_scc_pattern_miner: $(NBONACCI_ARITHMETIC_HULL_BIN)
+	python3 python/nbonacci_scc_pattern_miner.py --n-min=3 --n-max=9 --total-budget-mb=9000 --base-mb=32 --timeout=900
+
 $(NBONACCI_ARITHMETIC_HULL_BIN): \
 		$(APPDIR)/nbonacci_arithmetic_hull.cpp \
 		$(INCDIR)/ravel/nbonacci_margin_invariant.hpp \
