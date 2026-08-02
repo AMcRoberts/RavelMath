@@ -98,6 +98,13 @@ for the `n+2`-transition word family. The `n=6` endpoint was checked over all
 14 SAT branches. This is a concrete target for discovering the general slack
 recurrence.
 
+The shared-selector verifier removes the word-enumeration bottleneck. It
+encodes all ternary digits in one exact mixed-integer linear formula:
+`python/nbonacci_shared_interval_smt.py`. It extends the endpoint data to
+`k_7=20` and `k_8=28`: `q<1/20` is UNSAT for `n=7`, while `q<1/19` is SAT;
+`q<1/28` is UNSAT for `n=8`, while `q<1/27` is SAT. This is the preferred
+automation path for higher dimensions.
+
 The homogeneous limit can now be checked independently with
 `python/nbonacci_homogeneous_shell_smt.py`.  Exact rational SMT gives the
 following stable pattern for every tested dimension `2<=n<=10`:

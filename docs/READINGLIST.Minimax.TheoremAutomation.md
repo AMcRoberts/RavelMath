@@ -384,6 +384,18 @@ The current exact table is `3,4,7,10,14` for dimensions `2` through `6`.
 Treat this as conjecture-mining output; the proof task is to derive the
 recurrence for these integer margins from the block defect.
 
+For higher dimensions, avoid enumerating words and use the shared selector
+encoding:
+
+```sh
+python3 python/nbonacci_shared_interval_smt.py \
+  --n=8 --length=10 --upper-q=1/28
+```
+
+The shared exact formula gives `n=7: k=20` and `n=8: k=28`, with SAT at the
+immediately coarser endpoints `1/19` and `1/27`. This is the next source of
+data for a symbolic slack recurrence.
+
 For proof-mining experiments, emit the terminal Z3 proof object:
 
 ```sh
