@@ -183,6 +183,37 @@ theorem nbonacci_block_identity_matrix {ι R : Type} [Fintype ι]
     A ^ (n + 1) = 2 * A - 1 := by
   exact nbonacci_block_identity_scalar A n h
 
+noncomputable def nbonacciCharpoly (n : ℕ) : Polynomial ℤ :=
+  (Finset.sum (Finset.range n) (fun k => Polynomial.X ^ (k + 1))) -
+    Polynomial.C 1
+
+theorem nbonacci_geomSum_of_charpoly {ι : Type} [Fintype ι]
+    [DecidableEq ι] (A : Matrix ι ι ℤ) (n : ℕ)
+    (hchar : A.charpoly = nbonacciCharpoly n) :
+    nbonacciGeomSum A n = 1 := by
+  have hc := Matrix.aeval_self_charpoly A
+  rw [hchar] at hc
+  rw [Polynomial.aeval_def] at hc
+  simp [nbonacciCharpoly] at hc
+  change (Polynomial.eval₂AddMonoidHom
+      (algebraMap ℤ (Matrix ι ι ℤ)) A)
+      (Finset.sum (Finset.range n)
+        (fun k => Polynomial.X ^ (k + 1))) - 1 = 0 at hc
+  rw [map_sum] at hc
+  simp [Polynomial.eval₂AddMonoidHom_apply] at hc
+  clear hchar
+  have hsum_all : ∀ q : ℕ,
+      nbonacciGeomSum A q =
+        Finset.sum (Finset.range q) (fun k => A ^ (k + 1)) := by
+    intro q
+    induction q with
+    | zero => simp [nbonacciGeomSum]
+    | succ q ih =>
+        rw [nbonacciGeomSum, Finset.sum_range_succ, ih]
+  have hsum := hsum_all n
+  rw [← hsum] at hc
+  exact sub_eq_zero.mp hc
+
 /-! A concrete, executable bridge for the carry map.  The finite instances
 below are intentionally small: they are kernel-checked witnesses that the
 matrix hypothesis is the actual inverse-incidence matrix, rather than an

@@ -12,6 +12,8 @@
 #include <stdexcept>
 #include <vector>
 
+#include "math/charpoly.hpp"
+
 using Scalar = long long;
 using Matrix = std::vector<std::vector<Scalar>>;
 using Vector = std::vector<Scalar>;
@@ -63,6 +65,16 @@ int main() {
     std::size_t checks = 0;
     for (std::size_t n = 2; n <= 40; ++n) {
         const Matrix A = inverse_carry_matrix(n);
+        const auto characteristic = mathlib::charpoly_faddeev_leverrier(A);
+        mathlib::PolyZ expected_characteristic;
+        expected_characteristic.ensure_size(n + 1);
+        mathlib::set_si(expected_characteristic.coeff(0), -1);
+        for (std::size_t k = 1; k <= n; ++k)
+            mathlib::set_si(expected_characteristic.coeff(k), 1);
+        expected_characteristic.trim();
+        require(characteristic == expected_characteristic,
+                "companion characteristic polynomial mismatch");
+
         Matrix geometric(n, std::vector<Scalar>(n));
         Matrix running(n, std::vector<Scalar>(n));
         for (std::size_t i = 0; i < n; ++i) running[i][i] = 1;

@@ -126,6 +126,13 @@ matrix in dimensions `n=2,...,8` by executable finite instances. The remaining
 formal step is consequently index arithmetic for arbitrary `n`, rather than
 identifying the matrix or guessing the block law.
 
+The arbitrary-dimension reduction is now explicit in Lean: by
+Cayley--Hamilton, it suffices to prove that the inverse-incidence matrix has
+characteristic polynomial `X^n + X^(n-1) + ... + X - 1`. The theorem
+`nbonacci_geomSum_of_charpoly` turns that polynomial certificate into the
+geometric-sum premise without expanding matrix powers. This leaves a standard
+companion-characteristic-polynomial calculation as the next formal target.
+
 Sign-chamber mining is available through
 `python/nbonacci_sign_chamber_probe.py`. Sign alone is too coarse: at
 `n=3,B=6` it leaves a 12-chamber quotient SCC and two self-loops. Refining by
