@@ -239,6 +239,31 @@ replay fails; it is discovery output, not a proof certificate. The search now
 builds these large systems sparsely and suppresses giant coefficient dumps,
 so escalation can be repeated under the 10 GiB cap.
 
+### A stronger escape reduction: maximum-shell returns
+
+The finite chamber search also yielded a more robust mechanism. For a fixed
+box `[-M,M]^n`, compute first returns to the shell `max_i |a_i|=M`, allowing
+arbitrary legal interior paths between shell visits. A periodic orbit attaining
+global maximum `M` would induce a directed cycle in this return graph. The
+exact longest-path rank therefore gives a finite escape certificate whenever
+the shell-return graph is acyclic. The replayable implementation is
+`python/nbonacci_max_shell_return_probe.py` plus
+`python/nbonacci_max_shell_return_check.py`.
+
+Under the 10 GiB cap, n=3,M=8 has 1,538 shell states and 4,638 return edges;
+n=4,M=8 has 32,896 states and 143,538 edges. Both rank certificates replay
+with strict increase. This avoids asserting a single global affine chamber
+potential and is the current preferred finite reduction for the exterior
+escape lemma. A parameterized proof of shell acyclicity remains outstanding.
+
+There is a complementary algebraic route. For the n-bonacci root `β`, the
+covector `c_0=1`, `c_j=β c_{j-1}-1` satisfies the exact scalar update
+`β h(x')=h(x)+d`. Applying this identity to every conjugate and closing a
+periodic word gives geometric height bounds; inverse Vandermonde reconstruction
+then yields a fixed coefficient hull `B(n)`. Numerical discovery estimates
+are modest (roughly `B(4)<5`, `B(8)<12`), but root-location and interval
+certification are still required before promotion to a theorem.
+
 ## 5. What is proved and what remains
 
 The following are proved or exactly replayable:

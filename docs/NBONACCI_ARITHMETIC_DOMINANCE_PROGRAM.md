@@ -333,6 +333,39 @@ bounded forcing do not by themselves yield radial `L1` escape.
   evidence to a universal carry theorem. The four broader obligations below
   then consume that theorem as their recurrent coefficient bound.
 
+### Maximum-shell return reduction
+
+The chamber rank search exposed a cleaner finite reduction. For a fixed box
+`[-M,M]^n`, form the outer shell `max_i |a_i| = M` and compute the exact
+first-return relation: paths may move through the interior, but stop at their
+first subsequent shell visit. A periodic orbit whose global maximum is `M`
+would induce a directed cycle in this shell-return graph. Therefore an
+acyclic graph, together with its longest-path integer rank, is already a
+finite exterior-escape certificate; it does not require a guessed affine
+formula on all chambers.
+
+This is implemented by `python/nbonacci_max_shell_return_probe.py` and
+replayed by `python/nbonacci_max_shell_return_check.py`. Under the 10 GiB cap,
+the emitted n=3, M=8 certificate has 1,538 shell states and 4,638 return
+edges; n=4, M=8 has 32,896 states and 143,538 edges. Both replay with strict
+rank increase. The same relation passes n=4 at M=3,4,6,8,10 and n=5 at M=3.
+The remaining universal step is now sharply stated: prove a parameterized
+shell-return DAG/rank theorem (or derive it from the conjugate-height
+identity), rather than stabilize a single global chamber potential.
+
+### Algebraic-height route
+
+The exact carry update also supplies a dimension-parametric scalar identity.
+If `β` is the n-bonacci root and
+`c_j = β^j - (1 + β + ... + β^(j-1))`, then
+`h(x) = Σ c_j x_j` satisfies `β h(x') = h(x) + d`. The same identity holds
+in every conjugate embedding. On a periodic word, closure bounds each
+conjugate height by a geometric digit sum; Vandermonde inversion then gives a
+finite coefficient bound `B(n)`. This is a second route to the missing lemma:
+automate certified root-modulus intervals and the inverse-embedding bound,
+then feed the resulting finite hull into the exact arithmetic-hull machinery.
+The current numerical estimates are only discovery evidence, not yet a proof.
+
 The arithmetic reversal reduces the open proof to four explicit lemmas.
 
 1. **Recurrent coefficient/carry bound.** Every cyclic exact-window orbit of

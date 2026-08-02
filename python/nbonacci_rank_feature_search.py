@@ -15,7 +15,7 @@ import json
 
 import numpy as np
 from scipy import sparse
-from scipy.optimize import linprog
+from scipy.optimize import Bounds, LinearConstraint, linprog, milp
 
 
 def load(path: str) -> dict:
@@ -166,7 +166,8 @@ def feature_count(data: dict, family: str) -> int:
     return len(features(data["chambers"][0], family))
 
 
-def sparse_sector_search(data: dict, family: str):
+def sparse_sector_search(data: dict, family: str, integer: bool = False,
+                         time_limit: float = 60.0):
     """Build only the nonzero support of sector-affine features.
 
     A chamber has one intercept and a handful of gap/scale coordinates, so
@@ -219,8 +220,15 @@ def sparse_sector_search(data: dict, family: str):
     matrix = sparse.coo_matrix((vals, (rows, cols)),
                                shape=(len(data["weighted_edges"]), len(sectors) * width)).tocsr()
     rhs = -np.asarray([float(edge[2]) for edge in data["weighted_edges"]])
-    result = linprog(np.zeros(matrix.shape[1]), A_ub=matrix, b_ub=rhs,
-                     bounds=[(None, None)] * matrix.shape[1], method="highs")
+    if integer:
+        result = milp(np.zeros(matrix.shape[1]),
+                      integrality=np.ones(matrix.shape[1], dtype=np.int8),
+                      bounds=Bounds(-np.inf, np.inf),
+                      constraints=LinearConstraint(matrix, -np.inf, rhs),
+                      options={"time_limit": time_limit})
+    else:
+        result = linprog(np.zeros(matrix.shape[1]), A_ub=matrix, b_ub=rhs,
+                         bounds=[(None, None)] * matrix.shape[1], method="highs")
     if not result.success:
         return result, None, 0.0, sectors, width
     # For A x <= rhs, the desired rank slack is rhs - A x.
@@ -236,6 +244,10 @@ def main() -> int:
     parser.add_argument("--emit", help="write a rounded integer coefficient certificate")
     parser.add_argument("--max-features", type=int, default=5000,
                         help="skip LP families larger than this (default: 5000)")
+    parser.add_argument("--integer", action="store_true",
+                        help="use sparse integer MILP for sector families")
+    parser.add_argument("--time-limit", type=float, default=60.0,
+                        help="integer solver time limit in seconds")
     args = parser.parse_args()
     data = load(args.certificate)
     families = args.family or ["sign", "gaps", "quadratic", "rich", "sector-gaps", "sector-gaps-scale", "sector-gaps-mask", "mask-gaps", "order-gaps", "sector-order-gaps", "sector-order-gaps-scale", "sector-order-quadratic-scale", "sector-order-state-affine", "sector-order-residue-affine", "sign-interaction", "order-sign-interaction"]
@@ -246,12 +258,14 @@ def main() -> int:
                   f"features={count} > cap={args.max_features}")
             continue
         if family in ("sector-order-gaps", "sector-order-gaps-scale", "sector-order-quadratic-scale", "sector-order-state-affine", "sector-order-residue-affine"):
-            result, coefficients, minimum_slack, sectors, width = sparse_sector_search(data, family)
+            result, coefficients, minimum_slack, sectors, width = sparse_sector_search(
+                data, family, integer=args.integer, time_limit=args.time_limit)
             vectors = None
         else:
             result, coefficients, minimum_slack, vectors = search(data, family)
         if coefficients is None:
-            print(f"feature search: family={family} INFEASIBLE "
+            label = "INCONCLUSIVE" if args.integer and result.status == 1 else "INFEASIBLE"
+            print(f"feature search: family={family} {label} "
                   f"status={result.status}")
             continue
         print(f"feature search: family={family} FEASIBLE "

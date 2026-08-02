@@ -269,6 +269,25 @@ by minimum residue yields a real LP witness but no rounded integer replay, so
 it remains discovery evidence only. Large coefficient vectors are summarized
 instead of printed, preventing another log-driven memory spike.
 
+The better current escape mechanism is the maximum-shell return reduction.
+Run:
+
+```sh
+RAVEL_PROBE_MEMORY_MB=10240 python3 \
+  python/nbonacci_max_shell_return_probe.py \
+  --n=4 --bound=8 --emit-rank=/tmp/n4_shell8_return.json
+python3 python/nbonacci_max_shell_return_check.py \
+  /tmp/n4_shell8_return.json
+```
+
+This computes exact first returns to `max(abs(a_i))=M`, including arbitrary
+interior paths. A periodic orbit attaining its global maximum would produce a
+cycle of shell returns, so strict longest-path rank increase is a finite escape
+certificate. The n=4,M=8 run has 32,896 shell states and 143,538 edges and
+replays PASS. The next theorem task is to parameterize this shell DAG/rank in
+`M`, or replace it with the conjugate-height identity `β h(x') = h(x)+d`
+and certified Vandermonde bounds.
+
 Example:
 
 ```sh
