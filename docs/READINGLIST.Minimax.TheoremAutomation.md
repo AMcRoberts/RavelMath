@@ -349,6 +349,19 @@ discovery evidence until the solver disjunctions have a replayable certificate;
 the next task is to turn the `1/7` margin into a rational Farkas witness shared
 by all word branches.
 
+The stronger exact interval replay is:
+
+```sh
+RAVEL_PROBE_MEMORY_MB=10240 python3 \
+  python/nbonacci_word_interval_smt.py \
+  --n=4 --length=6 --upper-q=1/7
+```
+
+This checks all 365 canonical words directly in QF_LRA and reports
+`365/365 UNSAT`. It is the current best bridge from the homogeneous limit to a
+large-shell cutoff; use `--word=-1,1,-1,1,-1,1 --emit-proof=...` to inspect a
+single branch proof.
+
 For proof-mining experiments, emit the terminal Z3 proof object:
 
 ```sh

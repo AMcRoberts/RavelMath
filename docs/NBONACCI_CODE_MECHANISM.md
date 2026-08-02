@@ -77,6 +77,13 @@ This is solver evidence (the eventual promotion still needs a replayable
 Farkas/SMT certificate), but it supplies the first explicit quantitative
 bridge from the homogeneous obstruction to the large-shell cutoff.
 
+That margin has now been independently checked with exact QF_LRA. The
+replayable probe `python/nbonacci_word_interval_smt.py` tests the strict
+interval `0 <= q < 1/7` for every canonical word and returns
+`365/365 UNSAT`, with no unknown results. It can emit a Z3 proof for an
+individual branch with `--emit-proof`; the remaining compression is to share
+the resulting linear certificate across all word branches.
+
 The homogeneous limit can now be checked independently with
 `python/nbonacci_homogeneous_shell_smt.py`.  Exact rational SMT gives the
 following stable pattern for every tested dimension `2<=n<=10`:
