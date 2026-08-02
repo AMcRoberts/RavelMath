@@ -417,7 +417,8 @@ profile.** `app/thread_a4_extension_graph_probe.cpp` replaces the
 aggregate factor count with each factor's left/right extension graph.
 On orbit prefixes of at least 525456 symbols, a direct extension-graph
 pass through factor length 64 and a suffix-automaton stability pass
-through length 60000 on a separately enlarged orbit prefix find that
+through length 500000 (strengthened 2026-08-02 from an initial 60000)
+on a separately enlarged, 35676949-symbol orbit prefix find that
 `σ_{0,1}` has `p(n)=5n-5` for every
 checked `n>=4`, with exactly five left-special and three right-special
 factors. The AR-complexity controls all retain `p(n)=2n+1`, but now
@@ -443,7 +444,8 @@ the actual predecessor/branch decomposition for this substitution.
 The longer pass deliberately uses a separately enlarged orbit prefix. On the
 525456-symbol prefix, extending the requested length too far produces a first
 false loss of one left extension at `n=55406`; the 4-million-symbol prefix
-restores all five left-special factors through `n=60000`. Thus the probe also
+restores all five left-special factors through `n=60000`, and the current
+35-million-symbol prefix restores them through `n=500000`. Thus the probe also
 records an explicit finite-boundary failure mode rather than mistaking it for
 a structural transition.
 
