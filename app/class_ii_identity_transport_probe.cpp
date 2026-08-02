@@ -32,6 +32,7 @@
 #include <array>
 #include <cstdio>
 #include <stdexcept>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -231,17 +232,27 @@ BasisCoordinates coordinates_in_perron_basis(
     return out;
 }
 
-void print_multiplication_tensor(const char* label, const PolyZ& modulus,
-                                 const PolyZ& b, const PolyZ& c) {
+BasisCoordinates print_multiplication_tensor(
+        const char* label, const PolyZ& modulus,
+        const PolyZ& b, const PolyZ& c) {
     std::printf("  %s multiplication tensor in basis (b,c,1):\n", label);
+    BasisCoordinates difference;
     for (const auto& product : std::vector<std::pair<const char*, PolyZ>>{
              {"b*b", b * b}, {"b*c", b * c}, {"c*c", c * c},
              {"b(b-c)", b * (b - c)}}) {
         const auto coords = coordinates_in_perron_basis(
             reduce_univariate(product.second, modulus), b, c);
+        if (std::string(product.first) == "b(b-c)") difference = coords;
         std::printf("    %-6s = %lld*b %+lld*c %+lld\n", product.first,
                     coords.b, coords.c, coords.one);
     }
+    return difference;
+}
+
+bool coordinates_equal(const BasisCoordinates& actual,
+                       const BasisCoordinates& expected) {
+    return actual.b == expected.b && actual.c == expected.c
+        && actual.one == expected.one;
 }
 
 PolyZ companion_cubic(long long quadratic, long long linear) {
@@ -453,20 +464,31 @@ int main() {
     const PolyZ class_c = monomial(1, 2)
                         - monomial(displayed_a, 1)
                         - monomial(1, 0);
-    print_multiplication_tensor("Class II (a=7)", class_cubic,
-                                class_b, class_c);
-    print_multiplication_tensor("Tribonacci", trib_cubic,
-                                trib_b, trib_c);
+    const auto class_difference = print_multiplication_tensor(
+        "Class II (a=7)", class_cubic, class_b, class_c);
+    const auto tribonacci_difference = print_multiplication_tensor(
+        "Tribonacci", trib_cubic, trib_b, trib_c);
     // For companion cubics beta^3=A*beta^2+B*beta+1, the acceptance
     // covector basis is (b,c,1)=(beta,beta^2-A*beta,1). Incidence-column
     // subtraction gives b*(b-c)=(A-B)b+c-1.
-    print_multiplication_tensor("companion stratum (A=3,B=2)",
-                                companion_cubic(3, 2),
-                                monomial(1, 1),
-                                monomial(1, 2) - monomial(3, 1));
-    print_multiplication_tensor("companion stratum (A=2,B=3)",
-                                companion_cubic(2, 3),
-                                monomial(1, 1),
-                                monomial(1, 2) - monomial(2, 1));
-    return 0;
+    const auto companion32_difference = print_multiplication_tensor(
+        "companion stratum (A=3,B=2)", companion_cubic(3, 2),
+        monomial(1, 1), monomial(1, 2) - monomial(3, 1));
+    const auto companion23_difference = print_multiplication_tensor(
+        "companion stratum (A=2,B=3)", companion_cubic(2, 3),
+        monomial(1, 1), monomial(1, 2) - monomial(2, 1));
+
+    const bool column_differences_ok =
+        coordinates_equal(class_difference, {0, 1, 0})
+        && coordinates_equal(tribonacci_difference, {0, 1, -1})
+        && coordinates_equal(companion32_difference, {1, 1, -1})
+        && coordinates_equal(companion23_difference, {-1, 1, -1});
+    const bool all_ok = neighbor0_ok && neighbor1_ok
+        && !old_identity_remainder.is_zero()
+        && tribonacci_identity_remainder.is_zero()
+        && tribonacci_formula_ok && column_differences_ok;
+    std::printf("\nIncidence-column assertions: %s\n",
+                column_differences_ok ? "ALL EXACT" : "FAIL");
+    std::printf("Overall transport probe: %s\n", all_ok ? "PASS" : "FAIL");
+    return all_ok ? 0 : 1;
 }

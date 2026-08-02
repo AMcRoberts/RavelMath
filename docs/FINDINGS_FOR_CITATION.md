@@ -1334,6 +1334,10 @@ No Pisot, unimodular, primitive, or positivity hypothesis appears in
 this theorem; those assumptions enter only when turning the algebraic
 identity into contracting lattice/window geometry. The file and updated
 manifest carry both verified GPG and X.509 signatures.
+The C++ probe now treats the four expected column differences as assertions
+and exits nonzero on any identity, tensor, symbolic-endpoint, or transport
+failure; its enrolled explicit Make target reports `Overall transport probe:
+PASS`, not merely a diagnostic table followed by unconditional success.
 
 **Rolled forward automatically to rounds 3-5, confirming the "family
 of families" framing rather than asserting it** (`app/class_ii_

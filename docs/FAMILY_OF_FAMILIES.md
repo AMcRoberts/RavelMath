@@ -220,6 +220,34 @@ yet a theorem about the adjacent-swap graph defined here.
 
 ## First executable experiment
 
+### Incidence columns already encode Perron-coordinate difference identities
+
+One algebraic feature transports more broadly than the fixed-light fiber.
+Let `v` be the left Perron covector used by the stepped-hyperplane
+acceptance test, so `M^T v=beta v`. Subtracting coordinates `i,j` gives
+
+```text
+beta (v_i-v_j) = sum_k (M_ki-M_kj) v_k.
+```
+
+Thus any identity of the form "Perron coordinate times a coordinate
+difference" is read directly from the corresponding incidence-column
+difference. In the Class-II scaling `v=(b,c,1)` and `b=beta`, columns
+0 and 1 differ by `(0,1,0)`, hence `b(b-c)=c`. At Tribonacci the same
+acceptance-covector scaling gives difference `(0,1,-1)`, hence
+`b(b-c)=c-1`.
+
+This statement is not Pisot- or unimodularity-specific; those hypotheses
+enter later, in the contracting geometry, lattice arithmetic, and window
+positivity. `lean/perron_column_difference.lean` kernel-checks the arbitrary
+finite-dimensional real-matrix theorem. The executable
+`class_ii_identity_transport_probe` independently reduces the associated
+quotient-ring products and requires exact agreement with the incidence
+columns. This gives the family graph a useful division of labor: column
+differences predict the linear identity at each matrix vertex; positivity
+cones and ordered-prefix data decide whether that identity supports the same
+geometric proof across an edge.
+
 For each `2<=a<=A`:
 
 1. take the Class-II center and its three fixed-light neighbors;
