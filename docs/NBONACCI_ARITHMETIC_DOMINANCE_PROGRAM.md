@@ -120,6 +120,12 @@ the ternary layer, `2A-I` supplies radial growth while the displayed forcing
 is uniformly bounded. Run the exact regression with
 `make nbonacci_block_identity_test`.
 
+The Lean file now exposes the same implication at the matrix level and
+kernel-checks the geometric-sum premise for the explicit inverse-incidence
+matrix in dimensions `n=2,...,8` by executable finite instances. The remaining
+formal step is consequently index arithmetic for arbitrary `n`, rather than
+identifying the matrix or guessing the block law.
+
 Sign-chamber mining is available through
 `python/nbonacci_sign_chamber_probe.py`. Sign alone is too coarse: at
 `n=3,B=6` it leaves a 12-chamber quotient SCC and two self-loops. Refining by

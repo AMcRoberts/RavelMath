@@ -182,3 +182,22 @@ theorem nbonacci_block_identity_matrix {ι R : Type} [Fintype ι]
     (h : nbonacciGeomSum A n = 1) :
     A ^ (n + 1) = 2 * A - 1 := by
   exact nbonacci_block_identity_scalar A n h
+
+/-! A concrete, executable bridge for the carry map.  The finite instances
+below are intentionally small: they are kernel-checked witnesses that the
+matrix hypothesis is the actual inverse-incidence matrix, rather than an
+unrelated abstract ring element.  The dimension-parametric proof still has
+one remaining index-arithmetic seam. -/
+
+def inverseCarryMatrix (n : ℕ) : Matrix (Fin n) (Fin n) ℤ := fun i j =>
+  if i.val + 1 = j.val then 1
+  else if i.val = n - 1 then (if j.val = 0 then 1 else -1)
+  else 0
+
+example : nbonacciGeomSum (inverseCarryMatrix 2) 2 = 1 := by native_decide
+example : nbonacciGeomSum (inverseCarryMatrix 3) 3 = 1 := by native_decide
+example : nbonacciGeomSum (inverseCarryMatrix 4) 4 = 1 := by native_decide
+example : nbonacciGeomSum (inverseCarryMatrix 5) 5 = 1 := by native_decide
+example : nbonacciGeomSum (inverseCarryMatrix 6) 6 = 1 := by native_decide
+example : nbonacciGeomSum (inverseCarryMatrix 7) 7 = 1 := by native_decide
+example : nbonacciGeomSum (inverseCarryMatrix 8) 8 = 1 := by native_decide
