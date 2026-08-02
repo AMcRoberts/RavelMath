@@ -105,6 +105,21 @@ The remaining promotion target is precise: prove that every periodic orbit
 enters one of these finite boxes (or prove a direct maximum principle), after
 which the recurrent coefficient bound is no longer empirical.
 
+The homogeneous recurrence has a sharper exact identity, checked by
+`tests/nbonacci_block_identity_test.cpp` for every `2<=n<=40`:
+
+`A^(n+1) = 2*A - I`, where `A=M^(-1)` is the carry map. Over one phase block,
+the digit forcing is exactly
+
+`(-e0+2e_last) d0 + sum_{r=1}^{n-1}(e_{r-1}-e_r) d_r + e_last d_n`.
+
+Thus the observed `n+1` phase is an algebraic consequence of the companion
+matrix, and the forcing is a bounded discrete derivative of the digit word.
+The remaining carry lemma can now be attacked through this block map: outside
+the ternary layer, `2A-I` supplies radial growth while the displayed forcing
+is uniformly bounded. Run the exact regression with
+`make nbonacci_block_identity_test`.
+
 Sign-chamber mining is available through
 `python/nbonacci_sign_chamber_probe.py`. Sign alone is too coarse: at
 `n=3,B=6` it leaves a 12-chamber quotient SCC and two self-loops. Refining by

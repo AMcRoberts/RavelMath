@@ -83,7 +83,7 @@ TRANSITION_FILES := $(addprefix $(TRANSITIONS_DIR)/spectre_transitions_,$(addsuf
 .PHONY: test_qbasis validate_exploded test_12_exploded contact_boundary_4x4
 .PHONY: cylinder_measure verify_exploded_12 test_general_spectral
 .PHONY: prefix_automaton_test padic_test dedekind_factorization_test
-.PHONY: ideal_arithmetic_test coincidence_and_property_f_test local_field_test graph_divisor_test maximal_order_test gb_bp_hop_rule_test nbonacci_margin_invariant_test nbonacci_margin_core_graph_test
+.PHONY: ideal_arithmetic_test coincidence_and_property_f_test local_field_test graph_divisor_test maximal_order_test gb_bp_hop_rule_test nbonacci_margin_invariant_test nbonacci_margin_core_graph_test nbonacci_block_identity_test
 .PHONY: rnd13_factor_probe rnd13_prefix_automaton_probe classify_adelic_tiling test_bp_gb_divisor adelic_boundary_spectral_radius gb_bp_involution_check
 .PHONY: class_ii_symmetry_probe class_ii_boundary_family_test substitution_neighborhood_test
 .PHONY: class_ii_corona_literature_probe
@@ -408,6 +408,7 @@ TESTS_DEFAULT := \
 	gb_bp_hop_rule_test \
 	nbonacci_margin_invariant_test \
 	nbonacci_margin_core_graph_test \
+	nbonacci_block_identity_test \
 	dual_format_test \
 	dual_test \
 	spectral_dual_test \
@@ -616,6 +617,11 @@ $(NBONACCI_MARGIN_CORE_GRAPH_TEST_BIN): \
 		$(TESTDIR)/nbonacci_margin_core_graph_test.cpp \
 		$(INCDIR)/ravel/nbonacci_margin_invariant.hpp \
 		$(INCDIR)/ravel/graph_divisor.hpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+NBONACCI_BLOCK_IDENTITY_TEST_BIN := $(BUILDDIR)/nbonacci_block_identity_test
+nbonacci_block_identity_test: $(NBONACCI_BLOCK_IDENTITY_TEST_BIN)
+$(NBONACCI_BLOCK_IDENTITY_TEST_BIN): $(TESTDIR)/nbonacci_block_identity_test.cpp | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
 PISOT_NUMERATION_TOPOLOGY_TEST_BIN := $(BUILDDIR)/pisot_numeration_topology_test
