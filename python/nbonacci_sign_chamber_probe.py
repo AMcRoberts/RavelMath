@@ -13,6 +13,16 @@ from __future__ import annotations
 
 import argparse
 from collections import defaultdict, deque
+import os
+import resource
+
+
+def install_memory_limit() -> None:
+    """Cap virtual memory; use 0 to disable for a deliberate large run."""
+    megabytes = int(os.environ.get("RAVEL_PROBE_MEMORY_MB", "1024"))
+    if megabytes > 0:
+        limit = megabytes * 1024 * 1024
+        resource.setrlimit(resource.RLIMIT_AS, (limit, limit))
 
 
 def encode(x: tuple[int, ...], base: int, bound: int) -> int:
@@ -160,6 +170,7 @@ def run(n: int, bound: int, mode: str, modulus: int) -> int:
 
 
 def main() -> int:
+    install_memory_limit()
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--n", type=int, required=True)
     parser.add_argument("--bound", type=int, required=True)

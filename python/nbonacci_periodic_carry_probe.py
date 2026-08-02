@@ -17,8 +17,18 @@ from __future__ import annotations
 
 import argparse
 from dataclasses import dataclass
+import os
+import resource
 
 from z3 import Int, Or, Solver, sat
+
+
+def install_memory_limit() -> None:
+    """Cap virtual memory; use 0 to disable for a deliberate large run."""
+    megabytes = int(os.environ.get("RAVEL_PROBE_MEMORY_MB", "1024"))
+    if megabytes > 0:
+        limit = megabytes * 1024 * 1024
+        resource.setrlimit(resource.RLIMIT_AS, (limit, limit))
 
 
 @dataclass(frozen=True)
@@ -53,6 +63,7 @@ def probe(n: int, period: int, timeout_ms: int) -> ProbeResult:
 
 
 def main() -> int:
+    install_memory_limit()
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--min-n", type=int, default=3)
     parser.add_argument("--max-n", type=int, default=8)
