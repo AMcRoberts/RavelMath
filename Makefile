@@ -360,6 +360,7 @@ $(NBONACCI_CARRY_CYCLE_PROBE_BIN): \
 nbonacci_sign_chamber_probe:
 	python3 python/nbonacci_sign_chamber_probe.py --n=3 --bound=6 --mode=sign
 	python3 python/nbonacci_sign_chamber_probe.py --n=3 --bound=6 --mode=ordered
+	python3 python/nbonacci_sign_chamber_probe.py --n=3 --bound=6 --mode=gaps-mod --modulus=4
 $(NBONACCI_ARITHMETIC_HULL_BIN): \
 		$(APPDIR)/nbonacci_arithmetic_hull.cpp \
 		$(INCDIR)/ravel/nbonacci_margin_invariant.hpp \

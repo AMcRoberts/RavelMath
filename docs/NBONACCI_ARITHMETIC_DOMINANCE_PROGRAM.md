@@ -113,6 +113,16 @@ the weak ordering of absolute magnitudes removes neither phenomenon entirely
 therefore encode magnitude gaps or residues together with signs; this negative
 result prevents a false “sign-only” escape lemma.
 
+The combined refinement is now testable as `--mode=gaps-mod --modulus=4`:
+the chamber records signs, exact coordinate-wise gaps from the smallest
+absolute value, and that smallest value modulo four. Its transient quotient is
+acyclic for `n=3,B=6`, `n=4,B=4`, `n=5,B=3`, and `n=6,B=3`. Modulus three also
+works from `n=4` onward but leaves four 3-cycles at `n=3`; modulus four removes
+those low-dimensional residues. This is still a finite-box certificate—the
+promotion target is a bounded gap alphabet or a direct proof that gap growth
+itself supplies the ranking—but it is the first chamber family with a clean
+acyclic signature across dimensions.
+
 For regression, the unrestricted carry automaton at `B=2` leaves the following
 numbers of cyclic states (all ternary):
 

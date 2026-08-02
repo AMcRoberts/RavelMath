@@ -32,12 +32,32 @@ def decode(code: int, n: int, base: int, bound: int) -> tuple[int, ...]:
     return tuple(values)
 
 
-def chamber(x: tuple[int, ...], mode: str) -> str:
+def chamber(x: tuple[int, ...], mode: str, modulus: int = 3) -> str:
     signs = "".join("+" if v > 0 else "-" if v < 0 else "0" for v in x)
     if mode == "sign":
         return signs
-    levels = {value: rank for rank, value in enumerate(sorted({abs(v) for v in x}))}
-    return signs + "|" + ",".join(str(levels[abs(v)]) for v in x)
+    magnitudes = tuple(abs(v) for v in x)
+    if mode == "ordered":
+        levels = {value: rank for rank, value in enumerate(sorted(set(magnitudes)))}
+        return signs + "|" + ",".join(str(levels[value]) for value in magnitudes)
+    minimum = min(magnitudes)
+    if mode == "gapcap":
+        gaps = tuple(min(2, value - minimum) for value in magnitudes)
+        return signs + "|" + ",".join(map(str, gaps))
+    if mode == "gaps":
+        gaps = tuple(value - minimum for value in magnitudes)
+        return signs + "|" + ",".join(map(str, gaps))
+    if mode in ("gaps-parity", "gaps-mod3", "gaps-mod"):
+        gaps = tuple(value - minimum for value in magnitudes)
+        local_modulus = 2 if mode == "gaps-parity" else modulus
+        return (signs + "|" + ",".join(map(str, gaps)) + "|"
+                + str(minimum % local_modulus))
+    if mode == "parity":
+        levels = {value: rank for rank, value in enumerate(sorted(set(magnitudes)))}
+        parity = tuple(value % 2 for value in magnitudes)
+        return (signs + "|" + ",".join(str(levels[value]) for value in magnitudes)
+                + "|" + ",".join(map(str, parity)))
+    raise ValueError(f"unknown chamber mode: {mode}")
 
 
 def quotient_scc_sizes(edges: dict[str, set[str]]) -> list[int]:
@@ -85,7 +105,7 @@ def quotient_scc_sizes(edges: dict[str, set[str]]) -> list[int]:
     return sorted((size for size in sizes if size > 1), reverse=True)
 
 
-def run(n: int, bound: int, mode: str) -> int:
+def run(n: int, bound: int, mode: str, modulus: int) -> int:
     base = 2 * bound + 1
     states = base**n
     outgoing = [[] for _ in range(states)]
@@ -123,11 +143,11 @@ def run(n: int, bound: int, mode: str) -> int:
     for source in range(states):
         if not removed[source]:
             continue
-        source_chamber = chamber(decode(source, n, base, bound), mode)
+        source_chamber = chamber(decode(source, n, base, bound), mode, modulus)
         for destination in outgoing[source]:
             if removed[destination]:
                 edges[source_chamber].add(
-                    chamber(decode(destination, n, base, bound), mode)
+                    chamber(decode(destination, n, base, bound), mode, modulus)
                 )
     self_loops = sum(node in values for node, values in edges.items())
     nontrivial = quotient_scc_sizes(edges)
@@ -143,11 +163,16 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--n", type=int, required=True)
     parser.add_argument("--bound", type=int, required=True)
-    parser.add_argument("--mode", choices=("sign", "ordered"), default="ordered")
+    parser.add_argument(
+        "--mode", choices=("sign", "ordered", "gapcap", "gaps", "gaps-parity",
+                           "gaps-mod3", "gaps-mod", "parity"),
+        default="ordered",
+    )
+    parser.add_argument("--modulus", type=int, default=3)
     args = parser.parse_args()
-    if args.n < 2 or args.bound < 1:
-        parser.error("require n>=2 and bound>=1")
-    return run(args.n, args.bound, args.mode)
+    if args.n < 2 or args.bound < 1 or args.modulus < 2:
+        parser.error("require n>=2, bound>=1, and modulus>=2")
+    return run(args.n, args.bound, args.mode, args.modulus)
 
 
 if __name__ == "__main__":
