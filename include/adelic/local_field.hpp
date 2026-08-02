@@ -248,6 +248,88 @@ inline std::pair<ZpPoly, ZpPoly> zp_poly_divmod(const ZpPoly& a, const ZpPoly& b
     return {q, r};
 }
 
+// Set (grow or shrink) a ZpPoly's coefficient-wise p-adic precision.
+// Growing zero-pads (matching ZpInt::extend_to); shrinking drops high
+// digits (matching ZpInt::truncate_to). Needed for Hensel lifting: at
+// intermediate rounds, a ZpPoly's digits beyond its currently-valid
+// precision are not meaningful and must not leak into further
+// arithmetic -- this is the reliable way to isolate exactly the
+// valid prefix before re-using a partially-lifted polynomial.
+inline ZpPoly zp_poly_set_precision(const ZpPoly& f, long long new_precision) {
+    ZpPoly out;
+    out.p = f.p;
+    out.precision = new_precision;
+    out.coeffs.resize(f.coeffs.size());
+    for (std::size_t i = 0; i < f.coeffs.size(); ++i) {
+        out.coeffs[i] = f.coeffs[i];
+        out.coeffs[i].set_precision(new_precision);
+    }
+    return out;
+}
+
+// Extended Euclidean algorithm over Z_p[x] (the ZpPoly analogue of
+// fp_extended_gcd in fp_poly.hpp): returns (g, s, t) with
+// s*a + t*b = g = gcd(a,b), g monic (normalized to exactly 1 when
+// a,b are coprime). Requires the divisor at every division step to
+// have a unit leading coefficient (zp_poly_divmod's own requirement) --
+// true whenever a,b are themselves coprime with unit leading
+// coefficients, as in the multifactor-Hensel-lifting use case
+// (docs/DIRECTION_AND_OPEN_THREADS.md Item B1).
+//
+// Building block for lifting a coprime factorization f=g*h to higher
+// p-adic precision (needed to generalize local_polynomial_cofactor,
+// which currently only handles a single non-simple prime ideal): the
+// standard approach is to lift g,h via the quadratic Hensel step,
+// then re-derive fresh Bezout coefficients for the NEXT round by
+// running this function again on the newly-lifted g,h (truncated to
+// their actually-valid precision first via zp_poly_set_precision) --
+// rather than trying to incrementally correct the old s,t directly,
+// which needs a different, more delicate update formula. Verified
+// correct for one full lift round (g,h AND s,t together) against a
+// worked example (f=x^2+4 over Z, splitting mod 5 as (x-1)(x+1),
+// lifting toward its true 5-adic roots); multi-round iteration is
+// not yet verified and is real, separate future work -- see
+// tests/zp_poly_extended_gcd_test.cpp for exactly what's checked and
+// what isn't.
+struct ZpPolyExtGcdResult {
+    ZpPoly g;  // gcd(a, b), monic (= 1 exactly when a,b coprime)
+    ZpPoly s;  // s*a + t*b = g
+    ZpPoly t;
+};
+
+inline ZpPolyExtGcdResult zp_poly_extended_gcd(const ZpPoly& a, const ZpPoly& b) {
+    if (a.p != b.p) throw std::invalid_argument("zp_poly_extended_gcd: mismatched primes");
+    if (a.precision != b.precision) {
+        throw std::invalid_argument("zp_poly_extended_gcd: mismatched precisions");
+    }
+    ZpPoly r0 = a, r1 = b;
+    ZpPoly s0 = zp_poly_one(a.p, a.precision), s1 = zp_poly_zero(a.p, a.precision);
+    ZpPoly t0 = zp_poly_zero(a.p, a.precision), t1 = zp_poly_one(a.p, a.precision);
+    while (zp_poly_degree(r1) >= 0) {
+        auto qr = zp_poly_divmod(r0, r1);
+        ZpPoly q = qr.first, r2 = qr.second;
+        ZpPoly s2 = zp_poly_sub(s0, zp_poly_mul(q, s1));
+        ZpPoly t2 = zp_poly_sub(t0, zp_poly_mul(q, t1));
+        r0 = r1; r1 = r2;
+        s0 = s1; s1 = s2;
+        t0 = t1; t1 = t2;
+    }
+    long long lead_idx = zp_poly_degree(r0);
+    if (lead_idx < 0) {
+        throw std::runtime_error("zp_poly_extended_gcd: gcd is zero (inputs both zero?)");
+    }
+    // Normalize so the gcd is exactly 1 (when a,b are coprime), not just
+    // some nonzero constant -- the specific step a first implementation
+    // of this function omitted, verified by the test to actually matter
+    // (the un-normalized gcd came out as a nonzero-but-not-1 constant,
+    // silently breaking the Bezout identity s*a+t*b=1 downstream).
+    ZpInt inv = zp_invert(r0.coeffs[static_cast<std::size_t>(lead_idx)]);
+    r0 = zp_poly_scale(r0, inv);
+    s0 = zp_poly_scale(s0, inv);
+    t0 = zp_poly_scale(t0, inv);
+    return {r0, s0, t0};
+}
+
 inline ZpInt zp_poly_eval(const ZpPoly& f, const ZpInt& x) {
     long long d = zp_poly_degree(f);
     if (d < 0) return zp_zero(f.p, f.precision);
