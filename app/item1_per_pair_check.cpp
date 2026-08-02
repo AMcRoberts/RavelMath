@@ -36,6 +36,7 @@
 // path. The doubles remain only as diagnostics.
 
 #include <cmath>
+#include <cstring>
 #include <cstdio>
 #include <map>
 #include <set>
@@ -49,6 +50,7 @@
 #include "ravel/d_cont_check.hpp"
 #include "ravel/faces.hpp"
 #include "ravel/graph_divisor.hpp"
+#include "ravel/nbonacci_margin_invariant.hpp"
 #include "ravel/substitution.hpp"
 #include "math/charpoly.hpp"
 #include "math/in_h_sigma.hpp"
@@ -140,7 +142,7 @@ std::vector<std::vector<std::int8_t>> n_bonacci_rule(std::size_t n) {
 }
 
 template <std::size_t D>
-bool check(std::size_t n, double beta) {
+bool check(std::size_t n, double beta, bool dump_signed_ranges) {
     auto sigma = n_bonacci_rule(n);
     SubstitutionRule rule(sigma);
     auto subst = make_substitution<D>(rule, beta);
@@ -229,32 +231,164 @@ bool check(std::size_t n, double beta) {
     auto [dom_core, dom_idx] = extract_dominant_recurrent_core(gb_graph, 500);
     (void)dom_core;
 
+    const std::set<std::size_t> dom_set(dom_idx.begin(), dom_idx.end());
+    std::set<std::tuple<long long, long long, std::vector<long long>>>
+        actual_direct_core_nodes;
+    for (const std::size_t u : dom_idx)
+        actual_direct_core_nodes.insert(
+            {nodes[u].i, nodes[u].j, as_vector(nodes[u].x)});
+    std::set<std::tuple<long long, long long, std::vector<long long>>>
+        predicted_direct_core_nodes;
+    for (const auto pair : nbonacci_margin::label_pairs(n))
+        for (const auto& x : nbonacci_margin::displacement_catalogue(n))
+            if (nbonacci_margin::predicted_core_member(n, pair, x))
+                predicted_direct_core_nodes.insert({
+                    static_cast<long long>(pair.i),
+                    static_cast<long long>(pair.j), x});
+    const bool direct_core_grammar_matches =
+        actual_direct_core_nodes == predicted_direct_core_nodes;
+    std::set<std::vector<long long>> actual_dominant_displacements;
+    for (const std::size_t u : dom_idx)
+        actual_dominant_displacements.insert(as_vector(nodes[u].x));
+    const bool displacement_catalogue_matches =
+        actual_dominant_displacements ==
+        nbonacci_margin::displacement_catalogue(n);
     int exact_invalid_core_nodes = 0;
     int exact_transition_mismatches = 0;
+    std::set<std::tuple<long long, long long, long long, long long, long long>>
+        label_transition_schemas;
     for (std::size_t u : dom_idx) {
         if (!exact_simple_validity(subst, nodes[u])) ++exact_invalid_core_nodes;
-        if (fast_forward_records(subst, nodes[u]) !=
-            exact_forward_records(subst, nodes[u]))
+        const auto fast_records = fast_forward_records(subst, nodes[u]);
+        const auto exact_records = exact_forward_records(subst, nodes[u]);
+        if (fast_records != exact_records)
             ++exact_transition_mismatches;
+        for (const auto& [destination, p, q] : exact_records) {
+            const auto it = idx.find(destination);
+            if (it == idx.end() || !dom_set.count(it->second)) continue;
+            const long long delta =
+                (nodes[u].j != 0 ? 1 : 0) - (nodes[u].i != 0 ? 1 : 0);
+            label_transition_schemas.insert(
+                {nodes[u].i, nodes[u].j, destination.i, destination.j, delta});
+            (void)p;
+            (void)q;
+        }
     }
 
     std::map<std::pair<long long, long long>, std::vector<std::size_t>> groups;
     for (std::size_t u : dom_idx) groups[{nodes[u].i, nodes[u].j}].push_back(u);
+
+    std::set<nbonacci_margin::LabelPair> actual_pairs;
+    for (const auto& [ij, ignored] : groups) {
+        actual_pairs.insert({static_cast<std::size_t>(ij.first),
+                             static_cast<std::size_t>(ij.second)});
+        (void)ignored;
+    }
+    std::set<nbonacci_margin::LabelTransition> actual_label_transitions;
+    for (const auto& [i, j, ip, jp, delta] : label_transition_schemas) {
+        actual_label_transitions.insert({
+            {static_cast<std::size_t>(i), static_cast<std::size_t>(j)},
+            {static_cast<std::size_t>(ip), static_cast<std::size_t>(jp)},
+            delta});
+    }
+    const bool core_size_formula_matches =
+        dom_idx.size() == nbonacci_margin::predicted_core_size(n);
+    const bool pair_grammar_matches =
+        actual_pairs == nbonacci_margin::label_pairs(n);
+    const bool transition_grammar_matches =
+        actual_label_transitions == nbonacci_margin::label_transitions(n);
 
     std::printf("=== n=%zu: %zu (i,j) pairs in dominant core (size %zu) ===\n",
                 n, groups.size(), dom_idx.size());
     std::printf("  exact core audit: %d invalid nodes, %d transition-record "
                 "mismatches\n",
                 exact_invalid_core_nodes, exact_transition_mismatches);
+    std::printf("  generated grammar: direct-nodes=%s core-size=%s "
+                "displacements=%s pairs=%s transitions=%s\n",
+                direct_core_grammar_matches ? "EXACT" : "MISMATCH",
+                core_size_formula_matches ? "EXACT" : "MISMATCH",
+                displacement_catalogue_matches ? "EXACT" : "MISMATCH",
+                pair_grammar_matches ? "EXACT" : "MISMATCH",
+                transition_grammar_matches ? "EXACT" : "MISMATCH");
+    if (dump_signed_ranges) {
+        for (std::size_t u : dom_idx) {
+            std::printf("  NODE n=%zu i=%lld j=%lld x=[", n, nodes[u].i,
+                        nodes[u].j);
+            for (std::size_t k = 0; k < D; ++k)
+                std::printf("%s%lld", k == 0 ? "" : ",", nodes[u].x[k]);
+            std::printf("]\n");
+        }
+        for (const auto& [i, j, ip, jp, delta] : label_transition_schemas)
+            std::printf("  EDGE (%lld,%lld)->(%lld,%lld) delta=%lld\n",
+                        i, j, ip, jp, delta);
+    }
     double worst_margin = 1e18;
     int mismatches = 0;
     int exact_mismatches = 0;
     int nonpositive_exact_margins = 0;
     int structural_witness_failures = 0;
+    int signed_endpoint_formula_mismatches = 0;
+    int signed_endpoint_witness_failures = 0;
     bool have_exact_worst = false;
     mathlib::QElem exact_worst = R.zero();
     for (auto& [ij, us] : groups) {
         auto [i, j] = ij;
+        mathlib::QElem exact_min_t = mathlib::dot_qbeta(
+            as_vector(nodes[us.front()].x), exact_v, R);
+        mathlib::QElem exact_max_t = exact_min_t;
+        for (std::size_t u : us) {
+            const mathlib::QElem t = mathlib::dot_qbeta(
+                as_vector(nodes[u].x), exact_v, R);
+            if (mathlib::qbeta_sign(R.sub(t, exact_min_t), R,
+                                    beta_interval) < 0)
+                exact_min_t = t;
+            if (mathlib::qbeta_sign(R.sub(t, exact_max_t), R,
+                                    beta_interval) > 0)
+                exact_max_t = t;
+        }
+        const auto predicted_endpoints =
+            nbonacci_margin::endpoint_witnesses(
+                n, {static_cast<std::size_t>(i), static_cast<std::size_t>(j)});
+        const mathlib::QElem predicted_min_t = mathlib::dot_qbeta(
+            predicted_endpoints.lower, exact_v, R);
+        const mathlib::QElem predicted_max_t = mathlib::dot_qbeta(
+            predicted_endpoints.upper, exact_v, R);
+        if (!R.sub(exact_min_t, predicted_min_t).is_zero() ||
+            !R.sub(exact_max_t, predicted_max_t).is_zero())
+            ++signed_endpoint_formula_mismatches;
+        bool lower_witness_found = false;
+        bool upper_witness_found = false;
+        for (std::size_t u : us) {
+            const auto x = as_vector(nodes[u].x);
+            lower_witness_found = lower_witness_found ||
+                                  x == predicted_endpoints.lower;
+            upper_witness_found = upper_witness_found ||
+                                  x == predicted_endpoints.upper;
+        }
+        if (!lower_witness_found || !upper_witness_found)
+            ++signed_endpoint_witness_failures;
+        if (dump_signed_ranges) {
+            std::size_t min_u = us.front(), max_u = us.front();
+            double min_t = subst.dot_v(nodes[min_u].x);
+            double max_t = min_t;
+            for (std::size_t u : us) {
+                const double t = subst.dot_v(nodes[u].x);
+                if (t < min_t) { min_t = t; min_u = u; }
+                if (t > max_t) { max_t = t; max_u = u; }
+            }
+            auto print_x = [&](const IVec<D>& x) {
+                std::printf("[");
+                for (std::size_t k = 0; k < D; ++k)
+                    std::printf("%s%lld", k == 0 ? "" : ",", x[k]);
+                std::printf("]");
+            };
+            std::printf("  SIGNED (i=%2lld,j=%2lld): count=%zu min=%.9f x=",
+                        i, j, us.size(), min_t);
+            print_x(nodes[min_u].x);
+            std::printf(" max=%.9f x=", max_t);
+            print_x(nodes[max_u].x);
+            std::printf("\n");
+        }
         if (i == j) continue;  // diagonal identity-type nodes: not part of the claim
         double vi = subst.v[static_cast<std::size_t>(i)];
         double vj = subst.v[static_cast<std::size_t>(j)];
@@ -355,21 +489,37 @@ bool check(std::size_t n, double beta) {
                 nonpositive_exact_margins,
                 exact_worst_match ? "YES" : "NO",
                 exact_worst_positive ? "YES" : "NO");
-    return exact_invalid_core_nodes == 0 && exact_transition_mismatches == 0 &&
+    std::printf("  signed grammar certificate: %d endpoint-formula "
+                "mismatches, %d endpoint-witness failures\n\n",
+                signed_endpoint_formula_mismatches,
+                signed_endpoint_witness_failures);
+    return direct_core_grammar_matches && core_size_formula_matches &&
+           displacement_catalogue_matches &&
+           pair_grammar_matches &&
+           transition_grammar_matches && exact_invalid_core_nodes == 0 &&
+           exact_transition_mismatches == 0 &&
            exact_mismatches == 0 && structural_witness_failures == 0 &&
+           signed_endpoint_formula_mismatches == 0 &&
+           signed_endpoint_witness_failures == 0 &&
            nonpositive_exact_margins == 0 && exact_worst_match &&
            exact_worst_positive;
 }
 
 }  // namespace
 
-int main() {
+int main(int argc, char** argv) {
+    const bool dump_signed_ranges =
+        argc == 2 && std::strcmp(argv[1], "--signed-ranges") == 0;
+    if (argc > 2 || (argc == 2 && !dump_signed_ranges)) {
+        std::fprintf(stderr, "usage: %s [--signed-ranges]\n", argv[0]);
+        return 2;
+    }
     bool ok = true;
-    ok = check<3>(3, 1.8392867552141612) && ok;
-    ok = check<4>(4, 1.9275619754829254) && ok;
-    ok = check<5>(5, 1.9659482366454853) && ok;
-    ok = check<6>(6, 1.9835828434243288) && ok;
-    ok = check<7>(7, 1.9919641966050352) && ok;
+    ok = check<3>(3, 1.8392867552141612, dump_signed_ranges) && ok;
+    ok = check<4>(4, 1.9275619754829254, dump_signed_ranges) && ok;
+    ok = check<5>(5, 1.9659482366454853, dump_signed_ranges) && ok;
+    ok = check<6>(6, 1.9835828434243288, dump_signed_ranges) && ok;
+    ok = check<7>(7, 1.9919641966050352, dump_signed_ranges) && ok;
     std::printf("Exact per-pair Q(beta) certificate n=3..7: %s\n",
                 ok ? "PASS" : "FAIL");
     return ok ? 0 : 1;

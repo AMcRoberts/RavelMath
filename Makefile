@@ -83,10 +83,11 @@ TRANSITION_FILES := $(addprefix $(TRANSITIONS_DIR)/spectre_transitions_,$(addsuf
 .PHONY: test_qbasis validate_exploded test_12_exploded contact_boundary_4x4
 .PHONY: cylinder_measure verify_exploded_12 test_general_spectral
 .PHONY: prefix_automaton_test padic_test dedekind_factorization_test
-.PHONY: ideal_arithmetic_test coincidence_and_property_f_test local_field_test graph_divisor_test maximal_order_test gb_bp_hop_rule_test
+.PHONY: ideal_arithmetic_test coincidence_and_property_f_test local_field_test graph_divisor_test maximal_order_test gb_bp_hop_rule_test nbonacci_margin_invariant_test nbonacci_margin_core_graph_test
 .PHONY: rnd13_factor_probe rnd13_prefix_automaton_probe classify_adelic_tiling test_bp_gb_divisor adelic_boundary_spectral_radius gb_bp_involution_check
 .PHONY: class_ii_symmetry_probe class_ii_boundary_family_test substitution_neighborhood_test
 .PHONY: class_ii_corona_literature_probe
+.PHONY: nbonacci_periodic_carry_probe
 .PHONY: class_ii_neighbor_probe
 .PHONY: return_contact_lift_probe
 .PHONY: class_ii_terminal_transport_probe
@@ -122,6 +123,7 @@ lean-check:
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/class_ii_round1_red_pruning.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/class_ii_round234_shape_closure.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/perron_column_difference.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/nbonacci_margin_catalogue.lean)
 	@if rg -n '^[[:space:]]*sorry([[:space:]]|$$)' \
 		lean/free_involution_perron_core.lean \
 		lean/return_contact_lift.lean \
@@ -136,7 +138,8 @@ lean-check:
 		lean/class_ii_global_round_partition.lean \
 		lean/class_ii_round1_red_pruning.lean \
 		lean/class_ii_round234_shape_closure.lean \
-		lean/perron_column_difference.lean; then \
+		lean/perron_column_difference.lean \
+		lean/nbonacci_margin_catalogue.lean; then \
 		echo "ERROR: enrolled Lean file contains sorry"; exit 1; \
 	else \
 		echo "Enrolled Lean files are sorry-free."; \
@@ -305,6 +308,55 @@ $(ITEM1_PER_PAIR_CHECK_BIN): $(APPDIR)/item1_per_pair_check.cpp \
 		$(wildcard $(MATH_INCDIR)/math/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+NBONACCI_MARGIN_INVARIANT_SYNTHESIZER_BIN := $(BUILDDIR)/nbonacci_margin_invariant_synthesizer
+nbonacci_margin_invariant_synthesizer: $(NBONACCI_MARGIN_INVARIANT_SYNTHESIZER_BIN)
+	./$(NBONACCI_MARGIN_INVARIANT_SYNTHESIZER_BIN)
+$(NBONACCI_MARGIN_INVARIANT_SYNTHESIZER_BIN): \
+		$(APPDIR)/nbonacci_margin_invariant_synthesizer.cpp \
+		$(INCDIR)/ravel/nbonacci_margin_invariant.hpp \
+		$(wildcard $(MATH_INCDIR)/math/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+# Non-circular full-corona SCC ledger for the open n-bonacci dominance seam.
+# The default finite certificate stops at n=6; n=7/8 are available explicitly
+# but their corona construction is intentionally not enrolled in make check.
+NBONACCI_DOMINANCE_LEDGER_BIN := $(BUILDDIR)/nbonacci_dominance_ledger
+NBONACCI_DOMINANCE_ARGS ?= --exact 3 4 5 6
+nbonacci_dominance_ledger: $(NBONACCI_DOMINANCE_LEDGER_BIN)
+	./$(NBONACCI_DOMINANCE_LEDGER_BIN) $(NBONACCI_DOMINANCE_ARGS)
+$(NBONACCI_DOMINANCE_LEDGER_BIN): \
+		$(APPDIR)/nbonacci_dominance_ledger.cpp \
+		$(INCDIR)/ravel/nbonacci_margin_invariant.hpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) \
+		$(wildcard $(MATH_INCDIR)/math/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+# Corona-free exact Q(beta) supergraph experiment.  Its coefficient bound is
+# explicit until the carry automaton supplies the universal containment lemma.
+NBONACCI_ARITHMETIC_HULL_BIN := $(BUILDDIR)/nbonacci_arithmetic_hull
+NBONACCI_ARITHMETIC_HULL_ARGS ?= --exact --bound=1 3 4 5 6
+nbonacci_arithmetic_hull: $(NBONACCI_ARITHMETIC_HULL_BIN)
+	./$(NBONACCI_ARITHMETIC_HULL_BIN) $(NBONACCI_ARITHMETIC_HULL_ARGS)
+nbonacci_intertwiner_search: $(NBONACCI_ARITHMETIC_HULL_BIN)
+	./$(NBONACCI_ARITHMETIC_HULL_BIN) --bound=1 --dump-quotients 4 5 6 | \
+		python3 python/nbonacci_intertwiner_search.py
+nbonacci_restricted_intertwiner_search: $(NBONACCI_ARITHMETIC_HULL_BIN)
+	./$(NBONACCI_ARITHMETIC_HULL_BIN) --bound=1 --dump-relations 4 5 6 | \
+		python3 python/nbonacci_restricted_intertwiner_search.py
+nbonacci_passive_intertwiner_search: $(NBONACCI_ARITHMETIC_HULL_BIN)
+	./$(NBONACCI_ARITHMETIC_HULL_BIN) --bound=1 --dump-passive-relations 4 5 6 | \
+		python3 python/nbonacci_restricted_intertwiner_search.py
+nbonacci_exterior_spectrum_probe: $(NBONACCI_ARITHMETIC_HULL_BIN)
+	./$(NBONACCI_ARITHMETIC_HULL_BIN) --bound=1 --dump-quotients 4 5 6 7 | \
+		PYTHONPATH=python python3 python/nbonacci_exterior_spectrum_probe.py
+nbonacci_periodic_carry_probe:
+	PYTHONPATH=python python3 python/nbonacci_periodic_carry_probe.py
+$(NBONACCI_ARITHMETIC_HULL_BIN): \
+		$(APPDIR)/nbonacci_arithmetic_hull.cpp \
+		$(INCDIR)/ravel/nbonacci_margin_invariant.hpp \
+		$(wildcard $(MATH_INCDIR)/math/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 # ====================================================================
 # Tests (paired _test.cpp files; standalone binaries with main())
 # ====================================================================
@@ -344,6 +396,8 @@ TESTS_DEFAULT := \
 	graph_divisor_test \
 	maximal_order_test \
 	gb_bp_hop_rule_test \
+	nbonacci_margin_invariant_test \
+	nbonacci_margin_core_graph_test \
 	dual_format_test \
 	dual_test \
 	spectral_dual_test \
@@ -538,6 +592,20 @@ $(CSY_FINITE_CARRY_AUTOMATON_TEST_BIN): $(TESTDIR)/csy_finite_carry_automaton_te
 FAMILY_OF_FAMILIES_TEST_BIN := $(BUILDDIR)/family_of_families_test
 family_of_families_test: $(FAMILY_OF_FAMILIES_TEST_BIN)
 $(FAMILY_OF_FAMILIES_TEST_BIN): $(TESTDIR)/family_of_families_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+NBONACCI_MARGIN_INVARIANT_TEST_BIN := $(BUILDDIR)/nbonacci_margin_invariant_test
+nbonacci_margin_invariant_test: $(NBONACCI_MARGIN_INVARIANT_TEST_BIN)
+$(NBONACCI_MARGIN_INVARIANT_TEST_BIN): $(TESTDIR)/nbonacci_margin_invariant_test.cpp \
+		$(INCDIR)/ravel/nbonacci_margin_invariant.hpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+NBONACCI_MARGIN_CORE_GRAPH_TEST_BIN := $(BUILDDIR)/nbonacci_margin_core_graph_test
+nbonacci_margin_core_graph_test: $(NBONACCI_MARGIN_CORE_GRAPH_TEST_BIN)
+$(NBONACCI_MARGIN_CORE_GRAPH_TEST_BIN): \
+		$(TESTDIR)/nbonacci_margin_core_graph_test.cpp \
+		$(INCDIR)/ravel/nbonacci_margin_invariant.hpp \
+		$(INCDIR)/ravel/graph_divisor.hpp | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
 PISOT_NUMERATION_TOPOLOGY_TEST_BIN := $(BUILDDIR)/pisot_numeration_topology_test
