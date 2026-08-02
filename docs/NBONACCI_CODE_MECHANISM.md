@@ -205,6 +205,45 @@ orbit cannot survive more than a bounded number of steps -- but this has not
 yet been turned into the actual `n+1` survival-depth bound; it explains why
 survival should be short, not yet the exact constant `n+1`.
 
+**Two further attempts, one negative result and one real narrowing, neither
+yet closing the lemma:**
+
+- **Negative result: the naive dual-eigenbasis norm bound is too loose to
+  use.** Writing `x_0 = sum_k c_k v_k` in the eigenbasis of the (separate,
+  n-dimensional, not the `n+1`-dimensional block map above) homogeneous
+  shift map `T` itself (eigenvalues `1/beta_k` for every root of the
+  n-bonacci polynomial, one stable `k=1`, `n-1` unstable), bounding each
+  `|c_k|` via the dual (biorthogonal) functionals `w_k` and combining via
+  `1 = ||x_0||_inf <= |c_1| ||v_1||_inf + sum_{k>=2} |c_k| ||v_k||_inf`
+  gives a survival-depth upper bound that is numerically vacuous (does not
+  become infeasible for any `L` up to 199, tested `n=2..11`,
+  `python3` script, not yet promoted to a committed file) because the
+  stable term `||w_1||_1 ||v_1||_inf` alone already exceeds 1 and does not
+  shrink with `L`. The single aggregate inequality throws away too much:
+  it does not use that the same `L+1` constraints must hold
+  *simultaneously* with a *specific* boundary-touching structure at every
+  step, only their disjoint extremes. A tighter argument needs the joint
+  structure, not a combined norm bound.
+- **Real narrowing: the minimal Z3 unsat core is far smaller than the full
+  query, and reveals genuine structure.** `python/
+  nbonacci_homogeneous_shell_unsat_core.py` extracts Z3's minimal unsat
+  core (via `assert_and_track`/`unsat_core()`) for the `n+2`-transition
+  infeasibility query, instead of reading the full, unreadable resolution
+  proof. Across every tested `n=2..6`, the minimal core needs only:
+  two-sided bounds on `a_0`, two-sided (mostly) bounds on a single *run of
+  later, consecutive* scalar indices of the sequence -- "coordinate `n-1`
+  at step `t`" is literally `a_{t+n-1}`, so ranging `t` over consecutive
+  steps ranges the underlying scalar index consecutively too, not spread
+  across the whole `n`-wide window machinery -- and only one or two shell
+  (boundary-touch) disjunctions, not one per window. This narrows the
+  actual proof obligation from "reason about `n+3` whole `n`-dimensional
+  windows" to "reason about `a_0` and one later run of consecutive scalar
+  values," a real simplification. The specific indices found are **not
+  canonical**: Z3's minimal core is not guaranteed unique, and the pattern
+  in the exact run lengths found (`1,3,5,7,6` for `n=2..6`, with a gap at
+  `n=4`) does not yet fit a clean formula -- read this as narrowing where
+  to look, not as the pattern itself.
+
 For inspection, the probe can emit Z3's proof object for the terminal query:
 
 ```sh
