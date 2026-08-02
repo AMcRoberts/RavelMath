@@ -15,7 +15,8 @@
 //
 // Observed result (2026-08-01, orbit prefixes 5.2e5--9.3e5 symbols):
 // the direct extension-graph pass checks factors through length 64;
-// a suffix-automaton pass checks sigma_{0,1} through length 10000.
+// a suffix-automaton pass on a separately enlarged orbit checks
+// sigma_{0,1} through length 60000.
 // It has p(n)=5n-5 for every checked n>=4, with five left-special and
 // three right-special factors at every checked n>=4. By contrast every
 // AR-complexity control has
@@ -163,7 +164,7 @@ private:
 };
 
 void report_fast_stability(const Word& orbit) {
-    const std::size_t max_n = std::min<std::size_t>(10000, orbit.size() / 8);
+    const std::size_t max_n = std::min<std::size_t>(60000, orbit.size() / 8);
     const SuffixAutomaton forward(orbit);
     const auto complexity = forward.interval_counts(max_n, false);
     const auto right_special = forward.interval_counts(max_n, true);
@@ -180,8 +181,9 @@ void report_fast_stability(const Word& orbit) {
         }
     }
     if (first_deviation == 0) {
-        std::printf("  FAST suffix-automaton check: p(n)=5n-5, LS=5, RS=3 "
-                    "for every 4<=n<=%zu\n", max_n);
+        std::printf("  FAST suffix-automaton check (orbit=%zu): "
+                    "p(n)=5n-5, LS=5, RS=3 for every 4<=n<=%zu\n",
+                    orbit.size(), max_n);
     } else {
         std::printf("  FAST suffix-automaton first deviation at n=%zu: "
                     "p=%lld LS=%lld RS=%lld\n", first_deviation,
@@ -272,7 +274,11 @@ void report(const char* name, const Sigma& sigma, std::size_t max_n = 20,
             }
         }
     }
-    if (show_special_factors) report_fast_stability(orbit);
+    // The direct n<=64 pass needs only the base orbit. The long-range
+    // special-factor count needs a much larger boundary margin: on the base
+    // 525456-symbol prefix the left-special count spuriously drops at n=55406,
+    // while the enlarged prefix restores all five branches through n=60000.
+    if (show_special_factors) report_fast_stability(orbit_prefix(rule, 1U << 22));
     std::printf("\n");
 }
 

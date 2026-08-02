@@ -798,7 +798,8 @@ extension (Tetrabonacci/Pentanacci/Hexanacci-adjacent families,
 **Status: POSITIVE EXACT FINITE-WORD RESULT.** Direct extension sets
 are checked through factor length 64 on substitution-orbit prefixes of
 525456 to 922111 symbols; a suffix-automaton range calculation checks
-the non-AR formula and special-factor counts through length 10000.
+the non-AR formula and special-factor counts through length 60000 on a
+separately enlarged orbit prefix.
 This is not yet an all-length theorem. Reproducible with
 `app/thread_a4_extension_graph_probe.cpp`.
 
@@ -818,7 +819,7 @@ actual branching sites of the substitution language.
   AR complexity does not determine the orientation or multiplicity of
   local branching.
 - The non-AR `σ_{0,1}` orbit has `p(n)=5n-5` for every checked
-  `4<=n<=10000`. At every one of those lengths it has exactly five
+  `4<=n<=60000`. At every one of those lengths it has exactly five
   left-special and three right-special factors; left valence is at
   most two, while at least one right-special factor retains ternary
   valence. The excess slope five is therefore persistent distributed
@@ -842,6 +843,13 @@ particular, the constant finite-length count does not alone establish
 five infinite left-special branches: finite maximal-special families
 can grow recursively. The all-length proof must identify the actual
 predecessor decomposition before interpreting branch counts.
+
+**Finite-prefix boundary check.** Asking the original 525456-symbol prefix
+for lengths up to 60000 produces an apparent first left-special-count drop at
+`n=55406` even though complexity and right-special counts remain unchanged.
+Repeating on the enlarged prefix removes the drop and restores the displayed
+profile through 60000. The former is therefore a sampled-word boundary
+artifact, and the probe keeps the larger margin for this pass.
 
 ## Finding 7 — explicit Class-II balanced-pair core family
 

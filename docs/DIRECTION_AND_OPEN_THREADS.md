@@ -417,7 +417,8 @@ profile.** `app/thread_a4_extension_graph_probe.cpp` replaces the
 aggregate factor count with each factor's left/right extension graph.
 On orbit prefixes of at least 525456 symbols, a direct extension-graph
 pass through factor length 64 and a suffix-automaton stability pass
-through length 10000 find that `σ_{0,1}` has `p(n)=5n-5` for every
+through length 60000 on a separately enlarged orbit prefix find that
+`σ_{0,1}` has `p(n)=5n-5` for every
 checked `n>=4`, with exactly five left-special and three right-special
 factors. The AR-complexity controls all retain `p(n)=2n+1`, but now
 split structurally: Tribonacci and `σ_2` use one ternary special factor
@@ -438,6 +439,13 @@ left-special factors at each finite length do not by themselves imply
 five infinite left-special branches: some may belong to recursively
 growing finite maximal-special families. The next proof must establish
 the actual predecessor/branch decomposition for this substitution.
+
+The longer pass deliberately uses a separately enlarged orbit prefix. On the
+525456-symbol prefix, extending the requested length too far produces a first
+false loss of one left extension at `n=55406`; the 4-million-symbol prefix
+restores all five left-special factors through `n=60000`. Thus the probe also
+records an explicit finite-boundary failure mode rather than mistaking it for
+a structural transition.
 
 ### Thread A5 — extend the data
 
