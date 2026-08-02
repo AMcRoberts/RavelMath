@@ -87,7 +87,7 @@ TRANSITION_FILES := $(addprefix $(TRANSITIONS_DIR)/spectre_transitions_,$(addsuf
 .PHONY: rnd13_factor_probe rnd13_prefix_automaton_probe classify_adelic_tiling test_bp_gb_divisor adelic_boundary_spectral_radius gb_bp_involution_check
 .PHONY: class_ii_symmetry_probe class_ii_boundary_family_test substitution_neighborhood_test
 .PHONY: class_ii_corona_literature_probe
-.PHONY: nbonacci_periodic_carry_probe nbonacci_carry_cycle_probe nbonacci_sign_chamber_probe nbonacci_chamber_stability nbonacci_chamber_merge nbonacci_rank_feature_search nbonacci_sector_gap_rank nbonacci_block_spectrum_probe nbonacci_block_forcing_probe nbonacci_block_l1_growth_probe nbonacci_max_shell_return_probe nbonacci_max_shell_return_stability nbonacci_shell_word_probe nbonacci_conjugate_height_probe nbonacci_conjugate_height_bound nbonacci_dominance_theorem_pipeline nbonacci_homogeneous_shell_smt nbonacci_homogeneous_shell_unsat_core nbonacci_shell_covering_search nbonacci_shell_covering_proof nbonacci_covering_witness_enumerator nbonacci_covering_witness_enumerate nbonacci_data_shaker nbonacci_padic_fingerprint nbonacci_csy_state_count nbonacci_csy_dynamics nbonacci_homogeneous_shell_core_enumerate
+.PHONY: nbonacci_periodic_carry_probe nbonacci_carry_cycle_probe nbonacci_sign_chamber_probe nbonacci_chamber_stability nbonacci_chamber_merge nbonacci_rank_feature_search nbonacci_sector_gap_rank nbonacci_block_spectrum_probe nbonacci_block_forcing_probe nbonacci_block_l1_growth_probe nbonacci_max_shell_return_probe nbonacci_max_shell_return_stability nbonacci_shell_word_probe nbonacci_conjugate_height_probe nbonacci_conjugate_height_bound nbonacci_dominance_theorem_pipeline nbonacci_homogeneous_shell_smt nbonacci_homogeneous_shell_unsat_core nbonacci_shell_covering_search nbonacci_shell_covering_proof nbonacci_covering_witness_enumerator nbonacci_covering_witness_enumerate nbonacci_data_shaker nbonacci_padic_fingerprint nbonacci_csy_state_count nbonacci_csy_dynamics nbonacci_charmpoly_proof_probe nbonacci_homogeneous_shell_core_enumerate
 .PHONY: class_ii_neighbor_probe
 .PHONY: return_contact_lift_probe
 .PHONY: class_ii_terminal_transport_probe
@@ -108,12 +108,15 @@ math: $(MATH_LIB)
 	$(MAKE) -C $(MATH_DIR) check
 
 LEAN_ENV ?= ../LEAN/free_involution_perron/free_involution_perron
-lean-check:
+lean-check: nbonacci_charmpoly_proof_probe
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/free_involution_perron_core.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/return_contact_lift.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/bp_correction_determinant.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/class_ii_affine_shells.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/class_ii_neighbor_dominance.lean)
+	@if [ -f out/nbonacci_charmpoly_proof.lean ]; then \
+		cd $(LEAN_ENV) && lake env lean $(abspath out/nbonacci_charmpoly_proof.lean); \
+	fi
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/class_ii_neighbor2_extensions.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/class_ii_terminal_shells.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/class_ii_balanced_pivot.lean)
@@ -443,6 +446,26 @@ nbonacci_csy_dynamics: $(NBONACCI_CSY_DYNAMICS_BIN)
 	./$(NBONACCI_CSY_DYNAMICS_BIN) --n-min=2 --n-max=8 \
 		--max-prefixes=4,6,8,10 \
 		--bound-bits=10 --out=out/nbonacci_csy_dynamics.json
+
+# nbonacci_charmpoly_proof_probe: C++ symbolic-determinant probe
+# that verifies the cofactor expansion of the n-bonacci charmatrix
+# for n=2..8 and emits a Lean source file of native_decide
+# examples.  The C++ side computes the witness (the symbolic
+# det of the r-matrix and q-matrix, the cofactor sum); Lean's
+# kernel checks the equality.  This is the "operational statement
+# of the facts as they are observed in the C++ code" the user
+# asked for: the C++ code observes that the cofactor formula
+# holds for n=2..8, the Lean file records those observations as
+# machine-checked facts.
+NBONACCI_CHARMPOLY_PROOF_PROBE_BIN := $(BUILDDIR)/nbonacci_charmpoly_proof_probe
+$(NBONACCI_CHARMPOLY_PROOF_PROBE_BIN): \
+		$(APPDIR)/nbonacci_charmpoly_proof_probe.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+nbonacci_charmpoly_proof_probe: $(NBONACCI_CHARMPOLY_PROOF_PROBE_BIN)
+	@mkdir -p out
+	./$(NBONACCI_CHARMPOLY_PROOF_PROBE_BIN) --n-min=2 --n-max=8 \
+		--out=out/nbonacci_charmpoly_proof.lean
 
 NBONACCI_COVERING_ENUM_DIR ?= out/nbonacci_covering_enumerator
 nbonacci_covering_witness_enumerate: $(NBONACCI_COVERING_WITNESS_ENUMERATOR_BIN)
