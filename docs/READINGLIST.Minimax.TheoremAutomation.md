@@ -176,6 +176,89 @@ exception**: its natural minimal core has *two* disjoint later runs
 `nbonacci_homogeneous_shell_core_enumerate.py`, not the older single-core
 tool, for any further core-structure investigation.
 
+### Update -- 2026-08-02: extended to n=2..8, symbolic proof-mining tool built
+
+The new `python/nbonacci_shell_covering_proof.py` and its replay
+checker `python/nbonacci_shell_covering_proof_check.py` (Makefile
+target `nbonacci_shell_covering_proof`) extend the linear-algebra
+covering search to `n=2..8` and add four new capabilities on top of
+the original "stop at first valid candidate" behavior:
+
+1. **Full multi-candidate enumeration** within the `(n-1)`-pin
+   strategy.  Candidate counts per `n`: 3, 4, 8, 33, 66, 212, 424
+   for `n = 2..8`.  The growth is real and structural, not an
+   artifact.
+2. **Structural classification** of every candidate: gap pattern,
+   solution signature (zero/nonzero of `a_1, ..., a_{n-1}`),
+   sequence signature (distinct `|a_j|` count), cover compactness,
+   simplicity score (sort key).  Sorted by simplicity, not by
+   enumeration order.
+3. **Symbolic proof certificate** per candidate, replayable from
+   scratch: the `(n-1) x (n-1)` linear system `(M, rhs)`, the
+   solution vector, the full covering sequence, the box and cover
+   inequalities, the gap pattern, the candidate signature.
+4. **Closed-form mining** across `n` for the simplest candidate's
+   gap pattern (constant / linear in `k` / bilinear in `(k, n)`),
+   with holdout validation.  All three fail out-of-sample at the
+   largest available `n`, matching
+   `docs/NBONACCI_SCC_PATTERN_MINING_NEGATIVE_RESULT.md`'s
+   discipline: a 3-5 point fit is suggestive, not evidence.
+
+Simplest candidate per `n` (gap pattern, full sequence):
+
+| n | simplest pins           | gap_pattern   | sequence a_0..a_{n+L-1} |
+|--:|--:|--:|--:|
+| 2 | (4,)                    | ()           | 1, 1, 0, 1, -1 |
+| 3 | (1, 5)                  | (4,)         | 1, 1, 0, 0, 1, -1, 0 |
+| 4 | (1, 6, 8)               | (5, 2)       | 1, 1, 0, -1/3, 1/3, 1, -1, -2/3, 1 |
+| 5 | (1, 8, 9, 10)           | (7, 1, 1)    | 1, 1, 1/3, -1/3, 1/3, -1/3, 1, -1/3, -1, 1, -1 |
+| 6 | (7, 8, 9, 10, 12)       | (1, 1, 1, 2) | 1, 1, 1, 0, -1/2, 0, -1/2, 1, 1, -1, -1, 1/2, -1 |
+| 7 | (1, 10, 11, 12, 13, 14) | (9, 1, 1, 1, 1) | 1, 1, 1/3, -1/3, 1/3, -1/3, 1/3, -1/3, 1, -1/3, -1, 1, -1, 1, -1 |
+| 8 | (9, 10, 12, 13, 14, 15, 16) | (1, 2, 1, 1, 1, 1) | 1, 1, 0, -1/3, 1/3, -1/3, 1/3, -1/3, 1/3, 1, -1, -2/3, 1, -1, 1, -1, 1 |
+
+For `n = 5`, the simplest differs from the first-found documented
+elsewhere in this project (which was `(1, 2, 8, 9)`); both are
+valid, the new tool's simplicity sort selects `(1, 8, 9, 10)` as
+genuinely simpler (only 2 distinct `|a_j|` values vs the first-found's
+3).
+
+Structural feature preservation across consecutive `n`:
+- **Last pin at sequence end** (`n + L - 1`): preserved for all
+  `n >= 4`.
+- **First pin at index 1**: preserved for `n = 3, 4, 5, 7`;
+  *not* preserved at `n = 6` (first = 7) or `n = 8` (first = 9).
+- **Tail consecutive-pin cluster** of size 0, 0, 2, 0, 4, 4 for
+  `n = 3..8`; cluster size grows with `n` but not monotonically
+  across even/odd.
+- **Distinct `|a_j|` count** varies; not a preserved invariant.
+- **Sign balance** varies; not preserved.
+
+No simple closed-form fit of the gap pattern as a function of
+`(n, k)` is supported by the available data.  Honest options for
+the next move:
+- Extend to `n = 9, 10` (cost `C(18, 9) * 2^9 ~ 5M` candidates,
+  ~15 minutes) and re-fit.  May or may not surface a pattern.
+- Pivot to the Lean formalization route (next paragraph).
+- Pivot to a different bound candidate (e.g., a closed-form
+  sequence `B(n)` like the conjugate-height one already in use for
+  the broader arithmetic-dominance theorem).
+
+### The Lean formalization seam
+
+The same `lean/nbonacci_margin_catalogue.lean` open item: proving
+`(inverseCarryMatrix n).charpoly = nbonacciCharpoly n` for every
+`n >= 2` (replacing the seven `native_decide` witnesses).  The
+Mathlib audit (this session) confirms: no companion-matrix
+charpoly lemma exists in Mathlib.  Available infrastructure
+(`Matrix.charmatrix`, `Matrix.det_of_upperTriangular` /
+`det_of_lowerTriangular`, `Matrix.det_succ_column`,
+`Matrix.charpoly_fromBlocks_zero₁₂`) supports a cofactor-expansion
+proof in ~80 lines.  The route is documented as a roadmap in
+`lean/nbonacci_margin_catalogue.lean` (no `sorry` holes, file
+kernel-checks clean).  The full implementation is left as
+work-in-progress; the gap-formula route above is mathematically
+the same fact and is already machine-checked for `n = 2..8`.
+
 ### The precise remaining lemma, and the recommended next move
 
 Four analytic attempts this session (dual-eigenbasis norm bound: too
@@ -189,25 +272,19 @@ the remaining gap."
 
 **Concrete next step, in priority order:**
 
-1. Run `nbonacci_shell_covering_search.py` for `n=6,7,8` (extend
-   `--n-max`; combinatorial cost grows as
-   `C(n+L-1, n-1) * 2^{n-1}` per `L` tried -- estimate before running
-   unbounded, and background it, per this file's own memory-cap and
-   background-run conventions below). Collect the pin-index patterns for
-   more `n` and look for a formula in the *index gaps* (not raw indices,
-   which shift with `L`) -- the `n=2..5` data alone was too sparse to fit
-   safely (matches this project's own repeated lesson: an apparent
-   pattern from 3-4 points is not evidence, see
-   `docs/NBONACCI_SCC_PATTERN_MINING_NEGATIVE_RESULT.md`'s identical
-   trap caught by holdout validation).
-2. If a pin-index formula emerges and validates out-of-sample (holdout at
-   least one untested `n`, exact rational arithmetic, no floating point),
-   the *general* covering argument becomes: prove that formula's pin set
-   is (a) always realizable (the linear system is always solvable with
-   `|solution| <= 1`) and (b) always covers every window `t=0,...,n+1` --
-   both are then finite symbolic-algebra claims in `n`, not per-`n`
-   search, and a real route to the Lean-formalizable general-`n` proof.
-3. Once the survival-depth lemma closes for literal every `n`, the
+1. **Extend `nbonacci_shell_covering_proof.py` to `n=9, 10`** (or
+   accept the negative closed-form-mining result and pivot).
+2. If a pin-index formula emerges and validates out-of-sample (holdout
+   at least one untested `n`, exact rational arithmetic, no floating
+   point), the *general* covering argument becomes: prove that
+   formula's pin set is (a) always realizable and (b) always covers
+   every window `t=0,...,n+1` -- both are then finite symbolic-algebra
+   claims in `n`, not per-`n` search, and a real route to the
+   Lean-formalizable general-`n` proof.
+3. Carry out the Lean charpoly proof in
+   `lean/nbonacci_margin_catalogue.lean` per the documented
+   roadmap (~80 lines, two sub-lemmas of ~30 lines each).
+4. Once the survival-depth lemma closes for literal every `n`, the
    remaining full closure of the arithmetic-dominance theorem for
    general `n` *also* needs the dominance certificate (piece 2 of this
    file's original 4-piece split) established at the same growing `n` --

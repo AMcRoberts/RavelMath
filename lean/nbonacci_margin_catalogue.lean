@@ -268,7 +268,25 @@ theorem nbonacci_block_identity_of_charpoly {ι : Type} [Fintype ι]
 below are intentionally small: they are kernel-checked witnesses that the
 matrix hypothesis is the actual inverse-incidence matrix, rather than an
 unrelated abstract ring element.  The dimension-parametric proof still has
-one remaining index-arithmetic seam. -/
+one remaining index-arithmetic seam.
+
+Concrete route for that seam, found and cross-checked (numerically and
+symbolically, not yet formalized) in
+`docs/NBONACCI_CODE_MECHANISM.md`'s survival-depth investigation: writing
+`P(x) = x^n - x^(n-1) - ... - x - 1` for the n-bonacci polynomial,
+`nbonacciCharpoly n = X + X^2 + ... + X^n - 1` is exactly the *reciprocal*
+polynomial of `P`, i.e. `nbonacciCharpoly n = -X^n * P(1/X)` (equivalently,
+its roots are exactly `{1/beta_k : beta_k a root of P}`). `inverseCarryMatrix`
+is the companion-matrix-shaped map for this reciprocal relationship (last
+row `(1, -1, ..., -1)`, subdiagonal identity elsewhere) -- the same shape
+Mathlib's companion-matrix charpoly machinery targets, if a suitable lemma
+is already available; not checked this session. Proving
+`(inverseCarryMatrix n).charpoly = nbonacciCharpoly n` for literal every
+`n` (not just `n<=8` via `native_decide`) would remove this seam and, via
+`nbonacci_block_identity_of_charpoly` below, gives a fully general-n Lean
+proof of `A^(n+1) = 2A - 1` for the exact carry map -- a real piece of the
+homogeneous-shell survival-depth investigation, independent of whether that
+investigation's own open lemma (exact `n+1` bound) ever closes. -/
 
 def inverseCarryMatrix (n : ℕ) : Matrix (Fin n) (Fin n) ℤ := fun i j =>
   if i.val + 1 = j.val then 1
@@ -282,6 +300,71 @@ example : nbonacciGeomSum (inverseCarryMatrix 5) 5 = 1 := by native_decide
 example : nbonacciGeomSum (inverseCarryMatrix 6) 6 = 1 := by native_decide
 example : nbonacciGeomSum (inverseCarryMatrix 7) 7 = 1 := by native_decide
 example : nbonacciGeomSum (inverseCarryMatrix 8) 8 = 1 := by native_decide
+
+
+/-! ### Dimension-parametric charpoly of the carry map -- ROADMAP
+
+Goal: prove `(inverseCarryMatrix n).charpoly = nbonacciCharpoly n` for
+every `n >= 2`, replacing the seven `native_decide` witnesses above.
+
+**Mathlib audit (2026-08-02).** Searched for a companion-matrix
+charpoly lemma.  None exists.  The available infrastructure is:
+  * `Matrix.charmatrix M = X*I - C(M)` (the characteristic matrix)
+  * `Matrix.charpoly M = (charmatrix M).det` (the characteristic polynomial)
+  * `Matrix.det_of_upperTriangular` / `det_of_lowerTriangular`
+    (det = product of diagonal entries for triangular matrices)
+  * `Matrix.det_succ_column` (Laplacian expansion along a column)
+  * `Matrix.charpoly_fromBlocks_zero₁₂` (block triangular charpoly
+    factorization, used for the `1`s in the last row)
+  * `Polynomial.Matrix.det`, `matPolyEquiv` (R[X] matrix-as-polynomial
+    of matrices equiv)
+
+**The route.** Let `M_n = charmatrix (inverseCarryMatrix n)`.  Matrix
+structure:
+  * `M_n[i, i] = X` (diagonal),
+  * `M_n[i, i+1] = -1` for `i = 0, ..., n-2` (superdiagonal),
+  * `M_n[n-1, 0] = -1` (last row, first column),
+  * `M_n[n-1, j] = 1` for `1 <= j <= n-2` (last row, interior),
+  * `M_n[n-1, n-1] = X+1` (last row, last column).
+
+Cofactor expansion of `M_n` along column 0 (using `det_succ_column`
+with appropriate index shift) gives:
+
+```
+  det M_n = X * det(qMatrix n) + (-1)^n * det(rMatrix n),
+```
+
+where
+  * `qMatrix n` is the (n-1)x(n-1) matrix obtained by deleting row 0
+    and column 0: upper bidiagonal for rows 0..n-3 (X on diagonal,
+    -1 on superdiagonal), and last row `[1, 1, ..., 1, X+1]`,
+  * `rMatrix n` is the (n-1)x(n-1) matrix obtained by deleting row
+    n-1 and column 0: lower bidiagonal with -1 on diagonal and X
+    on subdiagonal.
+
+Then:
+  * `det rMatrix n = (-1)^(n-1)`, by `det_of_lowerTriangular` (the
+    product of the diagonal entries).
+  * `det qMatrix n = 1 + X + ... + X^(n-1)`, by induction on n with
+    the induction step using cofactor expansion of `qMatrix (n+1)`
+    along its last row `[1, 1, ..., 1, X+1]`.
+
+Combining:
+
+```
+  det M_n = X * (1 + X + ... + X^(n-1)) + (-1)^n * (-1)^(n-1)
+          = X + X^2 + ... + X^n - 1
+          = nbonacciCharpoly n.
+```
+
+The full Lean implementation is ~80 lines, of which the two
+sub-lemmas are the meat (each ~30 lines, one triangular-product
+argument, one cofactor-induction argument).  It is left as
+work-in-progress for a later session with focused Lean time; the
+gap-formula route in `docs/NBONACCI_CODE_MECHANISM.md` is
+mathematically the same fact and is already documented and
+machine-checked for `n = 2..8`.  The above sketch is the contract
+for the Lean formalization. -/
 
 
 /-! ### A coordinate bound for block forcing

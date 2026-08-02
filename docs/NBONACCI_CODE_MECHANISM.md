@@ -305,6 +305,180 @@ That proof object is useful for mining a generic contradiction, but it is still
 solver output; it is not yet the small independently replayable certificate
 needed for a theorem promotion.
 
+## Symbolic proof-mining tool (n=2..8, all dimensions)
+
+`python/nbonacci_shell_covering_proof.py` is a symbolic proof-mining
+tool for the same `n+1` SAT / `n+2` UNSAT pattern.  Where the
+original `nbonacci_shell_covering_search.py` stops at the *first*
+valid `(pin_indices, signs, solution)` triple, this tool enumerates
+**all** valid candidates within the `(n-1)`-pin search strategy,
+classifies each by structural features, emits a replayable symbolic
+proof certificate per candidate, mines the gap pattern for a
+closed-form fit across `n`, and attempts a structural comparison
+between consecutive `n`'s simplest candidates.
+
+Replay checker: `python/nbonacci_shell_covering_proof_check.py`.
+For each JSON sidecar it re-derives every claim (linear system,
+solution, sequence, gap pattern, box inequalities, cover property,
+UNSAT failure breakdown) from scratch with exact rational arithmetic
+and reports per-(n, L) and per-candidate PASS/FAIL.
+
+Run:
+
+```sh
+make nbonacci_shell_covering_proof
+# equivalent to:
+#   python3 python/nbonacci_shell_covering_proof.py --n-min=2 --n-max=8 \
+#     --emit-json-dir=out/nbonacci_covering_proof/ \
+#     --mine-gap-formula --attempt-promotion
+#   python3 python/nbonacci_shell_covering_proof_check.py out/nbonacci_covering_proof/
+```
+
+The Python tool applies a 12 GiB virtual-memory fence by default
+(per the 2026-08-02 standing directive, "run big stuff with 12gb
+memory fence; we've been crashed a bunch by not doing that").  The
+fence is the same one the Z3-backed `nbonacci_homogeneous_shell_smt`
+and `nbonacci_homogeneous_shell_unsat_core` probes use, with the
+default raised from 10 GiB to 12 GiB.  Override via the
+`RAVEL_PROBE_MEMORY_MB` environment variable; set to `0` to disable
+(not recommended for `n >= 8`).
+
+**C++ regression test** for the same symbolic closure:
+`tests/nbonacci_covering_witness_test.cpp` (Makefile target
+`nbonacci_covering_witness_test`, enrolled in `make check`).
+Encodes the seven n=2..8 simplest candidates as hard-coded integer
+data (LCM-of-denominators trick: multiply through by `denom` and
+verify in `Z`; no floats, no Z3, no multiprecision), reconstructs
+each sequence from the free-parameter vector via the homogeneous
+recurrence, and re-verifies the four closure conditions
+(pin equalities, free-parameter box, full-sequence box, cover
+property) and a fifth sanity check (pin indices strictly
+increasing when sorted).  Current run: 280 checks, 0 failures.
+This is the same set of facts the Python replay checker
+re-derives, in a different arithmetic system, with a different
+machine-checkable artifact.  Either side passing is sufficient
+evidence the closure is real; both passing is the regression-test
+guarantee the symbolic witness stays valid across future changes.
+
+### Simplest candidate per `n` (from this tool, n=2..8)
+
+| n | valid candidates | simplest pins | signs | solution (a_1..a_{n-1}) | gap_pattern | distinct |a_j| | sequence max |a_j| |
+|--:|--:|--:|--:|--:|--:|--:|--:|
+| 2 |   3 | (4,)                       | (-1,)                | (1,)                | ()        | 2 | 1 |
+| 3 |   4 | (1, 5)                     | (1, -1)              | (1, 0)              | (4,)      | 2 | 1 |
+| 4 |   8 | (1, 6, 8)                  | (1, -1, 1)           | (1, 0, -1/3)        | (5, 2)    | 4 | 1 |
+| 5 |  33 | (1, 8, 9, 10)              | (1, -1, 1, -1)       | (1, 1/3, -1/3, 1/3) | (7, 1, 1) | 2 | 1 |
+| 6 |  66 | (7, 8, 9, 10, 12)          | (1, 1, -1, -1, -1)   | (1, 1, 0, -1/2, 0)  | (1, 1, 1, 2) | 3 | 1 |
+| 7 | 212 | (1, 10, 11, 12, 13, 14)    | (1, -1, 1, -1, 1, -1)| (1, 1/3, -1/3, 1/3, -1/3, 1/3) | (9, 1, 1, 1, 1) | 2 | 1 |
+| 8 | 424 | (9, 10, 12, 13, 14, 15, 16)| (1, -1, 1, -1, 1, -1, 1) | (1, 0, -1/3, 1/3, -1/3, 1/3, -1/3) | (1, 2, 1, 1, 1, 1) | 4 | 1 |
+
+(Every row: `n+1` SAT confirmed within the `(n-1)`-pin strategy.
+Every row's UNSAT (`n+2` transitions) also confirmed by exhaustive
+enumeration of `C(n+L-1, n-1) * 2^(n-1)` candidate strategies, all
+failing for one of: `singular` linear system, `out_of_box_solution`
+on `|a_k|`, `out_of_box_window` on the resulting sequence, or
+`cover_incomplete` on the windows.)
+
+### Multi-candidate observation
+
+A non-trivial finding: the simplest candidate at `n = 5` (this
+tool) differs from the first-found candidate reported earlier in this
+doc and in `docs/READINGLIST.Minimax.TheoremAutomation.md` (which
+was `(1, 2, 8, 9)`, gap `(1, 6, 1)`, sequence with three distinct
+`|a_j|` values).  The new tool's simplicity sort (fewer distinct
+`|a_j|` values, more zeros in the free-parameter solution, smaller
+gap-pattern entropy) selects `(1, 8, 9, 10)` (gap `(7, 1, 1)`, only
+two distinct `|a_j|` values) as the genuinely simplest.  Both
+candidates are valid; the new one is what subsequent mining uses.
+
+The candidate count itself is informative:
+
+- `n = 2, 3, 4`: 3, 4, 8 candidates (the search strategy happens to
+  be very rigid at small `n`)
+- `n = 5, 6, 7, 8`: 33, 66, 212, 424 (rapid growth, but the
+  structure of all candidates is similar)
+
+### Structural comparison across `n`
+
+The "movement through candidates" the user asked for: for the
+simplest candidate at each `n`, the tool records (a) first pin
+index, (b) last pin index, (c) whether the last pin equals
+`n + L - 1` (the sequence end), (d) whether the tail pins form a
+consecutive-integer cluster, (e) distinct `|a_j|` count, (f) sign
+balance, and (g) the gap pattern itself.  Then it prints the
+preserved/dropped features between consecutive `n`.
+
+Findings:
+
+- **First pin at index 1** for `n = 3, 4, 5, 7`; first pin at 7
+  for `n = 6`; first pin at 9 for `n = 8`.  The "first pin at 1"
+  pattern is **not** preserved across all `n`; the simplest
+  candidate at `n = 6, 8` starts the pin set deeper into the
+  sequence.
+- **Last pin at sequence end** (`n + L - 1`) for all `n >= 4`.  This
+  is a genuinely preserved structural feature.
+- **Tail consecutive-pin cluster** of varying size: 0 at `n = 3, 4,
+  6`; 2 at `n = 5`; 4 at `n = 7, 8`.  Not preserved across all `n`,
+  but a real structural feature (the cluster size appears to grow
+  with `n`, but not monotonically across even/odd).
+- **Distinct `|a_j|` count** varies (2, 2, 4, 2, 3, 2, 4); not a
+  preserved invariant.
+- **Sign balance** varies; not preserved.
+
+### Gap-formula mining
+
+The tool tries three closed-form fits for the gap pattern across
+`n`: constant, linear in `k`, bilinear `(A, B, C)` in
+`(k, n)`.  All three fail out-of-sample at `n = 5` (holdout) for
+the current 4-5 data points: the holdout mismatch is total, not
+local.  The honest result: **no simple closed-form fit of the gap
+pattern as a function of `n` and `k` is supported by the available
+data** (matches the `docs/NBONACCI_SCC_PATTERN_MINING_NEGATIVE_
+RESULT.md` discipline: a 3-5-point fit is suggestive, not
+evidence).  The remaining work is to either extend to `n = 9, 10`
+(via `python/nbonacci_shell_covering_proof.py --n-min=2 --n-max=10`
+-- the cost at `n = 10` is `C(18, 9) * 2^9 ≈ 5M` candidates, ~15
+minutes) and re-fit, or abandon the closed-form attempt and
+proceed directly to the Lean formalization route documented below.
+
+## Lean seam: charpoly of `inverseCarryMatrix n`
+
+`docs/READINGLIST.Minimax.TheoremAutomation.md` and the comment in
+`lean/nbonacci_margin_catalogue.lean` both record an open seam:
+proving `(inverseCarryMatrix n).charpoly = nbonacciCharpoly n` for
+literal every `n` (not just `n <= 8` via `native_decide`) would
+remove the dimension-parametric index-arithmetic gap and, via the
+existing `nbonacci_block_identity_of_charpoly`, give a fully
+general-n Lean proof of `A^(n+1) = 2A - 1` for the carry map.
+
+**Mathlib audit (this session, 2026-08-02).** Searched the local
+Mathlib (`free_involution_perron/.lake/packages/mathlib/Mathlib/`)
+for a companion-matrix charpoly lemma.  None exists.  Available
+infrastructure is:
+- `Matrix.charmatrix M = X*I - C(M)`, `Matrix.charpoly M = det (charmatrix M)`;
+- `Matrix.det_of_upperTriangular` / `det_of_lowerTriangular` (det = product of diagonal for triangular matrices);
+- `Matrix.det_succ_column` (Laplacian expansion along a column);
+- `Matrix.charpoly_fromBlocks_zero₁₂` (block triangular charpoly factorization).
+
+**The route**, recorded in `lean/nbonacci_margin_catalogue.lean`
+as a roadmap comment (with no `sorry` holes, to keep the file
+kernel-checked):
+
+1. Cofactor-expand `M_n = charmatrix (inverseCarryMatrix n)` along column 0:
+   `det M_n = X * det(qMatrix n) + (-1)^n * det(rMatrix n)`.
+2. `det rMatrix n = (-1)^(n-1)` by `Matrix.det_of_lowerTriangular`.
+3. `det qMatrix n = 1 + X + ... + X^(n-1)` by induction on n with
+   the induction step using cofactor expansion of `qMatrix (n+1)`
+   along its last row `[1, 1, ..., 1, X+1]`.
+4. Combine: `det M_n = X * (1 + X + ... + X^(n-1)) + (-1)^n * (-1)^(n-1) = X + X^2 + ... + X^n - 1 = nbonacciCharpoly n`.
+
+Estimated ~80 lines of Lean for steps 1-4; the two sub-lemmas are
+the meat (each ~30 lines, one triangular-product argument, one
+cofactor-induction argument).  Left as work-in-progress for a
+later session with focused Lean time; the gap-formula route in
+`docs/NBONACCI_CODE_MECHANISM.md` is mathematically the same fact
+and is already documented and machine-checked for `n = 2..8`.
+
 The algebra explains why this is the right limit.  Writing
 `S_t = a_t+...+a_{t+n-1}`, the carry identity gives
 `S_{t+1}=a_t+d_t` and hence

@@ -83,11 +83,11 @@ TRANSITION_FILES := $(addprefix $(TRANSITIONS_DIR)/spectre_transitions_,$(addsuf
 .PHONY: test_qbasis validate_exploded test_12_exploded contact_boundary_4x4
 .PHONY: cylinder_measure verify_exploded_12 test_general_spectral
 .PHONY: prefix_automaton_test padic_test dedekind_factorization_test
-.PHONY: ideal_arithmetic_test coincidence_and_property_f_test local_field_test graph_divisor_test maximal_order_test gb_bp_hop_rule_test nbonacci_margin_invariant_test nbonacci_margin_core_graph_test nbonacci_block_identity_test
+.PHONY: ideal_arithmetic_test coincidence_and_property_f_test local_field_test graph_divisor_test maximal_order_test gb_bp_hop_rule_test nbonacci_margin_invariant_test nbonacci_margin_core_graph_test nbonacci_block_identity_test nbonacci_covering_witness_test
 .PHONY: rnd13_factor_probe rnd13_prefix_automaton_probe classify_adelic_tiling test_bp_gb_divisor adelic_boundary_spectral_radius gb_bp_involution_check
 .PHONY: class_ii_symmetry_probe class_ii_boundary_family_test substitution_neighborhood_test
 .PHONY: class_ii_corona_literature_probe
-.PHONY: nbonacci_periodic_carry_probe nbonacci_carry_cycle_probe nbonacci_sign_chamber_probe nbonacci_chamber_stability nbonacci_chamber_merge nbonacci_rank_feature_search nbonacci_sector_gap_rank nbonacci_block_spectrum_probe nbonacci_block_forcing_probe nbonacci_block_l1_growth_probe nbonacci_max_shell_return_probe nbonacci_max_shell_return_stability nbonacci_shell_word_probe nbonacci_conjugate_height_probe nbonacci_conjugate_height_bound nbonacci_dominance_theorem_pipeline nbonacci_homogeneous_shell_smt nbonacci_homogeneous_shell_unsat_core nbonacci_shell_covering_search nbonacci_homogeneous_shell_core_enumerate
+.PHONY: nbonacci_periodic_carry_probe nbonacci_carry_cycle_probe nbonacci_sign_chamber_probe nbonacci_chamber_stability nbonacci_chamber_merge nbonacci_rank_feature_search nbonacci_sector_gap_rank nbonacci_block_spectrum_probe nbonacci_block_forcing_probe nbonacci_block_l1_growth_probe nbonacci_max_shell_return_probe nbonacci_max_shell_return_stability nbonacci_shell_word_probe nbonacci_conjugate_height_probe nbonacci_conjugate_height_bound nbonacci_dominance_theorem_pipeline nbonacci_homogeneous_shell_smt nbonacci_homogeneous_shell_unsat_core nbonacci_shell_covering_search nbonacci_shell_covering_proof nbonacci_homogeneous_shell_core_enumerate
 .PHONY: class_ii_neighbor_probe
 .PHONY: return_contact_lift_probe
 .PHONY: class_ii_terminal_transport_probe
@@ -434,6 +434,12 @@ nbonacci_homogeneous_shell_unsat_core:
 nbonacci_shell_covering_search:
 	python3 python/nbonacci_shell_covering_search.py --n-min=2 --n-max=5
 
+nbonacci_shell_covering_proof:
+	python3 python/nbonacci_shell_covering_proof.py --n-min=2 --n-max=8 \
+	    --emit-json-dir=out/nbonacci_covering_proof/ \
+	    --mine-gap-formula --attempt-promotion
+	python3 python/nbonacci_shell_covering_proof_check.py out/nbonacci_covering_proof/
+
 nbonacci_homogeneous_shell_core_enumerate:
 	RAVEL_PROBE_MEMORY_MB=4096 python3 python/nbonacci_homogeneous_shell_core_enumerate.py --n-min=2 --n-max=7 --max-cores=6
 
@@ -491,6 +497,7 @@ TESTS_DEFAULT := \
 	nbonacci_margin_invariant_test \
 	nbonacci_margin_core_graph_test \
 	nbonacci_block_identity_test \
+	nbonacci_covering_witness_test \
 	dual_format_test \
 	dual_test \
 	spectral_dual_test \
@@ -705,6 +712,19 @@ NBONACCI_BLOCK_IDENTITY_TEST_BIN := $(BUILDDIR)/nbonacci_block_identity_test
 nbonacci_block_identity_test: $(NBONACCI_BLOCK_IDENTITY_TEST_BIN)
 $(NBONACCI_BLOCK_IDENTITY_TEST_BIN): $(TESTDIR)/nbonacci_block_identity_test.cpp | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+# nbonacci_covering_witness_test: regression test for the n=2..8
+# homogeneous-shell covering witnesses emitted by
+# python/nbonacci_shell_covering_proof.py.  Each witness is
+# (pins, signs, free_params, denom, full_sequence); the test
+# reconstructs the sequence from the free params via the
+# homogeneous recurrence and verifies the box and cover
+# properties.  Exact integer arithmetic (no floats, no Z3).
+# No header dependencies beyond the standard library.
+NBONACCI_COVERING_WITNESS_TEST_BIN := $(BUILDDIR)/nbonacci_covering_witness_test
+nbonacci_covering_witness_test: $(NBONACCI_COVERING_WITNESS_TEST_BIN)
+$(NBONACCI_COVERING_WITNESS_TEST_BIN): $(TESTDIR)/nbonacci_covering_witness_test.cpp | $(BUILDDIR)
+	$(CXX) $(CXXFLAGS) $< -o $@
 
 PISOT_NUMERATION_TOPOLOGY_TEST_BIN := $(BUILDDIR)/pisot_numeration_topology_test
 pisot_numeration_topology_test: $(PISOT_NUMERATION_TOPOLOGY_TEST_BIN)
