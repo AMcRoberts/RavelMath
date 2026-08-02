@@ -793,6 +793,29 @@ reconstruction of each pre-Red catalogue from the post-Red catalogue
 plus its ranks. Base rounds are rejected by construction rather than
 filled with an unproved guess.
 
+## Universal Perron column-difference identity
+
+**Status: Lean-kernel-checked, dimension-independent (2026-08-02).**
+`lean/perron_column_difference.lean` proves that for any finite real
+matrix and left eigenvector satisfying
+
+`sum_k M[k,i] v[k] = beta v[i]`,
+
+one has, for every pair of columns `i,j`,
+
+`beta (v[i]-v[j]) = sum_k (M[k,i]-M[k,j]) v[k]`.
+
+This requires no positivity, primitivity, Pisot, unimodularity, or
+integrality hypothesis; it is the eigenvector equation subtracted
+between two columns. In the scaled three-coordinate acceptance basis
+`v=(b,c,1)` with `b=beta`, it explains the identities discovered by
+the transport probe directly: Class II's column difference
+`(0,1,0)` gives `b(b-c)=c`, while Tribonacci's `(0,1,-1)` gives
+`b(b-c)=c-1`. Thus the differing identity is encoded in the incidence
+matrix itself. Pisot/unimodular hypotheses belong to the subsequent
+contracting geometry, integral lattice, and window-positivity steps,
+not to this algebraic identity.
+
 Lean kernel-checks the candidate shell bounds and core-polynomial
 signs. With all four base rounds now closed, the global occurrence
 theorem's remaining obligations are recurrent-SCC exhaustion and

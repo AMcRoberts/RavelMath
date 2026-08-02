@@ -59,6 +59,14 @@ matching private material lives in `~/claude/.ravel/keys/`. See
   selection for all legal rounds `1<=r<=a+1`. This closes the domain
   partition needed to stitch the existing local layer certificates;
   it does not itself assert their raw-corona equalities.
+- `perron_column_difference.lean` is kernel checked with no `sorry`.
+  In arbitrary finite dimension and over `ℝ`, it proves that subtracting
+  two coordinates of `M^T v = beta v` is exactly the corresponding
+  incidence-column difference evaluated against `v`. Its three-coordinate
+  corollaries give the Class-II `b*(b-c)=c` and Tribonacci
+  `b*(b-c)=c-1` forms once their column differences are supplied. The
+  theorem needs no Pisot, unimodularity, primitivity, or positivity
+  hypothesis; those enter only in the later geometric application.
 
 ## Incomplete extension
 

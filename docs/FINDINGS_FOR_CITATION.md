@@ -1325,6 +1325,16 @@ still the independent executable verification and handles other
 products, but this particular identity is already encoded linearly in
 `M^T v=beta v`.
 
+`lean/perron_column_difference.lean` kernel-checks the
+dimension-independent theorem (sorry-free): for arbitrary finite real
+`M`, `v`, and `beta`, the left-eigenvector equations imply
+`beta(v_i-v_j)=sum_k(M_{ki}-M_{kj})v_k` for every pair of columns.
+It also checks the three-coordinate Class-II and Tribonacci corollaries.
+No Pisot, unimodular, primitive, or positivity hypothesis appears in
+this theorem; those assumptions enter only when turning the algebraic
+identity into contracting lattice/window geometry. The file and updated
+manifest carry both verified GPG and X.509 signatures.
+
 **Rolled forward automatically to rounds 3-5, confirming the "family
 of families" framing rather than asserting it** (`app/class_ii_
 neighbor2_interior_regime_structure_check.cpp`): the enumeration and

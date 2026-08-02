@@ -121,6 +121,7 @@ lean-check:
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/class_ii_global_round_partition.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/class_ii_round1_red_pruning.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/class_ii_round234_shape_closure.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/perron_column_difference.lean)
 	@if rg -n '^[[:space:]]*sorry([[:space:]]|$$)' \
 		lean/free_involution_perron_core.lean \
 		lean/return_contact_lift.lean \
@@ -134,7 +135,8 @@ lean-check:
 		lean/class_ii_six_vertex_graduation.lean \
 		lean/class_ii_global_round_partition.lean \
 		lean/class_ii_round1_red_pruning.lean \
-		lean/class_ii_round234_shape_closure.lean; then \
+		lean/class_ii_round234_shape_closure.lean \
+		lean/perron_column_difference.lean; then \
 		echo "ERROR: enrolled Lean file contains sorry"; exit 1; \
 	else \
 		echo "Enrolled Lean files are sorry-free."; \
