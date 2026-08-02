@@ -336,6 +336,17 @@ uniform slack margin for `q=1/M`. The SMT result is discovery/replay support;
 do not promote it to a universal theorem until the generic induction or a
 replayable Farkas certificate is present.
 
+For proof-mining experiments, emit the terminal Z3 proof object:
+
+```sh
+python3 python/nbonacci_homogeneous_shell_smt.py \
+  --n=4 --emit-proof=/tmp/n4_homogeneous.proof
+```
+
+Use this as extraction aid only. The next step is to compress the repeated
+linear-arithmetic pattern into a generic induction or a small rational Farkas
+witness.
+
 Example:
 
 ```sh
