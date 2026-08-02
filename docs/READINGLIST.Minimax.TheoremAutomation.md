@@ -180,7 +180,8 @@ The promotion artifact must contain canonical chamber IDs, every block
 transition, integer chamber offsets, and a check that every exterior edge
 increases `R`. Generate one with `--emit-certificate=PATH`, then replay it
 with `python3 python/nbonacci_chamber_certificate_check.py PATH`; the second
-checker rejects positive difference-constraint cycles. Floating eigenvalues
+checker replays every recorded integer inequality (which also rules out any
+positive difference-constraint cycle). Floating eigenvalues
 are orientation only and must not enter the certificate.
 
 To test whether a finite rank stabilizes as the box grows, compare two
@@ -209,7 +210,8 @@ quotient SCC, and both still pass the merged difference constraints. The
 merge solver uses SCC-local propagation so this remains practical as the
 certificate grows.
 The same cross-box merge passes for `n=4`, bounds 8 and 10: 184,450 chambers
-and 349,088 weighted edges.
+and 349,088 weighted edges. Extending once more to bound 12 gives 352,178
+chambers and 701,448 weighted edges, again with one shared potential.
 
 The replay checker also enforces the exact involution `x ↦ -x`: every chamber
 must have its sign-negated partner with the same offset. This is a finite

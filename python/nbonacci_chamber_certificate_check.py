@@ -48,22 +48,15 @@ def main() -> int:
         if offsets[destination] < offsets[source] + weight:
             raise SystemExit("difference constraint failed")
 
-    # A positive cycle is exactly the obstruction to an integer rank offset.
-    heights = [0] * len(chambers)
-    for _ in range(len(chambers)):
-        changed = False
-        for source, destination, weight in edges:
-            candidate = heights[source] + weight
-            if heights[destination] < candidate:
-                heights[destination] = candidate
-                changed = True
-        if not changed:
-            bound = data.get("bound", data.get("bounds"))
-            print(f"chamber certificate PASS: n={data['n']} bound={bound} "
-                  f"chambers={len(chambers)} edges={len(edges)} "
-                  f"sign_symmetry={symmetry_pairs}")
-            return 0
-    raise SystemExit("positive difference-constraint cycle found")
+    # The supplied integer offsets already rule out positive cycles: summing
+    # the checked inequalities around a cycle would give 0 >= a positive
+    # number.  A second global Bellman--Ford pass is therefore redundant and
+    # would make replay quadratic in the certificate size.
+    bound = data.get("bound", data.get("bounds"))
+    print(f"chamber certificate PASS: n={data['n']} bound={bound} "
+          f"chambers={len(chambers)} edges={len(edges)} "
+          f"sign_symmetry={symmetry_pairs}")
+    return 0
 
 
 if __name__ == "__main__":

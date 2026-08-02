@@ -194,7 +194,8 @@ The same potential merges bounds 8, 12, 16, and 32 (98,996 chambers and
 appearing at bound 16.  The merge solver propagates constraints componentwise
 over the quotient SCC DAG rather than performing a global quadratic relaxation.
 The same cross-box merge passes for (n=4), bounds 8 and 10, over 184,450
-chambers and 349,088 weighted edges.
+chambers and 349,088 weighted edges. Extending to bound 12 gives 352,178
+chambers and 701,448 weighted edges, again with one shared potential.
 
 ## 5. What is proved and what remains
 
