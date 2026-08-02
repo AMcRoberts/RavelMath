@@ -291,6 +291,9 @@ Automation plan and acceptance gates:
 The first emitted higher-dimensional certificate passes at `n=4,B=8`:
 82,194 canonical chambers, 149,778 weighted edges, and a 9.2 MiB JSON
 artifact replayed successfully by `nbonacci_chamber_certificate_check.py`.
+The next-dimensional controlled run also passes at `n=5,B=4`: 58,954
+canonical chambers, 96,824 weighted edges, and a 6.3 MiB replayable artifact;
+the quotient had no nontrivial SCCs at this bound.
 - Add a checker that verifies every directed cycle in the certified exterior
   graph has positive total rank change (equivalently, no zero/nonpositive
   cycle survives); this is the finite obstruction audit for sublemma 4.
