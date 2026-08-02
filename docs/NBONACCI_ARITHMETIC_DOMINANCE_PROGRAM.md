@@ -377,6 +377,11 @@ binary selectors. With `q<=1/2`, n=4 still has feasible length-6 words;
 length 8 is mostly infeasible but not empty in the bounded sample. Thus the
 uniform theorem should target a forbidden language or return-depth automaton,
 not a single universal word length.
+In a targeted sample, the first 500 canonical n=4 length-8 words are all
+infeasible for `q<=1/3` (M>=3), whereas survivors appear near `q=1/2`.
+This suggests separating a small exceptional-shell computation from a
+uniform outer-shell forbidden-language proof; exhaustive word coverage is
+still required before promotion.
 
 ### Algebraic-height route
 
