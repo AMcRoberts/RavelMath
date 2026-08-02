@@ -158,7 +158,7 @@ theorem nbonacci_mul_geomSum {R : Type} [Ring R] (a : R) (n : ℕ) :
               rw [← pow_succ' a (n + 1)]
               noncomm_ring
         _ = nbonacciGeomSum a (n + 2) - a := by
-              congr 2 <;> omega
+              congr 2
 
 theorem nbonacci_block_identity_scalar {R : Type} [Ring R]
     (a : R) (n : ℕ) (h : nbonacciGeomSum a n = 1) :
