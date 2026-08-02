@@ -53,7 +53,8 @@ sweep is not presented as a universal proof.
 | `lua/` | Lua package, deterministic geometry tables, tests, and orchestration. |
 | `python/` | Legacy prototypes and result fixtures awaiting capability-by-capability retirement. |
 | `tatham_svg_parsed/` | Small parsed Spectre geometry tables used by the data pipeline. |
-| `refs/references.bib` | Citation metadata. Imported papers are not redistributed in this tree. |
+| `refs/references.bib` | Canonical citation metadata. |
+| `refs/FULLTEXT_ARCHIVE.md`, `refs/FULLTEXT_MANIFEST.tsv` | Policy and checksums for the adjacent, Git-excluded local `refs/FullText/` literature archive. |
 | `docs/` | Theorem status, proofs, audits, design notes, literature boundaries, and open questions. |
 
 ## Build and validation

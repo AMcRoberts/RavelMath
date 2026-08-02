@@ -415,9 +415,10 @@ work. A different approach is needed.
 **Positive next invariant (2026-08-01) — exact finite extension-graph
 profile.** `app/thread_a4_extension_graph_probe.cpp` replaces the
 aggregate factor count with each factor's left/right extension graph.
-On orbit prefixes of at least 525456 symbols, through factor length
-64, `σ_{0,1}` has `p(n)=5n-5` for every checked `n>=4`, with exactly
-five persistent left-special and three persistent right-special
+On orbit prefixes of at least 525456 symbols, a direct extension-graph
+pass through factor length 64 and a suffix-automaton stability pass
+through length 10000 find that `σ_{0,1}` has `p(n)=5n-5` for every
+checked `n>=4`, with exactly five left-special and three right-special
 factors. The AR-complexity controls all retain `p(n)=2n+1`, but now
 split structurally: Tribonacci and `σ_2` use one ternary special factor
 on each side; `σ_{a,1}` uses two binary left-special factors and one
@@ -427,6 +428,16 @@ invariants: non-AR means several persistent local branching seams, not
 merely a larger complexity number. Still open are an all-`n` proof and
 the precise theorem identifying these symbolic extension branches with
 local junction types of the stepped-hyperplane tiling.
+
+Klouda--Pelantová (2009, `references.bib` key
+`KloudaPelantova2009`, locally preserved and checksummed under the
+Git-excluded `refs/FullText/` archive) gives a relevant route from
+special-factor decompositions to infinite left-special branches. A
+necessary caution exposed by inspecting that machinery is that five
+left-special factors at each finite length do not by themselves imply
+five infinite left-special branches: some may belong to recursively
+growing finite maximal-special families. The next proof must establish
+the actual predecessor/branch decomposition for this substitution.
 
 ### Thread A5 — extend the data
 

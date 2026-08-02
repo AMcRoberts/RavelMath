@@ -186,7 +186,7 @@ repository root unless the file itself states otherwise.
 | `app/gkw_fully_rigorous.cpp` | Removes floating-point node/weight construction from the GKW certification pipeline. |
 | `app/smooth_relaxation_search.cpp` | Continuous relaxation search around integer Pisot seed matrices; exploratory, not a certificate. |
 | `app/hyperplane_progression.cpp` | Enumerates lattice points in `P_j={x:0<=<x,v><v_j}` across substitutions. |
-| `app/thread_a4_extension_graph_probe.cpp` | Refines Thread A4's factor-complexity split into exact left/right/two-sided extension graphs; exposes persistent non-AR branching seams through length 64. |
+| `app/thread_a4_extension_graph_probe.cpp` | Refines Thread A4's factor-complexity split into exact left/right/two-sided extension graphs through length 64 and a suffix-automaton stability check through length 10000; exposes persistent finite non-AR branching seams. |
 | `app/cylinder_measure.cpp` | Computes substitution cylinder measures using matrix growth rather than expanded words. |
 | `app/tabulate_pisot_properties.cpp` | Prints the property bundle from `pisot_substitution_properties.hpp`. |
 | `app/test_general_spectral.cpp` | Standalone diagnostic for general-dimension spectral invariants. |

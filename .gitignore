@@ -17,3 +17,7 @@ __pycache__/
 
 # Generated media from exploratory scripts
 *.gif
+
+# Locally preserved literature.  Full texts may carry redistribution
+# restrictions; keep the archive in full local checkpoints, not public Git.
+/refs/FullText/

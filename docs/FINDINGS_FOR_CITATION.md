@@ -795,9 +795,11 @@ extension (Tetrabonacci/Pentanacci/Hexanacci-adjacent families,
 
 ## Finding 6.7 — Thread A4: non-AR branching resolves into persistent extension seams
 
-**Status: POSITIVE EXACT FINITE-WORD RESULT, checked through factor
-length 64 on substitution-orbit prefixes of 525456 to 922111
-symbols; not yet an all-length theorem.** Reproducible with
+**Status: POSITIVE EXACT FINITE-WORD RESULT.** Direct extension sets
+are checked through factor length 64 on substitution-orbit prefixes of
+525456 to 922111 symbols; a suffix-automaton range calculation checks
+the non-AR formula and special-factor counts through length 10000.
+This is not yet an all-length theorem. Reproducible with
 `app/thread_a4_extension_graph_probe.cpp`.
 
 For every internal factor `u` of length `n`, the probe records its
@@ -816,7 +818,7 @@ actual branching sites of the substitution language.
   AR complexity does not determine the orientation or multiplicity of
   local branching.
 - The non-AR `σ_{0,1}` orbit has `p(n)=5n-5` for every checked
-  `4<=n<=64`. At every one of those lengths it has exactly five
+  `4<=n<=10000`. At every one of those lengths it has exactly five
   left-special and three right-special factors; left valence is at
   most two, while at least one right-special factor retains ternary
   valence. The excess slope five is therefore persistent distributed
@@ -831,6 +833,15 @@ persistent branches. What is **not** yet proved is the exact dictionary
 between a symbolic extension graph and a projected cube-face vertex
 star, or that the displayed formulas persist for all `n`. Those are
 now the two sharply stated derivation obligations.
+
+The special-factor framework of Klouda--Pelantová (2009,
+`KloudaPelantova2009` in `refs/references.bib`; local PDF checksum in
+`refs/FULLTEXT_MANIFEST.tsv`) is a plausible proof route, not a result
+being imported as though it already covered this substitution. In
+particular, the constant finite-length count does not alone establish
+five infinite left-special branches: finite maximal-special families
+can grow recursively. The all-length proof must identify the actual
+predecessor decomposition before interpreting branch counts.
 
 ## Finding 7 — explicit Class-II balanced-pair core family
 
