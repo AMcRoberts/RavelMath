@@ -203,6 +203,13 @@ must have its sign-negated partner with the same offset. This is a finite
 certificate reduction, not a numerical heuristic, and can be carried into
 the formal exterior proof.
 
+`python/nbonacci_rank_feature_search.py` is the next discovery gate. It solves
+the recorded edge inequalities for small linear feature families. On the
+current n=3, bound-8 certificate, sign, gap-linear, quadratic, and richer
+low-degree families are all infeasible. This rules out several tempting
+closed-form ranks without spending another graph-enumeration run. It is a
+negative discovery result, not a universal impossibility theorem.
+
 Example:
 
 ```sh
