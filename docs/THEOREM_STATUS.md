@@ -783,7 +783,8 @@ with the Lean-checked round-partition router
 penultimate/terminal/repeated certificates covering every round from 5
 through `a+1`, **all four rows of the base-premises table are now
 closed for every integer `a>=7`** (round 1 for every `a>=3`), one tier
-below Lean-formalized throughout.
+below Lean-formalized throughout. Citable as `docs/
+FINDINGS_FOR_CITATION.md` Finding 12.
 
 For the four non-base phases, C++ now exposes named pre-Red, ordered
 rank, and post-Red catalogue dispatchers. A structural sweep over 429
@@ -839,7 +840,11 @@ apparently stuck, which turned out on inspection to feed directly into
 the recurrent block born the same round, the identical shape of
 correction as item 5's overclaim above. All five items of the
 recurrent-exhaustion checklist are therefore verified together at
-`a=7..20` plus `a=30`, exact-checked, not yet closed-form.
+`a=7..20` plus `a=30`, exact-checked, not yet closed-form. Citable as
+`docs/FINDINGS_FOR_CITATION.md` Finding 13, which also records a
+2026-08-02 round-by-round strengthening (every catalogued rank's birth
+round confirmed individually, not just the aggregate item checklist)
+and the concrete plan toward a closed-form version.
 
 Every displayed core, regular-shell, and exceptional-shell matrix is
 also universally irreducible: its minimum-parameter support is
