@@ -350,17 +350,17 @@ nbonacci_exterior_spectrum_probe: $(NBONACCI_ARITHMETIC_HULL_BIN)
 	./$(NBONACCI_ARITHMETIC_HULL_BIN) --bound=1 --dump-quotients 4 5 6 7 | \
 		PYTHONPATH=python python3 python/nbonacci_exterior_spectrum_probe.py
 nbonacci_periodic_carry_probe:
-	RAVEL_PROBE_MEMORY_MB=1024 PYTHONPATH=python python3 python/nbonacci_periodic_carry_probe.py
+	RAVEL_PROBE_MEMORY_MB=10240 PYTHONPATH=python python3 python/nbonacci_periodic_carry_probe.py
 NBONACCI_CARRY_CYCLE_PROBE_BIN := $(BUILDDIR)/nbonacci_carry_cycle_probe
 nbonacci_carry_cycle_probe: $(NBONACCI_CARRY_CYCLE_PROBE_BIN)
-	ulimit -v 1048576; ./$(NBONACCI_CARRY_CYCLE_PROBE_BIN) --n=3 --bound=2
+	ulimit -v 10485760; ./$(NBONACCI_CARRY_CYCLE_PROBE_BIN) --n=3 --bound=2
 $(NBONACCI_CARRY_CYCLE_PROBE_BIN): \
 		$(APPDIR)/nbonacci_carry_cycle_probe.cpp | $(BUILDDIR)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< -o $@
 nbonacci_sign_chamber_probe:
-	RAVEL_PROBE_MEMORY_MB=1024 python3 python/nbonacci_sign_chamber_probe.py --n=3 --bound=6 --mode=sign
-	RAVEL_PROBE_MEMORY_MB=1024 python3 python/nbonacci_sign_chamber_probe.py --n=3 --bound=6 --mode=ordered
-	RAVEL_PROBE_MEMORY_MB=1024 python3 python/nbonacci_sign_chamber_probe.py --n=3 --bound=6 --mode=gaps-mod --modulus=auto --rank-base=sum
+	RAVEL_PROBE_MEMORY_MB=10240 python3 python/nbonacci_sign_chamber_probe.py --n=3 --bound=6 --mode=sign
+	RAVEL_PROBE_MEMORY_MB=10240 python3 python/nbonacci_sign_chamber_probe.py --n=3 --bound=6 --mode=ordered
+	RAVEL_PROBE_MEMORY_MB=10240 python3 python/nbonacci_sign_chamber_probe.py --n=3 --bound=6 --mode=gaps-mod --modulus=auto --rank-base=sum
 $(NBONACCI_ARITHMETIC_HULL_BIN): \
 		$(APPDIR)/nbonacci_arithmetic_hull.cpp \
 		$(INCDIR)/ravel/nbonacci_margin_invariant.hpp \

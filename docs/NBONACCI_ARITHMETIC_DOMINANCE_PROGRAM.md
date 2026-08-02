@@ -113,9 +113,9 @@ the weak ordering of absolute magnitudes removes neither phenomenon entirely
 therefore encode magnitude gaps or residues together with signs; this negative
 result prevents a false “sign-only” escape lemma.
 
-The Python probes install a 1 GiB virtual-memory cap by default
-(`RAVEL_PROBE_MEMORY_MB=1024`); set that variable to `0` only for a deliberate
-large run. The corresponding Make targets cap the native carry probe at the
+The Python probes install a 10 GiB virtual-memory cap by default
+(`RAVEL_PROBE_MEMORY_MB=10240`); set that variable to `0` only for a deliberate
+larger run. The corresponding Make targets cap the native carry probe at the
 same limit with `ulimit`, so failed synthesis attempts terminate as bounded
 experiments rather than destabilizing the workshop process.
 

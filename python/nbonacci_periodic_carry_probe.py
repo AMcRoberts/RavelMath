@@ -25,7 +25,7 @@ from z3 import Int, Or, Solver, sat
 
 def install_memory_limit() -> None:
     """Cap virtual memory; use 0 to disable for a deliberate large run."""
-    megabytes = int(os.environ.get("RAVEL_PROBE_MEMORY_MB", "1024"))
+    megabytes = int(os.environ.get("RAVEL_PROBE_MEMORY_MB", "10240"))
     if megabytes > 0:
         limit = megabytes * 1024 * 1024
         resource.setrlimit(resource.RLIMIT_AS, (limit, limit))
