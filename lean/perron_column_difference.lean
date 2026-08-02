@@ -41,14 +41,22 @@ theorem perron_three_coordinate_identity
   subst b
   nlinarith [hcolumn]
 
-/-- Class II's column difference `(0,1,0)` gives `b*(b-c)=c`. -/
+/-- Class II's first two left-eigenvector coordinate equations have column
+difference `(0,1,0)`, hence give `b*(b-c)=c` directly. -/
 theorem classII_column_difference
-    (b c : ℝ) (h : b * b - b * c = 0 * b + 1 * c + 0) :
+    (a beta b c : ℝ) (hbeta : b = beta)
+    (h0 : a * b + c + 1 = beta * b)
+    (h1 : a * b + 1 = beta * c) :
     b * (b - c) = c := by
-  nlinarith [h]
+  subst b
+  nlinarith [h0, h1]
 
-/-- Tribonacci's column difference `(0,1,-1)` gives `b*(b-c)=c-1`. -/
+/-- Tribonacci's first two left-eigenvector coordinate equations have column
+difference `(0,1,-1)`, hence give `b*(b-c)=c-1` directly. -/
 theorem tribonacci_column_difference
-    (b c : ℝ) (h : b * b - b * c = 0 * b + 1 * c - 1) :
+    (beta b c : ℝ) (hbeta : b = beta)
+    (h0 : b + c = beta * b)
+    (h1 : b + 1 = beta * c) :
     b * (b - c) = c - 1 := by
-  nlinarith [h]
+  subst b
+  nlinarith [h0, h1]
