@@ -1299,6 +1299,22 @@ automatically generated quotient-ring multiplication tensor plus a
 positivity cone per matrix stratum, not an attempt to force the literal
 Class-II identity onto every substitution.
 
+The probe now generates that tensor explicitly. In the `(b,c,1)` basis:
+Class II at `a=7` has `b^2=7b+c+1`, `bc=7b+1`, `c^2=b+6c`, while
+Tribonacci has `b^2=2b+2c+1`, `bc=b+c+1`, `c^2=b`; subtracting the
+first two tensor rows produces the two identities above automatically.
+Two farther named unimodular Pisot controls show where *sparsity* breaks:
+for a companion cubic `beta^3=A beta^2+B beta+1` with
+`(b,c)=(beta^2,beta)`, exact reduction gives
+
+`b*(b-c) = (A^2+B-A)b + (AB+1-B)c + (A-1)`.
+
+Thus the project's `sigma_1` stratum `(A,B)=(3,2)` gives
+`8b+5c+2`, and `sigma_2` `(A,B)=(2,3)` gives `5b+4c+1`.
+The automation remains uniform, but the unusually tiny Class-II and
+Tribonacci right-hand sides are genuine cancellations, not the generic
+shape of a cubic unimodular Pisot identity.
+
 **Rolled forward automatically to rounds 3-5, confirming the "family
 of families" framing rather than asserting it** (`app/class_ii_
 neighbor2_interior_regime_structure_check.cpp`): the enumeration and

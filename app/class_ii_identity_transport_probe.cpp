@@ -31,6 +31,7 @@
 
 #include <array>
 #include <cstdio>
+#include <stdexcept>
 #include <utility>
 #include <vector>
 
@@ -193,6 +194,58 @@ PolyZ monomial(long long coefficient, std::size_t degree) {
     PolyZ p;
     mathlib::set_si(p.coeff(degree), coefficient);
     return p;
+}
+
+long long coefficient_si(const PolyZ& p, std::size_t degree) {
+    if (static_cast<long long>(degree) > p.degree()) return 0;
+    return mpz_get_si(p.coeff(degree).get());
+}
+
+struct BasisCoordinates {
+    long long b = 0;
+    long long c = 0;
+    long long one = 0;
+};
+
+// Express a reduced degree-<3 polynomial in the supplied integral basis
+// (b,c,1).  Both bases used below are unimodular, so the 2x2 determinant
+// controlling the positive-degree coefficients is +/-1 and no denominator
+// is introduced.
+BasisCoordinates coordinates_in_perron_basis(
+        const PolyZ& reduced, const PolyZ& b, const PolyZ& c) {
+    const long long b1 = coefficient_si(b, 1);
+    const long long b2 = coefficient_si(b, 2);
+    const long long c1 = coefficient_si(c, 1);
+    const long long c2 = coefficient_si(c, 2);
+    const long long r1 = coefficient_si(reduced, 1);
+    const long long r2 = coefficient_si(reduced, 2);
+    const long long determinant = b1 * c2 - b2 * c1;
+    if (determinant != 1 && determinant != -1)
+        throw std::runtime_error("Perron coordinate basis is not unimodular");
+    BasisCoordinates out;
+    out.b = (r1 * c2 - r2 * c1) / determinant;
+    out.c = (b1 * r2 - b2 * r1) / determinant;
+    out.one = coefficient_si(reduced, 0)
+            - out.b * coefficient_si(b, 0)
+            - out.c * coefficient_si(c, 0);
+    return out;
+}
+
+void print_multiplication_tensor(const char* label, const PolyZ& modulus,
+                                 const PolyZ& b, const PolyZ& c) {
+    std::printf("  %s multiplication tensor in basis (b,c,1):\n", label);
+    for (const auto& product : std::vector<std::pair<const char*, PolyZ>>{
+             {"b*b", b * b}, {"b*c", b * c}, {"c*c", c * c}}) {
+        const auto coords = coordinates_in_perron_basis(
+            reduce_univariate(product.second, modulus), b, c);
+        std::printf("    %-3s = %lld*b %+lld*c %+lld\n", product.first,
+                    coords.b, coords.c, coords.one);
+    }
+}
+
+PolyZ companion_cubic(long long quadratic, long long linear) {
+    return monomial(1, 3) - monomial(quadratic, 2)
+         - monomial(linear, 1) - monomial(1, 0);
 }
 
 // In the genuinely matrix-changing Tribonacci hop, the Perron direction is
@@ -385,5 +438,37 @@ int main() {
                 tribonacci_formula_ok ? probes.size() : 0U, probes.size());
     std::printf("  boundary located: the clean identity is stratum-specific; "
                 "the reduction bazooka is not.\n");
+
+    // Derive the structure constants rather than recognizing identities by
+    // eye.  For Class II, c=beta^2-a*beta-1 in the normalized Perron basis;
+    // for Tribonacci, (b,c)=(beta^2,beta).  The differing sparse identities
+    // are now rows of automatically generated multiplication tensors.
+    const long long displayed_a = 7;
+    const PolyZ class_cubic = monomial(1, 3)
+                            - monomial(displayed_a, 2)
+                            - monomial(displayed_a + 1, 1)
+                            - monomial(1, 0);
+    const PolyZ class_b = monomial(1, 1);
+    const PolyZ class_c = monomial(1, 2)
+                        - monomial(displayed_a, 1)
+                        - monomial(1, 0);
+    print_multiplication_tensor("Class II (a=7)", class_cubic,
+                                class_b, class_c);
+    print_multiplication_tensor("Tribonacci", trib_cubic,
+                                monomial(1, 2), monomial(1, 1));
+    // Two named unimodular Pisot controls have companion cubics but move
+    // farther from Tribonacci: sigma_1 has (A,B)=(3,2), sigma_2 has
+    // (A,B)=(2,3) in beta^3=A*beta^2+B*beta+1.  With
+    // (b,c,1)=(beta^2,beta,1), the tensor is generated directly from
+    // (A,B); the once-tiny b*(b-c) identity becomes respectively
+    // 8b+5c+2 and 5b+4c+1.  This is the informative breakdown: the
+    // quotient-ring mechanism stays uniform while coefficient sparsity does
+    // not.
+    print_multiplication_tensor("sigma_1 companion stratum",
+                                companion_cubic(3, 2),
+                                monomial(1, 2), monomial(1, 1));
+    print_multiplication_tensor("sigma_2 companion stratum",
+                                companion_cubic(2, 3),
+                                monomial(1, 2), monomial(1, 1));
     return 0;
 }
