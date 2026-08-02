@@ -300,6 +300,11 @@ nontrivial quotient SCCs.
 - Add a checker that verifies every directed cycle in the certified exterior
   graph has positive total rank change (equivalently, no zero/nonpositive
   cycle survives); this is the finite obstruction audit for sublemma 4.
+- The periodic-contradiction endpoint is now kernel-checked as
+  `no_strict_rank_finite` in `lean/nbonacci_margin_catalogue.lean`: a strict
+  integer rank increase on a finite exterior state set is impossible. The
+  remaining work is only to instantiate its finite state set and rank from a
+  parameterized chamber certificate.
 - Only after these gates pass should the result be promoted from bounded
   evidence to a universal carry theorem. The four broader obligations below
   then consume that theorem as their recurrent coefficient bound.

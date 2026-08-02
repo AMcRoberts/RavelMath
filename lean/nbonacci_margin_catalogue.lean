@@ -300,3 +300,23 @@ theorem nbonacciBlockForcing_l1_bound (n : ℕ) (hn : 0 < n)
     _ = 4 * n := by
       simp
       ring
+
+
+/-! A periodic contradiction needs no spectral analysis once an integer rank
+increases strictly on every exterior step. -/
+
+theorem no_strict_rank_finite {α : Type} [Fintype α] [Nonempty α]
+    (step : α → α) (rank : α → ℤ)
+    (hstep : ∀ x, rank x < rank (step x)) : False := by
+  let m : ℤ := Finset.univ.image rank |>.max' (by simp)
+  have hmemb : m ∈ Finset.univ.image rank :=
+    Finset.max'_mem (Finset.univ.image rank) (by simp)
+  obtain ⟨x, hxuniv, hxrank⟩ := Finset.mem_image.mp hmemb
+  have hmax : rank x ≤ m := by
+    exact Finset.le_max' (Finset.univ.image rank) (rank x)
+      (Finset.mem_image.mpr ⟨x, Finset.mem_univ x, rfl⟩)
+  have hnext : rank (step x) ≤ m := by
+    exact Finset.le_max' (Finset.univ.image rank) (rank (step x))
+      (Finset.mem_image.mpr ⟨step x, Finset.mem_univ _, rfl⟩)
+  have hinc := hstep x
+  omega

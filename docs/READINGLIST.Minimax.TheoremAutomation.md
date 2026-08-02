@@ -205,10 +205,12 @@ nontrivial quotient SCCs.
 
 ## Periodic contradiction
 
-Once the exterior rank certificate is exact, prove the finite telescoping
-lemma: a periodic orbit with strict rank increase on every exterior block is
-impossible. The orbit therefore remains in the ternary layer (or in the
-explicit fixed hull, if the weaker theorem was proved).
+The finite telescoping endpoint is already kernel-checked as
+`no_strict_rank_finite` in `lean/nbonacci_margin_catalogue.lean`: a strict
+integer rank increase on a finite state set is impossible. Once the exterior
+rank certificate is exact, instantiate that theorem on the exterior chamber
+states. The orbit then remains in the ternary layer (or in the explicit fixed
+hull, if the weaker theorem was proved).
 
 ## Downstream full-theorem checklist
 
