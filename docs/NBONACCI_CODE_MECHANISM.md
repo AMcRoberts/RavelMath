@@ -262,6 +262,23 @@ yet closing the lemma:**
   or pigeonhole argument over the discrete choice of which coordinate
   touches the boundary at each step, not a spectral/growth-rate bound.
 
+**The sharpest available statement of the remaining gap**, combining all
+four findings above: fix `a_0=1` (WLOG, by the sign symmetry `a -> -a` and
+the unsat-core finding that `a_0` is always pinned). The remaining `n-1`
+free parameters `a_1,...,a_{n-1} in [-1,1]` linearly determine every later
+`a_j` (`j>=n`) via `a_t=a_{t+1}+...+a_{t+n}`. Windows `t=0,...,L` are
+covered (in the sense of "some coordinate in the window equals `+-1`") if
+every `t` in `{0,...,L}` has some scalar index `j in [t,t+n-1]` with
+`a_j=+-1`; each such pinned `j` covers an interval of up to `n` consecutive
+`t`s. The `n+1` bound is therefore an interval-covering /
+pigeonhole question: how many of the `L+1` required covering intervals can
+be realized by *linear equalities compatible with only `n-1` free
+parameters* -- not a geometric-growth question (ruled out above). This is
+now a concretely stateable combinatorial-linear-algebra claim, not yet
+proved; it is the recommended entry point for the next attempt, in
+preference to re-deriving the spectral/norm-bound routes already shown not
+to work.
+
 For inspection, the probe can emit Z3's proof object for the terminal query:
 
 ```sh
