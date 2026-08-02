@@ -1748,6 +1748,34 @@ that the magnitude range is consistent with the effect), but the
 mechanism -- "the seed's own hop set has reach 2, not 1" -- is now a
 confirmed, concrete fact rather than a guess.
 
+**Automated, wide-range check of this exact claim (2026-08-02).**
+`app/class_ii_neighbor2_round2_birth_mechanism_check.cpp` reconstructs
+round 2 directly from the fixed seed and the closed-form shell
+formulas, bypassing the expensive backward_closure/D_cont/Red pipeline
+entirely, and checks that `rank=a-1` and `rank=a-2`'s catalogued states
+are both present among round 2's new arrivals. Cross-validated against
+the trusted `algorithm2_trace` pipeline at a=7 (exact match, 72/72
+states) before being trusted at scale, per the discipline that caught
+two real bugs in early drafts (see the file's own header comment: a
+wrong round-1 seed gave a uniform, a-independent false mismatch; a
+wrong shell-formula call for `rank=a-2` needed the special- not
+regular-shell function). Holds with zero exceptions at every tested `a`
+from 7 through 30 (confirmed; matches the range already independently
+verified by `class_ii_neighbor2_round_stratified_transient_check`).
+Attempts to sweep much further (`a` up to 500 and 2000) were killed
+after several minutes each without completing -- per-value cost grows
+with `a` faster than the small-range timing suggested (memory climbing
+steadily, not O(1) per value as hoped), so this is not yet the
+overwhelming wide-range evidence a quick win would have supplied. Run
+`class_ii_neighbor2_round2_birth_mechanism_check <a_min> <a_max>` to
+extend further, but budget for genuinely growing per-value cost, not a
+cheap constant-time check. Still real evidence for the mechanism at the
+confirmed range, not the full closed-form proof: only the round-1-to-2
+step is checked, not the later-round induction, and it remains per-a
+exact computation
+with real numeric data rather than a symbolic argument for literally
+every integer `a`.
+
 ## Neighbor scope
 
 Neighbor 2 has the detailed layer grammar needed for the stitching
