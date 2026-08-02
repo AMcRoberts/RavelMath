@@ -238,10 +238,15 @@ Candidate find_simplest(std::size_t n, std::size_t L) {
         for (std::size_t i = 0; i < choose.size(); ++i)
             if (choose[i]) indices.push_back(candidates_idx[i]);
         std::printf("    iter choose=[");
-        for (bool b : choose) std::printf("%c", b ? 'T' : 'F');
+        for (std::size_t i = 0; i < choose.size(); ++i)
+            std::printf("%c", choose[i] ? 'T' : 'F');
         std::printf("] indices=[");
-        for (auto i : indices) std::printf("%zu,", i);
+        for (std::size_t i = 0; i < indices.size(); ++i) {
+            if (i) std::printf(",");
+            std::printf("%zu", indices[i]);
+        }
         std::printf("]\n");
+        std::fflush(stdout);
         for (std::size_t s = 0; s < (1ull << (n - 1)); ++s) {
             std::vector<long long> signs(n - 1);
             for (std::size_t k = 0; k < n - 1; ++k)
@@ -301,29 +306,69 @@ Candidate find_simplest(std::size_t n, std::size_t L) {
             }
             bool all_box = true;
             for (const auto& v : sol) if (!in_closed_unit_box(v)) { all_box = false; break; }
-            if (!all_box) { std::printf("    SKIP id=["); for (auto i : indices) std::printf("%zu,", i); std::printf("] s=%zu (box)\n", s); continue; }
+            if (!all_box) {
+                std::printf("    SKIP id=[");
+                for (std::size_t i = 0; i < indices.size(); ++i) {
+                    if (i) std::printf(",");
+                    std::printf("%zu", indices[i]);
+                }
+                std::printf("] s=%zu (box)\n", s);
+                continue;
+            }
             auto seq = reconstruct_sequence(n, L, sol);
-            if (!is_covering(n, L, seq)) { std::printf("    SKIP id=["); for (auto i : indices) std::printf("%zu,", i); std::printf("] s=%zu (cover)\n", s); continue; }
+            if (!is_covering(n, L, seq)) {
+                std::printf("    SKIP id=[");
+                for (std::size_t i = 0; i < indices.size(); ++i) {
+                    if (i) std::printf(",");
+                    std::printf("%zu", indices[i]);
+                }
+                std::printf("] s=%zu (cover)\n", s);
+                continue;
+            }
             std::printf("    CANDIDATE id=[");
-            for (auto i : indices) std::printf("%zu,", i);
+            for (std::size_t i = 0; i < indices.size(); ++i) {
+                if (i) std::printf(",");
+                std::printf("%zu", indices[i]);
+            }
             std::printf("] signs=[");
-            for (auto s2 : signs) std::printf("%lld,", s2);
+            for (std::size_t i = 0; i < signs.size(); ++i) {
+                if (i) std::printf(",");
+                std::printf("%lld", (long long)signs[i]);
+            }
             std::printf("] free=[");
-            for (const auto& s2 : sol) std::printf("%s,", s2.to_string().c_str());
+            for (std::size_t i = 0; i < sol.size(); ++i) {
+                if (i) std::printf(",");
+                std::printf("%s", sol[i].to_string().c_str());
+            }
             std::printf("] seq=[");
-            for (const auto& s2 : seq) std::printf("%s,", s2.to_string().c_str());
+            for (std::size_t i = 0; i < seq.size(); ++i) {
+                if (i) std::printf(",");
+                std::printf("%s", seq[i].to_string().c_str());
+            }
             std::printf("]\n");
             valid.push_back(make_candidate(n, L, indices, signs, sol, seq));
         }
     } while (std::prev_permutation(choose.begin(), choose.end()));
-    if (valid.empty()) return Candidate{};
+    if (valid.empty()) {
+        std::printf("    no valid candidate at n=%zu L=%zu\n", n, L);
+        return Candidate{};
+    }
     for (const auto& v : valid) {
         std::printf("    candidate: idx=[");
-        for (auto i : v.indices) std::printf("%zu,", i);
+        for (std::size_t i = 0; i < v.indices.size(); ++i) {
+            if (i) std::printf(",");
+            std::printf("%zu", v.indices[i]);
+        }
         std::printf("] signs=[");
-        for (auto s : v.signs) std::printf("%lld,", s);
-        std::printf("] score=%ld free_params=[", v.simplicity_score);
-        for (const auto& s : v.free_params) std::printf("%s,", s.to_string().c_str());
+        for (std::size_t i = 0; i < v.signs.size(); ++i) {
+            if (i) std::printf(",");
+            std::printf("%lld", (long long)v.signs[i]);
+        }
+        std::printf("] score=%ld free_params=[", (long long)v.simplicity_score);
+        for (std::size_t i = 0; i < v.free_params.size(); ++i) {
+            if (i) std::printf(",");
+            std::printf("%s", v.free_params[i].to_string().c_str());
+        }
         std::printf("]\n");
     }
     return *std::min_element(valid.begin(), valid.end(),
