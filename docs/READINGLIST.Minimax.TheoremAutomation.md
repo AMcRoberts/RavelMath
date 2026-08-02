@@ -131,7 +131,50 @@ question to AM is needed to resume -- the next step is named exactly.
   `1,5,2`; `1,1,6,1`; `1,1,7,1,2`) do not fit an obvious formula from
   this data alone -- do not force one from five points; get `n=7,8` first
   (same trap this project has been burned by repeatedly, see the SCC
-  mining negative result).
+  mining negative result). Extended to `n=6`: pins `(1,2,9,10,12)`,
+  matches the threshold exactly, gap sequence `1,1,7,1,2`.
+
+**Two more hypotheses checked directly and ruled out (do not re-test
+these)**:
+
+- **"Leading run of equal values" is not the mechanism.** Tested whether
+  forcing `a_0=a_1=...=a_{k-1}=1` (a consecutive prefix, not just `a_0`)
+  for increasing `k` finds a *longer* survival than `k=1` alone, for
+  `n=2..7`. It does not: `k=1` (only `a_0` pinned, `a_1` genuinely free)
+  already achieves the full known maximum `L=n+1` in every case tested.
+  The fact that several covering-search witnesses happened to show `a_1`
+  pinned to the same sign as `a_0` was an artifact of combination-search
+  order, not a structural necessity.
+- **No bounded-carry-length result found in the literature already on
+  disk.** Checked `refs/FullText/arXiv_2606.30496_..._Pisot-numerations-topological-groups.txt`
+  (Carton-Sudbery-Yassawi, already used elsewhere in this project for the
+  CSY carry automaton) for an explicit `n`-vs-carry-depth bound near
+  Lemma 43 / Theorem 3 -- nothing directly usable found. The original
+  Frougny-Solomyak 1992 "Condition F" paper (cited by CSY as the source
+  of the relevant classical addition-automaton theory) is **not yet on
+  disk** -- acquiring and reading it, following
+  `docs/OFFLINE_SOURCE_PRACTICE.md`, is a real candidate next step but
+  was not attempted this session (a genuinely separate, bounded task:
+  find the paper, get a lawful local copy with provenance, then check
+  whether its addition-delay bound specializes to exactly `n+1` for the
+  n-bonacci numeration).
+
+**Correction (found by a proper tool, not a re-derivation)**:
+`python/nbonacci_homogeneous_shell_core_enumerate.py` implements
+systematic multi-MUS enumeration (MARCO-style unsat-core blocking --
+find a core, permanently retract one of its members from the assumption
+list, re-solve, which *guarantees* a genuinely different core, unlike
+reshuffling which was tried first and found unreliable enough to obscure
+the clean structure for `n=7`). Solving from the full assumption set
+first (the natural, unforced minimization) gives a clean, gap-free single
+later run for `n=2,3,4,5,7` -- the earlier "gap at `n=4`" claim (from the
+single-core `nbonacci_homogeneous_shell_unsat_core.py` tool) was an
+artifact of which one arbitrary core `assert_and_track` happened to
+return, not a real feature. **`n=6` is a genuine, reproducible
+exception**: its natural minimal core has *two* disjoint later runs
+(`{1,2}` and `{8,...,13}`), confirmed stable, not yet explained. Use
+`nbonacci_homogeneous_shell_core_enumerate.py`, not the older single-core
+tool, for any further core-structure investigation.
 
 ### The precise remaining lemma, and the recommended next move
 
