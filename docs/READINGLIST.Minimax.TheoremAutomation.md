@@ -198,6 +198,11 @@ uniform chamber rank, not a checker failure; the edge-violation count is the
 sound replay result. The Make target `nbonacci_chamber_stability` runs the
 bounded n=3 example end to end.
 
+The replay checker also enforces the exact involution `x ↦ -x`: every chamber
+must have its sign-negated partner with the same offset. This is a finite
+certificate reduction, not a numerical heuristic, and can be carried into
+the formal exterior proof.
+
 Example:
 
 ```sh
