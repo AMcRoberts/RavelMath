@@ -176,3 +176,9 @@ theorem nbonacci_block_identity_scalar {R : Type} [Ring R]
       rw [nbonacciGeomSum_succ]
       noncomm_ring
     _ = 2 * a - 1 := by rw [hshift, h]
+
+theorem nbonacci_block_identity_matrix {ι R : Type} [Fintype ι]
+    [DecidableEq ι] [Ring R] (A : Matrix ι ι R) (n : ℕ)
+    (h : nbonacciGeomSum A n = 1) :
+    A ^ (n + 1) = 2 * A - 1 := by
+  exact nbonacci_block_identity_scalar A n h
