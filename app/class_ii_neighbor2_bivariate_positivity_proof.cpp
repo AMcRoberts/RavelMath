@@ -119,6 +119,18 @@ BivPoly b2_height_k(long long k) {
     { PolyZ p; mathlib::set_si(p.coeff(0), k); h[3] = p; }                // k * b^3
     return h;
 }
+
+// General height = p*b + q*c + r (any integer p,q,r), matching the 13
+// families in app/class_ii_neighbor2_same_letter_h_symbolic_proof.cpp
+// exactly, but bivariate (a stays a free variable, not substituted).
+// b^2*height = p*b^3 + q*a*b^2 + r*b^2 + q*b.
+BivPoly b2_height_general(long long p, long long q, long long r) {
+    BivPoly h(4, zero_a());
+    { PolyZ c; mathlib::set_si(c.coeff(0), q); h[1] = c; }                // q*b
+    { PolyZ c; mathlib::set_si(c.coeff(1), q); mathlib::set_si(c.coeff(0), r); h[2] = c; }  // (q*a+r)*b^2
+    { PolyZ c; mathlib::set_si(c.coeff(0), p); h[3] = c; }                // p*b^3
+    return h;
+}
 BivPoly b2_width(char w) {
     BivPoly out(4, zero_a());
     if (w == 'b') { PolyZ p; mathlib::set_si(p.coeff(0), 1); out[3] = p; }
@@ -281,5 +293,44 @@ int main() {
                     "one substitution (c=a+1/b) applied to one identity (b(b-c)=c) "
                     "that IS the cubic.\n");
     }
+
+    // ---- Automated: extend the bivariate (universal-in-a) proof to
+    // ALL 13 round-2 families, not just the k*(b-c) subfamily. This
+    // upgrades Finding 15 (docs/FINDINGS_FOR_CITATION.md) from
+    // "exact-certified at 13 concrete a-values" to "proven for every
+    // real a in the stated domain" -- the same strengthening just
+    // done for k*(b-c), applied to the whole table automatically. ----
+    std::printf("\n--- All 13 round-2 families, bivariate, domain a>=7 ---\n");
+    struct Family { long long p, q, r; char w; };
+    const std::vector<Family> all_families = {
+        {-1, 1, 1, '1'}, {-1, 1, 1, 'b'}, {-1, 1, 1, 'c'},
+        {0, 1, 0, 'b'},
+        {1, -1, 0, '1'}, {1, -1, 0, 'b'}, {1, -1, 0, 'c'},
+        {1, -1, 1, 'b'},
+        {2, -2, -1, 'b'}, {2, -2, -1, 'c'},
+        {2, -2, 0, 'b'}, {2, -2, 0, 'c'},
+        {2, -1, -1, 'b'},
+    };
+    const long long domain_a = 7;  // this project's standard domain for this family
+    long long families_ok = 0;
+    for (const auto& fam : all_families) {
+        const BivPoly b2h = b2_height_general(fam.p, fam.q, fam.r);
+        const BivPoly b2w = b2_width(fam.w);
+        const auto lower_cert = find_biv_certificate(b2h, cubic, domain_a);
+        const auto upper_cert = find_biv_certificate(biv_sub(b2w, b2h), cubic, domain_a);
+        const bool ok = lower_cert.found && upper_cert.found;
+        if (ok) ++families_ok;
+        std::printf("height=%+lldb%+lldc%+lld width=%c (domain a>=%lld): "
+                    "lower_steps=%d upper_steps=%d %s\n",
+                    fam.p, fam.q, fam.r, fam.w, domain_a,
+                    lower_cert.steps, upper_cert.steps,
+                    ok ? "PROVEN FOR EVERY a IN DOMAIN" : "NOT PROVEN");
+    }
+    std::printf("\n%lld / %zu round-2 families proven bivariate (every real "
+                "a>=%lld at once, not sampled): %s\n",
+                families_ok, all_families.size(), domain_a,
+                families_ok == static_cast<long long>(all_families.size())
+                    ? "ALL CLOSED -- Finding 15 upgradeable to universal-in-a"
+                    : "INCOMPLETE -- see failures above");
     return 0;
 }
