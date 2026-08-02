@@ -167,6 +167,16 @@ theorem carryUpdate_take_prefix (x : List ℤ) (d : ℤ) :
   | nil => rfl
   | cons x xs => simp [carryUpdate]
 
+/-! The scalar elimination used by the block-map shell argument.  The first
+window sum is the previous head plus its digit; substituting that sum into the
+next corrected-tail formula produces the exact `(n+1)`-block defect. -/
+theorem blockDefect_of_sum_update
+    {a0 a1 next sum1 d0 d1 : ℤ}
+    (hnext : next = 2 * a1 - sum1 + d1)
+    (hsum : sum1 = a0 + d0) :
+    next - 2 * a1 + a0 = d1 - d0 := by
+  omega
+
 def nbonacciGeomSum {R : Type} [Ring R] (a : R) : ℕ → R
   | 0 => 0
   | k + 1 => nbonacciGeomSum a k + a ^ (k + 1)

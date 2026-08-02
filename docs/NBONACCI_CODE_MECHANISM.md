@@ -115,6 +115,9 @@ certificate generator should use instead of expanding all coefficient paths.
 The identity itself is independently replayed by
 `python/nbonacci_block_defect_smt.py`; the current scan proves the negation
 UNSAT for every block position in dimensions `2` through `10`.
+The elimination step is now also formalized as
+`blockDefect_of_sum_update` in `lean/nbonacci_margin_catalogue.lean`, and the
+catalogue compiles cleanly.
 
 There is a useful asymptotic reduction already exposed by the same code. After
 normalizing by `M`, the digit contribution is `q=1/M`. At `q=0` the machine is

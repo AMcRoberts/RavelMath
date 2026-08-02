@@ -347,6 +347,10 @@ Use this as extraction aid only. The next step is to compress the repeated
 linear-arithmetic pattern into a generic induction or a small rational Farkas
 witness.
 
+The algebraic elimination is formally available as
+`blockDefect_of_sum_update` in `lean/nbonacci_margin_catalogue.lean`; compile
+that catalogue before using a shell certificate as evidence.
+
 Before changing the shell automaton, replay the algebraic seam independently:
 
 ```sh
