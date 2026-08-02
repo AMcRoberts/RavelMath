@@ -91,6 +91,13 @@ This gives a second exact rational margin and suggests that the cutoff is a
 dimension-dependent integer slack invariant, rather than a numerical solver
 artifact.
 
+The automated margin-table driver now records the sequence
+`k_2=3, k_3=4, k_4=7, k_5=10, k_6=14`, where `q<1/k_n` is uniformly forbidden
+for the `n+2`-transition word family. The `n=6` endpoint was checked over all
+3,281 canonical words: `q<1/14` is `3,281/3,281` UNSAT, while `q<1/13` has
+14 SAT branches. This is a concrete target for discovering the general slack
+recurrence.
+
 The homogeneous limit can now be checked independently with
 `python/nbonacci_homogeneous_shell_smt.py`.  Exact rational SMT gives the
 following stable pattern for every tested dimension `2<=n<=10`:

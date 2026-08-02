@@ -373,6 +373,17 @@ It returns `1,094/1,094 UNSAT`; at `upper-q=1/9`, only five branches survive.
 Use this pair to mine the dimension-dependent slack formula before attempting
 the generic certificate compression.
 
+To scan the endpoint sequence automatically:
+
+```sh
+python3 python/nbonacci_margin_table.py \
+  --n=2 --n-max=6 --max-denominator=16
+```
+
+The current exact table is `3,4,7,10,14` for dimensions `2` through `6`.
+Treat this as conjecture-mining output; the proof task is to derive the
+recurrence for these integer margins from the block defect.
+
 For proof-mining experiments, emit the terminal Z3 proof object:
 
 ```sh
