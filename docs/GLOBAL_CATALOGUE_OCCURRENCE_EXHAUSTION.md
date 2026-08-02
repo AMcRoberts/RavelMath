@@ -1824,3 +1824,21 @@ size -- checked as the literal sets, not just the counts, before the
 much simpler fact-(A) identity above was tried directly and confirmed.
 See `app/class_ii_neighbor2_round1_union_hypothesis.cpp` for both
 checks (`make class_ii_neighbor2_round1_union_hypothesis`).
+
+**Stale-pointer correction (2026-08-02).** Everything in this "Next
+implementation" section up to here was written while fact (B) --
+`open_reverse_inclusion` -- was still genuinely open, and it stayed
+that way in this section's own text even after it closed. Fact (B) was
+resolved shortly afterward, later the same night, by "Round 1: the
+literature check, done" above (this same file, the section right after
+the summary table): `±C` turned out to be a definitional
+symmetrization in the primary source, not an independent closure
+target, so the whole symbolic-backward-envelope construction this
+section calls "the next real mathematical step, not yet attempted" was
+never actually needed. The top-of-file base-premises table already
+reflects this ("Round 1's row is closed"); this section did not. Left
+in place as an honest record of the investigation path -- including a
+real dead end (the auxiliary 32-state object above) that turned out to
+be answering a question the literature had already dissolved -- rather
+than rewritten to look as if the shorter route was obvious from the
+start.
