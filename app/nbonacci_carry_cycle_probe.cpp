@@ -24,6 +24,7 @@ namespace {
 struct Options {
     int n = 3;
     int bound = 2;
+    bool print_witness = false;
 };
 
 std::size_t power(std::size_t base, int exponent) {
@@ -109,15 +110,27 @@ int run(const Options& options) {
     }
 
     std::size_t cyclic = 0, nonternary_cyclic = 0;
+    std::size_t first_nonternary = states;
     for (std::size_t code = 0; code < states; ++code) {
         if (removed[code]) continue;
         ++cyclic;
-        nonternary_cyclic += is_nonternary(code, options.n, options.bound, base);
+        if (is_nonternary(code, options.n, options.bound, base)) {
+            ++nonternary_cyclic;
+            if (first_nonternary == states) first_nonternary = code;
+        }
     }
     std::printf(
         "carry cycle probe: n=%d bound=%d states=%zu edges=%zu "
         "cyclic=%zu nonternary_cyclic=%zu\n",
         options.n, options.bound, states, edges, cyclic, nonternary_cyclic);
+    if (options.print_witness && first_nonternary != states) {
+        const auto witness = decode(first_nonternary, options.n,
+                                    options.bound, base);
+        std::printf("first_nonternary_witness=");
+        for (std::size_t k = 0; k < witness.size(); ++k)
+            std::printf("%s%d", k == 0 ? "" : ",", witness[k]);
+        std::printf("\n");
+    }
     return nonternary_cyclic == 0 ? 0 : 1;
 }
 
@@ -131,6 +144,8 @@ int main(int argc, char** argv) {
             options.n = std::stoi(value.substr(4));
         else if (value.rfind("--bound=", 0) == 0)
             options.bound = std::stoi(value.substr(8));
+        else if (value == "--print-witness")
+            options.print_witness = true;
         else {
             std::fprintf(stderr, "usage: %s --n=N --bound=B\n", argv[0]);
             return 2;

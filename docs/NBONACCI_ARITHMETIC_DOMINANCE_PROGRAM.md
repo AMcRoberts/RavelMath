@@ -306,6 +306,14 @@ The `n=7,B=3` shell also emits and replays successfully: 822,844 chambers,
 nontrivial quotient SCCs.
 The `n=8,B=2` shell also passes: 388,678 chambers, 523,824 weighted edges,
 and a 41 MiB replayable certificate, with no nontrivial quotient SCCs.
+The next dimension at the same bound, `n=9,B=2`, also passes: the probe
+reports 1,135,140 chamber keys, 0 self-loops, and no nontrivial quotient
+SCCs; the emitted 205 MiB certificate independently replays via
+`nbonacci_chamber_certificate_check.py` as 1,945,968 chambers and 2,501,934
+weighted edges, sign-symmetric. This extends the dimension range one step
+past the prior boundary without changing bound; the next controlled point
+per the stated methodology is either `n=9,B=3` or `n=10,B=2`, one axis at a
+time.
 
 An offset-stability check at `n=3` is a useful negative result: comparing the
 `B=8` and `B=12` certificates, 3,798 of 4,388 shared chamber signatures have
