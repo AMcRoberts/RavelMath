@@ -532,7 +532,7 @@ Test set: Tribonacci (control) + σ_{a,1} a=0..5 + σ_{1,2} + σ_1 + σ_2.
 All 10 are unimodular Pisot (β > 1, all other eigenvalues < 1 in
 modulus). Properties computed per candidate:
 
-| Property | Class I (Tribonacci) | Class II (σ_{a,1} a≥1) | Class III (σ_{0,1}) |
+| Property | AR-exact (Tribonacci) | AR-partial (σ_{a,1} a≥1) | non-AR (σ_{0,1}) |
 |---|---|---|---|
 | Constant factor (pos 0)? | yes | yes | no |
 | f(n) for n=1..10 (orbit of 0) | 3,5,7,9,11,13,15,17,19,21 (2n+1) | same | 1,3,7,11,15,20,25,30,35,40 (≠ 2n+1 at n=2) |
@@ -546,38 +546,38 @@ modulus). Properties computed per candidate:
 | Primitive return words | (0,1),(1,0,2,0),(2,0,1,0,0,1,0) | (0,1,2),(1,2,0,2,0,0),(2,0) | (0),(1,2),(2) |
 
 Three classes:
-- **Class I (Tribonacci family, 1 of 10 tested)**: Constant factor
+- **AR-exact (Tribonacci family, 1 of 10 tested)**: Constant factor
   at position 0. Orbit of 0 is Arnoux-Rauzy (f(n) = 2n+1).
   The n-bonacci involution [i,x,j]↔[j,-x,i] is EXACT on the dominant
   recurrent core (14/14 for n=3). The orbit quotient charpoly
   Q_sym_GB is exactly x^3 times Q_sym_BP's charpoly (x^4 - 2x - 1).
   This is the n-bonacci family structural proof from Finding 4.
-- **Class II (σ_{a,1} a≥1, σ_1, σ_2; 7 of 10 tested)**: Constant
+- **AR-partial (σ_{a,1} a≥1, σ_1, σ_2; 7 of 10 tested)**: Constant
   factor at position 0. Orbit of 0 is Arnoux-Rauzy (f(n) = 2n+1
   for n=1..10). The involution is PARTIAL (6/11 to 30/44 matched).
   The A1 cofactor is NOT x^k. The orbit IS Sturmian-like, but the
   n-bonacci involution doesn't apply.
-- **Class III (σ_{0,1}, σ_{0,2}; 2 of 10 tested)**: NO constant
+- **non-AR (σ_{0,1}, σ_{0,2}; 2 of 10 tested)**: NO constant
   factor. Orbit of 0 is NOT Arnoux-Rauzy (f(2) = 7, not 5).
   Different combinatorial structure. A2 involution partial
   (30/44 for σ_{0,1}). A1 = no.
 
 Decomposition hypothesis: the n-bonacci involution + nilpotent
-cofactor structure (Finding 4) is specific to Class I. The other
+cofactor structure (Finding 4) is specific to AR-exact. The other
 two classes of unimodular Pisot substitutions do not have this
 mechanism. The "Pisot = Sturmian" hypothesis (Barge 2015/2018) is
-correct for Class II (Arnoux-Rauzy) but breaks for Class III.
+correct for AR-partial (Arnoux-Rauzy) but breaks for non-AR.
 
 The Arnoux-Rauzy / Christoffel condition f(n) = (d-1)n + 1 (for
 3-letter alphabet: f(n) = 2n+1) is a necessary property for
-"classical Pisot" Class I/II but not for Class III.
+"classical Pisot" AR-exact/AR-partial but not for non-AR.
 
 What this means for the open tiling conjecture: each class may
-require a different proof path. The Class I proof (n-bonacci) is
-done. Class II (other constant-factor Pisots) has a Sturmian-like
+require a different proof path. The AR-exact proof (n-bonacci) is
+done. AR-partial (other constant-factor Pisots) has a Sturmian-like
 orbit but no involution; finding the "right" involution is open.
-Class III has no Arnoux-Rauzy structure; the open question is
-whether ANY structural principle drives Class III.
+non-AR has no Arnoux-Rauzy structure; the open question is
+whether ANY structural principle drives non-AR.
 
 Caveats: the data set is small (10 candidates, all 3-letter).
 The classification needs validation on a wider set:
@@ -707,17 +707,17 @@ trusting it, per the session's standing debugging discipline):
 | σ_{0,2} (non-unimodular, `b=2`) | III | (unresolved) | no termination found in 400 digits |
 
 **Finding: termination (i.e. period trivially = 1, all zeros) is NOT
-a Class I/II/III distinguishing signal.** Every tested Class I
-substitution terminates; so does the one Class III unimodular example
-tested (σ_{0,1}); so does every tested Class II example. The only
+an AR-exact/AR-partial/non-AR distinguishing signal.** Every tested AR-exact
+substitution terminates; so does the one non-AR unimodular example
+tested (σ_{0,1}); so does every tested AR-partial example. The only
 outlier, σ_{0,2}, is also the only *non-unimodular* candidate tested
 (`det = b = 2`) — its irregular behavior may correlate with
-unimodularity rather than with the Class I/II/III split at all, or it
+unimodularity rather than with the AR-exact/AR-partial/non-AR split at all, or it
 may simply need more than 400 digits/more precision to resolve
 (Schmidt's theorem guarantees SOME eventual period exists; it doesn't
 bound how long).
 
-A secondary, unconfirmed observation: the Class II family σ_{a,1}
+A secondary, unconfirmed observation: the AR-partial family σ_{a,1}
 (a=1..5) has a strikingly uniform digit pattern `[a+1, 0, 0, a, 1]` —
 worth checking algebraically (it likely falls straight out of the
 defining relation `β^3 = (a+1)β^2 + aβ + 1`... rearranged) rather than
@@ -725,17 +725,17 @@ being a new invariant, but not yet done.
 
 **What this means for Thread A4**: the proposed first step doesn't
 work as stated and needs a different approach — beta-expansion
-termination-length isn't the invariant that separates Class III from
-I/II. Thread A4 (Class III structure) remains genuinely open;
+termination-length isn't the invariant that separates non-AR from
+AR-exact/AR-partial. Thread A4 (non-AR structure) remains genuinely open;
 this finding narrows what *won't* work rather than closing the
 thread. `DIRECTION_AND_OPEN_THREADS.md` Thread A4 should be corrected
 to remove the periodicity-invariant claim as stated.
 
-## Finding 6.6 — Thread A5: Class I's exact signature found outside its two known source families
+## Finding 6.6 — Thread A5: AR-exact's exact signature found outside its two known source families
 
 **Status: EXTENDS Finding 5's data set from 10 to 18 new candidates
-(28 total). The coarse two-way split (Class-I-exact vs.
-partial-everything-else) held on every new candidate; Class I's
+(28 total). The coarse two-way split (AR-exact vs.
+partial-everything-else) held on every new candidate; AR-exact's
 specific structural signature (exact involution + `x^k` nilpotent
 cofactor) was also found for the first time in a substitution outside
 both of Finding 5's two source families (n-bonacci, `σ_{a,b}`).**
@@ -762,14 +762,14 @@ Results:
   a way not previously characterized here (`σ_{0,1}` and `σ_{0,2}`
   are Pisot per Finding 5/6.5; `σ_{0,3}`, `σ_{0,4}` are not).
 - Random unimodular matrices outside `σ_{a,b}`: **7 of 8 show the
-  same "partial involution, A1 not `x^k`" pattern as Class II/III**
+  same "partial involution, A1 not `x^k`" pattern as AR-partial/non-AR**
   — the generic/majority behavior among unrelated random unimodular
   Pisot matrices, not a `σ_{a,b}`-specific artifact. **1 of 8**
-  (`random_unimod_8`, `β≈5.033`, `|G_B|=80`) shows the **full Class I
+  (`random_unimod_8`, `β≈5.033`, `|G_B|=80`) shows the **full AR-exact
   signature**: involution EXACT (8/8 core nodes matched) and A1
-  cofactor exactly `x^1`. This is the first time Class I's exact
+  cofactor exactly `x^1`. This is the first time AR-exact's exact
   structural signature has been observed in ANY substitution outside
-  the n-bonacci family — direct evidence that Class I is a genuine,
+  the n-bonacci family — direct evidence that AR-exact is a genuine,
   recurring structural class rather than an n-bonacci-specific
   artifact, while confirming that it is the minority case (roughly
   1-in-8 in this small sample) among general unimodular Pisot
@@ -777,16 +777,16 @@ Results:
 
 **Exhaustiveness check**: every one of the 18 new candidates that
 reached a verdict fell cleanly into one of the two known patterns
-(Class-I-exact, or the shared "partial" pattern of Class II/III) —
+(AR-exact, or the shared "partial" pattern of AR-partial/non-AR) —
 no third pattern appeared. This is consistent with, but does not
 prove, Finding 5's implicit hypothesis that the classification is
 exhaustive; this probe doesn't check the Arnoux-Rauzy/constant-factor
-properties needed to further split "partial" candidates into Class II
-vs. Class III specifically.
+properties needed to further split "partial" candidates into AR-partial
+vs. non-AR specifically.
 
 **Caveats**: still a small sample (26 candidates total across Finding
 5 and this extension); the resource-cap wall at `σ_{a,1}, a≥8`
-prevents testing whether the Class II pattern holds indefinitely as
+prevents testing whether the AR-partial pattern holds indefinitely as
 `a` grows; the random-unimodular sample is only 8 matrices. 4-letter
 extension (Tetrabonacci/Pentanacci/Hexanacci-adjacent families,
 `β`-substitutions) not yet attempted.
@@ -882,7 +882,7 @@ theorem for `a>=7`. This still must not be cited as the universal
 boundary graph formula: derivation of the candidate contact set and
 occurrence/exhaustion of the full recurrent catalogues remain open.
 
-## Finding 10 — Item A's Class II: A1's nilpotent-cofactor divisibility is symbolically IMPOSSIBLE for every a>=2, not just numerically absent
+## Finding 10 — Item A's AR-partial: A1's nilpotent-cofactor divisibility is symbolically IMPOSSIBLE for every a>=2, not just numerically absent
 
 **Status: SYMBOLIC PROOF, conditional on Finding 9/Theorem 6's own
 still-open "universal exhaustion" premise (that the displayed

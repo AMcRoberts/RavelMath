@@ -74,12 +74,12 @@ further down (line ~348) resolved them. Read that section, and
 already ran A1 and A2 across 10 unimodular Pisot substitutions and
 found the n-bonacci mechanism does NOT generalize — Pisot
 substitutions split into 3 structural classes (constant-factor +
-Arnoux-Rauzy complexity), and only Class I (n-bonacci) has the full
+Arnoux-Rauzy complexity), and only AR-exact (n-bonacci) has the full
 x^k cofactor + exact involution. The live open threads are named
-**Thread A3** (find Class II's cofactor mechanism — the
+**Thread A3** (find AR-partial's cofactor mechanism — the
 small-group-action branch is already closed negatively, per Finding 6
 and `app/class_ii_symmetry_probe.cpp`'s rigidity result), **Thread
-A4** (Class III structure — its originally proposed beta-expansion-
+A4** (non-AR structure — its originally proposed beta-expansion-
 period invariant is refuted, see Finding 6.5; still open), and
 **Thread A5** (extend the 10-candidate data set: 4-letter, β-substitutions,
 a wider random survey) — kept below in their original numbering only
@@ -89,12 +89,12 @@ for historical/citation purposes:
 finding to all unimodular Pisot substitutions.** The pure-`x^k` cofactor
 structure (`charpoly(Q_sym_GB) / charpoly(Q_sym_BP) = x^k`, exact) is
 verified for n-bonacci at n=3,4,5, and does NOT persist beyond it —
-specific to Class I only, per Finding 5.
+specific to AR-exact only, per Finding 5.
 
 **(A2, ANSWERED — see above) Apply the involution machinery to
 non-n-bonacci unimodular Pisot substitutions.** The n-bonacci
-involution φ is EXACT (14/14) for Class I only; PARTIAL (6/11 to
-30/44) for Class II and III, per Finding 5, and confirmed
+involution φ is EXACT (14/14) for AR-exact only; PARTIAL (6/11 to
+30/44) for AR-partial and non-AR, per Finding 5, and confirmed
 independently rigid (automorphism group = identity only) for
 σ_{1,1}/σ_{2,1}/σ_{3,1} via exact digraph-automorphism enumeration
 (Finding 6).
@@ -366,7 +366,7 @@ The previous framing of "Item A (catching up to Nakaishi) and
 Item B (non-unimodular)" is now bracketed under the decomposition
 classification. The two new threads of work are:
 
-### Thread A3 — find the Class II cofactor
+### Thread A3 — find the AR-partial cofactor
 
 σ_{a,b} a ≥ 1 has constant factor at position 0 and Arnoux-Rauzy
 factor complexity (orbit of 0 is Sturmian-like), but the n-bonacci
@@ -396,7 +396,7 @@ polynomial. Thus a Class-II mechanism must use a different auxiliary
 object (for example a return-word extension or induced substitution),
 not an automorphism or the natural equitable quotient of `G_B`.
 
-### Thread A4 — a Class III structure
+### Thread A4 — a non-AR structure
 
 σ_{0,1} has no constant factor and not Arnoux-Rauzy (f(2) = 7, not
 5). The orbit of 0 has a non-Sturmian factor complexity. The first
@@ -408,14 +408,14 @@ crosses through 1, 2 before returning. The A1 cofactor is not x^k
 **First step attempted and refuted (2026-08-01) — see
 `FINDINGS_FOR_CITATION.md` Finding 6.5.** The original proposal here
 ("compute the Pisot continued fraction of 1/β_{0,1}... periodic for
-all Pisot numbers, period length distinguishes Class I/II/III") was
+all Pisot numbers, period length distinguishes AR-exact/AR-partial/non-AR") was
 mathematically wrong as stated: by Lagrange's theorem, a classical
 continued fraction is eventually periodic iff the number is a
 quadratic irrational, and β_{0,1} is cubic. The real nearby theorem
 (Bertrand/Schmidt) concerns the Rényi/Parry beta-expansion `d_β(1)`,
 not a continued fraction. Computed `d_β(1)` exactly for 12
 candidates: termination turns out NOT to distinguish the classes
-(Class I, most of Class II, and the tested Class III example all
+(AR-exact, most of AR-partial, and the tested non-AR example all
 terminate). Thread A4 is still open; this specific invariant doesn't
 work. A different approach is needed.
 
@@ -428,7 +428,7 @@ hypothesis, more substitutions are needed:
   d=4 Pisot decompositions
 - β-substitutions (Barge 2015/2018 family) — well-studied
 - Random 3-letter Pisot from a wider survey — to test whether
-  Class II/III partition is exhaustive
+  AR-partial/non-AR partition is exhaustive
 
 The tabulation driver handles 3-letter substitutions directly. For
 4-letter we may need to template `compute_gb_sym_quotient<d>` on
