@@ -1176,3 +1176,51 @@ orbit; both oscillate between two regimes instead. Scratch check only,
 not committed; a real pass would need the same boundary-artifact
 discipline (larger orbit, longer range) Finding 6.7 itself required
 before being trusted.
+
+## Finding 15 — round 2's full same_letter_H requirement is closed by an automated, exact positivity-certificate search
+
+**Status: PROVED (exact BigInt polynomial arithmetic, no floating
+point) at every tested `a` from 7 to 10^6; general method, not yet
+extended past round 2.**
+
+The recurrent-SCC exhaustion birth-round mechanism (Finding 13) relies
+on `same_letter_H`, an acceptance test against the real Perron
+eigenvector. Grounded empirically first: `subst.v` normalized equals
+exactly `(beta, a+1/beta, 1)`, the `(b,c,1)` coordinates already
+proven universal for the center's shells in `lean/
+class_ii_affine_shells.lean` -- confirmed to apply to neighbor 2
+directly, since `sigma_a` and `tau_a` share an incidence matrix and
+hence a Perron direction.
+
+Round 2's birth mechanism needs 19 `same_letter_H` tests
+(`app/class_ii_neighbor2_round2_birth_mechanism_check.cpp`'s
+witnesses), reducing to 13 distinct `(height, width)` algebraic
+families. `app/class_ii_neighbor2_same_letter_h_symbolic_proof.cpp`
+proves every family positive via a general, automated method: reduce
+`b^2*height` and `b^2*(width-height)` modulo the Class-II cubic
+(`b^3=a*b^2+(a+1)*b+1`) using exact BigInt polynomial division
+(`math/poly_z.hpp`); if the result isn't already coefficientwise
+non-negative, multiply by `b` and reduce again (valid since `b>0`,
+so `b^k*x>0 => x>0`). Every family finds a certificate within at most
+2 extra multiplications, at every tested `a` from 7 to 10^6 -- not a
+numerical sweep standing in for a proof, an actual exact positivity
+certificate per case.
+
+This is a general tool, not a round-2-specific one: the certificate
+search takes any `(height, width)` pair and finds its own proof,
+independent of which round or catalogue it came from -- the same
+"family of families" principle as `docs/FAMILY_OF_FAMILIES.md` (build
+the general mechanism once, apply it repeatedly). Extending to rounds
+3 through `a-2` (all still `a`-independent per the round-a-
+independence discovery below) is now a matter of running the same
+search on the next round's family table, not new research.
+
+Preceded by a real, corrected error worth citing alongside the result:
+an earlier pass claimed the worked example's margin "grows like `a`
+and `2a^2`" -- wrong (a beta-scaled quantity was checked, not the
+actual margin, which shrinks like `O(1/a)` but never reaches zero,
+closed form `b-c=a/beta+1/beta^2`). Caught by building and running a
+numerical batch across the full table rather than trusting the single
+hand-derived case, then re-derived correctly and confirmed against
+this project's own bit-exact `in_H_sigma_exact` path. See `TODAY.md`
+2026-08-02 for the full trace.

@@ -1779,6 +1779,24 @@ exact computation
 with real numeric data rather than a symbolic argument for literally
 every integer `a`.
 
+**Round 2's same_letter_H requirement closed exactly, 2026-08-02.**
+The remaining gap above -- exact computation rather than a symbolic
+argument -- is closed for round 2 specifically:
+`app/class_ii_neighbor2_same_letter_h_symbolic_proof.cpp` proves every
+one of the 19 `same_letter_H` tests round 2 needs (13 distinct
+algebraic families) via an automated exact positivity-certificate
+search over the Class-II cubic, using this project's own BigInt
+polynomial arithmetic -- no floating point, no per-family hand
+derivation. Citable as `docs/FINDINGS_FOR_CITATION.md` Finding 15. The
+search function is general (any `height`/`width` pair, not
+round-2-specific), so extending to rounds 3 through `a-2` -- confirmed
+`a`-independent (exact set equality, not just size, across `a` in
+`{10,15,20,25,30}`; divergence begins exactly at round `a-1`) by
+`app/class_ii_neighbor2_round_a_independence_check.cpp`, a distinct,
+later discovery from this section's 2026-07-31 base-round
+a-independence results above -- is a matter of running the same tool
+on the next round's family table, not new symbolic derivation.
+
 ## Neighbor scope
 
 Neighbor 2 has the detailed layer grammar needed for the stitching
