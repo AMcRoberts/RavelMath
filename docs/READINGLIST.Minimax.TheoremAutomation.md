@@ -208,6 +208,10 @@ Comparing `n=3` certificates at bounds 8 and 12 gives a useful negative
 result: 3,798 of 4,388 shared chamber signatures change canonical offset.
 Do not try to parameterize the theorem using only bounded residues; absolute
 gap scale must remain visible in the rank argument.
+Recording `floor(min_abs/(n+1))` as an additional chamber coordinate also
+fails to stabilize the potential: at `n=3`, bounds 8 and 12 differ on 4,042
+of 4,898 shared signatures. The scale dependence is in the exact gap geometry,
+not a single radial quotient.
 The larger known passing shell `n=5,bound=6` also emits and replays
 successfully: 371,198 chambers, 611,658 weighted edges, and a 41 MiB
 certificate. Treat this as a stress result, not as a universal theorem.

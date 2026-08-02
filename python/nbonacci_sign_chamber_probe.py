@@ -58,13 +58,17 @@ def chamber(x: tuple[int, ...], mode: str, modulus: int = 3) -> str:
     if mode == "gaps":
         gaps = tuple(value - minimum for value in magnitudes)
         return signs + "|" + ",".join(map(str, gaps))
-    if mode in ("gaps-parity", "gaps-mod3", "gaps-mod", "gaps-residue"):
+    if mode in ("gaps-parity", "gaps-mod3", "gaps-mod", "gaps-residue",
+                "gaps-mod-scale"):
         gaps = tuple(value - minimum for value in magnitudes)
         local_modulus = 2 if mode == "gaps-parity" else modulus
         if mode == "gaps-residue":
             gaps = tuple(value % local_modulus for value in gaps)
-        return (signs + "|" + ",".join(map(str, gaps)) + "|"
-                + str(minimum % local_modulus))
+        result = (signs + "|" + ",".join(map(str, gaps)) + "|"
+                  + str(minimum % local_modulus))
+        if mode == "gaps-mod-scale":
+            result += "|" + str(minimum // local_modulus)
+        return result
     if mode == "parity":
         levels = {value: rank for rank, value in enumerate(sorted(set(magnitudes)))}
         parity = tuple(value % 2 for value in magnitudes)
@@ -368,7 +372,8 @@ def main() -> int:
     parser.add_argument("--bound", type=int, required=True)
     parser.add_argument(
         "--mode", choices=("sign", "ordered", "gapcap", "gaps", "gaps-parity",
-                           "gaps-mod3", "gaps-mod", "gaps-residue", "parity"),
+                           "gaps-mod3", "gaps-mod", "gaps-residue",
+                           "gaps-mod-scale", "parity"),
         default="ordered",
     )
     parser.add_argument(

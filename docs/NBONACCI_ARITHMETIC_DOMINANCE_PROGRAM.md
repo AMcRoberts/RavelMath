@@ -312,6 +312,10 @@ An offset-stability check at `n=3` is a useful negative result: comparing the
 different canonical offsets. Thus the universal potential cannot depend only
 on signs, gap residues, or a bounded phase label; absolute gap scale remains
 part of the parameterized rank data.
+An attempted refinement that also records `floor(min_abs/(n+1))` does not
+stabilize the potential: at `n=3`, bounds 8 and 12 still differ on 4,042 of
+4,898 shared signatures. Scale enters through the exact gap geometry, not a
+single radial quotient.
 - Add a checker that verifies every directed cycle in the certified exterior
   graph has positive total rank change (equivalently, no zero/nonpositive
   cycle survives); this is the finite obstruction audit for sublemma 4.
