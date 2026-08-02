@@ -208,6 +208,8 @@ and 285,872 weighted edges at bound 32); bound 16 introduces a 162-node
 quotient SCC, and both still pass the merged difference constraints. The
 merge solver uses SCC-local propagation so this remains practical as the
 certificate grows.
+The same cross-box merge passes for `n=4`, bounds 8 and 10: 184,450 chambers
+and 349,088 weighted edges.
 
 The replay checker also enforces the exact involution `x ↦ -x`: every chamber
 must have its sign-negated partner with the same offset. This is a finite
