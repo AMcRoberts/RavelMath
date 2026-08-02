@@ -229,6 +229,12 @@ low-degree families are all infeasible. This rules out several tempting
 closed-form ranks without spending another graph-enumeration run. It is a
 negative discovery result, not a universal impossibility theorem.
 
+An abstraction audit is also informative: `sign`, `ordered`, and `gapcap`
+quotients fail their strict-rank tests, while the exact `gaps` grammar passes.
+For n=3, bounds 8 and 12, the residue-free exact-gap certificates merge over
+4,964 chambers and 14,302 edges. Any universal template must retain this
+unbounded gap information; finite sign/order summaries are too coarse.
+
 Example:
 
 ```sh

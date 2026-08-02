@@ -203,6 +203,12 @@ The existing certificates merge similarly at (n=5), bounds 4 and 6
 (531,186 chambers and 812,926 edges). These are cross-box promotion tests,
 not yet a uniform-in-(n) theorem.
 
+An abstraction audit is informative: sign-only, ordered-magnitude, and
+gap-capped quotients fail their strict-rank tests, whereas exact gaps pass.
+For n=3, bounds 8 and 12, the residue-free exact-gap certificates merge over
+4,964 chambers and 14,302 edges. The eventual template must therefore retain
+unbounded gap data rather than only a finite sign summary.
+
 ## 5. What is proved and what remains
 
 The following are proved or exactly replayable:
