@@ -115,7 +115,31 @@ def quotient_scc_sizes(edges: dict[str, set[str]]) -> list[int]:
     return sorted((size for size in sizes if size > 1), reverse=True)
 
 
-def run(n: int, bound: int, mode: str, modulus: int) -> int:
+def affine_min_rank_feasible(
+    weighted_edges: set[tuple[int, int, int]], chamber_count: int,
+) -> bool | None:
+    """Check R=min_abs+h(chamber) increasing on every quotient edge.
+
+    The inequalities are h(v) >= h(u) + (min_u-min_v) + 1.  Bellman-Ford
+    relaxation detects a positive cycle.  None means the bounded iteration
+    budget was insufficient, rather than a mathematical failure.
+    """
+    heights = [0] * chamber_count
+    edges = list(weighted_edges)
+    for _ in range(min(chamber_count, 200)):
+        changed = False
+        for source, destination, weight in edges:
+            if heights[destination] < heights[source] + weight:
+                heights[destination] = heights[source] + weight
+                changed = True
+        if not changed:
+            return True
+    if chamber_count <= 200:
+        return False
+    return None
+
+
+def run(n: int, bound: int, mode: str, modulus: int, rank_min: bool) -> int:
     base = 2 * bound + 1
     states = base**n
     outgoing = [[] for _ in range(states)]
@@ -150,21 +174,39 @@ def run(n: int, bound: int, mode: str, modulus: int) -> int:
                     queue.append(predecessor)
 
     edges: dict[str, set[str]] = defaultdict(set)
+    weighted_edges_by_name: set[tuple[str, str, int]] = set()
     for source in range(states):
         if not removed[source]:
             continue
-        source_chamber = chamber(decode(source, n, base, bound), mode, modulus)
+        source_state = decode(source, n, base, bound)
+        source_chamber = chamber(source_state, mode, modulus)
+        source_minimum = min(abs(value) for value in source_state)
         for destination in outgoing[source]:
             if removed[destination]:
-                edges[source_chamber].add(
-                    chamber(decode(destination, n, base, bound), mode, modulus)
+                destination_state = decode(destination, n, base, bound)
+                destination_chamber = chamber(destination_state, mode, modulus)
+                edges[source_chamber].add(destination_chamber)
+                destination_minimum = min(abs(value) for value in destination_state)
+                weighted_edges_by_name.add(
+                    (source_chamber, destination_chamber,
+                     source_minimum - destination_minimum + 1)
                 )
     self_loops = sum(node in values for node, values in edges.items())
     nontrivial = quotient_scc_sizes(edges)
+    rank_text = ""
+    if rank_min:
+        names = sorted(set(edges) | {value for values in edges.values() for value in values})
+        index = {name: k for k, name in enumerate(names)}
+        weighted_edges = {
+            (index[source], index[destination], weight)
+            for source, destination, weight in weighted_edges_by_name
+        }
+        feasible = affine_min_rank_feasible(weighted_edges, len(names))
+        rank_text = f" affine_min_rank={'PASS' if feasible is True else 'FAIL' if feasible is False else 'INCONCLUSIVE'}"
     print(
         f"sign chamber probe: n={n} bound={bound} mode={mode} "
         f"chambers={len(edges)} self_loops={self_loops} "
-        f"nontrivial_SCCs={nontrivial[:12]}"
+        f"nontrivial_SCCs={nontrivial[:12]}{rank_text}"
     )
     return 0
 
@@ -180,10 +222,11 @@ def main() -> int:
         default="ordered",
     )
     parser.add_argument("--modulus", type=int, default=3)
+    parser.add_argument("--rank-min", action="store_true")
     args = parser.parse_args()
     if args.n < 2 or args.bound < 1 or args.modulus < 2:
         parser.error("require n>=2, bound>=1, and modulus>=2")
-    return run(args.n, args.bound, args.mode, args.modulus)
+    return run(args.n, args.bound, args.mode, args.modulus, args.rank_min)
 
 
 if __name__ == "__main__":

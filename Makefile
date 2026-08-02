@@ -360,7 +360,7 @@ $(NBONACCI_CARRY_CYCLE_PROBE_BIN): \
 nbonacci_sign_chamber_probe:
 	RAVEL_PROBE_MEMORY_MB=1024 python3 python/nbonacci_sign_chamber_probe.py --n=3 --bound=6 --mode=sign
 	RAVEL_PROBE_MEMORY_MB=1024 python3 python/nbonacci_sign_chamber_probe.py --n=3 --bound=6 --mode=ordered
-	RAVEL_PROBE_MEMORY_MB=1024 python3 python/nbonacci_sign_chamber_probe.py --n=3 --bound=6 --mode=gaps-mod --modulus=4
+	RAVEL_PROBE_MEMORY_MB=1024 python3 python/nbonacci_sign_chamber_probe.py --n=3 --bound=6 --mode=gaps-mod --modulus=4 --rank-min
 $(NBONACCI_ARITHMETIC_HULL_BIN): \
 		$(APPDIR)/nbonacci_arithmetic_hull.cpp \
 		$(INCDIR)/ravel/nbonacci_margin_invariant.hpp \

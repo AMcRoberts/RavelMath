@@ -122,12 +122,14 @@ experiments rather than destabilizing the workshop process.
 The combined refinement is now testable as `--mode=gaps-mod --modulus=4`:
 the chamber records signs, exact coordinate-wise gaps from the smallest
 absolute value, and that smallest value modulo four. Its transient quotient is
-acyclic for `n=3,B=6`, `n=4,B=4`, `n=5,B=3`, and `n=6,B=3`. Modulus three also
-works from `n=4` onward but leaves four 3-cycles at `n=3`; modulus four removes
-those low-dimensional residues. This is still a finite-box certificate—the
-promotion target is a bounded gap alphabet or a direct proof that gap growth
-itself supplies the ranking—but it is the first chamber family with a clean
-acyclic signature across dimensions.
+The quotient itself is not stable as the box grows: at `n=3,B=8` it has small
+cycles again. The stronger `--rank-min` check assigns an integer offset to each
+chamber and verifies that
+`R(x)=min_i |x_i| + offset(chamber(x))` increases on every transient edge.
+That affine rank passes for `n=3,B=8`, `n=3,B=20`, `n=4,B=4`, `n=5,B=3`, and
+`n=6,B=3`. This is still a finite-box certificate, but it converts the
+quotient cycles into measurable outward drift; the promotion target is now a
+parametric offset rule (or a bounded gap alphabet), not quotient acyclicity.
 
 For regression, the unrestricted carry automaton at `B=2` leaves the following
 numbers of cyclic states (all ternary):
