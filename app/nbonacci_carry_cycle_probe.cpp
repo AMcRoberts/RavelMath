@@ -64,7 +64,11 @@ int run(const Options& options) {
         throw std::invalid_argument("require n>=2 and bound>=1");
     const std::size_t base = static_cast<std::size_t>(2 * options.bound + 1);
     const std::size_t states = power(base, options.n);
-    if (states > 3000000)
+    // n=7,bound=6 (62,748,517 states) measured 5.9 GiB peak RSS, 20s wall
+    // under the standard 10 GiB probe memory convention; the real safety
+    // net is that ulimit, not this check. 100,000,000 leaves headroom
+    // below the observed per-state cost without risking an uncapped run.
+    if (states > 100000000)
         throw std::invalid_argument("box too large; use a smaller n or bound");
 
     std::vector<std::vector<std::uint32_t>> out(states), in(states);
