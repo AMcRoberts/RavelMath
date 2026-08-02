@@ -236,13 +236,19 @@ def run(n: int, bound: int, mode: str, modulus: int, rank_base: str | None) -> i
                 if not outdegree[predecessor]:
                     queue.append(predecessor)
 
-    edges: dict[str, set[str]] = defaultdict(set)
-    weighted_edges_by_name: set[tuple[str, str, int]] = set()
+    edges: dict[int, set[int]] = defaultdict(set)
+    weighted_edges: set[tuple[int, int, int]] = set()
+    chamber_ids: dict[str, int] = {}
+
+    def chamber_id(name: str) -> int:
+        if name not in chamber_ids:
+            chamber_ids[name] = len(chamber_ids)
+        return chamber_ids[name]
     for source in range(states):
         if not removed[source]:
             continue
         source_state = decode(source, n, base, bound)
-        source_chamber = chamber(source_state, mode, modulus)
+        source_chamber = chamber_id(chamber(source_state, mode, modulus))
         source_magnitudes = tuple(abs(value) for value in source_state)
         if rank_base == "min":
             source_level = min(source_magnitudes)
@@ -262,7 +268,9 @@ def run(n: int, bound: int, mode: str, modulus: int, rank_base: str | None) -> i
         for destination in outgoing[source]:
             if removed[destination]:
                 destination_state = decode(destination, n, base, bound)
-                destination_chamber = chamber(destination_state, mode, modulus)
+                destination_chamber = chamber_id(
+                    chamber(destination_state, mode, modulus)
+                )
                 edges[source_chamber].add(destination_chamber)
                 destination_magnitudes = tuple(abs(value) for value in destination_state)
                 if rank_base == "min":
@@ -280,7 +288,7 @@ def run(n: int, bound: int, mode: str, modulus: int, rank_base: str | None) -> i
                     )
                 else:
                     destination_level = 0
-                weighted_edges_by_name.add(
+                weighted_edges.add(
                     (source_chamber, destination_chamber,
                      source_level - destination_level + 1)
                 )
@@ -288,13 +296,7 @@ def run(n: int, bound: int, mode: str, modulus: int, rank_base: str | None) -> i
     nontrivial = quotient_scc_sizes(edges)
     rank_text = ""
     if rank_base is not None:
-        names = sorted(set(edges) | {value for values in edges.values() for value in values})
-        index = {name: k for k, name in enumerate(names)}
-        weighted_edges = {
-            (index[source], index[destination], weight)
-            for source, destination, weight in weighted_edges_by_name
-        }
-        feasible = affine_min_rank_feasible(weighted_edges, len(names))
+        feasible = affine_min_rank_feasible(weighted_edges, len(chamber_ids))
         rank_text = (f" affine_{rank_base}_rank="
                      f"{'PASS' if feasible is True else 'FAIL' if feasible is False else 'INCONCLUSIVE'}")
     print(
@@ -334,7 +336,14 @@ def main() -> int:
     if args.rank_min and args.rank_base is not None:
         parser.error("choose at most one of --rank-min and --rank-base")
     rank_base = "min" if args.rank_min else args.rank_base
-    return run(args.n, args.bound, args.mode, modulus, rank_base)
+    try:
+        return run(args.n, args.bound, args.mode, modulus, rank_base)
+    except MemoryError:
+        print(
+            "sign chamber probe: INCONCLUSIVE/MEMORY_LIMIT "
+            f"n={args.n} bound={args.bound}"
+        )
+        return 2
 
 
 if __name__ == "__main__":
