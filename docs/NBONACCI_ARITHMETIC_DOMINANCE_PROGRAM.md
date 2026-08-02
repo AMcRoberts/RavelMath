@@ -105,6 +105,14 @@ The remaining promotion target is precise: prove that every periodic orbit
 enters one of these finite boxes (or prove a direct maximum principle), after
 which the recurrent coefficient bound is no longer empirical.
 
+Sign-chamber mining is available through
+`python/nbonacci_sign_chamber_probe.py`. Sign alone is too coarse: at
+`n=3,B=6` it leaves a 12-chamber quotient SCC and two self-loops. Refining by
+the weak ordering of absolute magnitudes removes neither phenomenon entirely
+(46-chamber quotient SCC, two self-loops). The next chamber refinement should
+therefore encode magnitude gaps or residues together with signs; this negative
+result prevents a false “sign-only” escape lemma.
+
 For regression, the unrestricted carry automaton at `B=2` leaves the following
 numbers of cyclic states (all ternary):
 
@@ -197,6 +205,7 @@ make nbonacci_restricted_intertwiner_search
 ./out/nbonacci_arithmetic_hull --bound=2 3 4 5
 make nbonacci_periodic_carry_probe
 make nbonacci_carry_cycle_probe
+make nbonacci_sign_chamber_probe
 ```
 
 The first command is the independent legacy-corona regression through n=6.
