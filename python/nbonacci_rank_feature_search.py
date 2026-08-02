@@ -35,18 +35,25 @@ def parse(name: str) -> tuple[str, list[int], int, int]:
     return signs, gaps, minimum_residue, quotient
 
 
+def sector_label(signs: str, gaps: list[int], family: str) -> str:
+    if family in ("sector-gaps-mask", "mask-gaps"):
+        mask = "".join("1" if value == 0 else "0" for value in gaps)
+        return (signs + "#" + mask) if family == "sector-gaps-mask" else mask
+    return signs
+
+
 def features(name: str, family: str, sectors: dict[str, int] | None = None,
              gap_count: int | None = None) -> list[float]:
     signs, gaps, residue, quotient = parse(name)
     sign_values = [1.0 if c == "+" else -1.0 if c == "-" else 0.0
                    for c in signs]
     result: list[float] = []
-    if family in ("sector-gaps", "sector-gaps-scale"):
+    if family in ("sector-gaps", "sector-gaps-scale", "sector-gaps-mask", "mask-gaps"):
         if sectors is None or gap_count is None:
             raise ValueError("sector-gaps requires sector metadata")
         width = gap_count + (2 if family == "sector-gaps-scale" else 1)
         result = [0.0] * (len(sectors) * width)
-        base = sectors[signs] * width
+        base = sectors[sector_label(signs, gaps, family)] * width
         result[base] = 1.0
         for index, value in enumerate(gaps):
             result[base + 1 + index] = float(value)
@@ -70,8 +77,8 @@ def features(name: str, family: str, sectors: dict[str, int] | None = None,
 def search(data: dict, family: str):
     names = data["chambers"]
     parsed = [parse(name) for name in names]
-    sectors = {signs: index for index, signs in enumerate(
-        sorted({item[0] for item in parsed}))}
+    sectors = {key: index for index, key in enumerate(sorted(
+        {sector_label(item[0], item[1], family) for item in parsed}))}
     gap_count = len(parsed[0][1]) if parsed else 0
     vectors = np.asarray([features(name, family, sectors, gap_count)
                           for name in names])
@@ -95,12 +102,12 @@ def search(data: dict, family: str):
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("certificate")
-    parser.add_argument("--family", choices=("sign", "gaps", "quadratic", "rich", "sector-gaps", "sector-gaps-scale"),
+    parser.add_argument("--family", choices=("sign", "gaps", "quadratic", "rich", "sector-gaps", "sector-gaps-scale", "sector-gaps-mask", "mask-gaps"),
                         action="append")
     parser.add_argument("--emit", help="write a rounded integer coefficient certificate")
     args = parser.parse_args()
     data = load(args.certificate)
-    families = args.family or ["sign", "gaps", "quadratic", "rich", "sector-gaps", "sector-gaps-scale"]
+    families = args.family or ["sign", "gaps", "quadratic", "rich", "sector-gaps", "sector-gaps-scale", "sector-gaps-mask", "mask-gaps"]
     for family in families:
         result, coefficients, minimum_slack, vectors = search(data, family)
         if coefficients is None:

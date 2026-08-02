@@ -219,6 +219,9 @@ uniform proof, not yet a dimension-parametric theorem.
 Adding the per-sector minimum-quotient coordinate (`sector-gaps-scale`) also
 passes the four-box merge; its 549,120 inequalities replay exactly with
 integer arithmetic.
+In (n=4), the corresponding sign-sector and mask-only refinements are
+infeasible, indicating that ordered gap relations—not merely zero-gap data—
+are part of the dimension-parametric template.
 
 ## 5. What is proved and what remains
 

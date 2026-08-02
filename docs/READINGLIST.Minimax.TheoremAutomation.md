@@ -249,6 +249,10 @@ integer sector-gap rank. This is the current candidate template to generalize.
 Adding the per-sector minimum-quotient feature (`sector-gaps-scale`) also
 passes the same four-box merge; its 549,120 inequalities replay in under a
 second with vectorized integer arithmetic.
+At n=4, both sign-sector affine gaps (with scale) and the bounded mask-only
+refinement are infeasible. The next refinement must encode ordered gap
+relations, not just the zero-gap mask; the full sign×mask LP is intentionally
+gated because its feature count is too large for an unbounded run.
 
 Example:
 
