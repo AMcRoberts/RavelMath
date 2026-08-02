@@ -1263,6 +1263,42 @@ way: `PolyZ::operator==` underflowed comparing two zero polynomials
 (`math/include/math/poly_z.hpp`, fixed, `3efc96d`, full `make check`
 green).
 
+**Transported across the whole fixed-incidence fiber, then crossed a
+matrix wall (2026-08-02).** `app/class_ii_identity_transport_probe.cpp`
+applies the same exact reduction to the regular recurrent shells of
+Class-II neighbors 0 and 1, not only neighbor 2. The first run exposed
+an important orientation error in the probe itself: `same_letter_H`
+tests the signed strip `-width < height < width`, whereas the earlier
+neighbor-2 representatives happened to be positively oriented and had
+been tested as `0 < height < width`. Once the actual signed predicate
+was used, all neighbor-0 and neighbor-1 templates passed. This is not
+an `m<=40` survey standing in for a theorem: every margin is affine in
+the shell parameter `m`, and the probe proves both symbolic endpoints
+`m=2` and `m=a-c`; hence the entire admissible interval for every `a`
+follows by affine interpolation. Result: the same closed form and
+signed-strip certificate hold for every regular shell of both other
+word-order neighbors.
+
+The next hop changes the incidence matrix while remaining in the
+three-letter unimodular Pisot setting: Tribonacci, with Perron basis
+`(b,c,1)=(beta^2,beta,1)` and cubic
+`beta^3=beta^2+beta+1`. Here the Class-II identity genuinely fails:
+`b*(b-c)-c` has exact remainder `b=beta^2`. The replacement is equally
+clean but different, `b*(b-c)=b+c`, verified by exact zero remainder.
+The general reduction machinery survives: for every `(p,q,r)`,
+
+`b^2*(p*b+q*c+r) = (7p+4q+2r)beta^2 + (6p+3q+2r)beta + (4p+2q+r)`.
+
+Thus the pattern is now located precisely. Sparse identities are the
+multiplication table of `Z[beta]=Z[x]/(f_M)` in the Perron-coordinate
+basis and change with the incidence-matrix/number-field stratum;
+characteristic-polynomial reduction is the transportable mechanism.
+Word-order changes inside a fixed-incidence fiber do not change that
+table. The route toward broader unimodular families is therefore an
+automatically generated quotient-ring multiplication tensor plus a
+positivity cone per matrix stratum, not an attempt to force the literal
+Class-II identity onto every substitution.
+
 **Rolled forward automatically to rounds 3-5, confirming the "family
 of families" framing rather than asserting it** (`app/class_ii_
 neighbor2_interior_regime_structure_check.cpp`): the enumeration and

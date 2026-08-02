@@ -277,6 +277,19 @@ $(HYPERPLANE_PROGRESSION_BIN): $(APPDIR)/hyperplane_progression.cpp \
 		$(wildcard $(MATH_INCDIR)/math/*.hpp) | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# class_ii_identity_transport_probe: proves same-letter signed-strip
+# validity for every regular-shell parameter of both remaining Class-II
+# adjacent-swap neighbors, then crosses an incidence-matrix wall to show
+# exactly what changes at Tribonacci: the sparse quotient-ring identity,
+# not the characteristic-polynomial reduction method.  Research probe;
+# explicit target, not part of the default app bundle.
+CLASS_II_IDENTITY_TRANSPORT_PROBE_BIN := $(BUILDDIR)/class_ii_identity_transport_probe
+class_ii_identity_transport_probe: $(CLASS_II_IDENTITY_TRANSPORT_PROBE_BIN)
+	./$(CLASS_II_IDENTITY_TRANSPORT_PROBE_BIN)
+$(CLASS_II_IDENTITY_TRANSPORT_PROBE_BIN): $(APPDIR)/class_ii_identity_transport_probe.cpp \
+		$(MATH_INCDIR)/math/poly_z.hpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 # ====================================================================
 # Tests (paired _test.cpp files; standalone binaries with main())
 # ====================================================================
