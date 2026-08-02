@@ -300,6 +300,12 @@ on a five-transition shell run but no six-transition run exists; at n=5,M=6
 the maximum is seven transitions and only 296 terminal words survive. This
 is the concrete target for a forbidden-block-word proof from the `(n+1)`-block
 identity.
+The normalized MILP experiment is available as
+`python/nbonacci_forbidden_block_milp.py`. It introduces `q=1/M` and encodes
+the shell disjunction exactly; use `--max-q=.5` to exclude the ternary shell.
+At n=4, length 6 still has exterior-feasible words, while a length-8 sample
+is mostly infeasible but not empty. This rules out a naive fixed word-length
+lemma and points toward a finite forbidden language/return-depth automaton.
 
 Example:
 

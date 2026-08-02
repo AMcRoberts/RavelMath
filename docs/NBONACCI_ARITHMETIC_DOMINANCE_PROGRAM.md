@@ -371,6 +371,12 @@ eighth; only 296 of the `3^7` words survive at the last length. These exact
 observations from `python/nbonacci_shell_word_probe.py` suggest proving a
 finite forbidden block-word statement directly from `A^(n+1)=2A-I` and the
 bounded forcing alphabet.
+The normalized MILP refinement (`python/nbonacci_forbidden_block_milp.py`)
+sets `q=1/M` and encodes “some coordinate is exactly on the shell” with
+binary selectors. With `q<=1/2`, n=4 still has feasible length-6 words;
+length 8 is mostly infeasible but not empty in the bounded sample. Thus the
+uniform theorem should target a forbidden language or return-depth automaton,
+not a single universal word length.
 
 ### Algebraic-height route
 

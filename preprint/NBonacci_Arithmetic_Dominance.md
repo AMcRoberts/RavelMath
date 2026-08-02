@@ -265,6 +265,12 @@ but no six-transition run exists; for n=5,M=6 the maximum is seven
 transitions, with only 296 terminal seven-digit words. This suggests a
 finite forbidden-block-word lemma derived from the exact block identity,
 rather than a smooth scalar rank formula.
+To test whether a fixed word length suffices, a normalized MILP solver uses
+`q=1/M` and binary shell-coordinate selectors. At n=4 with `q<=1/2`, some
+length-6 words remain feasible and a length-8 sample is sparse but nonempty.
+The prospective universal statement is therefore a finite forbidden language
+or return-depth automaton, not a single length-
+`n+1` obstruction.
 
 There is a complementary algebraic route. For the n-bonacci root `β`, the
 covector `c_0=1`, `c_j=β c_{j-1}-1` satisfies the exact scalar update
