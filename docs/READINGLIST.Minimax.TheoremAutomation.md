@@ -212,6 +212,10 @@ certificate grows.
 The same cross-box merge passes for `n=4`, bounds 8 and 10: 184,450 chambers
 and 349,088 weighted edges. Extending once more to bound 12 gives 352,178
 chambers and 701,448 weighted edges, again with one shared potential.
+The existing certificates also merge at `n=5`, bounds 4 and 6 (371,198
+chambers, 611,658 edges), and `n=6`, bounds 3 and 4 (531,186 chambers,
+812,926 edges). These are promotion tests across dimensions, not yet a
+uniform-in-`n` theorem.
 
 The replay checker also enforces the exact involution `x ↦ -x`: every chamber
 must have its sign-negated partner with the same offset. This is a finite
