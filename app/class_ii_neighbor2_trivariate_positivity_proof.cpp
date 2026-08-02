@@ -284,6 +284,84 @@ int main() {
                     all_ok ? "PROVEN FOR THE WHOLE (a,k) REGION" : "NOT PROVEN");
     }
 
+    // ---- The structural reason for THIS axis too, verified exactly ----
+    // Using b-c=c/b (itself a consequence of b(b-c)=c, i.e. the cubic)
+    // twice more: width_b - height = b - kc/b, and b^2=c(b+1) (same
+    // identity) gives b^2-kc = c(b+1-k), so
+    //   b^2*(width_b - height) = b*c*(b+1-k) = (ab+1)*(b+1-k)
+    // and width_c - height = c(b-k)/b, so
+    //   b^2*(width_c - height) = b*c*(b-k) = (ab+1)*(b-k).
+    // Both are products of two manifestly positive factors once
+    // b>k -- itself immediate from b>a>=k+2>k, not a separate
+    // inequality chase. Verify both factorizations EXACTLY (zero
+    // remainder mod cubic, not just checked numerically).
+    std::printf("--- The structural reason for the k-axis, verified exactly ---\n");
+    {
+        BivPoly ab_plus_1(2, zero_a());  // k-independent: a*b + 1
+        { PolyZ one; mathlib::set_si(one.coeff(0), 1); ab_plus_1[0] = one; }
+        { PolyZ a1; mathlib::set_si(a1.coeff(1), 1); ab_plus_1[1] = a1; }
+
+        auto mul_biv_by_bivk = [](const BivPoly& x, const BivPolyK& y) {
+            BivPolyK out(x.size() + y.size(), link_zero());
+            for (std::size_t i = 0; i < x.size(); ++i)
+                for (std::size_t j = 0; j < y.size(); ++j)
+                    out[i + j] = link_add(out[i + j], link_scale(y[j], x[i]));
+            return out;
+        };
+
+        // (b+1-k): b-coeff0 = (1-k) [P0=1,P1=-1], b-coeff1 = 1 [P0=1,P1=0]
+        BivPolyK b_plus_1_minus_k(2, link_zero());
+        { PolyZ one; mathlib::set_si(one.coeff(0), 1);
+          PolyZ negone; mathlib::set_si(negone.coeff(0), -1);
+          b_plus_1_minus_k[0] = {one, negone}; }
+        { PolyZ one; mathlib::set_si(one.coeff(0), 1);
+          b_plus_1_minus_k[1] = {one, zero_a()}; }
+        // (b-k): b-coeff0 = -k [P0=0,P1=-1], b-coeff1 = 1 [P0=1,P1=0]
+        BivPolyK b_minus_k(2, link_zero());
+        { PolyZ negone; mathlib::set_si(negone.coeff(0), -1);
+          b_minus_k[0] = {zero_a(), negone}; }
+        { PolyZ one; mathlib::set_si(one.coeff(0), 1);
+          b_minus_k[1] = {one, zero_a()}; }
+
+        BivPolyK claim_b = reduce_bivk(mul_biv_by_bivk(ab_plus_1, b_plus_1_minus_k), cubic);
+        BivPolyK claim_c = reduce_bivk(mul_biv_by_bivk(ab_plus_1, b_minus_k), cubic);
+
+        const BivPolyK actual_b = reduce_bivk(bivk_sub(b2_width_k('b'), b2h_sym), cubic);
+        const BivPolyK actual_c = reduce_bivk(bivk_sub(b2_width_k('c'), b2h_sym), cubic);
+
+        // NOTE: PolyZ::operator== has a real bug comparing two zero
+        // polynomials (degree() returns -1, cast to size_t underflows
+        // to a huge index, out-of-bounds coeffs_ access -- caught by
+        // this very check crashing under ASan/libstdc++ assertions).
+        // Not patched in the shared math library here; worked around
+        // by comparing via (p-q).is_zero(), which only uses the
+        // already-correct subtraction and is_zero(), not the buggy
+        // operator==/!=.
+        auto polyz_equal = [](const PolyZ& x, const PolyZ& y) { return (x - y).is_zero(); };
+        auto biv_polyk_equal = [&](const BivPolyK& x, const BivPolyK& y) {
+            std::size_t n = std::max(x.size(), y.size());
+            for (std::size_t i = 0; i < n; ++i) {
+                PolyZ xp0 = i < x.size() ? x[i].first : zero_a();
+                PolyZ xp1 = i < x.size() ? x[i].second : zero_a();
+                PolyZ yp0 = i < y.size() ? y[i].first : zero_a();
+                PolyZ yp1 = i < y.size() ? y[i].second : zero_a();
+                if (!polyz_equal(xp0, yp0) || !polyz_equal(xp1, yp1)) return false;
+            }
+            return true;
+        };
+
+        std::printf("b^2*(width_b - k*(b-c))  ==  (a*b+1)*(b+1-k)  exactly: %s\n",
+                    biv_polyk_equal(actual_b, claim_b) ? "TRUE" : "FALSE");
+        std::printf("b^2*(width_c - k*(b-c))  ==  (a*b+1)*(b-k)    exactly: %s\n",
+                    biv_polyk_equal(actual_c, claim_c) ? "TRUE" : "FALSE");
+        std::printf("\nBoth upper bounds are therefore products of two manifestly\n"
+                    "positive factors: (a*b+1) [trivial, a,b>0] times (b+1-k) or\n"
+                    "(b-k) [trivial, since b>a>=k+2>k]. Not a coincidence of the\n"
+                    "reduction search -- a direct algebraic consequence of\n"
+                    "b-c=c/b and b^2=c*(b+1), both restatements of the single\n"
+                    "identity b*(b-c)=c that IS the Class-II cubic.\n\n");
+    }
+
     std::printf("--- The reduced linear-in-k closed forms themselves ---\n");
     for (char w : {'b', 'c'}) {
         const BivPolyK b2w = b2_width_k(w);
