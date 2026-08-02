@@ -1177,11 +1177,19 @@ not committed; a real pass would need the same boundary-artifact
 discipline (larger orbit, longer range) Finding 6.7 itself required
 before being trusted.
 
-## Finding 15 — round 2's full same_letter_H requirement is closed by an automated, exact positivity-certificate search
+## Finding 15 — round 2's same_letter_H requirement, and the general shape of every future one, closed by a single verified closed form
 
-**Status: PROVED (exact BigInt polynomial arithmetic, no floating
-point) at every tested `a` from 7 to 10^6; general method, not yet
-extended past round 2.**
+**Status: PROVED for every real `a>=7` and, for the recurring
+`k*(b-c)` family, every real `a` and integer `k` in `[1,a-2]`
+simultaneously (bivariate exact polynomial arithmetic throughout, no
+per-point substitution). A single closed form,
+`b^2*height(p,q,r) = [(p+q)*a+r]*b^2 + [p*(a+1)+q]*b + p`, covers
+every possible `(p,q,r)` at once -- verified exactly against all 13
+round-2 families and four cases invented on the spot, none of which
+broke the pattern. The same automated method rolls forward to rounds
+3-5 with zero new hand derivation, and the algebraic reason for the
+whole thing is identified and verified exactly: every case reduces to
+the single identity `b*(b-c)=c`, itself the Class-II cubic restated.**
 
 The recurrent-SCC exhaustion birth-round mechanism (Finding 13) relies
 on `same_letter_H`, an acceptance test against the real Perron
@@ -1224,3 +1232,70 @@ numerical batch across the full table rather than trusting the single
 hand-derived case, then re-derived correctly and confirmed against
 this project's own bit-exact `in_H_sigma_exact` path. See `TODAY.md`
 2026-08-02 for the full trace.
+
+**Extended across `k` the same way, then hunted for and found a
+complete unification (2026-08-02).** `height=k*(b-c)` was still swept
+as separate concrete integers for `k` even after `a` was freed --
+fixed by tracking each coefficient as `P0(a)+k*P1(a)` (exact, since
+height is linear in `k`) and proving both endpoints `k=1` and `k=a-2`
+of the relevant interval, which (linear functions extremize at
+endpoints) proves the whole interval `[1,a-2]` and every `a` in it at
+once. Both endpoints proven for both widths
+(`app/class_ii_neighbor2_trivariate_positivity_proof.cpp`, `a9941e4`).
+
+The algebraic reason for that axis too, verified exactly: `b^2*(width_
+b-height) = (a*b+1)*(b+1-k)` and `b^2*(width_c-height) = (a*b+1)*(b-k)`
+-- both products of manifestly positive factors, direct consequences
+of `b-c=c/b` and `b^2=c*(b+1)` (both restatements of `b*(b-c)=c`, the
+cubic).
+
+**Then: does this break down for round 2's other 8 (non-`k(b-c)`)
+families?** No, verified exactly, not asserted -- every possible
+`height=p*b+q*c+r` reduces via the SAME master identity to one closed
+form, `b^2*height(p,q,r) = [(p+q)*a+r]*b^2 + [p*(a+1)+q]*b + p`,
+confirmed against all 13 round-2 families plus four cases invented on
+the spot (`app/class_ii_neighbor2_universal_closed_form.cpp`,
+`f147d8a`). Combined with the equally trivial width closed forms,
+BOTH bounds of literally any same_letter_H test this project's corona
+rule could generate are available in one algebraic step, zero
+per-case search. Caught and fixed a genuine, separate bug along the
+way: `PolyZ::operator==` underflowed comparing two zero polynomials
+(`math/include/math/poly_z.hpp`, fixed, `3efc96d`, full `make check`
+green).
+
+**Rolled forward automatically to rounds 3-5, confirming the "family
+of families" framing rather than asserting it** (`app/class_ii_
+neighbor2_interior_regime_structure_check.cpp`): the enumeration and
+certificate search generalize to round `p` with zero round-specific
+code, and every round's families are witnessed and certified. This
+also revealed the interior regime's real structure: rounds 3+ reduce
+to a single parametrized family, `height=k*(b-c)`, `width in {b,c}`,
+for `k` around the round number -- not new algebra each round.
+
+**Upgraded from per-`a` certification to a genuine proof**
+(`app/class_ii_neighbor2_bivariate_positivity_proof.cpp`): represents
+polynomials in `b` with coefficients that are themselves exact
+integer polynomials in `a` (`math/poly_z.hpp`'s `PolyZ` as the
+coefficient ring), reduces mod the cubic with `a` free throughout, and
+substitutes `a = m + (domain lower bound)` before the non-negativity
+check -- proving positivity for the family's actual domain (`a>=k+2`
+for `height=k*(b-c)`; `a>=7` for the other round-2 families), not a
+sampled range. A first version of this check asked the wrong question
+("positive for every `a>=0`, independent of `k`") and it genuinely
+failed for `k>=3` -- caught by running it and reading the output, not
+assumed correct. All 13 round-2 families and the whole `k*(b-c)`
+subfamily (`k=1` through `60`, tested) are now proved this way.
+
+**The symbolic reason, verified exactly:** `b*(b-c) = c` is not a
+consequence of the Class-II cubic discovered by algebraic
+manipulation -- cleared of its `1/b` denominator, it *is* the cubic,
+coefficient for coefficient (confirmed both in sympy, exact rational
+cancellation, and independently via this project's own BigInt
+bivariate arithmetic). Equivalently `b^2=c*(b+1)`, or `b-c=c/b`. This
+is why every `k*(b-c)`-shaped test reduces almost immediately: the
+recurring quantity is not an arbitrary one that happens to behave well
+under the cubic, it is the cubic's own defining relation restated in
+`(b,c)` coordinates. Practical consequence for a future Lean
+formalization: the positivity results should follow as near-immediate
+corollaries of a single one-line lemma (`b*(b-c)=c`) rather than
+needing a separate inequality chain per family.
