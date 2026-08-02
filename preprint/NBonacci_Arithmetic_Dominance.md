@@ -163,6 +163,8 @@ graph by finite sign/magnitude chambers.  A certificate records:
 The checker also enforces the involution (x\mapsto-x): every chamber has a
 sign-negated partner with equal offset.  Certificates use at most the
 configured 10 GiB virtual-memory cap and are replay-only after generation.
+The finite-cycle contradiction used to interpret a strict rank is
+kernel-checked as `no_strict_rank_finite` in the Lean catalogue.
 
 Representative results for the `gaps-mod` chamber grammar are:
 
