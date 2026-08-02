@@ -69,6 +69,14 @@ The normalized MILP is discovery machinery, not yet a proof certificate. The
 shell-return rank is exact for each tested `(n,M)`, but the dimension- and
 bound-independent slack closure remains the missing lemma.
 
+The MILP can now optimize the perturbation threshold rather than merely test
+one interval. For `n=4`, six transitions, and all 365 canonical digit words,
+`--minimize-q` finds no feasible word below
+`q=1/7`; the first threshold is attained by the word `-1-11-1-11`.
+This is solver evidence (the eventual promotion still needs a replayable
+Farkas/SMT certificate), but it supplies the first explicit quantitative
+bridge from the homogeneous obstruction to the large-shell cutoff.
+
 The homogeneous limit can now be checked independently with
 `python/nbonacci_homogeneous_shell_smt.py`.  Exact rational SMT gives the
 following stable pattern for every tested dimension `2<=n<=10`:

@@ -336,6 +336,19 @@ uniform slack margin for `q=1/M`. The SMT result is discovery/replay support;
 do not promote it to a universal theorem until the generic induction or a
 replayable Farkas certificate is present.
 
+The normalized MILP now supports threshold extraction:
+
+```sh
+OPENBLAS_NUM_THREADS=1 python3 python/nbonacci_forbidden_block_milp.py \
+  --n=4 --length=6 --time-limit=.5 --minimize-q
+```
+
+The exhaustive 365-word run finds the first feasible perturbation at `q=1/7`
+(word `-1-11-1-11`), with no feasible word below that value. Treat this as
+discovery evidence until the solver disjunctions have a replayable certificate;
+the next task is to turn the `1/7` margin into a rational Farkas witness shared
+by all word branches.
+
 For proof-mining experiments, emit the terminal Z3 proof object:
 
 ```sh

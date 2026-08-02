@@ -40,7 +40,7 @@ def canonical_words(length: int):
 
 
 def solve_word(n: int, word: tuple[int, ...], time_limit: float,
-               min_q: float, max_q: float):
+               min_q: float, max_q: float, optimize_q: str | None = None):
     A = np.linalg.inv(carry_matrix(n))
     matrices = []
     current = np.zeros((n, n + 1))
@@ -87,8 +87,13 @@ def solve_word(n: int, word: tuple[int, ...], time_limit: float,
     integrality[n + 1:] = 1
     lower_bounds = np.r_[np.full(n, -1.0), min_q, np.zeros(binary_count)]
     upper_bounds = np.r_[np.full(n, 1.0), max_q, np.ones(binary_count)]
+    objective = np.zeros(variable_count)
+    if optimize_q == "max":
+        objective[n] = -1.0
+    elif optimize_q == "min":
+        objective[n] = 1.0
     return milp(
-        np.zeros(variable_count), integrality=integrality,
+        objective, integrality=integrality,
         bounds=Bounds(lower_bounds, upper_bounds),
         constraints=LinearConstraint(sparse.csr_matrix(np.asarray(rows)),
                                      np.asarray(lower), np.asarray(upper)),
@@ -108,24 +113,44 @@ def main() -> int:
                         help="upper bound on q=1/M (use .5 for M>=2)")
     parser.add_argument("--min-q", type=float, default=0.0,
                         help="lower bound on q=1/M (0 permits the homogeneous limit)")
+    parser.add_argument("--maximize-q", action="store_true",
+                        help="maximize q for each word")
+    parser.add_argument("--minimize-q", action="store_true",
+                        help="minimize q for each word (the first feasible perturbation)")
     args = parser.parse_args()
     if (args.n < 2 or args.length < 1 or not 0 <= args.min_q <= args.max_q
-            or args.max_q > 1):
+            or args.max_q > 1 or (args.maximize_q and args.minimize_q)):
         parser.error("require n>=2, length>=1, and 0<=min-q<=max-q<=1")
     counts = {"feasible": 0, "infeasible": 0, "inconclusive": 0}
     witnesses = []
     q_samples = []
+    extreme_q_seen = None
+    min_positive_q_seen = None
+    min_positive_word = None
+    optimize_q = "max" if args.maximize_q else "min" if args.minimize_q else None
     inconclusive_words = []
     for index, word in enumerate(canonical_words(args.length)):
         if args.max_words and index >= args.max_words:
             break
         result, _ = solve_word(args.n, word, args.time_limit,
-                               args.min_q, args.max_q)
+                               args.min_q, args.max_q, optimize_q)
         if result.status == 0:
             counts["feasible"] += 1
             if len(witnesses) < 8:
                 witnesses.append(word)
                 q_samples.append(float(result.x[args.n]))
+            if optimize_q:
+                value = float(result.x[args.n])
+                if extreme_q_seen is None:
+                    extreme_q_seen = value
+                elif optimize_q == "max":
+                    extreme_q_seen = max(extreme_q_seen, value)
+                else:
+                    extreme_q_seen = min(extreme_q_seen, value)
+                if value > 1e-9:
+                    if (min_positive_q_seen is None or value < min_positive_q_seen):
+                        min_positive_q_seen = value
+                        min_positive_word = word
         elif result.status == 2:
             counts["infeasible"] += 1
         else:
@@ -138,6 +163,14 @@ def main() -> int:
         print("  feasible_words=" + " ".join("".join(map(str, word))
                                             for word in witnesses))
         print("  witness_q=" + " ".join(f"{value:.6g}" for value in q_samples))
+    if optimize_q and extreme_q_seen is not None:
+        label = "max_feasible_q" if optimize_q == "max" else "min_feasible_q"
+        print(f"  {label}={extreme_q_seen:.12g}")
+        print(f"  min_positive_word_threshold={min_positive_q_seen:.12g}"
+              if min_positive_q_seen is not None
+              else "  min_positive_word_threshold=none")
+        if min_positive_word is not None:
+            print("  min_threshold_word=" + "".join(map(str, min_positive_word)))
     if inconclusive_words:
         print("  inconclusive_words=" + " ".join(",".join(map(str, word))
                                                    for word in inconclusive_words))
