@@ -16,7 +16,11 @@
 // Observed result (2026-08-01, orbit prefixes 5.2e5--9.3e5 symbols):
 // the direct extension-graph pass checks factors through length 64;
 // a suffix-automaton pass on a separately enlarged orbit checks
-// sigma_{0,1} through length 60000.
+// sigma_{0,1} through length 500000 (orbit=35676949 symbols, a ~71x
+// margin over the checked length -- widened from an initial 60000/
+// 4983377-symbol pass after that pass's own margin, ~83x, still left
+// room for doubt following the smaller 525456-symbol prefix's spurious
+// n=55406 boundary artifact recorded below).
 // It has p(n)=5n-5 for every checked n>=4, with five left-special and
 // three right-special factors at every checked n>=4. By contrast every
 // AR-complexity control has
@@ -164,7 +168,7 @@ private:
 };
 
 void report_fast_stability(const Word& orbit) {
-    const std::size_t max_n = std::min<std::size_t>(60000, orbit.size() / 8);
+    const std::size_t max_n = std::min<std::size_t>(500000, orbit.size() / 8);
     const SuffixAutomaton forward(orbit);
     const auto complexity = forward.interval_counts(max_n, false);
     const auto right_special = forward.interval_counts(max_n, true);
@@ -277,8 +281,10 @@ void report(const char* name, const Sigma& sigma, std::size_t max_n = 20,
     // The direct n<=64 pass needs only the base orbit. The long-range
     // special-factor count needs a much larger boundary margin: on the base
     // 525456-symbol prefix the left-special count spuriously drops at n=55406,
-    // while the enlarged prefix restores all five branches through n=60000.
-    if (show_special_factors) report_fast_stability(orbit_prefix(rule, 1U << 22));
+    // while a large enough prefix restores all five branches far past that --
+    // checked to n=500000 on a 35676949-symbol prefix (2026-08-01, first
+    // cadence-loop cycle).
+    if (show_special_factors) report_fast_stability(orbit_prefix(rule, 1U << 25));
     std::printf("\n");
 }
 
