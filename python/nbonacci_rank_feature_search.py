@@ -63,6 +63,10 @@ def features(name: str, family: str, sectors: dict[str, int] | None = None,
         if family == "sector-gaps-scale":
             result[base + 1 + gap_count] = float(quotient)
         return result
+    if family == "sign-interaction":
+        result = sign_values + [float(value) for value in gaps]
+        result += [sign * gap for sign in sign_values for gap in gaps]
+        return result
     if family in ("sign", "quadratic", "rich"):
         result += sign_values
     if family in ("gaps", "quadratic", "rich"):
@@ -102,16 +106,38 @@ def search(data: dict, family: str):
     return result, result.x, float(slack.min(initial=0.0)), vectors
 
 
+def feature_count(data: dict, family: str) -> int:
+    parsed = [parse(name) for name in data["chambers"]]
+    if not parsed:
+        return 0
+    sectors = {sector_label(item[0], item[1], family) for item in parsed}
+    width = len(parsed[0][1]) + (2 if family == "sector-gaps-scale" else 1)
+    if family in ("sector-gaps", "sector-gaps-scale", "sector-gaps-mask",
+                  "mask-gaps", "order-gaps"):
+        return len(sectors) * width
+    if family == "sign-interaction":
+        n = len(parsed[0][1])
+        return 2 * n + n * n
+    return len(features(data["chambers"][0], family))
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("certificate")
-    parser.add_argument("--family", choices=("sign", "gaps", "quadratic", "rich", "sector-gaps", "sector-gaps-scale", "sector-gaps-mask", "mask-gaps", "order-gaps"),
+    parser.add_argument("--family", choices=("sign", "gaps", "quadratic", "rich", "sector-gaps", "sector-gaps-scale", "sector-gaps-mask", "mask-gaps", "order-gaps", "sign-interaction"),
                         action="append")
     parser.add_argument("--emit", help="write a rounded integer coefficient certificate")
+    parser.add_argument("--max-features", type=int, default=5000,
+                        help="skip LP families larger than this (default: 5000)")
     args = parser.parse_args()
     data = load(args.certificate)
-    families = args.family or ["sign", "gaps", "quadratic", "rich", "sector-gaps", "sector-gaps-scale", "sector-gaps-mask", "mask-gaps", "order-gaps"]
+    families = args.family or ["sign", "gaps", "quadratic", "rich", "sector-gaps", "sector-gaps-scale", "sector-gaps-mask", "mask-gaps", "order-gaps", "sign-interaction"]
     for family in families:
+        count = feature_count(data, family)
+        if count > args.max_features:
+            print(f"feature search: family={family} INCONCLUSIVE "
+                  f"features={count} > cap={args.max_features}")
+            continue
         result, coefficients, minimum_slack, vectors = search(data, family)
         if coefficients is None:
             print(f"feature search: family={family} INFEASIBLE "

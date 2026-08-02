@@ -255,6 +255,9 @@ relations, not just the zero-gap mask; the full sign×mask LP is intentionally
 gated because its feature count is too large for an unbounded run.
 An order-only sector refinement is also infeasible at n=4, so the successful
 n=3 sector rank does not lift by adding gap order without sign interaction.
+The bounded sign-coordinate×gap interaction family is likewise infeasible at
+n=4. Feature synthesis now has a hard feature-count cap and reports
+`INCONCLUSIVE` rather than launching an unbounded LP.
 
 Example:
 
