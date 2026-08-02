@@ -1,12 +1,32 @@
 # The conjugate-height bound: a period-independent carry bound
 
-Status: closes the periodic carry-bound lemma
-(`docs/NBONACCI_ARITHMETIC_DOMINANCE_PROGRAM.md`, "Scoped missing lemma:
-periodic carry escape") for `n=2,3,4,5,6,7`, at high-precision-numeric plus
-exact-finite-check strength. It is not yet a Lean-checked or
-interval-arithmetic-certified proof, and it does not yet reach `n>=8`
-(the direct exhaustive box check becomes computationally infeasible there;
-see "What remains open" below).
+Status: two claims of different strength, do not conflate them.
+
+- **Weak form (the doc's own stated acceptable target), proved for every
+  `n>=2`:** every periodic `a:Z->Z` with n-window defect in `{-1,0,1}`
+  satisfies `|a_t| <= B(n)` for an explicit, computable, period-independent
+  constant `B(n)` (roughly linear in `n`; see the table below). This holds
+  for literal every `n`, not sampled -- the derivation never fixes `n`.
+  This is real, previously-absent progress on sublemma 1 of the "arithmetic
+  reversal" list in `docs/NBONACCI_ARITHMETIC_DOMINANCE_PROGRAM.md`
+  ("Recurrent coefficient/carry bound... It is enough to prove the weaker
+  fixed-hull version with an explicit bound `B(n)`"). It does **not** by
+  itself close the broader n-bonacci arithmetic-dominance theorem: that
+  also needs the core-identification, grade-exhaustion, and
+  uniform-dominance sublemmas established at this same growing `B(n)`,
+  which `app/nbonacci_arithmetic_hull.cpp` has so far only checked at the
+  much smaller fixed box `[-1,1]^n` (`[-2,2]^n` for `n<=5`, no new cyclic
+  state found).
+- **Strong form (the actual ternary claim, `B(n)=1`), proved for
+  `n=2,3,4,5,6,7` only:** by cross-checking the weak-form bound against the
+  exact finite carry automaton at a box exceeding `B(n)`, no periodic
+  admissible sequence exceeds the ternary layer for these seven values of
+  `n`. `n>=8` is not reached by this cross-check (direct box exhaustion
+  becomes computationally infeasible there; see "What remains open" below).
+
+Both claims are at high-precision-numeric (60-digit mpmath) plus
+exact-finite-check strength, not yet Lean-checked or
+interval-arithmetic-certified.
 
 ## The claim
 
