@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 from collections import defaultdict, deque
+import json
 import os
 import resource
 
@@ -202,7 +203,31 @@ def affine_min_rank_feasible(
     return True
 
 
-def run(n: int, bound: int, mode: str, modulus: int, rank_base: str | None) -> int:
+def affine_rank_offsets(
+    weighted_edges: set[tuple[int, int, int]], chamber_count: int,
+) -> tuple[bool, list[int] | None]:
+    """Produce an integer difference-constraints certificate when feasible.
+
+    Heights satisfy h[v] >= h[u] + weight(u,v).  Bellman-Ford relaxation from
+    zero detects a positive cycle after chamber_count rounds and otherwise
+    returns replayable integer offsets.
+    """
+    heights = [0] * chamber_count
+    edges = sorted(weighted_edges)
+    for _ in range(chamber_count):
+        changed = False
+        for source, destination, weight in edges:
+            candidate = heights[source] + weight
+            if heights[destination] < candidate:
+                heights[destination] = candidate
+                changed = True
+        if not changed:
+            return True, heights
+    return False, None
+
+
+def run(n: int, bound: int, mode: str, modulus: int,
+        rank_base: str | None, emit_certificate: str | None) -> int:
     base = 2 * bound + 1
     states = base**n
     outgoing = [[] for _ in range(states)]
@@ -299,6 +324,34 @@ def run(n: int, bound: int, mode: str, modulus: int, rank_base: str | None) -> i
         feasible = affine_min_rank_feasible(weighted_edges, len(chamber_ids))
         rank_text = (f" affine_{rank_base}_rank="
                      f"{'PASS' if feasible is True else 'FAIL' if feasible is False else 'INCONCLUSIVE'}")
+    if emit_certificate is not None:
+        certificate_ok, offsets = affine_rank_offsets(
+            weighted_edges, len(chamber_ids)
+        ) if rank_base is not None else (False, None)
+        certificate = {
+            "kind": "nbonacci-sign-chamber-rank-v1",
+            "n": n,
+            "bound": bound,
+            "mode": mode,
+            "modulus": modulus,
+            "rank_base": rank_base,
+            "chambers": [name for name, _ in sorted(
+                chamber_ids.items(), key=lambda item: item[1]
+            )],
+            "weighted_edges": [list(edge) for edge in sorted(weighted_edges)],
+            "rank_certificate": {
+                "feasible": certificate_ok,
+                "offsets": offsets,
+                "checked_edges": bool(certificate_ok and offsets is not None and
+                    all(offsets[destination] >= offsets[source] + weight
+                        for source, destination, weight in weighted_edges)),
+            },
+        }
+        with open(emit_certificate, "w", encoding="utf-8") as stream:
+            json.dump(certificate, stream, indent=2, sort_keys=True)
+            stream.write("\n")
+        print(f"sign chamber certificate: wrote {emit_certificate} "
+              f"feasible={'PASS' if certificate_ok else 'FAIL'}")
     print(
         f"sign chamber probe: n={n} bound={bound} mode={mode} "
         f"modulus={modulus} "
@@ -324,6 +377,10 @@ def main() -> int:
     )
     parser.add_argument("--rank-min", action="store_true")
     parser.add_argument("--rank-base", choices=("min", "max", "sum", "quotient", "sum-quotient"))
+    parser.add_argument(
+        "--emit-certificate",
+        help="write a JSON chamber/rank certificate (requires --rank-base)",
+    )
     args = parser.parse_args()
     if args.n < 2 or args.bound < 1:
         parser.error("require n>=2, bound>=1, and modulus>=2")
@@ -337,7 +394,10 @@ def main() -> int:
         parser.error("choose at most one of --rank-min and --rank-base")
     rank_base = "min" if args.rank_min else args.rank_base
     try:
-        return run(args.n, args.bound, args.mode, modulus, rank_base)
+        if args.emit_certificate is not None and rank_base is None:
+            parser.error("--emit-certificate requires --rank-base or --rank-min")
+        return run(args.n, args.bound, args.mode, modulus, rank_base,
+                   args.emit_certificate)
     except MemoryError:
         print(
             "sign chamber probe: INCONCLUSIVE/MEMORY_LIMIT "

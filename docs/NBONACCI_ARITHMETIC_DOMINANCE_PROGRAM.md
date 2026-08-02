@@ -282,8 +282,11 @@ Automation plan and acceptance gates:
   closed forcing formula; the sharp parity refinement remains optional.
 - Extend `nbonacci_sign_chamber_probe.py` to emit a canonical chamber table,
   exact transition deltas, and a machine-readable difference-constraints
-  certificate for sublemma 3. The certificate must pass at increasing boxes
-  under the 10 GiB cap and use integer arithmetic only.
+  certificate for sublemma 3. This is now available through
+  `--emit-certificate=PATH`; `python/nbonacci_chamber_certificate_check.py`
+  replays the JSON and rejects positive difference-constraint cycles. The
+  certificate must pass at increasing boxes under the 10 GiB cap and use
+  integer arithmetic only.
 - Add a checker that verifies every directed cycle in the certified exterior
   graph has positive total rank change (equivalently, no zero/nonpositive
   cycle survives); this is the finite obstruction audit for sublemma 4.

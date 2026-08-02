@@ -178,9 +178,20 @@ quotient SCC, rank feasibility, peak RSS, and the exact command. A
 
 The promotion artifact must contain canonical chamber IDs, every block
 transition, integer chamber offsets, and a check that every exterior edge
-increases `R`. Add a second checker that rejects every directed exterior
-cycle with nonpositive total rank increase. Floating eigenvalues are
-orientation only and must not enter the certificate.
+increases `R`. Generate one with `--emit-certificate=PATH`, then replay it
+with `python3 python/nbonacci_chamber_certificate_check.py PATH`; the second
+checker rejects positive difference-constraint cycles. Floating eigenvalues
+are orientation only and must not enter the certificate.
+
+Example:
+
+```sh
+RAVEL_PROBE_MEMORY_MB=10240 python3 \
+  python/nbonacci_sign_chamber_probe.py \
+  --n=3 --bound=8 --mode=gaps-mod --modulus=auto --rank-base=sum \
+  --emit-certificate=/tmp/n3_b8_rank.json
+python3 python/nbonacci_chamber_certificate_check.py /tmp/n3_b8_rank.json
+```
 
 ## Periodic contradiction
 
