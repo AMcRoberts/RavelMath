@@ -124,3 +124,55 @@ theorem nbonacciDistanceToPreviousShadow_le_two
   · by_cases hzero : (i = 0) != (j = 0)
     · simp [nbonacciDistanceToPreviousShadow, htriple, hzero]
     · simp [nbonacciDistanceToPreviousShadow, htriple, hzero]
+
+/-! ### The exact `n+1` carry block
+
+The matrix identity used by the carry automaton is first formalized here in
+its scalar ring form.  The companion inverse `A` satisfies
+`A + A^2 + ... + A^n = 1`; multiplying by `A` and comparing the shifted sum
+gives `A^(n+1) = 2*A - 1`.  The explicit matrix instantiation is a separate
+seam, so this theorem does not hide any matrix calculation in a tactic.
+-/
+
+def nbonacciGeomSum {R : Type} [Ring R] (a : R) : ℕ → R
+  | 0 => 0
+  | k + 1 => nbonacciGeomSum a k + a ^ (k + 1)
+
+theorem nbonacciGeomSum_succ {R : Type} [Ring R] (a : R) (n : ℕ) :
+    nbonacciGeomSum a (n + 1) = nbonacciGeomSum a n + a ^ (n + 1) := by
+  rfl
+
+theorem nbonacci_mul_geomSum {R : Type} [Ring R] (a : R) (n : ℕ) :
+    a * nbonacciGeomSum a n = nbonacciGeomSum a (n + 1) - a := by
+  induction n with
+  | zero => simp [nbonacciGeomSum]
+  | succ n ih =>
+      calc
+        a * nbonacciGeomSum a (n + 1) =
+            a * (nbonacciGeomSum a n + a ^ (n + 1)) := by
+              rw [nbonacciGeomSum_succ]
+        _ = (nbonacciGeomSum a (n + 1) - a) + a * a ^ (n + 1) := by
+              rw [mul_add, ih]
+        _ = nbonacciGeomSum a (n + 1 + 1) - a := by
+              rw [nbonacciGeomSum_succ a (n + 1)]
+              rw [← pow_succ' a (n + 1)]
+              noncomm_ring
+        _ = nbonacciGeomSum a (n + 2) - a := by
+              congr 2 <;> omega
+
+theorem nbonacci_block_identity_scalar {R : Type} [Ring R]
+    (a : R) (n : ℕ) (h : nbonacciGeomSum a n = 1) :
+    a ^ (n + 1) = 2 * a - 1 := by
+  have hshift : nbonacciGeomSum a (n + 1) = 2 * a := by
+    calc
+      nbonacciGeomSum a (n + 1) =
+          a * nbonacciGeomSum a n + a := by
+            rw [nbonacci_mul_geomSum]
+            noncomm_ring
+      _ = a * 1 + a := by rw [h]
+      _ = 2 * a := by noncomm_ring
+  calc
+    a ^ (n + 1) = nbonacciGeomSum a (n + 1) - nbonacciGeomSum a n := by
+      rw [nbonacciGeomSum_succ]
+      noncomm_ring
+    _ = 2 * a - 1 := by rw [hshift, h]
