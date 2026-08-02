@@ -129,7 +129,10 @@ that a radial statistic plus that offset increases on every transient edge.
 The `--rank-min` statistic `min_i |x_i| + offset(chamber(x))` passes several
 small boxes but fails at `n=4,B=8`. The `--rank-base=sum` statistic
 `sum_i |x_i| + offset(chamber(x))` repairs that failure and passes under the
-memory cap for `n=3,B=30`, `n=4,B=10`, `n=5,B=6`, and `n=6,B=4`.
+memory cap for `n=3,B=30`, `n=4,B=12`, `n=5,B=6`, and `n=6,B=4`. The next
+`n=4,B=15` expansion passes under the requested 10 GiB cap (503,460 chambers;
+peak RSS about 545 MiB). The earlier 1 GiB `MEMORY_LIMIT` was therefore only a
+Python representation boundary, not a rank failure.
 
 The dimension-matched residue (`modulus=auto`, meaning `n+1`) remains part of
 the chamber phase. Modulus four fails at `n=4,B=6`, while modulus five repairs
