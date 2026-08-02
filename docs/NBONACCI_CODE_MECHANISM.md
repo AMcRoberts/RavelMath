@@ -85,6 +85,17 @@ automaton has survival depth exactly `n+1`.  The remaining work is to extract a
 generic Farkas/induction proof of that fact and then quantify the perturbation
 from `q=0` to `q=1/M`.
 
+For inspection, the probe can emit Z3's proof object for the terminal query:
+
+```sh
+python3 python/nbonacci_homogeneous_shell_smt.py \
+  --n=4 --emit-proof=/tmp/n4_homogeneous.proof
+```
+
+That proof object is useful for mining a generic contradiction, but it is still
+solver output; it is not yet the small independently replayable certificate
+needed for a theorem promotion.
+
 The algebra explains why this is the right limit.  Writing
 `S_t = a_t+...+a_{t+n-1}`, the carry identity gives
 `S_{t+1}=a_t+d_t` and hence

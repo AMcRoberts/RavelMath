@@ -36,7 +36,7 @@ def check(n: int, transitions: int):
         tail = current[0] - sum(current[1:], z3.RealVal(0))
         current = current[1:] + [tail]
     status = solver.check()
-    return status, solver.model() if status == z3.sat else None
+    return status, solver.model() if status == z3.sat else None, solver
 
 
 def main() -> int:
@@ -45,13 +45,19 @@ def main() -> int:
     parser.add_argument("--n", type=int, required=True)
     parser.add_argument("--max-n", action="store_true",
                         help="also scan 2..n (default: only --n)")
+    parser.add_argument("--emit-proof",
+                        help="write the Z3 proof for the n+2 UNSAT query")
     args = parser.parse_args()
     dimensions = range(2, args.n + 1) if args.max_n else (args.n,)
     if args.n < 2:
         parser.error("require n>=2")
+    if args.emit_proof:
+        # Proof production is a context-wide Z3 option and must be enabled
+        # before the first solver is constructed.
+        z3.set_param("proof", True)
     for n in dimensions:
-        short_status, model = check(n, n + 1)
-        long_status, _ = check(n, n + 2)
+        short_status, model, _ = check(n, n + 1)
+        long_status, _, long_solver = check(n, n + 2)
         short = str(short_status)
         long = str(long_status)
         witness = ""
@@ -60,6 +66,13 @@ def main() -> int:
                                                for i in range(n))
         print(f"homogeneous-shell: n={n} transitions={n+1} status={short}"
               f"; transitions={n+2} status={long}{witness}")
+        if args.emit_proof and n == args.n and long_status == z3.unsat:
+            # Rerun this one query under the proof-enabled context.
+            _, _, proof_solver = check(n, n + 2)
+            with open(args.emit_proof, "w", encoding="utf-8") as stream:
+                stream.write(str(proof_solver.proof()))
+                stream.write("\n")
+            print(f"  proof={args.emit_proof}")
     return 0
 
 
