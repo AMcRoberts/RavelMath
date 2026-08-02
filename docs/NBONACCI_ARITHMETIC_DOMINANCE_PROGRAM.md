@@ -349,9 +349,20 @@ replayed by `python/nbonacci_max_shell_return_check.py`. Under the 10 GiB cap,
 the emitted n=3, M=8 certificate has 1,538 shell states and 4,638 return
 edges; n=4, M=8 has 32,896 states and 143,538 edges. Both replay with strict
 rank increase. The same relation passes n=4 at M=3,4,6,8,10 and n=5 at M=3.
-The remaining universal step is now sharply stated: prove a parameterized
-shell-return DAG/rank theorem (or derive it from the conjugate-height
-identity), rather than stabilize a single global chamber potential.
+The stability driver reports n=4 as PASS for every M=2,...,12; its longest
+shell-window rank drops to 5 and then remains 5 from M=8 through M=12.
+Backtracked maximal chains show that this rank is a bounded survival depth:
+the shell can persist for only finitely many consecutive windows before the
+carry update leaves the shell. The remaining universal step is therefore to
+prove a parameterized bound on that survival depth from the block identity,
+rather than stabilize a single global chamber potential.
+
+The logical endpoint is kernel-checked in
+`lean/nbonacci_margin_catalogue.lean` as
+`no_strict_rank_relation_closed`: a nonempty finite closed return relation
+cannot have a strictly increasing integer rank on every edge. The shell JSON
+checker supplies exactly those finite edge inequalities; only the uniform
+shell-survival theorem is still missing.
 
 ### Algebraic-height route
 

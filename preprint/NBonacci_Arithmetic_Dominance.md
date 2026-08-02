@@ -254,7 +254,11 @@ Under the 10 GiB cap, n=3,M=8 has 1,538 shell states and 4,638 return edges;
 n=4,M=8 has 32,896 states and 143,538 edges. Both rank certificates replay
 with strict increase. This avoids asserting a single global affine chamber
 potential and is the current preferred finite reduction for the exterior
-escape lemma. A parameterized proof of shell acyclicity remains outstanding.
+escape lemma. The n=4 stability scan passes every M=2,...,12, with longest
+rank 5 for M=8,...,12; backtracking shows that this rank is bounded
+consecutive shell-window survival. The Lean catalogue now contains the
+matching finite relation lemma `no_strict_rank_relation_closed`. The remaining
+universal task is a bound on that survival depth from the carry/block algebra.
 
 There is a complementary algebraic route. For the n-bonacci root `β`, the
 covector `c_0=1`, `c_j=β c_{j-1}-1` satisfies the exact scalar update

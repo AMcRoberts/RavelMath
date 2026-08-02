@@ -287,6 +287,13 @@ certificate. The n=4,M=8 run has 32,896 shell states and 143,538 edges and
 replays PASS. The next theorem task is to parameterize this shell DAG/rank in
 `M`, or replace it with the conjugate-height identity `β h(x') = h(x)+d`
 and certified Vandermonde bounds.
+The stability driver
+`python/nbonacci_max_shell_return_stability.py --n=4 --min-bound=2 --max-bound=12`
+passes every shell; the longest rank is 5 for M=8,...,12. The Lean endpoint
+for this style of certificate is now
+`no_strict_rank_relation_closed`, which rules out a finite closed relation
+with strict integer rank increase on every edge. The missing theorem is the
+uniform bound on shell survival depth, not the finite-cycle contradiction.
 
 Example:
 

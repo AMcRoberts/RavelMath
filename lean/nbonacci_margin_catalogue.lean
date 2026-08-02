@@ -348,6 +348,26 @@ theorem no_strict_rank_finite {α : Type} [Fintype α] [Nonempty α]
   have hinc := hstep x
   omega
 
+/-! A shell-return graph is handled by the same maximum argument, without
+    choosing a deterministic successor.  This is the kernel interface for
+    replayed first-return DAG certificates: a nonempty finite closed relation
+    cannot carry a strictly increasing integer rank on every edge. -/
+theorem no_strict_rank_relation_closed {α : Type} [Fintype α] [Nonempty α]
+    (R : α → α → Prop) (rank : α → ℤ)
+    (hout : ∀ x, ∃ y, R x y)
+    (hstrict : ∀ ⦃x y⦄, R x y → rank x < rank y) : False := by
+  let m : ℤ := Finset.univ.image rank |>.max' (by simp)
+  have hmemb : m ∈ Finset.univ.image rank :=
+    Finset.max'_mem (Finset.univ.image rank) (by simp)
+  obtain ⟨x, hxuniv, hxrank⟩ := Finset.mem_image.mp hmemb
+  obtain ⟨y, hxy⟩ := hout x
+  have hymax : rank y ≤ m := by
+    exact Finset.le_max' (Finset.univ.image rank) (rank y)
+      (Finset.mem_image.mpr ⟨y, Finset.mem_univ y, rfl⟩)
+  have hxy' : rank x < rank y := hstrict hxy
+  have hxmax : rank x = m := hxrank
+  omega
+
 /-! A rank certificate only needs to cover the closed exterior subset. -/
 
 theorem no_strict_rank_closed_subset {α : Type} [Fintype α]
