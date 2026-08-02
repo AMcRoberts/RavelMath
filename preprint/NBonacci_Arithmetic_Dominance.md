@@ -77,6 +77,9 @@ this driven shift can run forever.  In every tested box, the survivors are
 already ternary; the unresolved proof is precisely the assertion that this
 finite-core phenomenon persists without a box bound.
 
+The scalar identity is now kernel checked as `carryUpdate_sum` and
+`carryUpdate_sum_digit_bound` in the Lean catalogue.
+
 ## 2. The block identity
 
 The characteristic polynomial of (A) is
@@ -190,6 +193,8 @@ The same potential merges bounds 8, 12, 16, and 32 (98,996 chambers and
 285,872 weighted edges at bound 32), despite a new 162-node quotient SCC
 appearing at bound 16.  The merge solver propagates constraints componentwise
 over the quotient SCC DAG rather than performing a global quadratic relaxation.
+The same cross-box merge passes for (n=4), bounds 8 and 10, over 184,450
+chambers and 349,088 weighted edges.
 
 ## 5. What is proved and what remains
 

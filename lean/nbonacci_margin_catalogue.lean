@@ -134,6 +134,33 @@ gives `A^(n+1) = 2*A - 1`.  The explicit matrix instantiation is a separate
 seam, so this theorem does not hide any matrix calculation in a tactic.
 -/
 
+/-! ### The scalar projection of the carry machine
+
+The implementation stores a state as a nonempty list of consecutive
+coefficients.  Its last coordinate is the inverse-incidence `tail` plus the
+signed digit.  The following elementary identity is the one-dimensional
+interface used by the exterior-escape automation.
+-/
+
+def carryUpdate (x : List ℤ) (d : ℤ) : List ℤ :=
+  match x with
+  | [] => []
+  | x₀ :: xs => xs ++ [x₀ - xs.sum + d]
+
+theorem carryUpdate_sum {x : List ℤ} (hx : x ≠ []) (d : ℤ) :
+    (carryUpdate x d).sum = x.head hx + d := by
+  cases x with
+  | nil => exact (hx rfl).elim
+  | cons x₀ xs =>
+      simp [carryUpdate, List.sum_append]
+
+theorem carryUpdate_sum_digit_bound {x : List ℤ} (hx : x ≠ [])
+    {d : ℤ} (hd : -1 ≤ d ∧ d ≤ 1) :
+    (carryUpdate x d).sum - x.head hx ∈ Set.Icc (-1 : ℤ) 1 := by
+  rw [carryUpdate_sum x hx d]
+  simp only [sub_add_cancel]
+  exact hd
+
 def nbonacciGeomSum {R : Type} [Ring R] (a : R) : ℕ → R
   | 0 => 0
   | k + 1 => nbonacciGeomSum a k + a ^ (k + 1)
