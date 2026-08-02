@@ -120,6 +120,17 @@ Dual<T> dual_cbrt(const Dual<T>& a);
 template <typename T>
 Dual<T> dual_sqrt(const Dual<T>& a);
 
+// d/dx cos(x) = -sin(x).  d/dx acos(x) = -1/sqrt(1-x^2) (|x| < 1).
+// Needed for the disc<=0 (three-distinct-real-roots) branch of the
+// cubic Cardano formula's trigonometric solution, per
+// docs/DIRECTION_AND_OPEN_THREADS.md's A-relax/B2 smooth-relaxation
+// gap: that branch previously had no differentiable path at all.
+template <typename T>
+Dual<T> dual_cos(const Dual<T>& a);
+
+template <typename T>
+Dual<T> dual_acos(const Dual<T>& a);
+
 // ===================================================================
 // Generic operator overloads.  These are the user-facing API for
 // arithmetic on Dual<T>, mirroring scalar-style syntax.  They delegate
@@ -205,6 +216,22 @@ inline Dual<double> dual_sqrt(const Dual<double>& a) {
     }
     double s = std::sqrt(a.val);
     return Dual<double>(s, a.eps / (2.0 * s));
+}
+template <>
+inline Dual<double> dual_cos(const Dual<double>& a) {
+    // d/dx cos(x) = -sin(x)
+    return Dual<double>(std::cos(a.val), -std::sin(a.val) * a.eps);
+}
+template <>
+inline Dual<double> dual_acos(const Dual<double>& a) {
+    // d/dx acos(x) = -1/sqrt(1-x^2)
+    if (a.val <= -1.0 || a.val >= 1.0) {
+        if (a.eps == 0.0) return Dual<double>(std::acos(a.val), 0.0);
+        throw std::domain_error("dual_acos<double>: |x|>=1 with nonzero derivative "
+                                 "(derivative is unbounded at the endpoints)");
+    }
+    double denom = std::sqrt(1.0 - a.val * a.val);
+    return Dual<double>(std::acos(a.val), -a.eps / denom);
 }
 
 // ===================================================================

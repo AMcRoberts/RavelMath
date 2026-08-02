@@ -731,6 +731,66 @@ this finding narrows what *won't* work rather than closing the
 thread. `DIRECTION_AND_OPEN_THREADS.md` Thread A4 should be corrected
 to remove the periodicity-invariant claim as stated.
 
+## Finding 6.6 — Thread A5: Class I's exact signature found outside its two known source families
+
+**Status: EXTENDS Finding 5's data set from 10 to 18 new candidates
+(28 total). The coarse two-way split (Class-I-exact vs.
+partial-everything-else) held on every new candidate; Class I's
+specific structural signature (exact involution + `x^k` nilpotent
+cofactor) was also found for the first time in a substitution outside
+both of Finding 5's two source families (n-bonacci, `σ_{a,b}`).**
+
+Construction: `app/probe_a5_extend_data.cpp` (kept separate from
+`probe_a1_a2_unimodular.cpp` so Finding 5's cited numbers stay
+reproducible), reusing the same `include/ravel/involution_helpers.hpp`
+primitives. Three batches: (1) `σ_{a,1}` for `a=6..15` (Finding 5
+covered `a=0..5`); (2) five more `σ_{a,b≥2}` cases; (3) 8 genuinely
+random unimodular (`det=±1`) 3-letter Pisot matrices sampled outside
+the `σ_{a,b}` family entirely (entries 0-4, seed 11, 702 trials to
+find 8 Pisot+unimodular hits).
+
+Results:
+- `σ_{6,1}`, `σ_{7,1}`: partial involution, A1 not `x^k` — same Class
+  II pattern as `σ_{1,1}..σ_{5,1}` in Finding 5, extends it cleanly.
+- `σ_{8,1}` through `σ_{15,1}`: contact-boundary stuck at a constant
+  `|G_B|=168` for all eight, not converging — a resource-cap
+  artifact (the boundary construction hits its default cap at
+  exactly the same size regardless of `a`), not new structural
+  information.
+- `σ_{0,3}`, `σ_{1,3}`, `σ_{3,2}`, `σ_{4,2}`, `σ_{0,4}`: **none are
+  Pisot**. Pisot-ness in the `σ_{a,b}` family is sensitive to `b` in
+  a way not previously characterized here (`σ_{0,1}` and `σ_{0,2}`
+  are Pisot per Finding 5/6.5; `σ_{0,3}`, `σ_{0,4}` are not).
+- Random unimodular matrices outside `σ_{a,b}`: **7 of 8 show the
+  same "partial involution, A1 not `x^k`" pattern as Class II/III**
+  — the generic/majority behavior among unrelated random unimodular
+  Pisot matrices, not a `σ_{a,b}`-specific artifact. **1 of 8**
+  (`random_unimod_8`, `β≈5.033`, `|G_B|=80`) shows the **full Class I
+  signature**: involution EXACT (8/8 core nodes matched) and A1
+  cofactor exactly `x^1`. This is the first time Class I's exact
+  structural signature has been observed in ANY substitution outside
+  the n-bonacci family — direct evidence that Class I is a genuine,
+  recurring structural class rather than an n-bonacci-specific
+  artifact, while confirming that it is the minority case (roughly
+  1-in-8 in this small sample) among general unimodular Pisot
+  substitutions.
+
+**Exhaustiveness check**: every one of the 18 new candidates that
+reached a verdict fell cleanly into one of the two known patterns
+(Class-I-exact, or the shared "partial" pattern of Class II/III) —
+no third pattern appeared. This is consistent with, but does not
+prove, Finding 5's implicit hypothesis that the classification is
+exhaustive; this probe doesn't check the Arnoux-Rauzy/constant-factor
+properties needed to further split "partial" candidates into Class II
+vs. Class III specifically.
+
+**Caveats**: still a small sample (26 candidates total across Finding
+5 and this extension); the resource-cap wall at `σ_{a,1}, a≥8`
+prevents testing whether the Class II pattern holds indefinitely as
+`a` grows; the random-unimodular sample is only 8 matrices. 4-letter
+extension (Tetrabonacci/Pentanacci/Hexanacci-adjacent families,
+`β`-substitutions) not yet attempted.
+
 ## Finding 7 — explicit Class-II balanced-pair core family
 
 **Status: PROVED recurrent BP core and characteristic polynomial for

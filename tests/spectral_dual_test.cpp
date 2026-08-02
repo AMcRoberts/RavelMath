@@ -83,11 +83,13 @@ int main() {
     {
         // The golden-ratio Pisot matrix M = [[1,1,0],[1,0,0],[0,0,1]]
         // (extended 2x2 Fibonacci with an identity row/col) has char poly
-        // (x-1)(x^2-x-1), all three roots real, discriminant < 0.
-        // Both Tribonacci and golden land in the disc <= 0 fallback
-        // branch, where spectral_dual's value comes from spectral_invariants_3x3
-        // (bit-exact via the three-distinct-real-roots path) and the eps
-        // is 0 by design (documented prototype limitation).
+        // (x-1)(x^2-x-1), all three roots real, discriminant <= 0 --
+        // a genuine disc<=0 (three-real-roots) case, unlike Tribonacci
+        // above (whose disc is actually > 0; the diagnostic print
+        // above is a value-based guess, not a real branch check).
+        // FIXED (2026-08-01): disc<=0 now has a real dual_cos/dual_acos
+        // trigonometric-Cardano path (include/ravel/dual.hpp,
+        // spectral_dual.hpp), replacing the old eps=0 fallback.
         std::vector<std::vector<long long>> M = {
             {1, 1, 0}, {1, 0, 0}, {0, 0, 1}};
         auto ref = ravel::spectral_invariants_3x3(
@@ -111,9 +113,30 @@ int main() {
             ravel::spectral_invariants_3x3_dual<double>(
                 m00, m01, m02, m10, m11, m12, m20, m21, m22);
         EXPECT(std::abs(dual_inv.beta.val - ref.beta) < 1e-9,
-               "spectral_dual .val matches on golden Pisot (value path via fallback)");
-        EXPECT(dual_inv.beta.eps == 0.0,
-               "fallback branch: eps=0 (documented prototype limitation; extends via dual_cos/dual_acos in a future session)");
+               "spectral_dual .val matches on golden Pisot (disc<=0 trig-Cardano path)");
+        // FIXED (2026-08-01): the disc<=0 branch now has a real gradient
+        // via dual_cos/dual_acos. Cross-check against finite difference
+        // on M[0][0] (seeded variable) rather than asserting eps==0.
+        double h = 1e-6;
+        std::vector<std::vector<long long>> Mp = {{2, 1, 0}, {1, 0, 0}, {0, 0, 1}};
+        (void)Mp;
+        auto beta_at = [&](double a00) {
+            Dual<double> v00 = Dual<double>::constant(a00);
+            Dual<double> v01 = Dual<double>::constant(1.0);
+            Dual<double> v02 = Dual<double>::constant(0.0);
+            Dual<double> v10 = Dual<double>::constant(1.0);
+            Dual<double> v11 = Dual<double>::constant(0.0);
+            Dual<double> v12 = Dual<double>::constant(0.0);
+            Dual<double> v20 = Dual<double>::constant(0.0);
+            Dual<double> v21 = Dual<double>::constant(0.0);
+            Dual<double> v22 = Dual<double>::constant(1.0);
+            return ravel::spectral_invariants_3x3_dual<double>(
+                v00, v01, v02, v10, v11, v12, v20, v21, v22).beta.val;
+        };
+        double fd = (beta_at(1.0 + h) - beta_at(1.0 - h)) / (2 * h);
+        EXPECT(std::abs(dual_inv.beta.eps - fd) < 1e-4,
+               "disc<=0 branch: analytic gradient matches finite difference "
+               "(fallback limitation closed via dual_cos/dual_acos)");
     }
 
     std::printf("\n%d passed, %d failed\n", n_pass, n_fail);

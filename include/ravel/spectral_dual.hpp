@@ -158,45 +158,70 @@ SpectralInvariantsDual<T> spectral_invariants_3x3_dual(
         inv.abs_det = det;
         inv.bound_holds = true;
     } else {
-        // All-real-roots branch (disc <= 0): for the smooth-relaxation
-        // prototype we use a non-differentiable fallback.  Compute the
-        // spectral invariants via the bit-exact (no dual) path; the
-        // returned Dual<T> wraps the scalar value with eps=0.  This
-        // is a documented limitation -- gradient = 0 here means the
-        // search gets no signal in this branch and stays put; for
-        // Pisot smoothing the user should start from a disc > 0
-        // matrix or pick an alternative Pisot-flavored objective that
-        // is differentiable in this branch.  Extending to full
-        // chain-rule through arccos / cos for disc < 0 is a future-
-        // session TODO (need dual_cos, dual_acos specializations, plus
-        // the standard reduced-cubic chain-rule identities).
-        T a11_v = a11.val;
-        T a12_v = a12.val;
-        T a13_v = a13.val;
-        T a21_v = a21.val;
-        T a22_v = a22.val;
-        T a23_v = a23.val;
-        T a31_v = a31.val;
-        T a32_v = a32.val;
-        T a33_v = a33.val;
-        // Convert to double for spectral_invariants_3x3 (which is the
-        // double-precision path); this gives the right scalar value
-        // for the fallback.  Documented limitation: gradient is zero
-        // here.
-        double d_a11 = static_cast<double>(a11_v);
-        double d_a12 = static_cast<double>(a12_v);
-        double d_a13 = static_cast<double>(a13_v);
-        double d_a21 = static_cast<double>(a21_v);
-        double d_a22 = static_cast<double>(a22_v);
-        double d_a23 = static_cast<double>(a23_v);
-        double d_a31 = static_cast<double>(a31_v);
-        double d_a32 = static_cast<double>(a32_v);
-        double d_a33 = static_cast<double>(a33_v);
-        ravel::SpectralInvariants ref = ravel::spectral_invariants_3x3(
-            d_a11, d_a12, d_a13, d_a21, d_a22, d_a23, d_a31, d_a32, d_a33);
-        inv.beta = Dual<T>(T(ref.beta));
-        inv.beta2 = Dual<T>(T(ref.beta2));
-        inv.abs_det = Dual<T>(T(ref.abs_det));
+        // All-real-roots branch (disc <= 0): the standard trigonometric
+        // Cardano solution, differentiated via dual_cos/dual_acos.
+        // For the depressed cubic t^3 + p*t + q = 0 with p < 0 (forced
+        // whenever disc <= 0 and not the fully-degenerate p=q=0 case):
+        //   t_k = 2*sqrt(-p/3) * cos( (1/3)*acos(arg) - 2*pi*k/3 ),
+        //   arg = (3q)/(2p) * sqrt(-3/p),  k = 0, 1, 2.
+        // x_k = t_k + tr/3 recovers the original cubic's roots. All
+        // three are real here, so "dominant" is just largest by value
+        // and "secondary" is second-largest in absolute value, matching
+        // the disc>0 branch's beta/beta2 convention (real eigenvalues
+        // only, so beta2 there is also effectively a real comparison).
+        T p_v = p.val;
+        if (p_v == T(0)) {
+            // Fully degenerate: p = q = 0 forces a triple root at
+            // tr/3. Not differentiable through the trig formula (arg
+            // is 0/0); return the exact triple root with zero gradient
+            // rather than dividing by zero.
+            Dual<T> triple = dual_div(tr, Dual<T>::constant(T(3)));
+            inv.beta = Dual<T>(triple.val, T(0));
+            inv.beta2 = Dual<T>(triple.val, T(0));
+            inv.abs_det = Dual<T>(det.val < T(0) ? -det.val : det.val, T(0));
+            inv.bound_holds = true;
+            return inv;
+        }
+        Dual<T> neg_p_third = dual_div(dual_neg(p), Dual<T>::constant(T(3)));
+        Dual<T> coeff = dual_mul(Dual<T>::constant(T(2)), dual_sqrt(neg_p_third));
+        Dual<T> neg_three_over_p = dual_div(Dual<T>::constant(T(-3)), p);
+        Dual<T> sqrt_neg3_p = dual_sqrt(neg_three_over_p);
+        Dual<T> three_q = dual_mul(Dual<T>::constant(T(3)), q);
+        Dual<T> two_p = dual_mul(Dual<T>::constant(T(2)), p);
+        Dual<T> ratio = dual_div(three_q, two_p);
+        Dual<T> arg = dual_mul(ratio, sqrt_neg3_p);
+        // Clamp the acos argument's PRIMAL value into [-1,1] against
+        // roundoff (the algebra guarantees |arg| <= 1 exactly when
+        // disc <= 0; floating evaluation can land a hair outside).
+        T arg_v = arg.val;
+        if (arg_v > T(1)) arg_v = T(1);
+        if (arg_v < T(-1)) arg_v = T(-1);
+        Dual<T> arg_clamped = Dual<T>(arg_v, arg.eps);
+        Dual<T> acos_arg = dual_acos(arg_clamped);
+        Dual<T> third_acos = dual_div(acos_arg, Dual<T>::constant(T(3)));
+        Dual<T> tr_third = dual_div(tr, Dual<T>::constant(T(3)));
+
+        const double two_pi = 6.283185307179586476925286766559;
+        Dual<T> roots[3];
+        for (int k = 0; k < 3; ++k) {
+            Dual<T> phase = dual_sub(third_acos,
+                Dual<T>::constant(T(two_pi * k / 3.0)));
+            Dual<T> t_k = dual_mul(coeff, dual_cos(phase));
+            roots[k] = dual_add(t_k, tr_third);
+        }
+        // Pick dominant (largest value) and secondary (second-largest
+        // in absolute value), matching the disc>0 branch's convention.
+        int dom = 0;
+        for (int k = 1; k < 3; ++k) if (roots[k].val > roots[dom].val) dom = k;
+        int sec = -1;
+        for (int k = 0; k < 3; ++k) {
+            if (k == dom) continue;
+            if (sec == -1 || std::abs(roots[k].val) > std::abs(roots[sec].val)) sec = k;
+        }
+        inv.beta = roots[dom];
+        Dual<T> sec_root = roots[sec];
+        inv.beta2 = sec_root.val < T(0) ? dual_neg(sec_root) : sec_root;
+        inv.abs_det = det.val < T(0) ? dual_neg(det) : det;
         inv.bound_holds = true;
     }
 
