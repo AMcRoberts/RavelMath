@@ -69,6 +69,18 @@ The normalized MILP is discovery machinery, not yet a proof certificate. The
 shell-return rank is exact for each tested `(n,M)`, but the dimension- and
 bound-independent slack closure remains the missing lemma.
 
+There is a useful asymptotic reduction already exposed by the same code. After
+normalizing by `M`, the digit contribution is `q=1/M`. At `q=0` the machine is
+the homogeneous shift/tail map. Exhaustive canonical-word search for
+`n=4`, six transitions tests all 365 words and finds none feasible. By
+compactness, an exact proof that every homogeneous six-window shell schedule
+is impossible would imply a positive margin for each finite schedule and
+therefore exclude all sufficiently large integer shells. The remaining finite
+range can then be discharged by the exact shell-return certificates. This is
+the most promising automation seam for turning numerical discovery into the
+universal lemma: replace the MILP result by replayable rational Farkas/SMT
+certificates, then compute the resulting margin explicitly.
+
 ```text
 carry update -> boundary shift -> tail-reset branches
              -> finite slack automaton -> strict shell rank
