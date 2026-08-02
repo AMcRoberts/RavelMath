@@ -851,6 +851,9 @@ or failure of the predicted exact global worst
 14/46/108/210/362 (Tribonacci through n=7), including the requested
 Tetrabonacci/Pentanacci/Hexanacci progression. This is an exact finite
 certificate over those computed cores, not an arbitrary-n catalogue theorem.
+An independent exact-rational forward reconstruction additionally reports
+zero invalid dominant-core nodes and zero transition-record mismatches with
+the fast path (destination, prefix labels, and multiplicity) for all n=3..7.
 
 Lean kernel-checks the candidate shell bounds and core-polynomial
 signs. With all four base rounds now closed, the global occurrence

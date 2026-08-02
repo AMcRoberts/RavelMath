@@ -30,7 +30,10 @@
 // It reconstructs the LEFT Perron covector in Q(beta), verifies its
 // sidedness, normalizes v_0=1, maximizes |<x,v>| by exact sign comparisons,
 // requires exact equality with every row formula, and requires every residual
-// margin to be strictly positive.  The doubles remain only as diagnostics.
+// margin to be strictly positive. It also independently reconstructs every
+// dominant-core forward transition with exact rational linear algebra and
+// exact window validity, requiring record-for-record agreement with the fast
+// path. The doubles remain only as diagnostics.
 
 #include <cmath>
 #include <cstdio>
@@ -79,6 +82,54 @@ bool equal_up_to_sign(const std::vector<long long>& x,
         opposite = opposite && x[k] == -expected[k];
     }
     return same || opposite;
+}
+
+template <std::size_t D>
+bool exact_simple_validity(const Substitution<D>& subst, const SNode<D>& node) {
+    bool trivial = true;
+    for (std::size_t k = 0; k < D; ++k)
+        if (node.x[k] != 0) trivial = false;
+    if (trivial && node.i == node.j) return false;
+    const SNode<D> mirror = node.mirror();
+    return subst.in_H_sigma_exact(node.x, static_cast<std::size_t>(node.j)) ||
+           subst.in_H_sigma_exact(mirror.x,
+                                  static_cast<std::size_t>(mirror.j));
+}
+
+template <std::size_t D>
+using TransitionRecord =
+    std::tuple<SNode<D>, std::vector<long long>, std::vector<long long>>;
+
+template <std::size_t D>
+std::multiset<TransitionRecord<D>> exact_forward_records(
+    const Substitution<D>& subst, const SNode<D>& node) {
+    std::multiset<TransitionRecord<D>> out;
+    const auto parents_i = parent_decompositions<D>(subst.images, node.i);
+    const auto parents_j = parent_decompositions<D>(subst.images, node.j);
+    for (const auto& pd : parents_i) {
+        const auto lp1 = abelianization<D>(pd.p);
+        for (const auto& qd : parents_j) {
+            const auto lq1 = abelianization<D>(qd.p);
+            std::array<long long, D> rhs{};
+            for (std::size_t k = 0; k < D; ++k)
+                rhs[k] = node.x[k] + lq1[k] - lp1[k];
+            const auto xprime = solve_Mx_eq_rhs_exact<D>(subst.M, rhs);
+            if (!xprime.has_value()) continue;
+            SNode<D> candidate{pd.parent_letter, *xprime, qd.parent_letter};
+            if (!exact_simple_validity(subst, candidate)) continue;
+            out.insert({candidate, pd.p, qd.p});
+        }
+    }
+    return out;
+}
+
+template <std::size_t D>
+std::multiset<TransitionRecord<D>> fast_forward_records(
+    const Substitution<D>& subst, const SNode<D>& node) {
+    std::multiset<TransitionRecord<D>> out;
+    for (const auto& [destination, pq] : simple_forward_targets<D>(subst, node))
+        out.insert({destination, pq.first, pq.second});
+    return out;
 }
 
 std::vector<std::vector<std::int8_t>> n_bonacci_rule(std::size_t n) {
@@ -178,11 +229,23 @@ bool check(std::size_t n, double beta) {
     auto [dom_core, dom_idx] = extract_dominant_recurrent_core(gb_graph, 500);
     (void)dom_core;
 
+    int exact_invalid_core_nodes = 0;
+    int exact_transition_mismatches = 0;
+    for (std::size_t u : dom_idx) {
+        if (!exact_simple_validity(subst, nodes[u])) ++exact_invalid_core_nodes;
+        if (fast_forward_records(subst, nodes[u]) !=
+            exact_forward_records(subst, nodes[u]))
+            ++exact_transition_mismatches;
+    }
+
     std::map<std::pair<long long, long long>, std::vector<std::size_t>> groups;
     for (std::size_t u : dom_idx) groups[{nodes[u].i, nodes[u].j}].push_back(u);
 
     std::printf("=== n=%zu: %zu (i,j) pairs in dominant core (size %zu) ===\n",
                 n, groups.size(), dom_idx.size());
+    std::printf("  exact core audit: %d invalid nodes, %d transition-record "
+                "mismatches\n",
+                exact_invalid_core_nodes, exact_transition_mismatches);
     double worst_margin = 1e18;
     int mismatches = 0;
     int exact_mismatches = 0;
@@ -292,7 +355,8 @@ bool check(std::size_t n, double beta) {
                 nonpositive_exact_margins,
                 exact_worst_match ? "YES" : "NO",
                 exact_worst_positive ? "YES" : "NO");
-    return exact_mismatches == 0 && structural_witness_failures == 0 &&
+    return exact_invalid_core_nodes == 0 && exact_transition_mismatches == 0 &&
+           exact_mismatches == 0 && structural_witness_failures == 0 &&
            nonpositive_exact_margins == 0 && exact_worst_match &&
            exact_worst_positive;
 }

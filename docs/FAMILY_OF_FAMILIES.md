@@ -273,6 +273,9 @@ Hexanacci have core sizes 46, 108, and 210 and exact global worst margin
 `2/beta-1 > 0`; Lean independently proves their coordinate order chains
 through the first two nearest extensions. The finite n=3..7 certificate does
 not by itself assert a uniform arbitrary-n core catalogue.
+On those same five computed cores, exact-rational forward reconstruction and
+exact window validity agree record-for-record with the fast transition path;
+there are zero invalid core nodes or transition mismatches.
 
 For each `2<=a<=A`:
 

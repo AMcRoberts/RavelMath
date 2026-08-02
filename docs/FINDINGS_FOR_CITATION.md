@@ -1384,6 +1384,14 @@ catalogue and the two nearest extensions, Pentanacci and Hexanacci, are closed
 at the exact arithmetic level; n=7 is an additional checked control. This is
 not yet a symbolic occurrence/exhaustion theorem for arbitrary n.
 
+The target also independently reconstructs every forward record from each
+dominant-core node with exact rational `M x'=rhs` solving and exact
+`Q(beta)` window validity, comparing destination, both prefix labels, and
+multiplicity against the fast path. Across n=3..7 it finds zero exactly
+invalid core nodes and zero transition-record mismatches. This removes the
+fast-path numerical ambiguity on these computed recurrent cores; it still
+does not prove that no additional core states occur for arbitrary n.
+
 The Lean module now matches those two nearest algebraic steps: a reusable
 positive-scaled-gap lemma yields explicit Pentanacci order
 `b>c>d>e>1` and Hexanacci order `b>c>d>e>f>1` from their consecutive left
