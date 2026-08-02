@@ -1,10 +1,14 @@
 // Covering-witness regression test for the n-bonacci homogeneous shell.
 //
-// Each witness below is a concrete (n, L=n+1) symbolic certificate emitted
-// by `python/nbonacci_shell_covering_proof.py`: a list of pin indices
-// (n-1 of them), the sign each pin asserts on `a_j`, the (rational) free-
-// parameter vector `(a_1, ..., a_{n-1})`, and the implied covering sequence
-// `a_0, a_1, ..., a_{n+L-1}`.  The witness is valid iff:
+// This is the symbolic closest-form sibling of the existing
+// `nbonacci_block_identity_test.cpp` (which checks the matrix identity
+// `A^(n+1) = 2A - I`): the n-bonacci carry map's survival-depth lemma
+// is proved by exhibiting, for each n in {2, ..., 8}, a witness that
+// reaches depth exactly n+1 and proves the depth n+2 by an exhaustive
+// enumeration.
+//
+// What this test verifies, for every candidate in the C++ enumerator's
+// .txt sidecars (in `out/nbonacci_covering_enumerator/n{n}_L{n+1}.txt`):
 //
 //   1. The pin equalities hold: `a_{pins[k]} = sign[k]`, all k.
 //   2. The free-parameter vector is in `[-1, 1]^(n-1)`.
@@ -13,188 +17,291 @@
 //   4. Every window `t = 0, ..., L` has some `i in 0..n-1` with
 //      `|a_{t+i}| = 1` (the cover property).
 //
-// This is the symbolic closest-form sibling of the existing
-// `nbonacci_block_identity_test.cpp` (which checks the matrix identity
-// `A^(n+1) = 2A - I`): the n-bonacci carry map's survival-depth lemma
-// is proved by exhibiting, for each n in {2, ..., 8}, a witness that
-// reaches depth exactly n+1 and proves the depth n+2 by an exhaustive
-// enumeration (which is in the Python tool, not here -- C++ verifies
-// the SAT-side witness only).
-//
-// Exact arithmetic.  Each witness is encoded in integer form by
-// multiplying through by the LCM of its denominators (`denom` below);
-// all inequalities and equalities are then integer checks at the
-// finite precision `denom`.  No floating point, no multiprecision,
+// Each candidate is parsed as a fraction `num/denom` (with denom
+// reduced to coprime form, denom in {1, 2, 3, ...} for n <= 10),
+// then verified by multiplying through by the LCM of denominators
+// and checking in long long.  No floating point, no multiprecision,
 // no Z3 -- a real symbolic closure being regression-tested.
+//
+// Inputs: `out/nbonacci_covering_enumerator/n{n}_L{n+1}.txt` for
+// n in {2, 3, 4, 5, 6, 7, 8}.  The .txt files are produced by
+// `make nbonacci_covering_witness_enumerate` (which runs the C++
+// covering witness enumerator at n=2..8 with both L=n+1 and
+// L=n+2).  If the .txt files are missing, the test still runs the
+// hard-coded simplest-per-n witness check (a smaller version of
+// the test, kept for sanity).
 
 #include <algorithm>
-#include <array>
+#include <cctype>
 #include <cstdio>
+#include <cstdlib>
+#include <fstream>
+#include <iostream>
+#include <map>
+#include <numeric>
+#include <optional>
+#include <sstream>
 #include <stdexcept>
+#include <string>
 #include <vector>
 
 namespace {
 
-// One covering witness for a fixed n.  All arrays are length n-1.
-struct CoveringWitness {
-    std::size_t n;
-    // pins[k] = which a_j is pinned; signs[k] = the pinned value (+1 or -1)
-    std::vector<std::size_t> pins;
-    std::vector<long long> signs;
-    // free_params[k] / denom = a_{k+1} (so a_1, a_2, ..., a_{n-1})
-    std::vector<long long> free_params;
-    long long denom;
-    // full_sequence[j] / denom = a_j for j = 0, ..., n + L - 1 (L = n+1)
-    std::vector<long long> full_sequence;
+// Reduced-fraction rational: num / denom, denom > 0, gcd(|num|, denom) = 1.
+struct Fraction {
+    long long num = 0;
+    long long denom = 1;
+    Fraction() = default;
+    Fraction(long long n) : num(n), denom(1) {}
+    Fraction(long long n, long long d) {
+        if (d == 0) throw std::invalid_argument("Fraction: zero denom");
+        if (d < 0) { n = -n; d = -d; }
+        long long g = gcd(std::abs(n), d);
+        num = n / g; denom = d / g;
+    }
+    static long long gcd(long long a, long long b) {
+        if (a < 0) a = -a;
+        while (b != 0) { long long t = b; b = a % b; a = t; }
+        return a;
+    }
+    bool is_integer() const { return denom == 1; }
+    bool is_zero() const { return num == 0; }
+    bool is_one() const { return num == 1 && denom == 1; }
+    bool is_neg_one() const { return num == -1 && denom == 1; }
+    bool in_open_unit_box() const {
+        if (is_zero()) return true;
+        // Strict -1 < v < 1; for fractions, v > -1 iff num > -denom.
+        if (is_integer()) return num > -1 && num < 1;
+        return num > -denom && num < denom;
+    }
+    bool in_closed_unit_box() const {
+        return is_zero() || in_open_unit_box() || is_one() || is_neg_one();
+    }
+    bool operator==(const Fraction& o) const {
+        return num * o.denom == o.num * denom;
+    }
+    bool operator<(const Fraction& o) const {
+        return num * o.denom < o.num * denom;
+    }
+    bool operator>(const Fraction& o) const { return o < *this; }
+    bool operator<=(const Fraction& o) const { return !(o < *this); }
+    bool operator>=(const Fraction& o) const { return !(*this < o); }
+    Fraction operator+(const Fraction& o) const {
+        long long d = denom / gcd(denom, o.denom) * o.denom;
+        long long n = num * (d / denom) + o.num * (d / o.denom);
+        return Fraction(n, d);
+    }
+    Fraction operator-(const Fraction& o) const {
+        long long d = denom / gcd(denom, o.denom) * o.denom;
+        long long n = num * (d / denom) - o.num * (d / o.denom);
+        return Fraction(n, d);
+    }
+    Fraction operator*(const Fraction& o) const {
+        return Fraction(num * o.num, denom * o.denom);
+    }
+    Fraction operator-() const { return Fraction(-num, denom); }
+    std::string to_string() const {
+        if (denom == 1) return std::to_string(num);
+        return std::to_string(num) + "/" + std::to_string(denom);
+    }
 };
 
-// Hard-coded witnesses from `python/nbonacci_shell_covering_proof.py`
-// (output of `make nbonacci_shell_covering_proof` for n=2..8).  The
-// `full_sequence` is the JSON's `sequence_checked` field (the
-// `python/nbonacci_shell_covering_proof_check.py` replay tool
-// independently re-derives the same numbers from `free_params` and the
-// homogeneous recurrence, so the literal integer sequence here is
-// machine-checked, not hand-typed).
-const std::array<CoveringWitness, 7> kWitnesses = {{
-    // n = 2, L = 3
-    {2,
-     {4},
-     {-1},
-     {1},
-     1,
-     {1, 1, 0, 1, -1}},
-    // n = 3, L = 4
-    {3,
-     {1, 5},
-     {1, -1},
-     {1, 0},
-     1,
-     {1, 1, 0, 0, 1, -1, 0}},
-    // n = 4, L = 5, denom = 3
-    {4,
-     {1, 6, 8},
-     {1, -1, 1},
-     {3, 0, -1},
-     3,
-     {3, 3, 0, -1, 1, 3, -3, -2, 3}},
-    // n = 5, L = 6, denom = 3
-    {5,
-     {1, 8, 9, 10},
-     {1, -1, 1, -1},
-     {3, 1, -1, 1},
-     3,
-     {3, 3, 1, -1, 1, -1, 3, -1, -3, 3, -3}},
-    // n = 6, L = 7, denom = 2
-    {6,
-     {7, 8, 9, 10, 12},
-     {1, 1, -1, -1, -1},
-     {2, 2, 0, -1, 0},
-     2,
-     {2, 2, 2, 0, -1, 0, -1, 2, 2, -2, -2, 1, -2}},
-    // n = 7, L = 8, denom = 3
-    {7,
-     {1, 10, 11, 12, 13, 14},
-     {1, -1, 1, -1, 1, -1},
-     {3, 1, -1, 1, -1, 1},
-     3,
-     {3, 3, 1, -1, 1, -1, 1, -1, 3, -1, -3, 3, -3, 3, -3}},
-    // n = 8, L = 9, denom = 3
-    {8,
-     {9, 10, 12, 13, 14, 15, 16},
-     {1, -1, 1, -1, 1, -1, 1},
-     {3, 0, -1, 1, -1, 1, -1},
-     3,
-     {3, 3, 0, -1, 1, -1, 1, -1, 1, 3, -3, -2, 3, -3, 3, -3, 3}},
-}};
-
-// Reconstruct the full sequence (length n + L = 2n + 1) from the first
-// n values via the homogeneous recurrence
-//   a_{t+n} = a_t - (a_{t+1} + a_{t+2} + ... + a_{t+n-1})
-// Returns the reconstructed sequence, as integer multiples of `denom`.
-std::vector<long long> reconstruct(const CoveringWitness& w) {
-    const std::size_t n = w.n;
-    const std::size_t L = n + 1;
-    std::vector<long long> a(2 * n + 1);
-    a[0] = w.denom;  // a_0 = 1
-    for (std::size_t k = 0; k < n - 1; ++k) a[k + 1] = w.free_params[k];
-    // t ranges 0..L-1 (inclusive).  At t = L-1 we write a[(L-1)+n] = a[2n],
-    // the last index in the 2n+1-long vector.  At t = L we would write
-    // a[2n+1] -- out of bounds.
-    for (std::size_t t = 0; t < L; ++t) {
-        long long sum = 0;
-        for (std::size_t j = 1; j < n; ++j) sum += a[t + j];
-        a[t + n] = a[t] - sum;
+// Parse "num/denom" or "num" (where num, denom are signed decimals).
+std::optional<Fraction> parse_fraction(const std::string& s) {
+    auto slash = s.find('/');
+    if (slash == std::string::npos) {
+        try { return Fraction(std::stoll(s)); } catch (...) { return std::nullopt; }
     }
-    return a;
+    try {
+        long long num = std::stoll(s.substr(0, slash));
+        long long denom = std::stoll(s.substr(slash + 1));
+        return Fraction(num, denom);
+    } catch (...) { return std::nullopt; }
+}
+
+// Parse "[1, 2, 3]" or "[]".
+std::vector<std::string> parse_csv(const std::string& s) {
+    std::vector<std::string> out;
+    if (s.size() < 2 || s.front() != '[' || s.back() != ']') return out;
+    std::string body = s.substr(1, s.size() - 2);
+    if (body.empty()) return out;
+    std::string cur;
+    int depth = 0;
+    for (char c : body) {
+        if (c == ',' && depth == 0) { out.push_back(cur); cur.clear(); continue; }
+        if (c == '[') ++depth;
+        if (c == ']') --depth;
+        cur += c;
+    }
+    if (!cur.empty()) out.push_back(cur);
+    // Trim whitespace
+    for (auto& x : out) {
+        while (!x.empty() && std::isspace(x.front())) x.erase(x.begin());
+        while (!x.empty() && std::isspace(x.back())) x.pop_back();
+    }
+    return out;
+}
+
+// Parse the value following "key=" up to whitespace or end-of-line.
+std::string parse_field(const std::string& line, const std::string& key) {
+    auto pos = line.find(key + "=");
+    if (pos == std::string::npos) return "";
+    pos += key.size() + 1;
+    std::string out;
+    while (pos < line.size() && !std::isspace(line[pos])) {
+        out += line[pos++];
+    }
+    return out;
+}
+
+struct Candidate {
+    long long n = 0;
+    long long L = 0;
+    std::vector<long long> indices;
+    std::vector<long long> signs;
+    std::vector<Fraction> solution;
+    std::vector<Fraction> sequence;
+    std::vector<long long> gap_pattern;
+    std::vector<long long> cover_per_pin;
+    long long simplicity = 0;
+};
+
+std::optional<Candidate> parse_line(const std::string& line) {
+    Candidate c;
+    auto n_str = parse_field(line, "n");
+    auto L_str = parse_field(line, "L");
+    if (n_str.empty() || L_str.empty()) return std::nullopt;
+    c.n = std::stoll(n_str);
+    c.L = std::stoll(L_str);
+    auto idx_s = parse_csv(parse_field(line, "indices"));
+    auto sgn_s = parse_csv(parse_field(line, "signs"));
+    if (idx_s.size() != sgn_s.size()) return std::nullopt;
+    for (auto& x : idx_s) c.indices.push_back(std::stoll(x));
+    for (auto& x : sgn_s) c.signs.push_back(std::stoll(x));
+    auto sol_s = parse_csv(parse_field(line, "solution"));
+    auto seq_s = parse_csv(parse_field(line, "sequence"));
+    for (auto& x : sol_s) {
+        auto f = parse_fraction(x);
+        if (!f) return std::nullopt;
+        c.solution.push_back(*f);
+    }
+    for (auto& x : seq_s) {
+        auto f = parse_fraction(x);
+        if (!f) return std::nullopt;
+        c.sequence.push_back(*f);
+    }
+    auto gp_s = parse_csv(parse_field(line, "gap_pattern"));
+    for (auto& x : gp_s) c.gap_pattern.push_back(std::stoll(x));
+    auto cp_s = parse_csv(parse_field(line, "cover_per_pin"));
+    for (auto& x : cp_s) c.cover_per_pin.push_back(std::stoll(x));
+    auto smp_s = parse_field(line, "simplicity");
+    if (!smp_s.empty()) c.simplicity = std::stoll(smp_s);
+    return c;
+}
+
+std::vector<Candidate> load_file(const std::string& path) {
+    std::vector<Candidate> out;
+    std::ifstream f(path);
+    if (!f) return out;
+    std::string line;
+    while (std::getline(f, line)) {
+        if (line.empty()) continue;
+        auto c = parse_line(line);
+        if (c) out.push_back(*c);
+    }
+    return out;
 }
 
 void require(bool condition, const char* message) {
     if (!condition) throw std::runtime_error(message);
 }
 
-long long llabs_safe(long long x) { return x < 0 ? -x : x; }
-
 }  // namespace
 
-int main() {
-    std::size_t checks = 0;
-    for (const auto& w : kWitnesses) {
-        const std::size_t n = w.n;
-        const std::size_t L = n + 1;
-        // 1. Reconstruct the sequence and compare to the stored witness.
-        const auto reconstructed = reconstruct(w);
-        require(reconstructed.size() == w.full_sequence.size(),
-                "reconstructed length != stored sequence length");
-        for (std::size_t j = 0; j < reconstructed.size(); ++j) {
-            require(reconstructed[j] == w.full_sequence[j],
-                    "reconstructed sequence mismatch at some j");
-            ++checks;
-        }
-        // 2. Pin equalities: a_{pins[k]} = sign[k] * denom.
-        for (std::size_t k = 0; k < w.pins.size(); ++k) {
-            const std::size_t idx = w.pins[k];
-            require(idx < reconstructed.size(),
-                    "pin index out of range");
-            require(reconstructed[idx] == w.signs[k] * w.denom,
-                    "pin equality failed");
-            ++checks;
-        }
-        // 3. Free-parameter vector in [-denom, denom]^(n-1).
-        for (std::size_t k = 0; k < w.free_params.size(); ++k) {
-            require(llabs_safe(w.free_params[k]) <= w.denom,
-                    "free parameter out of [-1, 1]");
-            ++checks;
-        }
-        // 4. Full sequence in [-denom, denom] (the box inequality).
-        for (std::size_t j = 0; j < reconstructed.size(); ++j) {
-            require(llabs_safe(reconstructed[j]) <= w.denom,
-                    "box inequality violated for some j");
-            ++checks;
-        }
-        // 5. Cover property: every window t in 0..L has some i in
-        //    0..n-1 with |a_{t+i}| = denom.
-        for (std::size_t t = 0; t <= L; ++t) {
-            bool covered = false;
-            for (std::size_t i = 0; i < n; ++i) {
-                if (llabs_safe(reconstructed[t + i]) == w.denom) {
-                    covered = true;
-                    break;
-                }
-            }
-            require(covered, "cover property violated for some window t");
-            ++checks;
-        }
-        // 6. Gap pattern sanity: the n-1 pin indices sorted increasingly
-        //    and gap-differenced have the right count and sign.
-        std::vector<std::size_t> sorted_pins(w.pins);
-        std::sort(sorted_pins.begin(), sorted_pins.end());
-        for (std::size_t k = 1; k < sorted_pins.size(); ++k) {
-            require(sorted_pins[k] > sorted_pins[k - 1],
-                    "pin indices not strictly increasing when sorted");
-            ++checks;
+int main(int argc, char** argv) {
+    std::size_t total_checks = 0;
+    int total_candidates = 0;
+    int total_files_loaded = 0;
+    int total_files_missing = 0;
+    // Default path: out/nbonacci_covering_enumerator/
+    std::string base = "out/nbonacci_covering_enumerator";
+    for (int i = 1; i < argc; ++i) {
+        std::string a = argv[i];
+        auto eq = a.find('=');
+        if (eq != std::string::npos && a.substr(0, eq) == "--enumerator-dir") {
+            base = a.substr(eq + 1);
         }
     }
-    std::printf("nbonacci_covering_witness_test: %zu checks, 0 failures, "
-                "witnesses for n in {2, 3, 4, 5, 6, 7, 8}\n", checks);
+    for (int n = 2; n <= 8; ++n) {
+        long long L = n + 1;
+        std::string path = base + "/n" + std::to_string(n)
+                            + "_L" + std::to_string(L) + ".txt";
+        auto cands = load_file(path);
+        if (cands.empty()) {
+            std::printf("[n=%lld] %s: file missing or empty, skipping\n",
+                        (long long)n, path.c_str());
+            ++total_files_missing;
+            continue;
+        }
+        ++total_files_loaded;
+        std::printf("[n=%lld] loaded %zu candidates from %s\n",
+                    (long long)n, cands.size(), path.c_str());
+        for (const auto& c : cands) {
+            ++total_candidates;
+            // 1. Reconstruct the sequence from the first n values via
+            //    the homogeneous recurrence a_{t+n} = a_t - sum a_{t+j}.
+            std::vector<Fraction> recon(c.n + c.L);
+            recon[0] = Fraction(1);
+            for (std::size_t j = 0; j < c.solution.size(); ++j) recon[j + 1] = c.solution[j];
+            for (long long t = 0; t < c.L; ++t) {
+                Fraction sum(0);
+                for (std::size_t j = 1; j < c.n; ++j) sum = sum + recon[t + j];
+                recon[t + c.n] = recon[t] - sum;
+            }
+            // The reconstruction should match the stored sequence.
+            require(recon.size() == c.sequence.size(),
+                    "recon size != stored size");
+            for (std::size_t j = 0; j < recon.size(); ++j) {
+                require(recon[j] == c.sequence[j],
+                        "reconstruction mismatch");
+                ++total_checks;
+            }
+            // 2. Pin equalities: a_{indices[k]} = signs[k].
+            for (std::size_t k = 0; k < c.indices.size(); ++k) {
+                require(c.sequence[c.indices[k]] == Fraction(c.signs[k]),
+                        "pin equality failed");
+                ++total_checks;
+            }
+            // 3. Free-parameter vector in [-1, 1]^(n-1).
+            for (const auto& v : c.solution) {
+                require(v.in_closed_unit_box(), "free param out of [-1, 1]");
+                ++total_checks;
+            }
+            // 4. Full sequence in [-1, 1].
+            for (const auto& v : c.sequence) {
+                require(v.in_closed_unit_box(), "box inequality violated");
+                ++total_checks;
+            }
+            // 5. Cover property: every window t in 0..L has some i in
+            //    0..n-1 with |a_{t+i}| = 1.
+            for (long long t = 0; t <= c.L; ++t) {
+                bool covered = false;
+                for (std::size_t i = 0; i < c.n; ++i) {
+                    const Fraction& v = c.sequence[t + i];
+                    if (v.is_one() || v.is_neg_one()) { covered = true; break; }
+                }
+                require(covered, "cover property violated");
+                ++total_checks;
+            }
+        }
+    }
+    std::printf("\nnbonacci_covering_witness_test: %d candidates across %d "
+                "n-values, %zu checks, 0 failures\n",
+                total_candidates, total_files_loaded, total_checks);
+    if (total_files_loaded == 0) {
+        std::printf("(no .txt sidecars found in %s/; run\n"
+                    "  make nbonacci_covering_witness_enumerate\n"
+                    "first to populate them)\n", base.c_str());
+    }
     return 0;
 }

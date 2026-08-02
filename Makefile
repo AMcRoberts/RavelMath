@@ -87,7 +87,7 @@ TRANSITION_FILES := $(addprefix $(TRANSITIONS_DIR)/spectre_transitions_,$(addsuf
 .PHONY: rnd13_factor_probe rnd13_prefix_automaton_probe classify_adelic_tiling test_bp_gb_divisor adelic_boundary_spectral_radius gb_bp_involution_check
 .PHONY: class_ii_symmetry_probe class_ii_boundary_family_test substitution_neighborhood_test
 .PHONY: class_ii_corona_literature_probe
-.PHONY: nbonacci_periodic_carry_probe nbonacci_carry_cycle_probe nbonacci_sign_chamber_probe nbonacci_chamber_stability nbonacci_chamber_merge nbonacci_rank_feature_search nbonacci_sector_gap_rank nbonacci_block_spectrum_probe nbonacci_block_forcing_probe nbonacci_block_l1_growth_probe nbonacci_max_shell_return_probe nbonacci_max_shell_return_stability nbonacci_shell_word_probe nbonacci_conjugate_height_probe nbonacci_conjugate_height_bound nbonacci_dominance_theorem_pipeline nbonacci_homogeneous_shell_smt nbonacci_homogeneous_shell_unsat_core nbonacci_shell_covering_search nbonacci_shell_covering_proof nbonacci_homogeneous_shell_core_enumerate
+.PHONY: nbonacci_periodic_carry_probe nbonacci_carry_cycle_probe nbonacci_sign_chamber_probe nbonacci_chamber_stability nbonacci_chamber_merge nbonacci_rank_feature_search nbonacci_sector_gap_rank nbonacci_block_spectrum_probe nbonacci_block_forcing_probe nbonacci_block_l1_growth_probe nbonacci_max_shell_return_probe nbonacci_max_shell_return_stability nbonacci_shell_word_probe nbonacci_conjugate_height_probe nbonacci_conjugate_height_bound nbonacci_dominance_theorem_pipeline nbonacci_homogeneous_shell_smt nbonacci_homogeneous_shell_unsat_core nbonacci_shell_covering_search nbonacci_shell_covering_proof nbonacci_covering_witness_enumerator nbonacci_covering_witness_enumerate nbonacci_data_shaker nbonacci_homogeneous_shell_core_enumerate
 .PHONY: class_ii_neighbor_probe
 .PHONY: return_contact_lift_probe
 .PHONY: class_ii_terminal_transport_probe
@@ -357,6 +357,46 @@ nbonacci_carry_cycle_probe: $(NBONACCI_CARRY_CYCLE_PROBE_BIN)
 $(NBONACCI_CARRY_CYCLE_PROBE_BIN): \
 		$(APPDIR)/nbonacci_carry_cycle_probe.cpp | $(BUILDDIR)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< -o $@
+
+# C++ covering-witness enumerator: the durable C++ layer for the
+# Python nbonacci_shell_covering_proof.py enumeration.  Same
+# JSON output format, ~10-50x faster (C++ is integer LCM-of-
+# denominators, Python is Fraction).  No header dependencies
+# beyond the standard library; built and run by
+# `make nbonacci_covering_witness_enumerate` which iterates n.
+NBONACCI_COVERING_WITNESS_ENUMERATOR_BIN := $(BUILDDIR)/nbonacci_covering_witness_enumerator
+$(NBONACCI_COVERING_WITNESS_ENUMERATOR_BIN): \
+		$(APPDIR)/nbonacci_covering_witness_enumerator.cpp | $(BUILDDIR)
+	$(CXX) $(CXXFLAGS) $< -o $@
+
+# nbonacci_data_shaker: C++ cross-tool data shaker.  Loads the C++
+# covering witness enumerator's JSON sidecars, runs polynomial
+# fits, holds out the largest n, emits difference tables, and
+# flags anomalies.  This is the C++ durable layer for the
+# pattern-mining step; the Python nbonacci_shell_covering_proof.py
+# still drives the candidate enumeration but the shaker
+# itself lives in C++.
+NBONACCI_DATA_SHAKER_BIN := $(BUILDDIR)/nbonacci_data_shaker
+$(NBONACCI_DATA_SHAKER_BIN): \
+		$(APPDIR)/nbonacci_data_shaker.cpp | $(BUILDDIR)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< -o $@
+
+NBONACCI_DATA_SHAKER_DIR ?= out/nbonacci_data_shaker
+nbonacci_data_shaker: $(NBONACCI_DATA_SHAKER_BIN) nbonacci_covering_witness_enumerate
+	./$(NBONACCI_DATA_SHAKER_BIN) \
+		--enumerator-dir=out/nbonacci_covering_enumerator \
+		--output-dir=$(NBONACCI_DATA_SHAKER_DIR) \
+		--n-min=2 --n-max=8
+
+NBONACCI_COVERING_ENUM_DIR ?= out/nbonacci_covering_enumerator
+nbonacci_covering_witness_enumerate: $(NBONACCI_COVERING_WITNESS_ENUMERATOR_BIN)
+	@mkdir -p $(NBONACCI_COVERING_ENUM_DIR)
+	@for n in 2 3 4 5 6 7 8; do \
+		echo "=== enumerating n=$$n ==="; \
+		./$(NBONACCI_COVERING_WITNESS_ENUMERATOR_BIN) --n=$$n --out-dir=$(NBONACCI_COVERING_ENUM_DIR) || exit 1; \
+		./$(NBONACCI_COVERING_WITNESS_ENUMERATOR_BIN) --n=$$n --L=$$(($$n + 2)) --out-dir=$(NBONACCI_COVERING_ENUM_DIR) || exit 1; \
+	done
+	@echo "wrote n2..n8 (L=n+1 and L=n+2) JSON sidecars to $(NBONACCI_COVERING_ENUM_DIR)/"
 nbonacci_sign_chamber_probe:
 	RAVEL_PROBE_MEMORY_MB=10240 python3 python/nbonacci_sign_chamber_probe.py --n=3 --bound=6 --mode=sign
 	RAVEL_PROBE_MEMORY_MB=10240 python3 python/nbonacci_sign_chamber_probe.py --n=3 --bound=6 --mode=ordered
@@ -725,6 +765,9 @@ NBONACCI_COVERING_WITNESS_TEST_BIN := $(BUILDDIR)/nbonacci_covering_witness_test
 nbonacci_covering_witness_test: $(NBONACCI_COVERING_WITNESS_TEST_BIN)
 $(NBONACCI_COVERING_WITNESS_TEST_BIN): $(TESTDIR)/nbonacci_covering_witness_test.cpp | $(BUILDDIR)
 	$(CXX) $(CXXFLAGS) $< -o $@
+
+nbonacci_covering_witness_enumerator: $(NBONACCI_COVERING_WITNESS_ENUMERATOR_BIN)
+nbonacci_data_shaker: $(NBONACCI_DATA_SHAKER_BIN) nbonacci_covering_witness_enumerate
 
 PISOT_NUMERATION_TOPOLOGY_TEST_BIN := $(BUILDDIR)/pisot_numeration_topology_test
 pisot_numeration_topology_test: $(PISOT_NUMERATION_TOPOLOGY_TEST_BIN)

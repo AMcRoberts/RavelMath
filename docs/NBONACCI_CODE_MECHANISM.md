@@ -326,39 +326,77 @@ and reports per-(n, L) and per-candidate PASS/FAIL.
 Run:
 
 ```sh
-make nbonacci_shell_covering_proof
-# equivalent to:
-#   python3 python/nbonacci_shell_covering_proof.py --n-min=2 --n-max=8 \
-#     --emit-json-dir=out/nbonacci_covering_proof/ \
-#     --mine-gap-formula --attempt-promotion
-#   python3 python/nbonacci_shell_covering_proof_check.py out/nbonacci_covering_proof/
+make nbonacci_shell_covering_proof   # Python (exploration prototype)
+make nbonacci_covering_witness_enumerate   # C++ (durable layer, ~10x faster)
+make nbonacci_data_shaker             # C++ (cross-tool pattern mining)
 ```
+
+The C++ tools are the durable layer.  The Python tool stays for
+fast-iteration exploration, but the C++ covering witness enumerator
+emits the same JSON format, runs ~10x faster, and is the source
+of truth for the symbolic closure.
 
 The Python tool applies a 12 GiB virtual-memory fence by default
 (per the 2026-08-02 standing directive, "run big stuff with 12gb
-memory fence; we've been crashed a bunch by not doing that").  The
-fence is the same one the Z3-backed `nbonacci_homogeneous_shell_smt`
-and `nbonacci_homogeneous_shell_unsat_core` probes use, with the
-default raised from 10 GiB to 12 GiB.  Override via the
-`RAVEL_PROBE_MEMORY_MB` environment variable; set to `0` to disable
-(not recommended for `n >= 8`).
+memory fence; we've been crashed a bunch by not doing that").
+Override via the `RAVEL_PROBE_MEMORY_MB` environment variable;
+set to `0` to disable (not recommended for `n >= 8`).
 
-**C++ regression test** for the same symbolic closure:
+**C++ durable layer** (`app/nbonacci_covering_witness_enumerator.cpp`):
+the same enumeration as the Python tool, in C++ with exact
+`SignInt = (num, denom)` rational arithmetic.  Emits both
+`out/nbonacci_covering_enumerator/n{n}_L{n+1}.{json,txt}` for
+each n in {2, ..., 8}: JSON for cross-tool consumption, TXT
+(one line per candidate, tab-separated fields) for the
+in-C++ regression test.  Runtime: ~1m34s for n=2..8 (both L=n+1
+and L=n+2).  Output verified to be SET-EQUAL to the Python tool's
+output for all 750 SAT candidates and all 7 UNSAT failure
+breakdowns (a difference only in `std::sort` stability on tied
+simplicity scores, which doesn't affect the candidate SET).
+
+**C++ cross-tool data shaker** (`app/nbonacci_data_shaker.cpp`):
+loads the C++ enumerator's JSON sidecars, runs Vandermonde
+polynomial fits (deg 1, 2) with holdout validation on the
+simplest-per-n candidate's `first_pin`, `tail_cluster`,
+`distinct_abs_count`, and `candidate_count` sequences; computes
+finite-difference tables; auto-flags anomalies.  Output written
+to `out/nbonacci_data_shaker/shaker.json`.  Findings for n=2..8:
+- first_pin[n]: `[4, 1, 1, 1, 7, 1, 9]`, no polynomial fit (deg 1
+  predicts 25 at n=8, actual 9; deg 2 predicts 67, actual 9).
+- tail_cluster[n]: `[0, 0, 0, 2, 0, 4, 4]`, anomaly at n=6 (would
+  expect 2 from the n=5,7 trend but is 0).
+- distinct_abs[n]: `[2, 2, 4, 2, 3, 2, 4]`, oscillates.
+- sign_balance[n]: `[(0,1), (1,1), (1,2), (2,2), (2,3), (3,3), (4,3)]`,
+  the absolute count of +1 vs -1 signs in the simplest candidate's
+  pin vector.  pos + neg = n - 1 (trivially), but the asymmetry
+  (pos - neg) is mostly in {-1, 0, 1} with no closed form.
+- Total candidate count: `[3, 4, 8, 33, 66, 212, 424]`, growth is
+  super-exponential; neither deg 1 (predicts 848 at n=8) nor
+  deg 2 (predicts 1046) fits.
+
+**C++ regression test** for the symbolic closure:
 `tests/nbonacci_covering_witness_test.cpp` (Makefile target
 `nbonacci_covering_witness_test`, enrolled in `make check`).
-Encodes the seven n=2..8 simplest candidates as hard-coded integer
-data (LCM-of-denominators trick: multiply through by `denom` and
-verify in `Z`; no floats, no Z3, no multiprecision), reconstructs
-each sequence from the free-parameter vector via the homogeneous
-recurrence, and re-verifies the four closure conditions
-(pin equalities, free-parameter box, full-sequence box, cover
-property) and a fifth sanity check (pin indices strictly
-increasing when sorted).  Current run: 280 checks, 0 failures.
-This is the same set of facts the Python replay checker
-re-derives, in a different arithmetic system, with a different
-machine-checkable artifact.  Either side passing is sufficient
-evidence the closure is real; both passing is the regression-test
-guarantee the symbolic witness stays valid across future changes.
+Reads the C++ enumerator's `.txt` sidecars and, for every
+candidate in `n{n}_L{n+1}.txt` (the SAT sidecar), runs an
+independent re-verification with a different (Fraction,
+num/denom reduced) arithmetic system:
+1. Reconstruct the sequence from the free parameters via the
+   homogeneous recurrence `a_{t+n} = a_t - (a_{t+1} + ... + a_{t+n-1})`
+   and check it matches the stored sequence.
+2. Verify the pin equalities: `a_{indices[k]} = signs[k]`.
+3. Verify the free parameters are in `[-1, 1]`.
+4. Verify the full sequence is in `[-1, 1]` (box inequality).
+5. Verify every window t in 0..L has some `|a_{t+i}| = 1`
+   (cover property).
+
+Current run: 750 candidates across 7 n-values, 39909 checks, 0
+failures.  This is the same set of facts the Python replay
+checker re-derives, in a different arithmetic system, with a
+different machine-checkable artifact.  Either side passing is
+sufficient evidence the closure is real; both passing is the
+regression-test guarantee the symbolic witness stays valid
+across future changes.
 
 ### Simplest candidate per `n` (from this tool, n=2..8)
 
