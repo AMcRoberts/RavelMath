@@ -203,9 +203,11 @@ For the stronger cross-box test, use `python/nbonacci_chamber_merge.py` (or
 unions the weighted constraints from multiple boxes, and searches for one
 common integer potential. The n=3 bounds 8 and 12 merge successfully, even
 though their independently normalized longest-path offsets differ.
-The same merged potential survives a fresh bound-16 certificate (22,100
-chambers and 51,120 weighted edges); this run introduces a 162-node quotient
-SCC but still passes the merged difference constraints.
+The same merged potential survives fresh bounds 16 and 32 (98,996 chambers
+and 285,872 weighted edges at bound 32); bound 16 introduces a 162-node
+quotient SCC, and both still pass the merged difference constraints. The
+merge solver uses SCC-local propagation so this remains practical as the
+certificate grows.
 
 The replay checker also enforces the exact involution `x ↦ -x`: every chamber
 must have its sign-negated partner with the same offset. This is a finite

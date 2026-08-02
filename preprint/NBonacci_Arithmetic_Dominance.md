@@ -186,8 +186,10 @@ This normalization issue is not itself an obstruction.  The merge tool
 the two finite constraint systems; the n=3, bounds 8 and 12 systems admit one
 common integer potential.  Cross-box merging is therefore the preferred
 promotion test, while a genuine positive difference cycle is a sound failure.
-The same potential merges bounds 8, 12, and 16 (22,100 chambers and 51,120
-weighted edges), despite a new 162-node quotient SCC appearing at bound 16.
+The same potential merges bounds 8, 12, 16, and 32 (98,996 chambers and
+285,872 weighted edges at bound 32), despite a new 162-node quotient SCC
+appearing at bound 16.  The merge solver propagates constraints componentwise
+over the quotient SCC DAG rather than performing a global quadratic relaxation.
 
 ## 5. What is proved and what remains
 

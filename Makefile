@@ -372,8 +372,10 @@ nbonacci_chamber_stability:
 nbonacci_chamber_merge: nbonacci_chamber_stability
 	RAVEL_PROBE_MEMORY_MB=10240 python3 python/nbonacci_sign_chamber_probe.py --n=3 --bound=16 --mode=gaps-mod --modulus=auto --rank-base=sum --emit-certificate=/tmp/n3_b16_rank.json
 	python3 python/nbonacci_chamber_certificate_check.py /tmp/n3_b16_rank.json
-	python3 python/nbonacci_chamber_merge.py /tmp/n3_b8_rank.json /tmp/n3_b12_rank.json /tmp/n3_b16_rank.json --emit=/tmp/n3_b8_b12_b16_merged_rank.json
-	python3 python/nbonacci_chamber_certificate_check.py /tmp/n3_b8_b12_b16_merged_rank.json
+	RAVEL_PROBE_MEMORY_MB=10240 python3 python/nbonacci_sign_chamber_probe.py --n=3 --bound=32 --mode=gaps-mod --modulus=auto --rank-base=sum --emit-certificate=/tmp/n3_b32_rank.json
+	python3 python/nbonacci_chamber_certificate_check.py /tmp/n3_b32_rank.json
+	python3 python/nbonacci_chamber_merge.py /tmp/n3_b8_rank.json /tmp/n3_b12_rank.json /tmp/n3_b16_rank.json /tmp/n3_b32_rank.json --emit=/tmp/n3_b8_b12_b16_b32_merged_rank.json
+	python3 python/nbonacci_chamber_certificate_check.py /tmp/n3_b8_b12_b16_b32_merged_rank.json
 
 nbonacci_rank_feature_search: nbonacci_chamber_stability
 	python3 python/nbonacci_rank_feature_search.py /tmp/n3_b8_rank.json
