@@ -253,6 +253,8 @@ At n=4, both sign-sector affine gaps (with scale) and the bounded mask-only
 refinement are infeasible. The next refinement must encode ordered gap
 relations, not just the zero-gap mask; the full sign×mask LP is intentionally
 gated because its feature count is too large for an unbounded run.
+An order-only sector refinement is also infeasible at n=4, so the successful
+n=3 sector rank does not lift by adding gap order without sign interaction.
 
 Example:
 

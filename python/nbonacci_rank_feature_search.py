@@ -39,6 +39,9 @@ def sector_label(signs: str, gaps: list[int], family: str) -> str:
     if family in ("sector-gaps-mask", "mask-gaps"):
         mask = "".join("1" if value == 0 else "0" for value in gaps)
         return (signs + "#" + mask) if family == "sector-gaps-mask" else mask
+    if family == "order-gaps":
+        levels = {value: index for index, value in enumerate(sorted(set(gaps)))}
+        return ",".join(str(levels[value]) for value in gaps)
     return signs
 
 
@@ -48,7 +51,7 @@ def features(name: str, family: str, sectors: dict[str, int] | None = None,
     sign_values = [1.0 if c == "+" else -1.0 if c == "-" else 0.0
                    for c in signs]
     result: list[float] = []
-    if family in ("sector-gaps", "sector-gaps-scale", "sector-gaps-mask", "mask-gaps"):
+    if family in ("sector-gaps", "sector-gaps-scale", "sector-gaps-mask", "mask-gaps", "order-gaps"):
         if sectors is None or gap_count is None:
             raise ValueError("sector-gaps requires sector metadata")
         width = gap_count + (2 if family == "sector-gaps-scale" else 1)
@@ -102,12 +105,12 @@ def search(data: dict, family: str):
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("certificate")
-    parser.add_argument("--family", choices=("sign", "gaps", "quadratic", "rich", "sector-gaps", "sector-gaps-scale", "sector-gaps-mask", "mask-gaps"),
+    parser.add_argument("--family", choices=("sign", "gaps", "quadratic", "rich", "sector-gaps", "sector-gaps-scale", "sector-gaps-mask", "mask-gaps", "order-gaps"),
                         action="append")
     parser.add_argument("--emit", help="write a rounded integer coefficient certificate")
     args = parser.parse_args()
     data = load(args.certificate)
-    families = args.family or ["sign", "gaps", "quadratic", "rich", "sector-gaps", "sector-gaps-scale", "sector-gaps-mask", "mask-gaps"]
+    families = args.family or ["sign", "gaps", "quadratic", "rich", "sector-gaps", "sector-gaps-scale", "sector-gaps-mask", "mask-gaps", "order-gaps"]
     for family in families:
         result, coefficients, minimum_slack, vectors = search(data, family)
         if coefficients is None:

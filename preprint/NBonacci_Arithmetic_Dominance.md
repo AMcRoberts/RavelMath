@@ -222,6 +222,8 @@ integer arithmetic.
 In (n=4), the corresponding sign-sector and mask-only refinements are
 infeasible, indicating that ordered gap relations—not merely zero-gap data—
 are part of the dimension-parametric template.
+An order-only gap-sector refinement also fails at n=4; the missing interaction
+must couple gap order to sign sectors.
 
 ## 5. What is proved and what remains
 
