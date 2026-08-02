@@ -434,6 +434,10 @@ distances `out<=3`, `in<=2`, and hub radius `3n-1`. This is the strongest
 available evidence that the Root/AlternatingTriple slack labels are the right
 finite rank; the remaining theorem seam is the coefficient-to-descriptor lift.
 
+The broader grammar regression reports 36,747,061 checks and zero failures
+through `n=64`, covering descriptor round trips, affine closure, inverse
+tables, symmetry, and transition deltas.
+
 For proof-mining experiments, emit the terminal Z3 proof object:
 
 ```sh

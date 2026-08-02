@@ -52,6 +52,13 @@ has graph radius exactly `3n-1` in both directions. Thus the descriptor slack
 is already a verified bounded local rank, and the remaining bridge is to relate
 that graph layer to the coefficient shell-return graph.
 
+The companion grammar regression is broader: `make nbonacci_margin_invariant_test`
+executes 36,747,061 exact checks through `n=64` with zero failures. It verifies
+descriptor round trips, affine-update closure, inverse tables, mirror symmetry,
+pair-stratum counts, and transition deltas. The symbolic side of the proposed
+lift is therefore extensively verified; only the coefficient-to-descriptor map
+remains unproved.
+
 ## Where it lives
 
 The exact implementation is in `include/ravel/nbonacci_margin_invariant.hpp`:
