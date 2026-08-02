@@ -115,6 +115,7 @@ def main() -> int:
     counts = {"feasible": 0, "infeasible": 0, "inconclusive": 0}
     witnesses = []
     q_samples = []
+    inconclusive_words = []
     for index, word in enumerate(canonical_words(args.length)):
         if args.max_words and index >= args.max_words:
             break
@@ -129,12 +130,17 @@ def main() -> int:
             counts["infeasible"] += 1
         else:
             counts["inconclusive"] += 1
+            if len(inconclusive_words) < 8:
+                inconclusive_words.append(word)
     print(f"forbidden-block MILP: n={args.n} length={args.length} "
           f"tested={sum(counts.values())} {counts}")
     if witnesses:
         print("  feasible_words=" + " ".join("".join(map(str, word))
                                             for word in witnesses))
         print("  witness_q=" + " ".join(f"{value:.6g}" for value in q_samples))
+    if inconclusive_words:
+        print("  inconclusive_words=" + " ".join(",".join(map(str, word))
+                                                   for word in inconclusive_words))
     return 0
 
 

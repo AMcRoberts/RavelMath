@@ -306,11 +306,19 @@ the shell disjunction exactly; use `--max-q=.5` to exclude the ternary shell.
 At n=4, length 6 still has exterior-feasible words, while a length-8 sample
 is mostly infeasible but not empty. This rules out a naive fixed word-length
 lemma and points toward a finite forbidden language/return-depth automaton.
-As a targeted outer-shell experiment, the first 500 canonical n=4 length-8
-words are all MILP-infeasible for `q<=1/3` (M>=3), while exterior-feasible
-words occur near `q=1/2`. This is evidence for a small exceptional-shell
-regime followed by a uniform block obstruction, but the full word language
-still needs exhaustive coverage or a symbolic reduction.
+The exhaustive n=4 length-8 run covers all 3,281 canonical words and proves
+MILP-infeasible for strict `q<1/3` (M>3); the only survivor at the boundary is
+exactly `q=1/3`. The lone timeout was independently rerun with a 20-second
+cap and proved infeasible. Combined with the exact M=3 shell DAG PASS, this
+computationally excludes maximum shells M>=3 at n=4. The next automation is
+to emit replayable Farkas/SMT certificates rather than relying on solver
+status alone.
+The code-level mechanism is a boundary-witness automaton: a shell hit at
+coordinate `i>0` shifts deterministically to a hit at `i-1` on the next
+window, while only the tail coordinate can create a new hit, via
+`x_0-sum(x_1,...,x_(n-1))+d`. Mine these descending witnesses and tail resets
+before adding more affine rank features; this is the likely finite symbolic
+object behind the shell DAG.
 
 Example:
 

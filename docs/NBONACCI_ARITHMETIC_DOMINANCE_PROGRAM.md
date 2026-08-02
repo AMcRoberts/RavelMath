@@ -377,11 +377,20 @@ binary selectors. With `q<=1/2`, n=4 still has feasible length-6 words;
 length 8 is mostly infeasible but not empty in the bounded sample. Thus the
 uniform theorem should target a forbidden language or return-depth automaton,
 not a single universal word length.
-In a targeted sample, the first 500 canonical n=4 length-8 words are all
-infeasible for `q<=1/3` (M>=3), whereas survivors appear near `q=1/2`.
-This suggests separating a small exceptional-shell computation from a
-uniform outer-shell forbidden-language proof; exhaustive word coverage is
-still required before promotion.
+The exhaustive canonical n=4 length-8 sweep (3,281 words) is infeasible for
+every strict `q<1/3` (M>3); the sole survivor at the boundary is exactly
+`q=1/3`. The one timeout was independently rerun with a 20-second cap and
+proved infeasible. Together with the exact M=3 shell DAG certificate, this
+computationally excludes maximum shells M>=3 at n=4. A replayable Farkas/SMT
+certificate is still needed before promoting this finite result to Lean.
+The transition code identifies the symbolic mechanism behind the finite
+obstruction. If coordinate `i>0` is on the shell, then the shift makes
+coordinate `i-1` hit the shell at the next window with the same sign. The only
+new boundary contact can occur at the tail coordinate
+`x_0-sum(x_1,...,x_(n-1))+d`; the digit is the sole bounded correction there.
+Backtracked maximal chains are therefore descending boundary-witness words,
+with occasional tail resets, rather than arbitrary chamber motion. A formal
+proof can enumerate this small boundary automaton and bound its reset depth.
 
 ### Algebraic-height route
 

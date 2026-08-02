@@ -271,6 +271,12 @@ length-6 words remain feasible and a length-8 sample is sparse but nonempty.
 The prospective universal statement is therefore a finite forbidden language
 or return-depth automaton, not a single length-
 `n+1` obstruction.
+The transition formula reveals the likely automaton: a boundary hit at
+coordinate `i>0` shifts to a hit at `i-1`, while only the tail coordinate can
+create a new boundary hit, through
+`x_0 - sum(x_1,...,x_(n-1)) + d`. Maximal shell chains are thus descending
+boundary witnesses with bounded tail resets. This is the symbolic mechanism
+now targeted for formalization.
 
 There is a complementary algebraic route. For the n-bonacci root `β`, the
 covector `c_0=1`, `c_j=β c_{j-1}-1` satisfies the exact scalar update
