@@ -89,3 +89,24 @@ theorem companion_perron_gap_negative
   have hbB : b ≤ B := le_trans hbA hBA
   nlinarith [mul_nonneg (sub_nonneg.mpr hcb) (le_of_lt hb),
     mul_nonneg (sub_nonneg.mpr hbB) (le_of_lt hb)]
+
+/-- The local `n`-bonacci gap recursion. Consecutive incidence columns have
+the common `v₀` contribution and differ only by the next two coordinate
+vectors, so subtracting their eigen-equations transports one Perron gap to
+the next. -/
+theorem nbonacci_gap_step
+    (beta vi vi1 vi2 v0 : ℝ)
+    (hi : v0 + vi1 = beta * vi)
+    (hi1 : v0 + vi2 = beta * vi1) :
+    beta * (vi - vi1) = vi1 - vi2 := by
+  linarith
+
+/-- The Tetrabonacci first-gap instance: after scaling `b=beta`, the
+three-letter terminal constant `1` is replaced by the next coordinate `d`. -/
+theorem tetrabonacci_first_gap
+    (beta b c d : ℝ) (hbeta : b = beta)
+    (h0 : b + c = beta * b)
+    (h1 : b + d = beta * c) :
+    b * (b - c) = c - d := by
+  subst b
+  nlinarith [h0, h1]

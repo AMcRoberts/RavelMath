@@ -1353,6 +1353,16 @@ correction was structural rather than cosmetic: `same_letter_H` uses
 `H_sigma union (-H_sigma)`, so it can transport across an orientation reversal
 that would invalidate an oriented `0<height<width` proof.
 
+**The same identity hops out of dimension three.** Consecutive columns of the
+`n`-bonacci incidence matrix share their `e_0` contribution and differ by
+`e_{i+1}-e_{i+2}`. The universal column theorem therefore gives the gap
+recursion `beta(v_i-v_{i+1})=v_{i+1}-v_{i+2}`. Tribonacci's
+`b(b-c)=c-1` is the terminal three-letter instance; Tetrabonacci's first
+instance is `b(b-c)=c-d`. `lean/perron_column_difference.lean`
+kernel-checks both the arbitrary local recursion and the explicit
+Tetrabonacci corollary. This is a genuine direction toward broader families,
+not another cubic-coordinate coincidence.
+
 **Rolled forward automatically to rounds 3-5, confirming the "family
 of families" framing rather than asserting it** (`app/class_ii_
 neighbor2_interior_regime_structure_check.cpp`): the enumeration and

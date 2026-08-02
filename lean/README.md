@@ -70,7 +70,9 @@ matching private material lives in `~/claude/.ravel/keys/`. See
   file also proves the companion-stratum orientation wall from the two
   coordinate eigen-equations: for positive coordinates and integer-style
   coefficient chambers, `A>=B>=1` forces `b>c`, while `B>=A+1` forces
-  `c>b`.
+  `c>b`. It also proves the dimension-independent local `n`-bonacci gap
+  recursion and its Tetrabonacci first-gap specialization
+  `b*(b-c)=c-d`.
 
 ## Incomplete extension
 

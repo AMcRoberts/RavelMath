@@ -255,6 +255,14 @@ valid on both sides; only its orientation reverses. Consequently the signed
 `same_letter_H` strip is the transportable object, while an oriented
 `0<height<width` certificate belongs to one chamber only.
 
+Nor is the column rule confined to cubic strata. In the `n`-bonacci family,
+consecutive columns differ by consecutive coordinate vectors, giving
+`beta(v_i-v_{i+1})=v_{i+1}-v_{i+2}`. The familiar Tribonacci identity is the
+terminal `c-1` case; Tetrabonacci continues with `c-d`. This supplies a
+dimension-changing edge in the family-of-families map on which the same
+algebraic mechanism transports literally, while the later window catalogue
+and topology may still change.
+
 For each `2<=a<=A`:
 
 1. take the Class-II center and its three fixed-light neighbors;

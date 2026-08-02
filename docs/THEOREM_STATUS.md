@@ -826,6 +826,13 @@ orientation of the gap used by `same_letter_H` genuinely reverses; the signed
 strip `H_sigma union (-H_sigma)` is exactly the convention that survives this
 wall.
 
+The theorem also extends beyond three letters. Lean proves the local
+`n`-bonacci recursion
+`beta(v_i-v_{i+1})=v_{i+1}-v_{i+2}` directly from two consecutive
+coordinate eigen-equations, and the explicit Tetrabonacci first-gap identity
+`b(b-c)=c-d`. Tribonacci's `c-1` right-hand side is therefore the terminal
+case of a coordinate-gap chain, not a cubic-only phenomenon.
+
 Lean kernel-checks the candidate shell bounds and core-polynomial
 signs. With all four base rounds now closed, the global occurrence
 theorem's remaining obligations are recurrent-SCC exhaustion and
