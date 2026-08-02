@@ -69,6 +69,22 @@ The normalized MILP is discovery machinery, not yet a proof certificate. The
 shell-return rank is exact for each tested `(n,M)`, but the dimension- and
 bound-independent slack closure remains the missing lemma.
 
+The homogeneous limit can now be checked independently with
+`python/nbonacci_homogeneous_shell_smt.py`.  Exact rational SMT gives the
+following stable pattern for every tested dimension `2<=n<=10`:
+
+```text
+ n+1 transitions: SAT
+ n+2 transitions: UNSAT
+```
+
+The SAT witnesses are rational boundary chains; the UNSAT query is over real
+linear arithmetic with exact equalities, not floating-point sampling.  This
+strongly identifies the missing symbolic lemma: the homogeneous boundary
+automaton has survival depth exactly `n+1`.  The remaining work is to extract a
+generic Farkas/induction proof of that fact and then quantify the perturbation
+from `q=0` to `q=1/M`.
+
 There is a useful asymptotic reduction already exposed by the same code. After
 normalizing by `M`, the digit contribution is `q=1/M`. At `q=0` the machine is
 the homogeneous shift/tail map. Exhaustive canonical-word search for
