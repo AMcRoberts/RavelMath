@@ -238,11 +238,26 @@ yet closing the lemma:**
   (boundary-touch) disjunctions, not one per window. This narrows the
   actual proof obligation from "reason about `n+3` whole `n`-dimensional
   windows" to "reason about `a_0` and one later run of consecutive scalar
-  values," a real simplification. The specific indices found are **not
-  canonical**: Z3's minimal core is not guaranteed unique, and the pattern
-  in the exact run lengths found (`1,3,5,7,6` for `n=2..6`, with a gap at
-  `n=4`) does not yet fit a clean formula -- read this as narrowing where
-  to look, not as the pattern itself.
+  values," a real simplification.
+- **Correction, found by building proper systematic multi-MUS
+  enumeration** (`python/nbonacci_homogeneous_shell_core_enumerate.py` --
+  MARCO-style: find a core, permanently retract one of its members from
+  the assumption list, re-solve, repeat, rather than a single
+  `assert_and_track` call or ad hoc reshuffling). The single-core version
+  above reported gaps in the later run for `n=4,5`; those were themselves
+  an artifact of which one arbitrary minimal core `assert_and_track`
+  happened to return. Solving from the **full** assumption set first (no
+  reshuffling) gives a clean, gap-free single later run for
+  `n=2,3,4,5,7`. **`n=6` is a genuine, reproducible exception**: its
+  natural minimal core has *two* disjoint later runs
+  (`indices=[0,1,2,8,9,10,11,12,13]`, i.e. `{1,2}` and `{8,...,13}`), not
+  one -- confirmed reproducible (same result from the systematic
+  procedure, not a random artifact), not yet explained. Do not assume
+  `n=6` fits the single-run pattern; do not assume it doesn't generalize
+  to other `n` either -- only `n=2..7` checked. The specific indices are
+  still **not shown canonical** (a different, non-blocking exploration
+  order could in principle surface an equally-valid single-run core for
+  `n=6` too -- not yet checked before this session ended).
 - **A third, decisive negative result: box-boundedness alone is not the
   binding constraint.** Fixing `a_0=1` and treating `a_1,...,a_{n-1}` as
   free parameters in `[-1,1]`, every later value `a_n, a_{n+1}, ...` is an
