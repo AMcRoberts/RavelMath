@@ -793,6 +793,45 @@ prevents testing whether the AR-partial pattern holds indefinitely as
 extension (Tetrabonacci/Pentanacci/Hexanacci-adjacent families,
 `β`-substitutions) not yet attempted.
 
+## Finding 6.7 — Thread A4: non-AR branching resolves into persistent extension seams
+
+**Status: POSITIVE EXACT FINITE-WORD RESULT, checked through factor
+length 64 on substitution-orbit prefixes of 525456 to 922111
+symbols; not yet an all-length theorem.** Reproducible with
+`app/thread_a4_extension_graph_probe.cpp`.
+
+For every internal factor `u` of length `n`, the probe records its
+left extensions `L(u)`, right extensions `R(u)`, and two-sided
+extensions `E(u)`. This refines the scalar complexity `p(n)` into the
+actual branching sites of the substitution language.
+
+- Tribonacci (AR-exact) has `p(n)=2n+1` and exactly one left-special
+  and one right-special factor at every checked length, both ternary.
+- `σ_{a,1}` for `a=1,2` has the same `p(n)=2n+1`, but realizes the
+  two new factors per length as two binary left-special factors and
+  one ternary right-special factor. `σ_1` has the reversed orientation:
+  one ternary left-special and two binary right-special factors.
+  `σ_2` matches Tribonacci's one-ternary-on-each-side profile despite
+  belonging to the graph-theoretic AR-partial class. Thus aggregate
+  AR complexity does not determine the orientation or multiplicity of
+  local branching.
+- The non-AR `σ_{0,1}` orbit has `p(n)=5n-5` for every checked
+  `4<=n<=64`. At every one of those lengths it has exactly five
+  left-special and three right-special factors; left valence is at
+  most two, while at least one right-special factor retains ternary
+  valence. The excess slope five is therefore persistent distributed
+  branching, not a sporadic exceptional factor.
+
+This supplies the first positive Thread-A4 structure after the
+continued-fraction/beta-expansion and balance-constant proposals were
+refuted. In the intended stepped-hyperplane interpretation, special
+factors are candidate local seam/junction types: the AR-complexity
+cases have total branching increment two, while `σ_{0,1}` carries five
+persistent branches. What is **not** yet proved is the exact dictionary
+between a symbolic extension graph and a projected cube-face vertex
+star, or that the displayed formulas persist for all `n`. Those are
+now the two sharply stated derivation obligations.
+
 ## Finding 7 — explicit Class-II balanced-pair core family
 
 **Status: PROVED recurrent BP core and characteristic polynomial for

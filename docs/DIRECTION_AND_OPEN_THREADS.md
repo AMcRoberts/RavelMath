@@ -412,6 +412,22 @@ candidates: termination turns out NOT to distinguish the classes
 terminate). Thread A4 is still open; this specific invariant doesn't
 work. A different approach is needed.
 
+**Positive next invariant (2026-08-01) — exact finite extension-graph
+profile.** `app/thread_a4_extension_graph_probe.cpp` replaces the
+aggregate factor count with each factor's left/right extension graph.
+On orbit prefixes of at least 525456 symbols, through factor length
+64, `σ_{0,1}` has `p(n)=5n-5` for every checked `n>=4`, with exactly
+five persistent left-special and three persistent right-special
+factors. The AR-complexity controls all retain `p(n)=2n+1`, but now
+split structurally: Tribonacci and `σ_2` use one ternary special factor
+on each side; `σ_{a,1}` uses two binary left-special factors and one
+ternary right-special factor; `σ_1` reverses that orientation. This is
+the first positive Thread-A4 structure after the two refuted scalar
+invariants: non-AR means several persistent local branching seams, not
+merely a larger complexity number. Still open are an all-`n` proof and
+the precise theorem identifying these symbolic extension branches with
+local junction types of the stepped-hyperplane tiling.
+
 ### Thread A5 — extend the data
 
 The current data set is 10 substitutions: Tribonacci + 6 σ_{a,1}
