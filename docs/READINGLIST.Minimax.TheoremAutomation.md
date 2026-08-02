@@ -240,6 +240,13 @@ The natural n=3 core-polytope facet violation (even augmented by raw `L1`)
 also fails, so the missing rank is not simply distance from the convex hull of
 the ternary core.
 
+The first positive symbolic synthesis is `sector-gaps`: one affine function
+per sign sector, with coefficients on the exact gap coordinates. It passes
+the merged n=3 bounds 8 and 12 certificate; `nbonacci_rank_feature_certificate_check.py`
+replays the resulting integer coefficients without floating point. The
+larger merged n=3 bounds 8, 12, 16, and 32 system also admits such a rounded
+integer sector-gap rank. This is the current candidate template to generalize.
+
 Example:
 
 ```sh

@@ -210,6 +210,13 @@ For n=3, bounds 8 and 12, the residue-free exact-gap certificates merge over
 4,964 chambers and 14,302 edges. The eventual template must therefore retain
 unbounded gap data rather than only a finite sign summary.
 
+The first positive symbolic synthesis is a `sector-gaps` rank: one affine
+function per sign sector, with integer coefficients on the exact gap
+coordinates. It passes the merged (n=3), bounds 8 and 12 certificate, and
+also the merged bounds 8, 12, 16, and 32 system. The companion replay checker
+uses integer arithmetic only. This is the current candidate template for a
+uniform proof, not yet a dimension-parametric theorem.
+
 ## 5. What is proved and what remains
 
 The following are proved or exactly replayable:
