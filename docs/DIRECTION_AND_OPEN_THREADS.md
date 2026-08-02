@@ -429,7 +429,9 @@ the first positive Thread-A4 structure after the two refuted scalar
 invariants: non-AR means several persistent local branching seams, not
 merely a larger complexity number. Still open are an all-`n` proof and
 the precise theorem identifying these symbolic extension branches with
-local junction types of the stepped-hyperplane tiling.
+local junction types of the stepped-hyperplane tiling. Citable as
+`docs/FINDINGS_FOR_CITATION.md` Finding 6.7 (original result) and
+Finding 14 (2026-08-02 range strengthening to `n=500000`).
 
 Klouda--Pelantová (2009, `references.bib` key
 `KloudaPelantova2009`, locally preserved and checksummed under the

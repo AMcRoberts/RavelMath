@@ -100,6 +100,9 @@ The word “base” must not collapse four different statements:
 | 3 | 24 fixed roles plus the first tip | positive center-interface/correction witnesses, window validity, Red retention, and (2026-07-31) full raw-corona reverse inclusion (`T_3=B_3∪E_3` exact) and full Red exclusion for every `a>=7`, same argument as round two | none -- Round 3's row is closed |
 | 4 | 24 fixed roles plus the affine tip | interior coefficientwise positive transport and Red retention; (2026-07-31) `T_4=B_4∪E_4` exact and full Red exclusion for every `a>=7`, same argument; (2026-07-31, later) the round-four to round-five bridge itself, see "Round 4: the stable bridge, closed" below | none -- Round 4's row is closed |
 
+All four rows above are now closed. Citable as `docs/
+FINDINGS_FOR_CITATION.md` Finding 12.
+
 These are occurrence/exhaustion gaps, not missing endpoint-validity or
 survival lemmas. In particular, the `7+4` center-interface witnesses
 do not prove that no other raw state occurs, and a positive Red bridge
@@ -1675,7 +1678,7 @@ exhaustion checklist -- are now verified together at `a` in
 sub-check. This is the same tier as most of this investigation's other
 results before their closed-form upgrades: exact-checked at a dense,
 consecutive range plus outliers, not yet a symbolic proof for every
-integer `a>=7`.
+integer `a>=7`. Citable as `docs/FINDINGS_FOR_CITATION.md` Finding 13.
 
 **The birth-round/rank correspondence, made exact (2026-08-01).**
 Earlier phrasing here ("birth_round = a - rank, with the one bounded
