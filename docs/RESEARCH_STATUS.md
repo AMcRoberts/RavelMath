@@ -210,11 +210,23 @@ own mirror union `class_ii_neighbor2_initial_extension_states()` --
 all three parameter-free, so the identity holds for literally every
 integer `a` at once (`app/class_ii_neighbor2_round1_union_hypothesis.cpp`,
 enrolled permanently in `tests/substitution_neighborhood_test.cpp`).
-This is the target formula's own internal decomposition (proven); it
-does NOT yet prove that this target is the correct reverse-inclusion
-closure of `tau_a`'s own `D_cont` seeds, which remains open and is
-still what `class_ii_neighbor2_first_missing_premise` correctly reports
-as such.
+This is the target formula's own internal decomposition (proven).
+
+**Stale-pointer correction (2026-08-02): the next sentence here used to
+say this does not prove reverse inclusion and that it remains open.**
+It was true when written but was overtaken later the same night: a
+literature check (`docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md`'s
+"Round 1: the literature check, done" section) found that `±C` is a
+definitional symmetrization in the primary source, not an independently
+closed object -- so reverse inclusion for round 1 was never a real
+proof obligation in the first place, and closes on that basis rather
+than via a symbolic construction. `class_ii_neighbor2_first_missing_
+premise` (`include/ravel/class_ii_neighbor2_pruning.hpp`) still
+literally reports round 1 as `open_reverse_inclusion` -- flagged, not
+fixed, as its own possible staleness in that file's header comment
+(2026-08-02), since it is not yet verified whether that function's
+specific technical sense of "reverse inclusion" is the same claim the
+literature argument closed.
 
 ## Exact and formal machinery
 
