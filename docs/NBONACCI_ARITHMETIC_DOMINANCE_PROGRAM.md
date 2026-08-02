@@ -287,6 +287,10 @@ Automation plan and acceptance gates:
   replays the JSON and rejects positive difference-constraint cycles. The
   certificate must pass at increasing boxes under the 10 GiB cap and use
   integer arithmetic only.
+
+The first emitted higher-dimensional certificate passes at `n=4,B=8`:
+82,194 canonical chambers, 149,778 weighted edges, and a 9.2 MiB JSON
+artifact replayed successfully by `nbonacci_chamber_certificate_check.py`.
 - Add a checker that verifies every directed cycle in the certified exterior
   graph has positive total rank change (equivalently, no zero/nonpositive
   cycle survives); this is the finite obstruction audit for sublemma 4.

@@ -193,6 +193,11 @@ RAVEL_PROBE_MEMORY_MB=10240 python3 \
 python3 python/nbonacci_chamber_certificate_check.py /tmp/n3_b8_rank.json
 ```
 
+The same path has passed one higher-dimensional stress point, `n=4,bound=8`:
+82,194 chambers, 149,778 weighted edges, and a 9.2 MiB certificate replayed
+successfully under the 10 GiB cap. Increase only one bound or dimension at a
+time after recording the result.
+
 ## Periodic contradiction
 
 Once the exterior rank certificate is exact, prove the finite telescoping
