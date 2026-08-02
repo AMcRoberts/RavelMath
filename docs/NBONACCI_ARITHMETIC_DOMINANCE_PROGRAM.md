@@ -122,13 +122,12 @@ experiments rather than destabilizing the workshop process.
 The combined refinement is now testable as `--mode=gaps-mod --modulus=auto`
 (which selects modulus `n+1`):
 the chamber records signs, exact coordinate-wise gaps from the smallest
-absolute value, and that smallest value modulo four. Its transient quotient is
-The quotient itself is not stable as the box grows: at `n=3,B=8` it has small
-cycles again. The stronger affine check assigns an integer offset to each
-chamber and verifies that a radial statistic plus that offset increases on
-every transient edge. The `--rank-min` statistic
-`min_i |x_i| + offset(chamber(x))` passes several small boxes but fails at
-`n=4,B=8`. The `--rank-base=sum` statistic
+absolute value, and that smallest value modulo `n+1`. The transient quotient
+is not stable as the box grows: at `n=3,B=8` it has small cycles again. The
+stronger affine check assigns an integer offset to each chamber and verifies
+that a radial statistic plus that offset increases on every transient edge.
+The `--rank-min` statistic `min_i |x_i| + offset(chamber(x))` passes several
+small boxes but fails at `n=4,B=8`. The `--rank-base=sum` statistic
 `sum_i |x_i| + offset(chamber(x))` repairs that failure and passes under the
 memory cap for `n=3,B=30`, `n=4,B=10`, `n=5,B=6`, and `n=6,B=4`.
 
@@ -136,7 +135,10 @@ The dimension-matched residue (`modulus=auto`, meaning `n+1`) remains part of
 the chamber phase. Modulus four fails at `n=4,B=6`, while modulus five repairs
 it, supporting the `n+1` prefix-period signal. This is still finite-box
 evidence, but it has now produced a concrete two-layer target: a bounded
-sign/gap/residue phase plus an `L1` radial drift certificate.
+sign/gap/residue phase plus an `L1` radial drift certificate. A flat affine
+formula in the gap coordinates alone is infeasible already at `n=3,B=8`, so
+the chamber offset is genuinely piecewise rather than a hidden three-parameter
+linear norm.
 
 For regression, the unrestricted carry automaton at `B=2` leaves the following
 numbers of cyclic states (all ternary):
