@@ -239,6 +239,54 @@ first large n=6 shell, cannot use only minimal decompositions.
 
 ## Universal theorem obligations
 
+### Scoped missing lemma: periodic carry escape
+
+The missing lemma that blocks promotion from the finite certificates to the
+full theorem is the following precise statement.
+
+> **Periodic carry-bound lemma.** Let `a : Z -> Z` be periodic, and suppose
+> `d_t = -a_t + a_(t+1) + ... + a_(t+n)` lies in `{-1,0,1}` for every `t`.
+> Then `|a_t| <= 1` for every `t`.
+
+It is enough to prove the weaker fixed-hull version with an explicit bound
+`B(n)`, provided the arithmetic-hull core and its dominance certificate are
+proved for that same `B(n)`. The ternary statement is the preferred target
+because it closes directly onto the generated grade-1 core.
+
+The proof should be split into four independently checkable sublemmas:
+
+1. **Block algebra.** The already-formalized identity `A^(n+1)=2*A-I` and
+   the displayed bounded forcing formula.
+2. **Forcing bound.** An exact coordinate/L1 bound for every block forcing word
+   `d_0,...,d_n`; this is finite digit arithmetic and should be proved in Lean
+   and exhaustively regression-tested in C++.
+3. **Exterior escape.** Outside the ternary layer, the block map plus bounded
+   forcing strictly increases a certified rank (the current exact-gap chamber
+   plus `sum_abs` offset is the candidate). This is the genuinely dynamical
+   sublemma; it must be stated as a finite chamber transition theorem with a
+   parameterized boundary case, not as a floating-point spectral assertion.
+4. **Periodic contradiction.** Iterate the strict rank increase around a
+   purported periodic orbit to obtain a contradiction, then recover the
+   ternary bound.
+
+Automation plan and acceptance gates:
+
+- `nbonacci_block_identity_test` and the Lean matrix/characteristic-polynomial
+  bridge certify sublemma 1.
+- Add a digit-word forcing enumerator that emits the sharp bound and a Lean
+  theorem for sublemma 2; every reported extremizer must be replayable from
+  the closed forcing formula.
+- Extend `nbonacci_sign_chamber_probe.py` to emit a canonical chamber table,
+  exact transition deltas, and a machine-readable difference-constraints
+  certificate for sublemma 3. The certificate must pass at increasing boxes
+  under the 10 GiB cap and use integer arithmetic only.
+- Add a checker that verifies every directed cycle in the certified exterior
+  graph has positive total rank change (equivalently, no zero/nonpositive
+  cycle survives); this is the finite obstruction audit for sublemma 4.
+- Only after these gates pass should the result be promoted from bounded
+  evidence to a universal carry theorem. The four broader obligations below
+  then consume that theorem as their recurrent coefficient bound.
+
 The arithmetic reversal reduces the open proof to four explicit lemmas.
 
 1. **Recurrent coefficient/carry bound.** Every cyclic exact-window orbit of
