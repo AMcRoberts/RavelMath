@@ -71,6 +71,12 @@ public:
     bool operator==(const PolyZ& o) const {
         long long da = degree(), db = o.degree();
         if (da != db) return false;
+        if (da < 0) return true;  // both the zero polynomial (degree -1);
+                                   // casting da to size_t below would
+                                   // otherwise underflow to SIZE_MAX and
+                                   // walk off the end of coeffs_ -- found
+                                   // 2026-08-02 via a real crash, not by
+                                   // inspection.
         for (std::size_t i = 0; i <= static_cast<std::size_t>(da); ++i) {
             if (cmp(coeffs_[i], o.coeffs_[i]) != 0) return false;
         }
