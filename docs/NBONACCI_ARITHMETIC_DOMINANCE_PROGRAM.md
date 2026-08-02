@@ -400,18 +400,32 @@ Backtracked maximal chains are therefore descending boundary-witness words,
 with occasional tail resets, rather than arbitrary chamber motion. A formal
 proof can enumerate this small boundary automaton and bound its reset depth.
 
-### Algebraic-height route
+### Algebraic-height route -- carried through to a closure for n=2..7
 
 The exact carry update also supplies a dimension-parametric scalar identity.
 If `β` is the n-bonacci root and
 `c_j = β^j - (1 + β + ... + β^(j-1))`, then
 `h(x) = Σ c_j x_j` satisfies `β h(x') = h(x) + d`. The same identity holds
-in every conjugate embedding. On a periodic word, closure bounds each
-conjugate height by a geometric digit sum; Vandermonde inversion then gives a
-finite coefficient bound `B(n)`. This is a second route to the missing lemma:
-automate certified root-modulus intervals and the inverse-embedding bound,
-then feed the resulting finite hull into the exact arithmetic-hull machinery.
-The current numerical estimates are only discovery evidence, not yet a proof.
+in every conjugate embedding.
+
+**This route is no longer discovery-only.** `python/nbonacci_conjugate_height_probe.py`
+(commit `30f8e26`) used the loose bound `R_k = 1/(1-|beta_k|)^2` for conjugate
+roots, derived from a full-period backward-telescoping sum. That bound is
+superseded: `docs/NBONACCI_CONJUGATE_HEIGHT_BOUND.md` re-derives the
+conjugate bound via the same max-attained argument used for the dominant
+root (applied in the contracting time direction, giving `R_k = 1/(1-|beta_k|)`,
+not squared -- tight, not just finite), and cross-checks the resulting
+period-independent `B(n)` against the exact finite carry automaton
+(`nbonacci_carry_cycle_probe`) at a box exceeding `B(n)`. This closes the
+periodic carry-bound lemma for `n=2,3,4,5,6,7` at high-precision-numeric
+plus exact-finite-check strength (see that doc for the exact rigor tier,
+what's not yet Lean/interval-certified, and the precise diagnosis of why
+`n>=8` needs a fundamentally sharper argument rather than a bigger box --
+it is a geometry-of-numbers/joint-lattice gap, not a loose per-root
+constant). `python/nbonacci_conjugate_height_bound.py` is the current
+probe; `python/nbonacci_conjugate_slack_diagnostic.py` is the measurement
+that located the gap. Use these, not the retired `1/(1-|beta_k|)^2` bound,
+for any further work on this route.
 
 The arithmetic reversal reduces the open proof to four explicit lemmas.
 

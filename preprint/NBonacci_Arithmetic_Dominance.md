@@ -278,13 +278,28 @@ create a new boundary hit, through
 boundary witnesses with bounded tail resets. This is the symbolic mechanism
 now targeted for formalization.
 
-There is a complementary algebraic route. For the n-bonacci root `β`, the
-covector `c_0=1`, `c_j=β c_{j-1}-1` satisfies the exact scalar update
-`β h(x')=h(x)+d`. Applying this identity to every conjugate and closing a
-periodic word gives geometric height bounds; inverse Vandermonde reconstruction
-then yields a fixed coefficient hull `B(n)`. Numerical discovery estimates
-are modest (roughly `B(4)<5`, `B(8)<12`), but root-location and interval
-certification are still required before promotion to a theorem.
+There is a complementary algebraic route, now carried through to a partial
+closure rather than left as discovery output. For the n-bonacci root `β`,
+the covector `c_0=1`, `c_j=β c_{j-1}-1` satisfies the exact scalar update
+`β h(x')=h(x)+d`. Applying this identity to every conjugate root and closing
+a periodic word gives geometric height bounds -- the dominant root's bound
+`1/(β-1)` and each conjugate's `1/(1-|β_k|)` come from the *same*
+max-attained argument, applied in whichever time direction is contracting
+for that root (forward for the dominant root, backward for conjugates), not
+two separate arguments. Inverse Vandermonde reconstruction then yields a
+fixed, period-independent coefficient hull `B(n)`. Cross-checked against
+the exact finite carry automaton (`nbonacci_carry_cycle_probe`) at a box
+exceeding `B(n)`, this closes the periodic carry-bound lemma for `n=2..7`
+at high-precision-numeric plus exact-finite-check strength. `n>=8` is
+computationally out of reach for the direct box check (`B(8)~6.5` implies
+`~2.56` billion box states); a measured diagnosis (comparing the bound
+against the true achieved heights on the real cyclic states) shows the
+remaining gap is a geometry-of-numbers effect -- no single admissible
+integer state realizes every conjugate root's individual extreme
+simultaneously -- not a loose per-root constant, so tightening any one
+`R_k` will not by itself close it. See `docs/NBONACCI_CONJUGATE_HEIGHT_BOUND.md`
+for the full derivation, the exact rigor tier (not yet Lean- or
+interval-arithmetic-certified), and the precise open seam.
 
 ## 5. What is proved and what remains
 

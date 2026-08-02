@@ -1,6 +1,17 @@
 #!/usr/bin/env python3
 """Numerically mine the conjugate-height bound for periodic carry words.
 
+SUPERSEDED: the conjugate-root bound below (1/(1-|beta_k|)^2, from a
+full-period backward-telescoping sum) is a loose over-approximation.
+python/nbonacci_conjugate_height_bound.py re-derives the same-family bound
+via the max-attained argument applied in the contracting time direction
+(1/(1-|beta_k|), not squared), which is tight, not just finite, and closes
+the periodic carry-bound lemma for n=2..7 when cross-checked against the
+exact finite carry automaton -- see docs/NBONACCI_CONJUGATE_HEIGHT_BOUND.md.
+Kept for the historical record and as a negative data point (how loose the
+naive telescoping bound is); do not use this script's numbers for further
+theorem work.
+
 For the n-bonacci root beta, define c_0=1 and c_j=beta*c_{j-1}-1.  The
 carry update satisfies beta*h(x')=h(x)+d.  Closing a periodic word bounds
 each conjugate height; inverting the embedding matrix gives a finite bound
