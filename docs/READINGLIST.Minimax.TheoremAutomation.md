@@ -204,6 +204,10 @@ A further controlled point passes at `n=6,bound=3`: 117,394 chambers,
 nontrivial quotient SCCs.
 The `n=8,bound=2` shell also passes: 388,678 chambers, 523,824 weighted
 edges, and a 41 MiB replayable certificate, with no nontrivial quotient SCCs.
+Comparing `n=3` certificates at bounds 8 and 12 gives a useful negative
+result: 3,798 of 4,388 shared chamber signatures change canonical offset.
+Do not try to parameterize the theorem using only bounded residues; absolute
+gap scale must remain visible in the rank argument.
 The larger known passing shell `n=5,bound=6` also emits and replays
 successfully: 371,198 chambers, 611,658 weighted edges, and a 41 MiB
 certificate. Treat this as a stress result, not as a universal theorem.

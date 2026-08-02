@@ -306,6 +306,12 @@ The `n=7,B=3` shell also emits and replays successfully: 822,844 chambers,
 nontrivial quotient SCCs.
 The `n=8,B=2` shell also passes: 388,678 chambers, 523,824 weighted edges,
 and a 41 MiB replayable certificate, with no nontrivial quotient SCCs.
+
+An offset-stability check at `n=3` is a useful negative result: comparing the
+`B=8` and `B=12` certificates, 3,798 of 4,388 shared chamber signatures have
+different canonical offsets. Thus the universal potential cannot depend only
+on signs, gap residues, or a bounded phase label; absolute gap scale remains
+part of the parameterized rank data.
 - Add a checker that verifies every directed cycle in the certified exterior
   graph has positive total rank change (equivalently, no zero/nonpositive
   cycle survives); this is the finite obstruction audit for sublemma 4.
