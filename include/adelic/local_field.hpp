@@ -284,13 +284,17 @@ inline ZpPoly zp_poly_set_precision(const ZpPoly& f, long long new_precision) {
 // running this function again on the newly-lifted g,h (truncated to
 // their actually-valid precision first via zp_poly_set_precision) --
 // rather than trying to incrementally correct the old s,t directly,
-// which needs a different, more delicate update formula. Verified
-// correct for one full lift round (g,h AND s,t together) against a
-// worked example (f=x^2+4 over Z, splitting mod 5 as (x-1)(x+1),
-// lifting toward its true 5-adic roots); multi-round iteration is
-// not yet verified and is real, separate future work -- see
-// tests/zp_poly_extended_gcd_test.cpp for exactly what's checked and
-// what isn't.
+// which needs a different, more delicate update formula. THIS
+// FUNCTION (zp_poly_extended_gcd) is verified general-purpose --
+// cross-checked against fp_extended_gcd's independent computation.
+// The separate g,h-lift formula used alongside it (see
+// tests/zp_poly_extended_gcd_test.cpp) is verified ONLY for one
+// specific worked example (f=x^2+4 over Z, mod 5); a second worked
+// example (f=x^2-3, mod 11) showed that SAME g,h-lift formula can
+// fail even at the first round, cause not yet identified. Multi-round
+// iteration is not yet verified either. Do not treat the g,h-lift
+// formula as trustworthy in general from this comment or the test
+// file's passing status -- only this function itself is.
 struct ZpPolyExtGcdResult {
     ZpPoly g;  // gcd(a, b), monic (= 1 exactly when a,b coprime)
     ZpPoly s;  // s*a + t*b = g

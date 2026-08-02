@@ -26,6 +26,23 @@
 // single-round case below is confirmed) -- see
 // .ravel/TODAY.md's B1 entries (2026-08-01) for the full, honest
 // history of what was tried and what wasn't yet resolved.
+//
+// IMPORTANT CAVEAT, added after this test was first committed: the
+// "one full Hensel lift round" claim below (part 2) is verified ONLY
+// for this specific worked example (f=x^2+4, p=5). A SECOND worked
+// example (f=x^2-3, p=11), checked independently via pure sympy after
+// this test was already shipped, shows the SAME g,h-lift formula
+// (delta_g = divmod-remainder, delta_h = t*e + q*g) can fail even at
+// round 0 -- multiple attempts to find what differs between the two
+// examples (degree of the error term e, which root pair mod p is
+// chosen, swapping which of g/h gets the remainder) did not identify
+// the cause. Do NOT treat this file's "verified" language as proof
+// the g,h-lift formula is correct in general -- only zp_poly_extended_gcd
+// itself (part 1) has been checked against an independent second
+// source (fp_extended_gcd) and is trustworthy as a general-purpose
+// primitive. The g,h-lift formula needs a from-scratch, precise,
+// textbook-verified derivation before being relied on for anything
+// beyond this one specific example.
 
 #include <cstdio>
 #include <vector>
