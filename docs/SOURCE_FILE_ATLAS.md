@@ -265,7 +265,7 @@ repository root unless the file itself states otherwise.
 | `app/rnd13_prefix_automaton_probe.cpp` | Builds the actual rnd13 prefix automaton and digit set. |
 | `app/sweep_mismatches_property_f.cpp` | Unit-case mismatch sweep for coincidence versus property-(F). |
 | `app/sweep_nonunit_property_f.cpp` | Non-unit counterpart with local-place bounds. |
-| `app/sweep_nonunit_property_f_4letter.cpp` | Generalizes the non-unit sweep to 4-letter alphabets (`adelic::integer_determinant` + `is_irreducible_over_q_via_small_primes`). Surfaced and, after the fix, confirmed the `spectral_invariants_general` Pisot-classifier bug: 1/7 verdicts before the fix, 6/7 after, 14/17 at a later target=20 rerun. |
+| `app/sweep_nonunit_property_f_4letter.cpp` | Generalizes the non-unit sweep to 4-letter alphabets (`adelic::integer_determinant` + `is_irreducible_over_q_via_small_primes`). Surfaced and confirmed the `spectral_invariants_general` Pisot-classifier bug (1/7 verdicts before that fix, 6/7 after), then supplied the real `rndW3_5` regression for per-factor Hensel lifting: the deterministic batch is now 7/7 ESTABLISHED with zero skips. |
 
 ## Lean formalization
 

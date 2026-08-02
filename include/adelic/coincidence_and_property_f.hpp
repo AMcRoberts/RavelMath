@@ -101,17 +101,13 @@
 // plan's §2.6 conditions, cleanly, with both checks cross-validated
 // for stability. See docs/RESEARCH_STATUS.md for the full trace.
 //
-// STILL OPEN: the general (partially-ramified, and/or more-than-one-
-// prime-above-p) case has no p-adic bound implemented -- padic.hpp's
-// QpTotallyRamified only covers a single, fully-ramified prime. The
-// paper's own worked example is exactly this harder case (two primes
-// above 2, only one of which "contracts" and needs adjoining, with
-// local degree ef=2 in a degree-3 field -- not the ef=n shape
-// QpTotallyRamified handles), so it still does not close and
-// check_property_f still reports INCONCLUSIVE there. Building the
-// general local-field construction (Montes/Ore-type algorithm, or an
-// explicit Eisenstein generator for a partially ramified prime) is
-// the natural next step, but was out of scope for this pass.
+// UPDATE: the general combined bound is implemented below. It handles
+// partial ramification, multiple rational primes, multiple ideals above
+// one prime, residue degree f>1, and (after the per-factor linear
+// Hensel lift) multiple non-simple factors. The paper's worked example
+// and the formerly blocked rndW3_5 case both close through the shared
+// classifier. An archimedean-only control remains intentionally
+// inconclusive in coincidence_and_property_f_test.cpp.
 //
 
 // ===================================================================
@@ -667,17 +663,12 @@ make_combined_padic_bound(const std::vector<long long>& primes_dividing_det,
                 residue_a = ((-g0) % p + p) % p;
             }
             // local_polynomial_cofactor's general branch (hit whenever
-            // (e,f) != (1,1) and ef != n) divides the OTHER simple
-            // (mult=1, deg=1) factors out of the full charpoly
-            // reduction and returns whatever degree-ef cofactor remains.
-            // It throws (rather than silently misconstructing m_k) if
-            // the cofactor division has a non-zero remainder -- the
-            // only way that happens in practice is the genuinely
-            // ambiguous "more than one non-simple ideal" case, which
-            // is detected and rejected explicitly.  For the usual
-            // 1-simple + 1-non-simple case (the vast majority of
-            // real substitutions), this gives the right local
-            // polynomial m_k(x).
+            // (e,f) != (1,1) and ef != n) identifies the requested
+            // irreducible factor with its multiplicity modulo p and
+            // Hensel-lifts it against the coprime product of every
+            // other factor. Multiple non-simple ideals are therefore
+            // supported; absent or ambiguous factor metadata is still
+            // rejected explicitly rather than guessed.
             bounds->push_back(make_local_field_padic_bound(pi.p, pi.e, pi.f, charpoly, residue_a, precision));
         }
     }

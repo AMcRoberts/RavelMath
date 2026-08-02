@@ -5,44 +5,24 @@
 // fp_extended_gcd, building blocks for multifactor Hensel lifting
 // (docs/DIRECTION_AND_OPEN_THREADS.md Item B1).
 //
-// Two things are verified here, precisely matching what's actually
-// confirmed correct (not more):
+// Four things are verified here:
 //   1. zp_poly_extended_gcd in isolation, at precision 1 (mod p),
 //      cross-checked against fp_extended_gcd's independent answer.
 //      This caught a real bug during development: the first version
 //      omitted normalizing the gcd to exactly 1, silently returning
 //      Bezout coefficients for SOME nonzero constant multiple of the
 //      identity instead.
-//   2. ONE full quadratic Hensel lift round -- g,h lifted via the
-//      standard formula, AND fresh Bezout coefficients re-derived via
-//      zp_poly_extended_gcd on the newly-lifted g,h -- against a real
-//      worked example: f(x)=x^2+4 over Z, which splits mod 5 as
-//      (x-1)(x+1) and 5-adically as (x-a)(x+a) for a with a^2=-4.
-//      Verified exactly mod p^2=25 by direct integer reconstruction.
-//
-// NOT yet verified (real, separate future work, not attempted here):
-// iterating this across MULTIPLE rounds to reach arbitrary precision.
-// A first attempt at that hit a further, distinct bug (only the
-// single-round case below is confirmed) -- see
-// .ravel/TODAY.md's B1 entries (2026-08-01) for the full, honest
-// history of what was tried and what wasn't yet resolved.
-//
-// IMPORTANT CAVEAT, added after this test was first committed: the
-// "one full Hensel lift round" claim below (part 2) is verified ONLY
-// for this specific worked example (f=x^2+4, p=5). A SECOND worked
-// example (f=x^2-3, p=11), checked independently via pure sympy after
-// this test was already shipped, shows the SAME g,h-lift formula
-// (delta_g = divmod-remainder, delta_h = t*e + q*g) can fail even at
-// round 0 -- multiple attempts to find what differs between the two
-// examples (degree of the error term e, which root pair mod p is
-// chosen, swapping which of g/h gets the remainder) did not identify
-// the cause. Do NOT treat this file's "verified" language as proof
-// the g,h-lift formula is correct in general -- only zp_poly_extended_gcd
-// itself (part 1) has been checked against an independent second
-// source (fp_extended_gcd) and is trustworthy as a general-purpose
-// primitive. The g,h-lift formula needs a from-scratch, precise,
-// textbook-verified derivation before being relied on for anything
-// beyond this one specific example.
+//   2. The corrected g,h assignment in zp_poly_hensel_lift_gh against
+//      Moreno Maza's published worked example f=x^4-1 mod 25.  This is
+//      the independent example that exposed the old reversed assignment.
+//   3. The production linear factor-pair lift through 8 p-adic digits
+//      for two differently structured examples: x^2+4 over p=5 and
+//      x^2-3 over p=11. Both products are checked coefficientwise in
+//      Z_p[x], not through a floating approximation.
+//   4. The actual local_polynomial_cofactor integration on a quartic
+//      having two non-simple factors over the same prime: one (e=1,f=2)
+//      and one (e=2,f=1).  Each requested local polynomial has degree 2
+//      and their product reconstructs the quartic at full precision.
 
 #include <cstdio>
 #include <vector>
@@ -86,6 +66,10 @@ bool zp_int_eq_first_digit(const ZpInt& a, long long expected) {
     return !a.digits.empty() && a.digits[0] == ((expected % a.p) + a.p) % a.p;
 }
 
+bool factorization_holds(const ZpPoly& f, const ZpPoly& g, const ZpPoly& h) {
+    return zp_poly_equal(zp_poly_mul(g, h), f);
+}
+
 }  // namespace
 
 int main() {
@@ -118,62 +102,68 @@ int main() {
               "isolated gcd: s*g + t*h == 1 exactly");
     }
 
-    // ---- Part 2: one full Hensel lift round (g,h AND s,t together),
-    // f(x) = x^2 + 4, splitting mod 5 as (x-1)(x+1). ----
+    // ---- Part 2: reproduce the published one-round example exactly.
+    // f=x^4-1, g=x-2, h=x^3+2x^2-x-2 (mod 5). The corrected lift is
+    // g1=x+18, h1=x^3+7x^2+24x+18 (mod 25). ----
     {
-        long long p = 5, target_prec = 6;
-        PolyZ f_z({4, 0, 1});
-        ZpPoly f = zp_poly_from_polyz(f_z, p, target_prec);
-
-        FpPoly g0_fp{p, {4, 1}}, h0_fp{p, {1, 1}};
-        auto bez = fp_extended_gcd(g0_fp, h0_fp);
-        bez.s = fp_divmod(bez.s, h0_fp).second;
-        bez.t = fp_divmod(bez.t, g0_fp).second;
-
-        ZpPoly g = fp_to_zp(g0_fp, target_prec);
-        ZpPoly h = fp_to_zp(h0_fp, target_prec);
-        ZpPoly s = fp_to_zp(bez.s, target_prec);
-        ZpPoly t = fp_to_zp(bez.t, target_prec);
-
-        // g,h lift step (the standard quadratic Hensel formula).
-        ZpPoly e = zp_poly_sub(f, zp_poly_mul(g, h));
-        ZpPoly se = zp_poly_mul(s, e);
-        auto qr = zp_poly_divmod(se, h);
-        ZpPoly delta_g = qr.second;
-        ZpPoly delta_h = zp_poly_add(zp_poly_mul(t, e), zp_poly_mul(qr.first, g));
-        ZpPoly g1 = zp_poly_add(g, delta_g);
-        ZpPoly h1 = zp_poly_add(h, delta_h);
-
-        long long modulus = 25;  // p^2, what one quadratic step promises
-        ZpPoly check_gh = zp_poly_mul(g1, h1);
-        bool ok_gh = true;
-        for (std::size_t i = 0; i < f.coeffs.size(); ++i) {
-            long long want = reconstruct_mod(f.coeffs[i], target_prec, modulus);
-            long long got = i < check_gh.coeffs.size()
-                                 ? reconstruct_mod(check_gh.coeffs[i], target_prec, modulus)
-                                 : 0;
-            if (want != got) ok_gh = false;
+        const long long p = 5;
+        PolyZ f_z({-1, 0, 0, 0, 1});
+        FpPoly g_fp{p, {3, 1}};
+        FpPoly h_fp{p, {3, 4, 2, 1}};
+        auto bez = fp_extended_gcd(g_fp, h_fp);
+        ZpPoly f = zp_poly_from_polyz(f_z, p, 2);
+        auto lifted = zp_poly_hensel_lift_gh(
+            f, fp_to_zp(g_fp, 2), fp_to_zp(h_fp, 2),
+            fp_to_zp(bez.s, 2), fp_to_zp(bez.t, 2));
+        CHECK(factorization_holds(f, lifted.first, lifted.second),
+              "published example: corrected g1*h1 == f mod 25");
+        CHECK(reconstruct_mod(lifted.first.coeffs[0], 2, 25) == 18 &&
+              reconstruct_mod(lifted.first.coeffs[1], 2, 25) == 1,
+              "published example: g1 == x+18 mod 25");
+        const long long expected_h[] = {18, 24, 7, 1};
+        bool h_matches = lifted.second.coeffs.size() == 4;
+        for (std::size_t i = 0; h_matches && i < 4; ++i) {
+            h_matches = reconstruct_mod(lifted.second.coeffs[i], 2, 25) == expected_h[i];
         }
-        CHECK(ok_gh, "one Hensel round: g1*h1 == f exactly mod p^2");
+        CHECK(h_matches, "published example: h1 == x^3+7x^2+24x+18 mod 25");
+    }
 
-        // Re-derive fresh Bezout coefficients for g1,h1 (truncated to
-        // their actually-valid precision p^2 first).
-        ZpPoly g1_trunc = zp_poly_set_precision(g1, 2);
-        ZpPoly h1_trunc = zp_poly_set_precision(h1, 2);
-        auto ext1 = zp_poly_extended_gcd(g1_trunc, h1_trunc);
-        CHECK(zp_poly_degree(ext1.s) == 0, "re-derived s has the required degree bound (< deg(h)=1)");
-        CHECK(zp_poly_degree(ext1.t) == 0, "re-derived t has the required degree bound (< deg(g)=1)");
+    // ---- Part 3: the production linear lift on two independent cases. ----
+    {
+        const PolyZ f5({4, 0, 1});
+        auto lift5 = zp_poly_hensel_lift_factor_pair(
+            f5, FpPoly{5, {4, 1}}, FpPoly{5, {1, 1}}, 8);
+        CHECK(factorization_holds(zp_poly_from_polyz(f5, 5, 8),
+                                  lift5.first, lift5.second),
+              "linear lift: x^2+4 factors correctly through precision 8 over Z_5");
 
-        ZpPoly s1 = zp_poly_set_precision(ext1.s, target_prec);
-        ZpPoly t1 = zp_poly_set_precision(ext1.t, target_prec);
-        ZpPoly check_bez = zp_poly_add(zp_poly_mul(s1, g1), zp_poly_mul(t1, h1));
-        bool ok_bez = true;
-        for (std::size_t i = 0; i < check_bez.coeffs.size(); ++i) {
-            long long want = (i == 0) ? 1 : 0;
-            long long got = reconstruct_mod(check_bez.coeffs[i], target_prec, modulus);
-            if (want != got) ok_bez = false;
-        }
-        CHECK(ok_bez, "one Hensel round: re-derived s1*g1 + t1*h1 == 1 exactly mod p^2");
+        const PolyZ f11({-3, 0, 1});
+        auto lift11 = zp_poly_hensel_lift_factor_pair(
+            f11, FpPoly{11, {6, 1}}, FpPoly{11, {5, 1}}, 8);
+        CHECK(factorization_holds(zp_poly_from_polyz(f11, 11, 8),
+                                  lift11.first, lift11.second),
+              "linear lift: x^2-3 factors correctly through precision 8 over Z_11");
+    }
+
+    // ---- Part 4: the multi-non-simple-ideal seam that the old
+    // cofactor-of-simple-factors implementation could not separate.
+    // Mod 3:
+    //   f = (x^2+1) (x-1)^2,
+    // giving distinct (e=1,f=2) and (e=2,f=1) targets. ----
+    {
+        const long long p = 3, precision = 8;
+        PolyZ f_z({4, -2, 2, -2, 1});
+        ZpPoly quadratic = local_polynomial_cofactor(
+            f_z, p, /*e=*/1, /*f=*/2, precision);
+        ZpPoly ramified_linear = local_polynomial_cofactor(
+            f_z, p, /*e=*/2, /*f=*/1, precision, /*residue_a=*/1);
+        CHECK(zp_poly_degree(quadratic) == 2,
+              "two non-simple factors: (e=1,f=2) target has degree 2");
+        CHECK(zp_poly_degree(ramified_linear) == 2,
+              "two non-simple factors: (e=2,f=1) target has degree 2");
+        ZpPoly f = zp_poly_from_polyz(f_z, p, precision);
+        CHECK(factorization_holds(f, quadratic, ramified_linear),
+              "two non-simple factors: independently requested locals reconstruct f");
     }
 
     std::printf("\n%d passed, %d failed\n", n_pass, n_fail);

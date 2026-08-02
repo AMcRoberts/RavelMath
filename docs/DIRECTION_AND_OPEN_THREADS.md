@@ -222,47 +222,40 @@ upstream, one still uninvestigated:
   every `n>=4` matrix this project's survey tools generate, not just
   the 4-letter experiment above), this is a real correctness fix to
   the project, not just an unblocking of one probe app.
-- **2 cases (1 after the spectral fix -- see below), "local_polynomial_
-  cofactor: computed m_k has wrong degree"** in `include/adelic/
-  local_field.hpp`. Understood precisely (2026-08-01), not a hidden
-  bug: the remaining case (`rndW3_5`) has TWO non-simple prime ideals
-  above the same rational prime (`p=3`: one `(e=1,f=2)`, one
-  `(e=2,f=1)`, confirmed via the factoring diagnostic). `local_
-  polynomial_cofactor`'s own header comment already documents this
-  exact limitation -- its cofactor approach (divide the charpoly mod p
-  by the product of all SIMPLE, degree-1 factors) only correctly
-  isolates a single non-simple ideal's local polynomial; with two, the
-  cofactor bundles both together and its degree no longer matches
-  either ideal's `ef`. The function correctly THROWS rather than
-  returning a silently-wrong polynomial -- this is safe, working-as-
-  designed behavior hitting a real, pre-documented scope limitation,
-  not a bug to chase down. A genuine fix would need a different,
-  stronger construction (per-ideal Hensel lifting rather than a
-  cofactor-of-simple-factors trick) -- real, separate work, not
-  attempted here.
+- **The remaining `local_polynomial_cofactor` case is now closed
+  (2026-08-01).** `rndW3_5` has two non-simple prime ideals above
+  `p=3`, one `(e=1,f=2)` and one `(e=2,f=1)`. The old implementation
+  bundled both after dividing out only simple factors and correctly
+  threw on the resulting degree mismatch. The replacement identifies
+  each target irreducible factor (with its multiplicity) mod `p` and
+  Hensel-lifts it against the coprime product of all remaining factors.
+  A first quadratic implementation exposed an invalid assumption:
+  extended Euclid over `Z/(p^k)[x]` can encounter a nonunit leading
+  coefficient because the coefficient ring is not a field. The final
+  implementation uses the valid `F_p[x]` Bezout certificate and lifts
+  one p-adic digit at a time. Focused tests cover the published
+  correction assignment, two independent repeated lifts, and a
+  synthetic quartic with the exact two-non-simple-factor shape.
 
 So the contact-boundary pipeline, combined p-adic bound, and spectral
 filter did NOT fully handle degree 4 when first tried -- not just a
-parameter change as previously assumed here. One root cause (the
+parameter change as previously assumed here. Both root causes are now
+closed. One (the
 spectral filter's unsoundness for complex dominant secondary pairs at
-`n>=4`) was a real, silent bug, now fixed. **After the spectral fix,
-re-running the same 4-letter batch: 6/7 candidates now reach a verdict
-(all ESTABLISHED, tiles)** -- only one hits `local_polynomial_
-cofactor`'s pre-documented (not silently broken) limitation: two
-non-simple prime ideals over the same rational prime, which its
-cofactor-of-simple-factors approach can't disentangle by construction.
+`n>=4`) was a real, silent bug. The other was the bounded cofactor
+construction above. **After both fixes, re-running the deterministic
+4-letter batch gives 7/7 ESTABLISHED, zero skipped**; `rndW3_5` now
+passes Property (F) with 421 nodes.
 **A larger follow-up run confirms this holds at scale** (target=20,
 same reduced certify/rho budgets, 2026-08-01): 17 candidates checked,
 **14 ESTABLISHED, 2 INCONCLUSIVE (property-F budget exhausted -- a
-resource cap, not a failure), 1 SKIPPED (the same cofactor
-limitation), zero new unexplained exceptions.** Extending the cofactor
-case is real, separate work (a per-ideal Hensel-lifting construction,
-not a bug fix) and is the actual remaining item before a wider-alphabet
-survey can be trusted at full generality -- but it's a known, scoped
-feature gap now, not an unexplained failure. The smooth-relaxation
-search (B2) is a smarter candidate generator that targets
-Pisot-preserving perturbations specifically, once the pipeline itself
-covers the multi-non-simple-ideal case too.
+resource cap, not a failure), 1 SKIPPED under the then-unfixed cofactor
+limitation, zero unexplained exceptions.** That larger sample has not
+yet been rerun after the Hensel fix; the deterministic regression is
+the present ground-truth closure. The smooth-relaxation search (B2) is
+a smarter candidate generator that targets Pisot-preserving
+perturbations specifically now that the pipeline covers the known
+multi-non-simple-ideal case.
 
 **(B2) Smooth-relaxation search.** The natural way to generate
 new Item A and Item B candidates, replacing pure random sampling

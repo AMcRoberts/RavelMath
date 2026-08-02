@@ -189,10 +189,9 @@ inline FpPoly fp_gcd(const FpPoly& a, const FpPoly& b) {
 // Extended Euclidean algorithm over F_p[x]: returns (g, s, t) with
 // s*a + t*b = g = gcd(a,b), g monic. Building block for multifactor
 // Hensel lifting (docs/DIRECTION_AND_OPEN_THREADS.md, Item B1) --
-// local_polynomial_cofactor (include/adelic/local_field.hpp) needs
-// this to lift a full mod-p factorization simultaneously instead of
-// its current cofactor-division approach, which only handles a
-// single non-simple prime ideal.
+// local_polynomial_cofactor (include/adelic/local_field.hpp) uses the
+// resulting mod-p Bezout certificate to lift one selected factor
+// against its coprime complement, including multiple non-simple ideals.
 struct FpExtGcdResult {
     FpPoly g;  // gcd(a, b), monic
     FpPoly s;  // s*a + t*b = g

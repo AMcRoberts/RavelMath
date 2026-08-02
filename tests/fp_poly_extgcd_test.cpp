@@ -4,12 +4,12 @@
 // Euclidean algorithm over F_p[x], returning Bezout coefficients
 // s, t with s*a + t*b = gcd(a,b). Building block for multifactor
 // Hensel lifting (docs/DIRECTION_AND_OPEN_THREADS.md Item B1) --
-// local_polynomial_cofactor (include/adelic/local_field.hpp)
-// currently handles only a single non-simple prime ideal via
-// cofactor division; the general fix needs this to lift a full
-// mod-p factorization simultaneously. This test verifies the
-// primitive itself before it's used for that larger, riskier
-// integration -- not attempted in this file.
+// local_polynomial_cofactor (include/adelic/local_field.hpp) originally
+// handled only a single non-simple prime ideal via cofactor division.
+// Its replacement uses this primitive's F_p Bezout certificate to lift
+// one selected factor against the product of all remaining factors.
+// This file verifies the certificate independently; the integration
+// regression lives in zp_poly_extended_gcd_test.cpp.
 
 #include <cstdio>
 #include <vector>

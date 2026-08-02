@@ -28,11 +28,11 @@
 //      Step 3: r(x) is irreducible over Q_p (in the simple case
 //      L = ef, single-factor), so m_k(x) = r(x).
 //
-//   3. RECURSIVE COFACTOR (Approach C)
-//      For each prime p_k, build m_k(x) = f(x) / ∏_{i ≠ k} m_i(x)
-//      over Q_p.  Simplest cases (e=1, f=1) computed first, then
-//      harder ones by division.  Useful for cross-validation: two
-//      independently-derived m_k(x)'s that agree is strong evidence.
+//   3. PER-FACTOR HENSEL LIFT (Approach C)
+//      Isolate the target factor (with multiplicity) modulo p and lift
+//      it against the coprime product of every other factor, one p-adic
+//      digit at a time with a fixed F_p[x] Bezout certificate. Simple
+//      linear factors retain their direct Newton root lift.
 //
 // All three feed into QpLocalField, which exposes uniform arithmetic
 // (+, -, *, valuation) in K_p regardless of how m_k(x) was
@@ -272,29 +272,22 @@ inline ZpPoly zp_poly_set_precision(const ZpPoly& f, long long new_precision) {
 // s*a + t*b = g = gcd(a,b), g monic (normalized to exactly 1 when
 // a,b are coprime). Requires the divisor at every division step to
 // have a unit leading coefficient (zp_poly_divmod's own requirement) --
-// true whenever a,b are themselves coprime with unit leading
-// coefficients, as in the multifactor-Hensel-lifting use case
-// (docs/DIRECTION_AND_OPEN_THREADS.md Item B1).
-//
-// Building block for lifting a coprime factorization f=g*h to higher
-// p-adic precision (needed to generalize local_polynomial_cofactor,
-// which currently only handles a single non-simple prime ideal): the
-// standard approach is to lift g,h via the quadratic Hensel step,
-// then re-derive fresh Bezout coefficients for the NEXT round by
-// running this function again on the newly-lifted g,h (truncated to
-// their actually-valid precision first via zp_poly_set_precision) --
-// rather than trying to incrementally correct the old s,t directly,
-// which needs a different, more delicate update formula. THIS
-// FUNCTION (zp_poly_extended_gcd) is verified general-purpose --
-// cross-checked against fp_extended_gcd's independent computation.
-// The separate g,h-lift formula used alongside it (see
-// tests/zp_poly_extended_gcd_test.cpp) is verified ONLY for one
-// specific worked example (f=x^2+4 over Z, mod 5); a second worked
-// example (f=x^2-3, mod 11) showed that SAME g,h-lift formula can
-// fail even at the first round, cause not yet identified. Multi-round
-// iteration is not yet verified either. Do not treat the g,h-lift
-// formula as trustworthy in general from this comment or the test
-// file's passing status -- only this function itself is.
+// This is automatic at precision 1, where the coefficient ring is
+// F_p. It is NOT automatic merely because the input polynomials are
+// coprime and monic when precision > 1: Z/(p^N) is not a field, and
+// an intermediate remainder can have nonunit leading coefficient.
+// Therefore this function is cross-checked against fp_extended_gcd at
+// precision 1 but is not used to refresh Bezout coefficients in the
+// production multi-round Hensel lift below. That lift deliberately
+// retains its valid certificate over F_p.
+// The separate g,h-lift formula used alongside it is zp_poly_hensel_lift_gh
+// below -- see that function's own comment for the real story: several
+// earlier attempts had the update terms assigned to the wrong output
+// (g got the divmod remainder, h got the other term; the correct
+// assignment, confirmed against an independently published worked
+// example, is the reverse). The production multi-round algorithm is
+// the linear F_p-certificate lift below; see
+// tests/zp_poly_extended_gcd_test.cpp.
 struct ZpPolyExtGcdResult {
     ZpPoly g;  // gcd(a, b), monic (= 1 exactly when a,b coprime)
     ZpPoly s;  // s*a + t*b = g
@@ -332,6 +325,135 @@ inline ZpPolyExtGcdResult zp_poly_extended_gcd(const ZpPoly& a, const ZpPoly& b)
     s0 = zp_poly_scale(s0, inv);
     t0 = zp_poly_scale(t0, inv);
     return {r0, s0, t0};
+}
+
+// One quadratic Hensel lift step: given f = g0*h0 (mod m) with
+// s0*g0 + t0*h0 = 1 (mod m), h0 monic, deg(f)=deg(g0)+deg(h0),
+// deg(s0)<deg(h0), deg(t0)<deg(g0), returns (g1, h1) with
+// f = g1*h1 (mod m^2). Building block for multifactor Hensel
+// lifting (docs/DIRECTION_AND_OPEN_THREADS.md Item B1).
+//
+// GENUINE BUG HISTORY, worth keeping: several earlier attempts at
+// this exact function assigned the divmod remainder to g1 and the
+// other correction term to h1. That assignment happened to work for
+// one specific worked example (f=x^2+4 over Z, mod 5) and was
+// mistakenly shipped as "verified" on that basis -- a second worked
+// example (f=x^2-3, mod 11) then showed it fails even at the first
+// round. The CORRECT assignment (confirmed by reproducing an
+// independently published worked example -- f=x^4-1, g=x-2,
+// h=x^3+2x^2-x-2, m=5 -- exactly, and then verified against BOTH of
+// the earlier examples, and through several rounds of multi-round
+// iteration) is the reverse: the remainder goes to h1, and the
+// t0*e+q*g0 term goes to g1. Source:
+// https://www.csd.uwo.ca/~mmorenom/CS424/Lectures/Hensel.html/node3.html
+// ("Algorithm 1", following von zur Gathen & Gerhard's presentation).
+inline std::pair<ZpPoly, ZpPoly> zp_poly_hensel_lift_gh(
+        const ZpPoly& f, const ZpPoly& g0, const ZpPoly& h0,
+        const ZpPoly& s0, const ZpPoly& t0) {
+    ZpPoly e = zp_poly_sub(f, zp_poly_mul(g0, h0));
+    ZpPoly se = zp_poly_mul(s0, e);
+    auto qr = zp_poly_divmod(se, h0);  // h0 must be monic
+    ZpPoly delta_h = qr.second;
+    ZpPoly delta_g = zp_poly_add(zp_poly_mul(t0, e), zp_poly_mul(qr.first, g0));
+    ZpPoly g1 = zp_poly_add(g0, delta_g);
+    ZpPoly h1 = zp_poly_add(h0, delta_h);
+    return {g1, h1};
+}
+
+// Lift one chosen factor of f mod p against the product of all remaining
+// coprime factors.  `g_mod_p * h_mod_p` must equal f mod p and the two
+// factors must be coprime.  This uses the standard linear Hensel lift, one
+// p-adic digit at a time, reusing the valid Bezout certificate over F_p.
+//
+// Deliberately do NOT recompute an extended GCD over Z/(p^k)[x] here:
+// that coefficient ring is not a field, and rndW3_5 exposed a real case
+// where an intermediate Euclidean remainder has a nonunit leading
+// coefficient.  The mod-p certificate avoids that invalid assumption.
+inline std::pair<ZpPoly, ZpPoly> zp_poly_hensel_lift_factor_pair(
+        const mathlib::PolyZ& f_z, const FpPoly& g_mod_p,
+        const FpPoly& h_mod_p, long long precision) {
+    if (g_mod_p.p != h_mod_p.p) {
+        throw std::invalid_argument("zp_poly_hensel_lift_factor_pair: mismatched primes");
+    }
+    if (precision < 1) {
+        throw std::invalid_argument("zp_poly_hensel_lift_factor_pair: precision < 1");
+    }
+    const long long p = g_mod_p.p;
+    FpPoly f_mod_p = reduce_z_to_fp(f_z, p);
+    FpPoly product_mod_p = fp_mul(g_mod_p, h_mod_p);
+    if (product_mod_p.c != f_mod_p.c) {
+        throw std::invalid_argument(
+            "zp_poly_hensel_lift_factor_pair: initial factors do not multiply to f mod p");
+    }
+    FpPoly gcd_mod_p = fp_gcd(g_mod_p, h_mod_p);
+    if (gcd_mod_p.c.size() != 1 || gcd_mod_p.c[0] != 1) {
+        throw std::invalid_argument(
+            "zp_poly_hensel_lift_factor_pair: initial factors are not coprime mod p");
+    }
+
+    auto fp_to_zp_at = [p](const FpPoly& a, long long prec) {
+        ZpPoly out = zp_poly_zero(p, prec);
+        out.coeffs.assign(a.c.size(), zp_zero(p, prec));
+        for (std::size_t i = 0; i < a.c.size(); ++i) {
+            out.coeffs[i] = zp_from_int_full(p, a.c[i], prec);
+        }
+        zp_poly_trim(out);
+        return out;
+    };
+
+    const auto bezout_mod_p = fp_extended_gcd(g_mod_p, h_mod_p);
+    if (bezout_mod_p.g.c.size() != 1 || bezout_mod_p.g.c[0] != 1) {
+        throw std::runtime_error(
+            "zp_poly_hensel_lift_factor_pair: Bezout gcd is not 1");
+    }
+
+    ZpPoly f_full = zp_poly_from_polyz(f_z, p, precision);
+    ZpPoly g = fp_to_zp_at(g_mod_p, precision);
+    ZpPoly h = fp_to_zp_at(h_mod_p, precision);
+    for (long long digit = 1; digit < precision; ++digit) {
+        // Since f-g*h is zero modulo p^digit, its digit at index
+        // `digit` is exactly ((f-g*h)/p^digit) mod p.
+        ZpPoly error = zp_poly_sub(f_full, zp_poly_mul(g, h));
+        FpPoly normalized_error{p, {0}};
+        normalized_error.c.assign(error.coeffs.size(), 0);
+        for (std::size_t i = 0; i < error.coeffs.size(); ++i) {
+            normalized_error.c[i] =
+                error.coeffs[i].digits[static_cast<std::size_t>(digit)];
+        }
+        while (normalized_error.c.size() > 1 &&
+               normalized_error.c.back() == 0) {
+            normalized_error.c.pop_back();
+        }
+
+        FpPoly se = fp_mul(bezout_mod_p.s, normalized_error);
+        auto qr = fp_divmod(se, h_mod_p);
+        // Correct assignment, matching zp_poly_hensel_lift_gh:
+        // remainder -> h; t*e + q*g -> g.
+        FpPoly delta_h_mod_p = qr.second;
+        FpPoly delta_g_mod_p = fp_add(
+            fp_mul(bezout_mod_p.t, normalized_error),
+            fp_mul(qr.first, g_mod_p));
+
+        auto shifted_correction = [p, precision, digit](const FpPoly& a) {
+            ZpPoly out = zp_poly_zero(p, precision);
+            out.coeffs.assign(a.c.size(), zp_zero(p, precision));
+            for (std::size_t i = 0; i < a.c.size(); ++i) {
+                out.coeffs[i].digits[static_cast<std::size_t>(digit)] = a.c[i];
+            }
+            zp_poly_trim(out);
+            return out;
+        };
+        g = zp_poly_add(g, shifted_correction(delta_g_mod_p));
+        h = zp_poly_add(h, shifted_correction(delta_h_mod_p));
+
+        ZpPoly f_prefix = zp_poly_set_precision(f_full, digit + 1);
+        ZpPoly product_prefix = zp_poly_set_precision(zp_poly_mul(g, h), digit + 1);
+        if (!zp_poly_equal(product_prefix, f_prefix)) {
+            throw std::runtime_error(
+                "zp_poly_hensel_lift_factor_pair: lifted factors do not reconstruct f");
+        }
+    }
+    return {g, h};
 }
 
 inline ZpInt zp_poly_eval(const ZpPoly& f, const ZpInt& x) {
@@ -852,27 +974,25 @@ inline bool qp_local_is_integral(const QpLocalField& K, const mathlib::QElem& ga
 // ===================================================================
 //
 // Given f(x) (charpoly), p, and the (e, f) data for a specific prime
-// p_k, build the local polynomial m_k(x) as the cofactor of f(x) by
-// the product of the OTHER primes' local polynomials.
+// p_k, build the local polynomial m_k(x). Simple linear factors use
+// Newton root lifting; every other target is isolated mod p and lifted
+// against the coprime product of the remaining factors.
 //
 // Algorithm:
 //   1. Factor the FpPoly f_p = f mod p.  Each FpFactor (g, mult)
 //      corresponds to a prime p_i with e_i = mult, f_i = deg(g).
-//   2. For each prime p_i with e_i = 1 and f_i = 1, find the 2-adic
-//      lift r_i of the residue (the unique root of g_i mod p) using
-//      Newton iteration on f.  The local polynomial for p_i is
-//      (x - r_i) of degree 1.
-//   3. For our target prime p_k, compute m_k(x) = f(x) / ∏_{i ≠ k} m_i(x)
-//      where the product is over all OTHER primes' local polynomials.
+//   2. Identify the unique target factor g_k(x)^e by multiplicity,
+//      degree, and (for linear factors) residue.
+//   3. Let h be the product of every other distinct factor with its
+//      multiplicity. Since g_k and h are coprime mod p, lift f=g_k*h
+//      one p-adic digit at a time with a fixed F_p Bezout certificate.
 //   4. Special case: if our target prime has e = 1, f = 1, the local
 //      polynomial is just (x - r_a) (the simple linear factor).
 //
-// This approach is correct and exact (in the Q_p sense) but requires
-// that the other primes' local polynomials are computable.  In
-// particular, it assumes that the simple primes (e=1, f=1) are
-// computable, which they are via Newton iteration.  For more
-// complicated prime structures (multiple primes with e > 1 or f > 1),
-// use the Ore approach.
+// This closes the former multiple-non-simple-factor limitation for
+// distinct mod-p irreducible factors (the rndW3_5 case). If the supplied
+// (e,f,residue) data does not identify exactly one mod-p factor, the
+// routine still refuses the ambiguous case rather than guessing.
 inline ZpPoly local_polynomial_cofactor(const mathlib::PolyZ& charpoly,
                                           long long p, long long e, long long f,
                                           long long precision,
@@ -896,47 +1016,41 @@ inline ZpPoly local_polynomial_cofactor(const mathlib::PolyZ& charpoly,
         m_k.coeffs[1] = zp_one(p, precision);
         return m_k;
     }
-    // For the multi-prime case (e > 1 or f > 1), factor the FpPoly
-    // to identify the simple linear factors, then compute m_k(x) as
-    // the cofactor of f(x) by the product of the OTHER primes' local
-    // polynomials.
+    // For the multi-prime case (e > 1 or f > 1), identify the target
+    // irreducible factor g_k^e mod p and Hensel-lift it against the
+    // product of every other factor.  Distinct irreducible factors are
+    // coprime even when several of them are non-simple, so this isolates
+    // the requested prime instead of bundling all non-simple factors into
+    // one cofactor (the old limitation hit by rndW3_5).
     FpPoly f_p = reduce_z_to_fp(charpoly, p);
     auto factors = factor_fp(f_p);
-    std::vector<ZpPoly> simple_locals;
-    for (const auto& fac : factors) {
-        if (fac.mult == 1 && fac.g.c.size() == 2) {
-            long long a = ((-fac.g.c[0]) % p + p) % p;
-            ZpInt r_simple = newton_iterate_root(f_zp, a, precision);
-            ZpPoly x_minus_r = zp_poly_zero(p, precision);
-            x_minus_r.coeffs.assign(2, zp_zero(p, precision));
-            x_minus_r.coeffs[0] = zp_neg(r_simple);
-            x_minus_r.coeffs[1] = zp_one(p, precision);
-            simple_locals.push_back(x_minus_r);
+    std::vector<std::size_t> matches;
+    for (std::size_t i = 0; i < factors.size(); ++i) {
+        const auto& fac = factors[i];
+        const long long factor_degree = static_cast<long long>(fac.g.c.size()) - 1;
+        if (fac.mult != e || factor_degree != f) continue;
+        if (f == 1) {
+            const long long a = ((-fac.g.c[0]) % p + p) % p;
+            if (a != ((residue_a % p) + p) % p) continue;
+        }
+        matches.push_back(i);
+    }
+    if (matches.size() != 1) {
+        throw std::runtime_error(
+            "local_polynomial_cofactor: target mod-p factor is absent or ambiguous");
+    }
+
+    const std::size_t target = matches.front();
+    FpPoly target_mod_p{p, {1}};
+    FpPoly complement_mod_p{p, {1}};
+    for (std::size_t i = 0; i < factors.size(); ++i) {
+        for (long long power = 0; power < factors[i].mult; ++power) {
+            if (i == target) target_mod_p = fp_mul(target_mod_p, factors[i].g);
+            else complement_mod_p = fp_mul(complement_mod_p, factors[i].g);
         }
     }
-    ZpPoly product = zp_poly_one(p, precision);
-    for (const auto& sl : simple_locals) {
-        product = zp_poly_mul(product, sl);
-    }
-    typename std::pair<ZpPoly, ZpPoly> dm;
-    try {
-        dm = zp_poly_divmod(f_zp, product);
-    } catch (const std::invalid_argument&) {
-        throw std::runtime_error("local_polynomial_cofactor: division failed "
-                                  "(leading coefficient of product is not a unit — "
-                                  "inconsistency in the simple-case local polynomials)");
-    }
-    if (!zp_poly_is_zero(dm.second)) {
-        throw std::runtime_error("local_polynomial_cofactor: cofactor division has a "
-                                  "NONZERO remainder -- the collected 'simple' (mult=1, "
-                                  "deg=1) factors do not exactly divide the charpoly mod p, "
-                                  "meaning either there is more than one non-simple ideal "
-                                  "remaining (this function's cofactor approach only "
-                                  "correctly isolates a SINGLE non-simple ideal) or a "
-                                  "genuine precision/logic error -- refusing to return a "
-                                  "silently-wrong local polynomial.");
-    }
-    ZpPoly m_k = dm.first;
+    ZpPoly m_k = zp_poly_hensel_lift_factor_pair(
+        charpoly, target_mod_p, complement_mod_p, precision).first;
     if (zp_poly_degree(m_k) != L) {
         throw std::runtime_error("local_polynomial_cofactor: computed m_k has wrong degree "
                                   "(expected ef, got something else)");

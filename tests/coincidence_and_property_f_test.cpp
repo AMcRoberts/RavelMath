@@ -77,20 +77,16 @@ void test_worked_example() {
     CHECK(coin.holds, "worked example: strong coincidence HOLDS (matches paper's Sec 10.2)");
     CHECK(!coin.inconclusive, "worked example: strong coincidence resolved (not inconclusive)");
 
-    // property (F): STILL OPEN for this example.  This is the "two
-    // primes above p, only one contracts, and the contracting one
-    // has ef < n" shape (Sec 2.7's own worked case: p1=(beta) with
-    // e=2,f=1 in a degree-3 field, so ef=2 =/= n=3) -- NOT the
-    // single-totally-ramified-prime (ef=n) case
-    // make_totally_ramified_padic_bound covers.  Building the general
-    // partially-ramified local field is future work (see header
-    // STATUS).  Recorded, not asserted.
+    // Deliberate archimedean-only control. The shared classifier's
+    // combined local-field bound closes this example (verified in
+    // classify_adelic_test); without that bound, the search exhausts
+    // its budget. This confirms the p-adic pruning is substantive.
     auto propf = check_property_f<d>(automaton);
-    fprintf(stderr, "  property (F) [archimedean-only; no p-adic bound available for this "
-                     "prime shape]: holds=%d inconclusive=%d nodes=%lld\n",
+    fprintf(stderr, "  property (F) [archimedean-only control; combined p-adic bound "
+                     "tested separately]: holds=%d inconclusive=%d nodes=%lld\n",
             propf.holds, propf.inconclusive, propf.nodes_explored);
-    fprintf(stderr, "  (paper's stated verdict for this example: TILES; this "
-                     "pipeline currently reaches: coincidence=%s, property(F)=%s [open])\n",
+    fprintf(stderr, "  (expected control result: coincidence=%s, archimedean-only "
+                     "property(F)=%s; full classifier ESTABLISHES)\n",
             coin.holds ? "HOLDS" : "not resolved",
             propf.holds ? "HOLDS" : (propf.inconclusive ? "INCONCLUSIVE" : "FAILS"));
 }

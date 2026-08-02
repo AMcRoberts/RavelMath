@@ -312,14 +312,16 @@ not a second independent implementation. Treat this
 as a strong, reproducible computational result warranting confidence,
 not yet as a citation-ready theorem-with-proof.
 
-**What remains for full generality**: the adelic classifier's p-adic
-bound only covers the "single totally ramified prime" factorization
-shape (which rnd13 happens to have). The paper's own worked example
-(a harder shape: two primes above `p`, only one contracting, partial
-ramification) still does not close and remains INCONCLUSIVE.
-Building the general local-field construction (a Montes/Ore-type
-algorithm) would close that gap and make the classifier apply to any
-future non-unit candidate.
+**What remains for full generality**: the former single-prime and
+multiple-non-simple-factor gaps are both closed. The local-field path
+now handles the paper's partial-ramification example and independently
+isolates distinct non-simple factors by a per-factor linear Hensel
+lift with a fixed `F_p[x]` Bezout certificate. The deterministic
+4-letter regression is consequently 7/7 ESTABLISHED, zero skipped;
+the previously blocked `rndW3_5` case closes Property (F) at 421
+nodes. This remains a tested computational implementation rather than
+a complete formalization of general Montes/Ore theory, and ambiguous
+factor metadata is rejected rather than guessed.
 
 **Rauzy fractal render for 4-letter `rnd13`**: the former
 `rauzy_fractal_natural` i.i.d. projected-letter cloud was illustrative
