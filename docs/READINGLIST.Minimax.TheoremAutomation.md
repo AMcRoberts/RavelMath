@@ -407,6 +407,14 @@ It currently verifies `k_7=20`, `k_8=28`, `k_9=40`, `k_10=54`, and `k_11=80`.
 Unknown solver statuses are reported as inconclusive rather than promoted to
 cutoffs.
 
+Before introducing a new rank feature, inspect the existing symbolic grammar
+in `include/ravel/nbonacci_margin_invariant.hpp`: `forward_descriptor` has four
+exhaustive Root/AlternatingTriple cases and `predecessor_descriptors` has at
+most two inverse branches. The shell word thresholds are projections of this
+small grammar plus tail slack. The next implementation should attach the
+slack weight to descriptors and compare its induced rank with the exact shell
+DAG.
+
 For proof-mining experiments, emit the terminal Z3 proof object:
 
 ```sh

@@ -16,6 +16,23 @@ only place a new boundary hit can be born is the corrected tail. Long maximal
 shell runs are therefore descending boundary witnesses with bounded tail
 resets.
 
+The C++ implementation confirms that this is already compressed into a
+two-shape symbolic alphabet. `forward_descriptor` in
+`include/ravel/nbonacci_margin_invariant.hpp` has exactly four cases:
+
+```text
+Root, a>0  : shift (d=0) or append an alternating triple (d=sign)
+Root, a=0  : fold to a root (d=-sign)
+Triple,a>0 : shift (d=sign)
+Triple,a=0 : fold to a root (d=-sign)
+```
+
+`predecessor_descriptors` has at most two inverse candidates, independently of
+dimension. The large shell word search is therefore observing a projection of
+this Root/AlternatingTriple grammar; the missing theorem should be stated on
+this descriptor automaton with the tail slack as its weight, rather than on
+raw coefficient tuples.
+
 ## Where it lives
 
 The exact implementation is in `include/ravel/nbonacci_margin_invariant.hpp`:
