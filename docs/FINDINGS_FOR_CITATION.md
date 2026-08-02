@@ -948,3 +948,50 @@ were tested numerically there (via the full pipeline, `|G_B|=128,148`
 matching the `20a+8` formula exactly) and both showed "partial
 involution, A1 not x^k" -- consistent with, though not by itself
 proof of, this symbolic result.
+
+## Finding 11 — Item B, Thread B3: rnd13's involution structure is partial, like non-unimodular candidates in general; A1's exact check is computationally infeasible at this scale
+
+**Status: PARTIAL RESULT (A2 only). Answers Thread B3's question --
+"do the n-bonacci involution results give structural information
+about the non-unimodular tilers (only rnd13 in the 24/24 batch)?" --
+for the involution half, honestly, without forcing the cofactor half
+through at unreasonable cost.**
+
+Ran the same A1/A2 machinery used throughout Item A
+(`include/ravel/involution_helpers.hpp`) against `rnd13`'s actual
+`G_B` (`app/probe_b3_rnd13_involution.cpp`), the one non-unimodular
+Pisot candidate in the 24/24 survey known to TILE (Finding 2).
+`rnd13`'s contact-boundary is substantial: `|G_B|=1101`, dominant
+recurrent core 917 nodes.
+
+**A2 (involution)**: 870/917 matched -- **partial**, not the exact
+signature AR-exact substitutions show. `rnd13` does NOT carry the
+n-bonacci-style involution cleanly, despite being the one candidate
+known to tile. At face value this suggests the involution/cofactor
+mechanism and adelic tiling are independent properties, at least for
+this one tested candidate -- tiling doesn't require (or predict) the
+AR-exact structural signature.
+
+**A1 (nilpotent cofactor)**: NOT COMPLETED, and this is itself a
+real finding, not just a gap. The quotient construction gives a
+`435x435` integer matrix (`Q_sym_GB`, 435 orbits from the 870 matched
+core nodes) whose EXACT characteristic polynomial (via
+`charpoly_PolyZ`'s BigInt arithmetic) did not finish in over 30
+minutes of wall time before being killed as part of diagnosing what
+first looked like a hang. Instrumented diagnosis (flushed progress
+prints after every stage) showed it was NOT a hang -- every earlier
+stage (contact-boundary construction, the A2 involution check, both
+quotient constructions) completed within about a minute total; the
+cost is entirely in the exact-arithmetic characteristic polynomial of
+a matrix roughly 40x larger (435 vs 11) than anything A1 has been
+checked on before (Theorem 6's `K_a`, Finding 10). This is a genuine
+scaling limit of the current exact approach, not a bug: worth noting
+for any future attempt to run A1 at 4-letter / large-`|G_B|` scale.
+
+**What this leaves open**: whether `rnd13`'s A1 cofactor is `x^k` or
+not is genuinely unknown, not just unreported. A faster numeric
+(non-exact) check, or a faster exact charpoly algorithm at this
+scale, would be needed to close it. Reproducible driver:
+`app/probe_b3_rnd13_involution.cpp` (the A2 result reproduces in
+under 90 seconds; A1 requires either more patience or a different
+method).
