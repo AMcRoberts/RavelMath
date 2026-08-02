@@ -287,6 +287,7 @@ TESTS_DEFAULT := \
 	number_field_parity_test \
 	poly_discriminant_bigint_test \
 	fp_poly_factor_test \
+	fp_poly_extgcd_test \
 	maximal_order_bigint_test \
 	general_order_radical_test \
 	golod_shafarevich_test \
@@ -362,6 +363,11 @@ $(POLY_DISCRIMINANT_BIGINT_TEST_BIN): $(TESTDIR)/poly_discriminant_bigint_test.c
 FP_POLY_FACTOR_TEST_BIN := $(BUILDDIR)/fp_poly_factor_test
 fp_poly_factor_test: $(FP_POLY_FACTOR_TEST_BIN)
 $(FP_POLY_FACTOR_TEST_BIN): $(TESTDIR)/fp_poly_factor_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+FP_POLY_EXTGCD_TEST_BIN := $(BUILDDIR)/fp_poly_extgcd_test
+fp_poly_extgcd_test: $(FP_POLY_EXTGCD_TEST_BIN)
+$(FP_POLY_EXTGCD_TEST_BIN): $(TESTDIR)/fp_poly_extgcd_test.cpp | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
 MAXIMAL_ORDER_BIGINT_TEST_BIN := $(BUILDDIR)/maximal_order_bigint_test

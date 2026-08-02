@@ -186,6 +186,47 @@ inline FpPoly fp_gcd(const FpPoly& a, const FpPoly& b) {
     return x;
 }
 
+// Extended Euclidean algorithm over F_p[x]: returns (g, s, t) with
+// s*a + t*b = g = gcd(a,b), g monic. Building block for multifactor
+// Hensel lifting (docs/DIRECTION_AND_OPEN_THREADS.md, Item B1) --
+// local_polynomial_cofactor (include/adelic/local_field.hpp) needs
+// this to lift a full mod-p factorization simultaneously instead of
+// its current cofactor-division approach, which only handles a
+// single non-simple prime ideal.
+struct FpExtGcdResult {
+    FpPoly g;  // gcd(a, b), monic
+    FpPoly s;  // s*a + t*b = g
+    FpPoly t;
+};
+
+inline FpExtGcdResult fp_extended_gcd(const FpPoly& a, const FpPoly& b) {
+    if (a.p != b.p) throw std::invalid_argument("fp_extended_gcd: mismatched primes");
+    long long p = a.p;
+    FpPoly r0 = a, r1 = b;
+    FpPoly s0{p, {1}}, s1{p, {0}};
+    FpPoly t0{p, {0}}, t1{p, {1}};
+    while (!(r1.c.size() == 1 && r1.c[0] == 0)) {
+        auto dm = fp_divmod(r0, r1);
+        FpPoly q = dm.first, r2 = dm.second;
+        FpPoly s2 = fp_sub(s0, fp_mul(q, s1));
+        FpPoly t2 = fp_sub(t0, fp_mul(q, t1));
+        r0 = r1; r1 = r2;
+        s0 = s1; s1 = s2;
+        t0 = t1; t1 = t2;
+    }
+    if (r0.c.empty() || r0.c.back() == 0) {
+        throw std::runtime_error("fp_extended_gcd: gcd is zero (inputs both zero?)");
+    }
+    long long inv = 0;
+    for (long long k = 1; k < p; ++k) {
+        if ((r0.c.back() * k) % p == 1) { inv = k; break; }
+    }
+    for (auto& ci : r0.c) ci = (ci * inv) % p;
+    for (auto& ci : s0.c) ci = (ci * inv) % p;
+    for (auto& ci : t0.c) ci = (ci * inv) % p;
+    return {r0, s0, t0};
+}
+
 // Make a F_p[x] polynomial from a monic (x - a) factor.
 inline FpPoly fp_linear(long long p, long long a) {
     // (x - a) = -a + 1·x  (in low-first coefficients, the constant
