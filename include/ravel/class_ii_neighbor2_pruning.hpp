@@ -4815,6 +4815,24 @@ class_ii_neighbor2_nonbase_post_red_catalogue(
 // Do not set any base round's status to `closed` without a proved
 // certificate to cite in this comment; as of 2026-07-30 all four are
 // open.
+//
+// **Possibly stale as of 2026-08-02, flagged not fixed.** The doc's own
+// base-premises table (`docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md`)
+// now reads "Round 1's row is closed" (via "Round 1: the literature
+// check, done", 2026-07-31 night: the paper's `Ĝ_C = ±C` is definitional,
+// so raw-corona reverse inclusion for round 1 was never an independent
+// obligation) and records round 4's bridge as closed the same night
+// ("the remaining gap... it closes too", a provable-constant argument
+// for a>=7). Both postdate this function's "as of 2026-07-30" comment
+// above and its hardcoded `open_reverse_inclusion`/`open_bridge`
+// returns for rounds 1 and 4. NOT changed here: it is not yet verified
+// whether this enum's specific technical sense of "reverse inclusion"
+// (a raw-corona base-case induction fact) is the same claim the
+// literature argument closed, or a narrower/different one -- getting
+// that wrong in either direction (silently stale vs. a false `closed`
+// in load-bearing proof-tracking code) is worse than leaving it
+// flagged. Needs a careful read of both closures against this file's
+// exact definitions before touching the enum values.
 enum class ClassIINeighbor2InductionStatus {
     closed,
     open_reverse_inclusion,  // missing: raw-corona reverse inclusion
