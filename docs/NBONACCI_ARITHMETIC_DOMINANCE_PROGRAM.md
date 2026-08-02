@@ -364,6 +364,14 @@ cannot have a strictly increasing integer rank on every edge. The shell JSON
 checker supplies exactly those finite edge inequalities; only the uniform
 shell-survival theorem is still missing.
 
+The shell-word miner makes the temporal structure explicit. For n=4, M=10,
+all `3^5=243` digit words occur as five-transition shell runs, but no
+six-transition run exists. For n=5, M=6, runs reach seven transitions and no
+eighth; only 296 of the `3^7` words survive at the last length. These exact
+observations from `python/nbonacci_shell_word_probe.py` suggest proving a
+finite forbidden block-word statement directly from `A^(n+1)=2A-I` and the
+bounded forcing alphabet.
+
 ### Algebraic-height route
 
 The exact carry update also supplies a dimension-parametric scalar identity.

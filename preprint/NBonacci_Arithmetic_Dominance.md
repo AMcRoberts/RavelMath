@@ -259,6 +259,12 @@ rank 5 for M=8,...,12; backtracking shows that this rank is bounded
 consecutive shell-window survival. The Lean catalogue now contains the
 matching finite relation lemma `no_strict_rank_relation_closed`. The remaining
 universal task is a bound on that survival depth from the carry/block algebra.
+The companion shell-word miner records the temporal obstruction directly:
+for n=4,M=10 all 243 five-digit words occur on five-transition shell runs,
+but no six-transition run exists; for n=5,M=6 the maximum is seven
+transitions, with only 296 terminal seven-digit words. This suggests a
+finite forbidden-block-word lemma derived from the exact block identity,
+rather than a smooth scalar rank formula.
 
 There is a complementary algebraic route. For the n-bonacci root `β`, the
 covector `c_0=1`, `c_j=β c_{j-1}-1` satisfies the exact scalar update

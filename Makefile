@@ -87,7 +87,7 @@ TRANSITION_FILES := $(addprefix $(TRANSITIONS_DIR)/spectre_transitions_,$(addsuf
 .PHONY: rnd13_factor_probe rnd13_prefix_automaton_probe classify_adelic_tiling test_bp_gb_divisor adelic_boundary_spectral_radius gb_bp_involution_check
 .PHONY: class_ii_symmetry_probe class_ii_boundary_family_test substitution_neighborhood_test
 .PHONY: class_ii_corona_literature_probe
-.PHONY: nbonacci_periodic_carry_probe nbonacci_carry_cycle_probe nbonacci_sign_chamber_probe nbonacci_chamber_stability nbonacci_chamber_merge nbonacci_rank_feature_search nbonacci_sector_gap_rank nbonacci_block_spectrum_probe nbonacci_block_forcing_probe nbonacci_block_l1_growth_probe nbonacci_max_shell_return_probe nbonacci_max_shell_return_stability nbonacci_conjugate_height_probe
+.PHONY: nbonacci_periodic_carry_probe nbonacci_carry_cycle_probe nbonacci_sign_chamber_probe nbonacci_chamber_stability nbonacci_chamber_merge nbonacci_rank_feature_search nbonacci_sector_gap_rank nbonacci_block_spectrum_probe nbonacci_block_forcing_probe nbonacci_block_l1_growth_probe nbonacci_max_shell_return_probe nbonacci_max_shell_return_stability nbonacci_shell_word_probe nbonacci_conjugate_height_probe
 .PHONY: class_ii_neighbor_probe
 .PHONY: return_contact_lift_probe
 .PHONY: class_ii_terminal_transport_probe
@@ -407,6 +407,10 @@ nbonacci_max_shell_return_probe:
 
 nbonacci_max_shell_return_stability:
 	RAVEL_PROBE_MEMORY_MB=10240 python3 python/nbonacci_max_shell_return_stability.py --n=4 --min-bound=2 --max-bound=12
+
+nbonacci_shell_word_probe:
+	RAVEL_PROBE_MEMORY_MB=10240 python3 python/nbonacci_shell_word_probe.py --n=4 --bound=10 --max-steps=7
+	RAVEL_PROBE_MEMORY_MB=10240 python3 python/nbonacci_shell_word_probe.py --n=5 --bound=6 --max-steps=8
 
 nbonacci_conjugate_height_probe:
 	RAVEL_PROBE_MEMORY_MB=10240 python3 python/nbonacci_conjugate_height_probe.py --min-n=2 --max-n=10

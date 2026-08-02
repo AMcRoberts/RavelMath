@@ -294,6 +294,12 @@ for this style of certificate is now
 `no_strict_rank_relation_closed`, which rules out a finite closed relation
 with strict integer rank increase on every edge. The missing theorem is the
 uniform bound on shell survival depth, not the finite-cycle contradiction.
+For the next structural mining pass, run
+`make nbonacci_shell_word_probe`. At n=4,M=10 every `3^5` digit word occurs
+on a five-transition shell run but no six-transition run exists; at n=5,M=6
+the maximum is seven transitions and only 296 terminal words survive. This
+is the concrete target for a forbidden-block-word proof from the `(n+1)`-block
+identity.
 
 Example:
 
