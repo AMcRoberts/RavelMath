@@ -57,9 +57,11 @@ def chamber(x: tuple[int, ...], mode: str, modulus: int = 3) -> str:
     if mode == "gaps":
         gaps = tuple(value - minimum for value in magnitudes)
         return signs + "|" + ",".join(map(str, gaps))
-    if mode in ("gaps-parity", "gaps-mod3", "gaps-mod"):
+    if mode in ("gaps-parity", "gaps-mod3", "gaps-mod", "gaps-residue"):
         gaps = tuple(value - minimum for value in magnitudes)
         local_modulus = 2 if mode == "gaps-parity" else modulus
+        if mode == "gaps-residue":
+            gaps = tuple(value % local_modulus for value in gaps)
         return (signs + "|" + ",".join(map(str, gaps)) + "|"
                 + str(minimum % local_modulus))
     if mode == "parity":
@@ -248,6 +250,13 @@ def run(n: int, bound: int, mode: str, modulus: int, rank_base: str | None) -> i
             source_level = max(source_magnitudes)
         elif rank_base == "sum":
             source_level = sum(source_magnitudes)
+        elif rank_base == "quotient":
+            source_level = sum(value // modulus for value in source_magnitudes)
+        elif rank_base == "sum-quotient":
+            scale = int(os.environ.get("RAVEL_QUOTIENT_SCALE", "1"))
+            source_level = sum(source_magnitudes) + scale * sum(
+                value // modulus for value in source_magnitudes
+            )
         else:
             source_level = 0
         for destination in outgoing[source]:
@@ -262,6 +271,13 @@ def run(n: int, bound: int, mode: str, modulus: int, rank_base: str | None) -> i
                     destination_level = max(destination_magnitudes)
                 elif rank_base == "sum":
                     destination_level = sum(destination_magnitudes)
+                elif rank_base == "quotient":
+                    destination_level = sum(value // modulus for value in destination_magnitudes)
+                elif rank_base == "sum-quotient":
+                    scale = int(os.environ.get("RAVEL_QUOTIENT_SCALE", "1"))
+                    destination_level = sum(destination_magnitudes) + scale * sum(
+                        value // modulus for value in destination_magnitudes
+                    )
                 else:
                     destination_level = 0
                 weighted_edges_by_name.add(
@@ -297,7 +313,7 @@ def main() -> int:
     parser.add_argument("--bound", type=int, required=True)
     parser.add_argument(
         "--mode", choices=("sign", "ordered", "gapcap", "gaps", "gaps-parity",
-                           "gaps-mod3", "gaps-mod", "parity"),
+                           "gaps-mod3", "gaps-mod", "gaps-residue", "parity"),
         default="ordered",
     )
     parser.add_argument(
@@ -305,7 +321,7 @@ def main() -> int:
         help="minimum magnitude residue modulus, or 'auto' for n+1",
     )
     parser.add_argument("--rank-min", action="store_true")
-    parser.add_argument("--rank-base", choices=("min", "max", "sum"))
+    parser.add_argument("--rank-base", choices=("min", "max", "sum", "quotient", "sum-quotient"))
     args = parser.parse_args()
     if args.n < 2 or args.bound < 1:
         parser.error("require n>=2, bound>=1, and modulus>=2")

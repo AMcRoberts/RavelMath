@@ -140,6 +140,11 @@ formula in the gap coordinates alone is infeasible already at `n=3,B=8`, so
 the chamber offset is genuinely piecewise rather than a hidden three-parameter
 linear norm.
 
+Reducing the gaps themselves modulo `n+1` is too aggressive: the resulting
+finite phase fails at `n=3,B=30` and `n=4,B=10`, even after adding scalar
+quotient-weighted radial terms. Exact relative gaps, or an equivalent richer
+carry state, are therefore required by the current evidence.
+
 For regression, the unrestricted carry automaton at `B=2` leaves the following
 numbers of cyclic states (all ternary):
 
