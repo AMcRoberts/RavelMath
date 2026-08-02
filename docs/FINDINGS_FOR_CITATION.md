@@ -1337,7 +1337,11 @@ manifest carry both verified GPG and X.509 signatures.
 The C++ probe now treats the four expected column differences as assertions
 and exits nonzero on any identity, tensor, symbolic-endpoint, or transport
 failure; its enrolled explicit Make target reports `Overall transport probe:
-PASS`, not merely a diagnostic table followed by unconditional success.
+PASS`, not merely a diagnostic table followed by unconditional success. It
+also constructs the four actual incidence matrices and requires all three
+columns of the multiplication-by-`beta` tensor to equal `M` exactly before
+checking the derived column differences; current result is
+`Full multiplication-by-beta tensors equal M: ALL EXACT`.
 
 **Rolled forward automatically to rounds 3-5, confirming the "family
 of families" framing rather than asserting it** (`app/class_ii_

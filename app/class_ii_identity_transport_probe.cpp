@@ -208,6 +208,8 @@ struct BasisCoordinates {
     long long one = 0;
 };
 
+using Matrix3 = std::array<std::array<long long, 3>, 3>;
+
 // Express a reduced degree-<3 polynomial in the supplied integral basis
 // (b,c,1).  Both bases used below are unimodular, so the 2x2 determinant
 // controlling the positive-degree coefficients is +/-1 and no denominator
@@ -253,6 +255,25 @@ bool coordinates_equal(const BasisCoordinates& actual,
                        const BasisCoordinates& expected) {
     return actual.b == expected.b && actual.c == expected.c
         && actual.one == expected.one;
+}
+
+BasisCoordinates matrix_column(const Matrix3& matrix, std::size_t column) {
+    return {matrix[0][column], matrix[1][column], matrix[2][column]};
+}
+
+bool beta_tensor_equals_incidence(const Matrix3& matrix,
+                                  const PolyZ& modulus,
+                                  const PolyZ& b, const PolyZ& c) {
+    // In every basis supplied below b=beta. M^T*v=beta*v therefore says
+    // the coordinates of beta*b, beta*c, beta*1 are columns 0,1,2 of M.
+    return coordinates_equal(coordinates_in_perron_basis(
+               reduce_univariate(b * b, modulus), b, c),
+               matrix_column(matrix, 0))
+        && coordinates_equal(coordinates_in_perron_basis(
+               reduce_univariate(b * c, modulus), b, c),
+               matrix_column(matrix, 1))
+        && coordinates_equal(coordinates_in_perron_basis(b, b, c),
+               matrix_column(matrix, 2));
 }
 
 PolyZ companion_cubic(long long quadratic, long long linear) {
@@ -478,17 +499,53 @@ int main() {
         "companion stratum (A=2,B=3)", companion_cubic(2, 3),
         monomial(1, 1), monomial(1, 2) - monomial(2, 1));
 
+    const Matrix3 class_matrix{{
+        {{displayed_a, displayed_a, 1}}, {{1, 0, 0}}, {{1, 1, 0}}}};
+    const Matrix3 tribonacci_matrix{{
+        {{1, 1, 1}}, {{1, 0, 0}}, {{0, 1, 0}}}};
+    const Matrix3 companion32_matrix{{
+        {{3, 2, 1}}, {{1, 0, 0}}, {{0, 1, 0}}}};
+    const Matrix3 companion23_matrix{{
+        {{2, 3, 1}}, {{1, 0, 0}}, {{0, 1, 0}}}};
+
     const bool column_differences_ok =
-        coordinates_equal(class_difference, {0, 1, 0})
-        && coordinates_equal(tribonacci_difference, {0, 1, -1})
-        && coordinates_equal(companion32_difference, {1, 1, -1})
-        && coordinates_equal(companion23_difference, {-1, 1, -1});
+        coordinates_equal(class_difference,
+                          {class_matrix[0][0] - class_matrix[0][1],
+                           class_matrix[1][0] - class_matrix[1][1],
+                           class_matrix[2][0] - class_matrix[2][1]})
+        && coordinates_equal(tribonacci_difference,
+                          {tribonacci_matrix[0][0] - tribonacci_matrix[0][1],
+                           tribonacci_matrix[1][0] - tribonacci_matrix[1][1],
+                           tribonacci_matrix[2][0] - tribonacci_matrix[2][1]})
+        && coordinates_equal(companion32_difference,
+                          {companion32_matrix[0][0] - companion32_matrix[0][1],
+                           companion32_matrix[1][0] - companion32_matrix[1][1],
+                           companion32_matrix[2][0] - companion32_matrix[2][1]})
+        && coordinates_equal(companion23_difference,
+                          {companion23_matrix[0][0] - companion23_matrix[0][1],
+                           companion23_matrix[1][0] - companion23_matrix[1][1],
+                           companion23_matrix[2][0] - companion23_matrix[2][1]});
+    const bool full_tensors_ok =
+        beta_tensor_equals_incidence(class_matrix, class_cubic,
+                                     class_b, class_c)
+        && beta_tensor_equals_incidence(tribonacci_matrix, trib_cubic,
+                                        trib_b, trib_c)
+        && beta_tensor_equals_incidence(companion32_matrix,
+                                        companion_cubic(3, 2),
+                                        monomial(1, 1),
+                                        monomial(1, 2) - monomial(3, 1))
+        && beta_tensor_equals_incidence(companion23_matrix,
+                                        companion_cubic(2, 3),
+                                        monomial(1, 1),
+                                        monomial(1, 2) - monomial(2, 1));
     const bool all_ok = neighbor0_ok && neighbor1_ok
         && !old_identity_remainder.is_zero()
         && tribonacci_identity_remainder.is_zero()
-        && tribonacci_formula_ok && column_differences_ok;
+        && tribonacci_formula_ok && column_differences_ok && full_tensors_ok;
     std::printf("\nIncidence-column assertions: %s\n",
                 column_differences_ok ? "ALL EXACT" : "FAIL");
+    std::printf("Full multiplication-by-beta tensors equal M: %s\n",
+                full_tensors_ok ? "ALL EXACT" : "FAIL");
     std::printf("Overall transport probe: %s\n", all_ok ? "PASS" : "FAIL");
     return all_ok ? 0 : 1;
 }
