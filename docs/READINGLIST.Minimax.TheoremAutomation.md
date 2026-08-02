@@ -362,6 +362,17 @@ This checks all 365 canonical words directly in QF_LRA and reports
 large-shell cutoff; use `--word=-1,1,-1,1,-1,1 --emit-proof=...` to inspect a
 single branch proof.
 
+The next-dimensional check is also available:
+
+```sh
+python3 python/nbonacci_word_interval_smt.py \
+  --n=5 --length=7 --upper-q=1/10
+```
+
+It returns `1,094/1,094 UNSAT`; at `upper-q=1/9`, only five branches survive.
+Use this pair to mine the dimension-dependent slack formula before attempting
+the generic certificate compression.
+
 For proof-mining experiments, emit the terminal Z3 proof object:
 
 ```sh

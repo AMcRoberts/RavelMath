@@ -84,6 +84,13 @@ interval `0 <= q < 1/7` for every canonical word and returns
 individual branch with `--emit-proof`; the remaining compression is to share
 the resulting linear certificate across all word branches.
 
+The same independent scan at `n=5`, seven transitions, tests all 1,094
+canonical words and returns `1,094/1,094 UNSAT` for `0 <= q < 1/10`.
+At the next coarser endpoint `q < 1/9`, exactly five branches become SAT.
+This gives a second exact rational margin and suggests that the cutoff is a
+dimension-dependent integer slack invariant, rather than a numerical solver
+artifact.
+
 The homogeneous limit can now be checked independently with
 `python/nbonacci_homogeneous_shell_smt.py`.  Exact rational SMT gives the
 following stable pattern for every tested dimension `2<=n<=10`:
