@@ -316,6 +316,11 @@ An attempted refinement that also records `floor(min_abs/(n+1))` does not
 stabilize the potential: at `n=3`, bounds 8 and 12 still differ on 4,042 of
 4,898 shared signatures. Scale enters through the exact gap geometry, not a
 single radial quotient.
+
+The capped vectorized raw-block test (`make nbonacci_block_l1_growth_probe`)
+confirms why the chamber potential is needed: minimum raw `L1` changes are
+`-15` at `n=3,B=8` and `-13` at `n=4,B=6`. Thus the exact block identity and
+bounded forcing do not by themselves yield radial `L1` escape.
 - Add a checker that verifies every directed cycle in the certified exterior
   graph has positive total rank change (equivalently, no zero/nonpositive
   cycle survives); this is the finite obstruction audit for sublemma 4.

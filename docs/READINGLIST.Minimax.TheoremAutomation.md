@@ -212,6 +212,10 @@ Recording `floor(min_abs/(n+1))` as an additional chamber coordinate also
 fails to stabilize the potential: at `n=3`, bounds 8 and 12 differ on 4,042
 of 4,898 shared signatures. The scale dependence is in the exact gap geometry,
 not a single radial quotient.
+The capped vectorized raw-block test (`make nbonacci_block_l1_growth_probe`)
+also confirms that raw `L1` is insufficient: minimum changes are `-15` at
+`n=3,B=8` and `-13` at `n=4,B=6`. The chamber/coboundary correction is
+mathematically necessary, not just an implementation choice.
 The larger known passing shell `n=5,bound=6` also emits and replays
 successfully: 371,198 chambers, 611,658 weighted edges, and a 41 MiB
 certificate. Treat this as a stress result, not as a universal theorem.
