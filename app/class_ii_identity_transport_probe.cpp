@@ -235,10 +235,11 @@ void print_multiplication_tensor(const char* label, const PolyZ& modulus,
                                  const PolyZ& b, const PolyZ& c) {
     std::printf("  %s multiplication tensor in basis (b,c,1):\n", label);
     for (const auto& product : std::vector<std::pair<const char*, PolyZ>>{
-             {"b*b", b * b}, {"b*c", b * c}, {"c*c", c * c}}) {
+             {"b*b", b * b}, {"b*c", b * c}, {"c*c", c * c},
+             {"b(b-c)", b * (b - c)}}) {
         const auto coords = coordinates_in_perron_basis(
             reduce_univariate(product.second, modulus), b, c);
-        std::printf("    %-3s = %lld*b %+lld*c %+lld\n", product.first,
+        std::printf("    %-6s = %lld*b %+lld*c %+lld\n", product.first,
                     coords.b, coords.c, coords.one);
     }
 }
@@ -248,22 +249,21 @@ PolyZ companion_cubic(long long quadratic, long long linear) {
          - monomial(linear, 1) - monomial(1, 0);
 }
 
-// In the genuinely matrix-changing Tribonacci hop, the Perron direction is
-// (beta^2,beta,1).  Thus b=beta^2 and c=beta, and reduction modulo
-// beta^3-beta^2-beta-1 gives this new stratum-specific universal form:
-//   b^2*(p*b+q*c+r)
-//     = (7p+4q+2r) beta^2 + (6p+3q+2r) beta + (4p+2q+r).
+// In the genuinely matrix-changing Tribonacci hop, use the same convention
+// as in_H_sigma: the left Perron covector, scaled to the integral basis
+// (b,c,1)=(beta,beta^2-beta,1).  Reduction modulo the Tribonacci cubic gives
+//   b^2*(p*b+q*c+r) = (p+q+r)*beta^2 + (p+q)*beta + p.
 PolyZ tribonacci_closed_form(long long p, long long q, long long r) {
     PolyZ out;
-    mathlib::set_si(out.coeff(2), 7 * p + 4 * q + 2 * r);
-    mathlib::set_si(out.coeff(1), 6 * p + 3 * q + 2 * r);
-    mathlib::set_si(out.coeff(0), 4 * p + 2 * q + r);
+    mathlib::set_si(out.coeff(2), p + q + r);
+    mathlib::set_si(out.coeff(1), p + q);
+    mathlib::set_si(out.coeff(0), p);
     return out;
 }
 
 PolyZ tribonacci_direct(long long p, long long q, long long r) {
-    // beta^4 * (p*beta^2 + q*beta + r).
-    return monomial(p, 6) + monomial(q, 5) + monomial(r, 4);
+    // beta^2 * (p*beta + q*(beta^2-beta) + r).
+    return monomial(q, 4) + monomial(p - q, 3) + monomial(r, 2);
 }
 
 }  // namespace
@@ -400,13 +400,14 @@ int main() {
     // linear closed form.  This locates the wall: not at word order, but at
     // the number-field/matrix stratum.
     const PolyZ trib_cubic = tribonacci_cubic();
-    const PolyZ old_identity =
-        monomial(1, 4) - monomial(1, 3) - monomial(1, 1);
+    const PolyZ trib_b = monomial(1, 1);
+    const PolyZ trib_c = monomial(1, 2) - monomial(1, 1);
+    const PolyZ old_identity = trib_b * (trib_b - trib_c) - trib_c;
     const PolyZ old_identity_remainder =
         reduce_univariate(old_identity, trib_cubic);
-    // old_identity is already b*(b-c)-c, so subtract only the additional
-    // b needed to test b*(b-c)-(b+c).
-    const PolyZ tribonacci_identity = old_identity - monomial(1, 2);
+    // The incidence-column difference predicts c-1, so add 1 to
+    // old_identity=b*(b-c)-c.
+    const PolyZ tribonacci_identity = old_identity + monomial(1, 0);
     const PolyZ tribonacci_identity_remainder =
         reduce_univariate(tribonacci_identity, trib_cubic);
 
@@ -428,7 +429,7 @@ int main() {
                 "(exact remainder: %s)\n",
                 old_identity_remainder.is_zero() ? "YES" : "NO",
                 mathlib::str(old_identity_remainder).c_str());
-    std::printf("  Tribonacci replacement b*(b-c)=b+c: %s "
+    std::printf("  Tribonacci replacement b*(b-c)=c-1: %s "
                 "(exact remainder: %s)\n",
                 tribonacci_identity_remainder.is_zero() ? "YES" : "NO",
                 mathlib::str(tribonacci_identity_remainder).c_str());
@@ -440,9 +441,9 @@ int main() {
                 "the reduction bazooka is not.\n");
 
     // Derive the structure constants rather than recognizing identities by
-    // eye.  For Class II, c=beta^2-a*beta-1 in the normalized Perron basis;
-    // for Tribonacci, (b,c)=(beta^2,beta).  The differing sparse identities
-    // are now rows of automatically generated multiplication tensors.
+    // eye.  Both bases are scaled LEFT Perron covectors, matching
+    // in_H_sigma. M^T*v=beta*v says multiplication by beta=b has coordinate
+    // matrix M itself, so the identity is literally col_0-col_1.
     const long long displayed_a = 7;
     const PolyZ class_cubic = monomial(1, 3)
                             - monomial(displayed_a, 2)
@@ -455,20 +456,17 @@ int main() {
     print_multiplication_tensor("Class II (a=7)", class_cubic,
                                 class_b, class_c);
     print_multiplication_tensor("Tribonacci", trib_cubic,
-                                monomial(1, 2), monomial(1, 1));
-    // Two named unimodular Pisot controls have companion cubics but move
-    // farther from Tribonacci: sigma_1 has (A,B)=(3,2), sigma_2 has
-    // (A,B)=(2,3) in beta^3=A*beta^2+B*beta+1.  With
-    // (b,c,1)=(beta^2,beta,1), the tensor is generated directly from
-    // (A,B); the once-tiny b*(b-c) identity becomes respectively
-    // 8b+5c+2 and 5b+4c+1.  This is the informative breakdown: the
-    // quotient-ring mechanism stays uniform while coefficient sparsity does
-    // not.
-    print_multiplication_tensor("sigma_1 companion stratum",
+                                trib_b, trib_c);
+    // For companion cubics beta^3=A*beta^2+B*beta+1, the acceptance
+    // covector basis is (b,c,1)=(beta,beta^2-A*beta,1). Incidence-column
+    // subtraction gives b*(b-c)=(A-B)b+c-1.
+    print_multiplication_tensor("companion stratum (A=3,B=2)",
                                 companion_cubic(3, 2),
-                                monomial(1, 2), monomial(1, 1));
-    print_multiplication_tensor("sigma_2 companion stratum",
+                                monomial(1, 1),
+                                monomial(1, 2) - monomial(3, 1));
+    print_multiplication_tensor("companion stratum (A=2,B=3)",
                                 companion_cubic(2, 3),
-                                monomial(1, 2), monomial(1, 1));
+                                monomial(1, 1),
+                                monomial(1, 2) - monomial(2, 1));
     return 0;
 }

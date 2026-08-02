@@ -1280,14 +1280,17 @@ signed-strip certificate hold for every regular shell of both other
 word-order neighbors.
 
 The next hop changes the incidence matrix while remaining in the
-three-letter unimodular Pisot setting: Tribonacci, with Perron basis
-`(b,c,1)=(beta^2,beta,1)` and cubic
-`beta^3=beta^2+beta+1`. Here the Class-II identity genuinely fails:
-`b*(b-c)-c` has exact remainder `b=beta^2`. The replacement is equally
-clean but different, `b*(b-c)=b+c`, verified by exact zero remainder.
-The general reduction machinery survives: for every `(p,q,r)`,
+three-letter unimodular Pisot setting: Tribonacci. An initial version
+used its right-eigenvector power basis `(beta^2,beta,1)`; that is not
+the acceptance-strip convention in `Substitution::in_H_sigma`, which
+uses the left Perron covector (`M^T` power iteration). Corrected before
+finalizing the result. Scaled integrally, the actual basis is
+`(b,c,1)=(beta,beta^2-beta,1)`. Here the Class-II identity genuinely
+fails by exact remainder `-1`; the replacement is `b*(b-c)=c-1`, exact
+zero remainder. The general reduction machinery survives: for every
+`(p,q,r)`,
 
-`b^2*(p*b+q*c+r) = (7p+4q+2r)beta^2 + (6p+3q+2r)beta + (4p+2q+r)`.
+`b^2*(p*b+q*c+r) = (p+q+r)beta^2 + (p+q)beta + p`.
 
 Thus the pattern is now located precisely. Sparse identities are the
 multiplication table of `Z[beta]=Z[x]/(f_M)` in the Perron-coordinate
@@ -1299,21 +1302,28 @@ automatically generated quotient-ring multiplication tensor plus a
 positivity cone per matrix stratum, not an attempt to force the literal
 Class-II identity onto every substitution.
 
-The probe now generates that tensor explicitly. In the `(b,c,1)` basis:
-Class II at `a=7` has `b^2=7b+c+1`, `bc=7b+1`, `c^2=b+6c`, while
-Tribonacci has `b^2=2b+2c+1`, `bc=b+c+1`, `c^2=b`; subtracting the
-first two tensor rows produces the two identities above automatically.
-Two farther named unimodular Pisot controls show where *sparsity* breaks:
-for a companion cubic `beta^3=A beta^2+B beta+1` with
-`(b,c)=(beta^2,beta)`, exact reduction gives
+The sharper pattern is simpler than a generic quotient-ring comparison.
+For the scaled left Perron covector `v=(b,c,1)`, `M^T v=beta v` says
+that multiplication by `beta=b` has coordinate matrix **exactly the
+incidence matrix `M`**. Therefore `b(b-c)` is obtained without a search:
+subtract incidence column 1 from column 0 and read the resulting three
+coordinates in `(b,c,1)`. Class II has column difference `(0,1,0)`,
+giving `c`; Tribonacci has `(0,1,-1)`, giving `c-1`.
 
-`b*(b-c) = (A^2+B-A)b + (AB+1-B)c + (A-1)`.
+The generated tensors confirm this directly. Class II at `a=7` has
+`b^2=7b+c+1`, `bc=7b+1`, `c^2=b+6c`; Tribonacci has
+`b^2=b+c`, `bc=b+1`, `c^2=b+c-1`. For a companion incidence stratum
+with cubic `beta^3=A beta^2+B beta+1`, the acceptance-covector basis is
+`(b,c,1)=(beta,beta^2-A beta,1)` and column subtraction gives the
+universal identity
 
-Thus the project's `sigma_1` stratum `(A,B)=(3,2)` gives
-`8b+5c+2`, and `sigma_2` `(A,B)=(2,3)` gives `5b+4c+1`.
-The automation remains uniform, but the unusually tiny Class-II and
-Tribonacci right-hand sides are genuine cancellations, not the generic
-shape of a cubic unimodular Pisot identity.
+`b*(b-c) = (A-B)b + c - 1`.
+
+This is the sought pattern: the differing algebraic identities are
+literal differences of incidence columns. Quotient-ring reduction is
+still the independent executable verification and handles other
+products, but this particular identity is already encoded linearly in
+`M^T v=beta v`.
 
 **Rolled forward automatically to rounds 3-5, confirming the "family
 of families" framing rather than asserting it** (`app/class_ii_
