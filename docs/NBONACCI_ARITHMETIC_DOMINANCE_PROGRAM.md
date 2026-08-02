@@ -94,6 +94,17 @@ dimensions and periods. This is a bounded certificate generator, not yet the
 uniform maximum principle; a future promotion must prove the periodic-word
 claim for arbitrary period (or supply a finite carry-state quotient).
 
+The finite carry-state quotient is now implemented in
+`app/nbonacci_carry_cycle_probe.cpp`. It enumerates the whole box
+`[-B,B]^n`, permits all three signed digits at every state, and removes
+vertices that cannot lie on a directed cycle. It reports no non-ternary cyclic
+state for `n=3..8, B=2`; the cyclic set is unchanged for `n=3..6, B=3` and
+`n=3..5, B=4`. Since this probe forgets the beta window and face labels, these
+are stronger finite carry certificates than the arithmetic-hull experiments.
+The remaining promotion target is precise: prove that every periodic orbit
+enters one of these finite boxes (or prove a direct maximum principle), after
+which the recurrent coefficient bound is no longer empirical.
+
 ## Intertwiner search
 
 For a shell block `S` and core block `C`, a nonnegative matrix `P` satisfying
@@ -173,6 +184,7 @@ make nbonacci_restricted_intertwiner_search
 ./out/nbonacci_arithmetic_hull --exact --bound=1 7 8
 ./out/nbonacci_arithmetic_hull --bound=2 3 4 5
 make nbonacci_periodic_carry_probe
+make nbonacci_carry_cycle_probe
 ```
 
 The first command is the independent legacy-corona regression through n=6.
