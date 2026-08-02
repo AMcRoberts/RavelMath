@@ -246,6 +246,9 @@ the merged n=3 bounds 8 and 12 certificate; `nbonacci_rank_feature_certificate_c
 replays the resulting integer coefficients without floating point. The
 larger merged n=3 bounds 8, 12, 16, and 32 system also admits such a rounded
 integer sector-gap rank. This is the current candidate template to generalize.
+Adding the per-sector minimum-quotient feature (`sector-gaps-scale`) also
+passes the same four-box merge; its 549,120 inequalities replay in under a
+second with vectorized integer arithmetic.
 
 Example:
 

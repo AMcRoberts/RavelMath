@@ -216,6 +216,9 @@ coordinates. It passes the merged (n=3), bounds 8 and 12 certificate, and
 also the merged bounds 8, 12, 16, and 32 system. The companion replay checker
 uses integer arithmetic only. This is the current candidate template for a
 uniform proof, not yet a dimension-parametric theorem.
+Adding the per-sector minimum-quotient coordinate (`sector-gaps-scale`) also
+passes the four-box merge; its 549,120 inequalities replay exactly with
+integer arithmetic.
 
 ## 5. What is proved and what remains
 

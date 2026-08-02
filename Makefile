@@ -386,6 +386,11 @@ nbonacci_sector_gap_rank:
 	python3 python/nbonacci_chamber_merge.py /tmp/n3_b8_gaps.json /tmp/n3_b12_gaps.json --emit=/tmp/n3_gaps_merged.json
 	python3 python/nbonacci_rank_feature_search.py /tmp/n3_gaps_merged.json --family=sector-gaps --emit=/tmp/n3_sector_gap_rank.json
 	python3 python/nbonacci_rank_feature_certificate_check.py /tmp/n3_sector_gap_rank.json
+	RAVEL_PROBE_MEMORY_MB=10240 python3 python/nbonacci_sign_chamber_probe.py --n=3 --bound=8 --mode=gaps-mod-scale --rank-base=sum --emit-certificate=/tmp/n3_b8_scale_rank.json
+	RAVEL_PROBE_MEMORY_MB=10240 python3 python/nbonacci_sign_chamber_probe.py --n=3 --bound=12 --mode=gaps-mod-scale --rank-base=sum --emit-certificate=/tmp/n3_b12_scale_rank.json
+	python3 python/nbonacci_chamber_merge.py /tmp/n3_b8_scale_rank.json /tmp/n3_b12_scale_rank.json --emit=/tmp/n3_scale_merged.json
+	python3 python/nbonacci_rank_feature_search.py /tmp/n3_scale_merged.json --family=sector-gaps-scale --emit=/tmp/n3_sector_scale_rank.json
+	python3 python/nbonacci_rank_feature_certificate_check.py /tmp/n3_sector_scale_rank.json
 nbonacci_block_spectrum_probe:
 	RAVEL_PROBE_MEMORY_MB=10240 OPENBLAS_NUM_THREADS=1 python3 python/nbonacci_block_spectrum_probe.py
 nbonacci_block_forcing_probe:

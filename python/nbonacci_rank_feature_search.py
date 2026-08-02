@@ -41,15 +41,17 @@ def features(name: str, family: str, sectors: dict[str, int] | None = None,
     sign_values = [1.0 if c == "+" else -1.0 if c == "-" else 0.0
                    for c in signs]
     result: list[float] = []
-    if family == "sector-gaps":
+    if family in ("sector-gaps", "sector-gaps-scale"):
         if sectors is None or gap_count is None:
             raise ValueError("sector-gaps requires sector metadata")
-        width = gap_count + 1
+        width = gap_count + (2 if family == "sector-gaps-scale" else 1)
         result = [0.0] * (len(sectors) * width)
         base = sectors[signs] * width
         result[base] = 1.0
         for index, value in enumerate(gaps):
             result[base + 1 + index] = float(value)
+        if family == "sector-gaps-scale":
+            result[base + 1 + gap_count] = float(quotient)
         return result
     if family in ("sign", "quadratic", "rich"):
         result += sign_values
@@ -93,12 +95,12 @@ def search(data: dict, family: str):
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("certificate")
-    parser.add_argument("--family", choices=("sign", "gaps", "quadratic", "rich", "sector-gaps"),
+    parser.add_argument("--family", choices=("sign", "gaps", "quadratic", "rich", "sector-gaps", "sector-gaps-scale"),
                         action="append")
     parser.add_argument("--emit", help="write a rounded integer coefficient certificate")
     args = parser.parse_args()
     data = load(args.certificate)
-    families = args.family or ["sign", "gaps", "quadratic", "rich", "sector-gaps"]
+    families = args.family or ["sign", "gaps", "quadratic", "rich", "sector-gaps", "sector-gaps-scale"]
     for family in families:
         result, coefficients, minimum_slack, vectors = search(data, family)
         if coefficients is None:
