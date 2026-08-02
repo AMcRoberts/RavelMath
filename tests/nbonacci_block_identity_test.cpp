@@ -26,6 +26,12 @@ Matrix multiply(const Matrix& lhs, const Matrix& rhs) {
     return result;
 }
 
+void add_in_place(Matrix& target, const Matrix& source) {
+    for (std::size_t i = 0; i < target.size(); ++i)
+        for (std::size_t j = 0; j < target.size(); ++j)
+            target[i][j] += source[i][j];
+}
+
 Vector multiply(const Matrix& matrix, const Vector& vector) {
     Vector result(matrix.size());
     for (std::size_t i = 0; i < matrix.size(); ++i)
@@ -57,6 +63,18 @@ int main() {
     std::size_t checks = 0;
     for (std::size_t n = 2; n <= 40; ++n) {
         const Matrix A = inverse_carry_matrix(n);
+        Matrix geometric(n, std::vector<Scalar>(n));
+        Matrix running(n, std::vector<Scalar>(n));
+        for (std::size_t i = 0; i < n; ++i) running[i][i] = 1;
+        for (std::size_t k = 1; k <= n; ++k) {
+            running = multiply(running, A);
+            add_in_place(geometric, running);
+        }
+        Matrix identity(n, std::vector<Scalar>(n));
+        for (std::size_t i = 0; i < n; ++i) identity[i][i] = 1;
+        require(geometric == identity,
+                "geometric sum A+...+A^n != I");
+
         Matrix power(n, std::vector<Scalar>(n));
         for (std::size_t i = 0; i < n; ++i) power[i][i] = 1;
         for (std::size_t k = 0; k < n + 1; ++k) power = multiply(power, A);
