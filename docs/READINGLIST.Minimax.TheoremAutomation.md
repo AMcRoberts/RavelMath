@@ -199,6 +199,9 @@ successfully under the 10 GiB cap. Increase only one bound or dimension at a
 time after recording the result. A controlled next-dimensional run also
 passes at `n=5,bound=4`: 58,954 chambers, 96,824 weighted edges, and a 6.3 MiB
 certificate; its quotient has no nontrivial SCCs.
+A further controlled point passes at `n=6,bound=3`: 117,394 chambers,
+178,978 weighted edges, and a 13 MiB replayable certificate, again with no
+nontrivial quotient SCCs.
 
 ## Periodic contradiction
 

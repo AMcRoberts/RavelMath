@@ -294,6 +294,9 @@ artifact replayed successfully by `nbonacci_chamber_certificate_check.py`.
 The next-dimensional controlled run also passes at `n=5,B=4`: 58,954
 canonical chambers, 96,824 weighted edges, and a 6.3 MiB replayable artifact;
 the quotient had no nontrivial SCCs at this bound.
+The next controlled point passes at `n=6,B=3`: 117,394 canonical chambers,
+178,978 weighted edges, and a 13 MiB replayable certificate, again with no
+nontrivial quotient SCCs.
 - Add a checker that verifies every directed cycle in the certified exterior
   graph has positive total rank change (equivalently, no zero/nonpositive
   cycle survives); this is the finite obstruction audit for sublemma 4.
