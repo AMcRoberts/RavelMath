@@ -131,10 +131,12 @@ The dimension-matched modulus passes the affine rank for `n=3,B=30`, `n=4,B=6`,
 `n=5,B=4`, `n=6,B=3`, `n=7,B=2`, and `n=8,B=2`. The earlier fixed modulus
 four fails at `n=4,B=6`, while modulus five repairs it, which is evidence for
 the `n+1` prefix-period rather than an accidental universal residue. This is
-still a finite-box certificate, but it converts quotient cycles into measurable
-outward drift with a dimension-parametric residue. The promotion target is now
-an explicit formula for the chamber offset (or a bounded gap alphabet), not
-quotient acyclicity.
+still a finite-box certificate: the same rank fails again at `n=4,B=8`, while
+`n=5,B=5` passes. It converts many quotient cycles into measurable outward
+drift and identifies the relevant period, but a second residue/drift component
+is still needed for a uniform theorem. The promotion target is now an explicit
+multi-component chamber offset (or a bounded gap alphabet), not quotient
+acyclicity.
 
 For regression, the unrestricted carry automaton at `B=2` leaves the following
 numbers of cyclic states (all ternary):
