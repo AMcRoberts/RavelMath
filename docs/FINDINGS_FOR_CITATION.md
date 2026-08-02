@@ -1058,3 +1058,121 @@ scale, would be needed to close it. Reproducible driver:
 `app/probe_b3_rnd13_involution.cpp` (the A2 result reproduces in
 under 90 seconds; A1 requires either more patience or a different
 method).
+
+## Finding 12 — the global occurrence theorem's four-round base-premises seam is closed for every `a>=7`
+
+**Status: PAPER PROOF for every integer `a>=7` (Round 1's own row for
+every `a>=3`), one tier below Lean-formalized; not yet the full global
+occurrence theorem (recurrent-SCC exhaustion is a separate obligation,
+Finding 13).**
+
+`docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md`'s base-premises table
+names four exceptional round-1-through-4 transitions that the general
+`round>=5` stable machinery does not cover. All four close:
+
+- **Round 1** (`1fda87c`, 2026-07-31): closes by a literature check
+  against Loridant--Thuswaldner--Zhang, not a symbolic construction.
+  `±C := C ∪ (−C)` (§3.5 of the primary source) is a definitional
+  symmetrization, not an independently-closed object the algorithm's
+  connector set needs to be proven equal to -- the paper's own
+  Algorithm 2 starts from `±C` directly. This dissolves the question
+  rather than answering it by computation; a same-night attempt at a
+  direct symmetric-seed closure construction (Finding 9's SCC-shell
+  machinery, applied to `D_cont(tau_a) ∪ mirror(D_cont(tau_a))`) is
+  documented as a real, ruled-out dead end rather than erased.
+- **Rounds 2 and 3**: closed symbolically for every `a>=7` via the raw-
+  corona/Red catalogues already exact-checked and Lean-formalized
+  (`class_ii_neighbor2_nonbase_pre_red_catalogue`/`_post_red_catalogue`).
+- **Round 4** (`1f82dbd`, 2026-07-31): the round-4-to-stable bridge
+  reduces to whether the generic stable machinery's own round-4 output
+  equals the real round-4 survivor catalogue. Checked exactly at
+  fourteen widely separated `a` from 7 to 50
+  (`app/class_ii_neighbor2_round4_stable_bridge_check.cpp`), then
+  proven outright: both sides are independently provably constant for
+  `a>=7` (the generic formula's branch conditions are already decided
+  for `a>5`; the ground-truth side's constancy follows from the
+  closed-form proof that closed rounds 2-4, which showed no
+  slope-nonzero edge exists in the shape-classified structure for
+  `a>=7` at all). Two independently-arrived-at constants, checked
+  equal and both proven constant -- not a pattern holding at fourteen
+  points.
+
+`class_ii_neighbor2_first_missing_premise` (`include/ravel/
+class_ii_neighbor2_pruning.hpp`) still hardcodes all four rounds as
+open as of its own "2026-07-30" comment, predating this closure --
+flagged as a possibly-stale load-bearing artifact (2026-08-02), not
+yet corrected pending a careful check of whether that function's
+specific technical sense of "reverse inclusion" matches the literature
+argument that closed Round 1.
+
+## Finding 13 — recurrent-SCC exhaustion (items 1-5) verified together for neighbor 2 at `a` in `{7,...,20,30}`
+
+**Status: EXACT FINITE CERTIFICATE at fifteen tested `a`, not yet
+closed-form; the true global occurrence theorem's final obligation
+after Finding 12's base seam.**
+
+`docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md`'s "What 'stitching'
+still means" section names five items needed to promote the displayed
+recurrent catalogues from "exhibited" to "exactly the recurrent SCCs of
+the real boundary graph": (1) a partition into core/shell/transient,
+(2) universal strong connectivity of each recurrent block tied to real
+edges, (3) an escape witness from every transient block, (4) no return
+edge from a recurrent block to an earlier transient stratum, (5) no
+edges joining two distinct recurrent blocks.
+
+- **Items 1, 2, 5** (`c17e879`, 2026-07-31): `app/class_ii_neighbor2_
+  recurrent_exhaustion_check.cpp` runs generic Tarjan SCC decomposition
+  against the real, fully-converged boundary graph and matches it
+  node-for-node against the hand-catalogued recurrent blocks at all
+  fifteen tested `a`. A first-draft stronger check (zero edges of any
+  kind between distinct recurrent blocks) was found false -- eight
+  such one-way edges every time, between the two ranks nearest the
+  dominant core -- and corrected; item 5 as actually stated does not
+  require this.
+- **Items 3, 4** (`d28c66b`, 2026-07-31): `app/class_ii_neighbor2_
+  round_stratified_transient_check.cpp` supplies the round/rank
+  ordering items 3-4 need: a state's birth round is the first round it
+  survives Red in the full corona trace, well-defined since a state
+  never leaves a later round's survivor set once it enters one. Zero
+  violations of item 4 at all fifteen `a`; item 3 holds once "escape"
+  is corrected from "strictly later round" to "does not remain
+  transient forever" (same-round absorption into a recurrent block
+  counts).
+
+Extended computationally, 2026-08-02: `app/class_ii_neighbor2_
+round2_birth_mechanism_check.cpp` and `app/class_ii_neighbor2_
+round_by_round_birth_check.cpp` reconstruct the corona iteration
+directly from the closed-form seed (bypassing the expensive D_cont/
+backward_closure front-end) and confirm, round by round rather than
+only via the aggregate birth-round number, that every catalogued
+rank's states are present among the correct round's new arrivals --
+zero exceptions at every tested `a` from 7 through 30. Not yet a proof
+for every integer `a`: the underlying `same_letter_H`/`in_H_sigma`
+acceptance test is a real-valued inequality against the Perron
+eigenvector, still evaluated numerically per `a` rather than reduced to
+the `(b,c,1)`-coordinate polynomial-inequality argument
+`lean/class_ii_affine_shells.lean` uses for the structurally similar
+stepped-hyperplane endpoint theorem -- see that file and
+`docs/CUT_AND_PROJECT_PROOF_DIRECTION.md` for the template a closed-
+form version of this finding would need to follow.
+
+## Finding 14 — Thread A4's persistent non-AR branching survives a much longer-range check
+
+**Status: EXACT FINITE CERTIFICATE, strengthened range (2026-08-02).**
+
+Finding 6.7 (`sigma_{0,1}`'s constant `p(n)=5n-5`, `LS=5`, `RS=3`
+branching profile) originally held through `n=60000` on a
+4,983,377-symbol orbit prefix. Re-checked on a 35,676,949-symbol prefix
+(a ~71x margin over the checked length, well past the margin that
+mattered for the earlier `n=55406` finite-prefix boundary artifact):
+holds unchanged through `n=500000`, zero exceptions.
+`app/thread_a4_extension_graph_probe.cpp` (committed at this strength).
+
+A cheap, bounded check of whether the constant profile generalizes to
+the rest of the `sigma_{0,b}` non-AR family (not yet a citable finding
+in its own right -- recorded here as a pointer, not promoted): `b=2`
+and `b=3` do NOT show a constant profile through `n=30` on a small
+orbit; both oscillate between two regimes instead. Scratch check only,
+not committed; a real pass would need the same boundary-artifact
+discipline (larger orbit, longer range) Finding 6.7 itself required
+before being trusted.
