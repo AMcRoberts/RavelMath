@@ -105,6 +105,18 @@ The remaining promotion target is precise: prove that every periodic orbit
 enters one of these finite boxes (or prove a direct maximum principle), after
 which the recurrent coefficient bound is no longer empirical.
 
+For regression, the unrestricted carry automaton at `B=2` leaves the following
+numbers of cyclic states (all ternary):
+
+| n | box states | cyclic states | non-ternary cyclic |
+|---:|---:|---:|---:|
+| 3 | 125 | 15 | 0 |
+| 4 | 625 | 37 | 0 |
+| 5 | 3,125 | 95 | 0 |
+| 6 | 15,625 | 255 | 0 |
+| 7 | 78,125 | 699 | 0 |
+| 8 | 390,625 | 1,947 | 0 |
+
 ## Intertwiner search
 
 For a shell block `S` and core block `C`, a nonnegative matrix `P` satisfying
