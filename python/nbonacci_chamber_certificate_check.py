@@ -7,6 +7,15 @@ import argparse
 import json
 
 
+def sign_negation(name: str) -> str:
+    """Apply the carry automaton's x -> -x symmetry to a chamber name."""
+    fields = name.split("|", 1)
+    signs = fields[0]
+    flipped = "".join("+" if char == "-" else "-" if char == "+" else "0"
+                      for char in signs)
+    return flipped if len(fields) == 1 else flipped + "|" + fields[1]
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("certificate")
@@ -22,6 +31,15 @@ def main() -> int:
         raise SystemExit("certificate records infeasible rank constraints")
     if len(offsets) != len(chambers):
         raise SystemExit("offset/chamber length mismatch")
+    chamber_index = {name: index for index, name in enumerate(chambers)}
+    symmetry_pairs = 0
+    for name, index in chamber_index.items():
+        partner = sign_negation(name)
+        if partner not in chamber_index:
+            raise SystemExit(f"missing sign-negation chamber for {name}")
+        if offsets[chamber_index[partner]] != offsets[index]:
+            raise SystemExit(f"sign-negation offset mismatch for {name}")
+        symmetry_pairs += 1
     for source, destination, weight in edges:
         if not (0 <= source < len(chambers) and
                 0 <= destination < len(chambers)):
@@ -41,7 +59,8 @@ def main() -> int:
         if not changed:
             print(
                 f"chamber certificate PASS: n={data['n']} bound={data['bound']} "
-                f"chambers={len(chambers)} edges={len(edges)}"
+                f"chambers={len(chambers)} edges={len(edges)} "
+                f"sign_symmetry={symmetry_pairs}"
             )
             return 0
     raise SystemExit("positive difference-constraint cycle found")
@@ -49,4 +68,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
