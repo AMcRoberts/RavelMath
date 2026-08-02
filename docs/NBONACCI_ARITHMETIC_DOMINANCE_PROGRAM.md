@@ -273,9 +273,12 @@ Automation plan and acceptance gates:
 
 - `nbonacci_block_identity_test` and the Lean matrix/characteristic-polynomial
   bridge certify sublemma 1.
-- Add a digit-word forcing enumerator that emits the sharp bound and a Lean
-  theorem for sublemma 2; every reported extremizer must be replayable from
-  the closed forcing formula.
+- `python/nbonacci_block_forcing_probe.py` is now the exact digit-word
+  enumerator for sublemma 2 (via `make nbonacci_block_forcing_probe`). It checks
+  every word through `n=10`, finds maximum coordinate `4`, and observes the
+  sharp `L1` bound `2n+2` for even `n` and `2n` for odd `n`. The next promotion
+  step is the matching Lean inequality; every reported extremizer is already
+  replayable from the closed forcing formula.
 - Extend `nbonacci_sign_chamber_probe.py` to emit a canonical chamber table,
   exact transition deltas, and a machine-readable difference-constraints
   certificate for sublemma 3. The certificate must pass at increasing boxes
