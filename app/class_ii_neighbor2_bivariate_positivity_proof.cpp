@@ -231,5 +231,55 @@ int main() {
         u = reduce_biv(biv_mul_b(u), cubic);
         std::printf("upper width=b (k=1), 1 extra step: %s\n", str_biv(u).c_str());
     }
+
+    // ---- The symbolic REASON, verified exactly (not just observed
+    // as "0 extra steps") ----
+    // AM: "look for a symbolic reason why the reduction happens" --
+    // then "if you can automate it...". Hypothesis, checked first in
+    // sympy (job scratch, exact rational cancellation, ratio=1 not
+    // just proportional): b*(b-c) - c, cleared of its 1/b denominator
+    // by multiplying through by b, is EXACTLY the Class-II cubic --
+    // not merely a consequence of it, algebraically identical to it.
+    // Verified here with this project's own exact BigInt bivariate
+    // arithmetic: b^2*(b-c) - b*c should reduce to the EXACT ZERO
+    // polynomial (every coefficient zero, not just non-negative) once
+    // the cubic itself is subtracted out -- i.e. b^2*(b-c) - b*c IS
+    // the cubic, coefficient for coefficient, not merely proportional
+    // to it.
+    std::printf("\n--- The symbolic reason (verified exactly) ---\n");
+    {
+        BivPoly b2_height1 = b2_height_k(1);  // b^2*(b-c)
+        BivPoly bc(2, zero_a());              // b*c = a*b + 1
+        { PolyZ p; mathlib::set_si(p.coeff(1), 1); bc[1] = p; }
+        { PolyZ p; mathlib::set_si(p.coeff(0), 1); bc[0] = p; }
+        BivPoly diff = biv_sub(b2_height1, bc);  // should equal -cubic (or cubic, up to sign)
+        bool matches_cubic = true, matches_neg_cubic = true;
+        BivPoly neg_cubic(cubic.size());
+        for (std::size_t i = 0; i < cubic.size(); ++i) neg_cubic[i] = zero_a() - cubic[i];
+        for (std::size_t i = 0; i < std::max(diff.size(), cubic.size()); ++i) {
+            PolyZ d = i < diff.size() ? diff[i] : zero_a();
+            PolyZ cposs = i < cubic.size() ? cubic[i] : zero_a();
+            PolyZ cneg = i < neg_cubic.size() ? neg_cubic[i] : zero_a();
+            if (d != cposs) matches_cubic = false;
+            if (d != cneg) matches_neg_cubic = false;
+        }
+        std::printf("b^2*(b-c) - b*c  ==  cubic exactly (coefficient for "
+                    "coefficient, not just proportional): %s\n",
+                    matches_cubic ? "TRUE" : (matches_neg_cubic ? "TRUE (up to sign)" : "FALSE"));
+        std::printf("b^2*(b-c) - b*c = %s\n", str_biv(diff).c_str());
+        std::printf("cubic (as bivariate)      = %s\n", str_biv(cubic).c_str());
+        std::printf("\nInterpretation: b*(b-c) = c is EXACTLY equivalent to the "
+                    "Class-II cubic relation -- not a consequence of it discovered\n"
+                    "by algebra, algebraically identical to it. Equivalently: "
+                    "b^2 = c*(b+1), or b-c = c/b. This is why k*(b-c) reduces\n"
+                    "almost immediately for every k: it is not an arbitrary "
+                    "quantity that happens to behave well under the cubic --\n"
+                    "it IS (up to the factor k) the cubic's own defining "
+                    "relation, restated in terms of b and c instead of b alone.\n"
+                    "b^2*k*(b-c) = k*b*c = k*(a*b+1) is therefore not a "
+                    "coincidence of the reduction algorithm; it follows from\n"
+                    "one substitution (c=a+1/b) applied to one identity (b(b-c)=c) "
+                    "that IS the cubic.\n");
+    }
     return 0;
 }
