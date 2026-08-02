@@ -1368,6 +1368,27 @@ Lean also checks the complete four-letter first chain:
 ordering obtained from incidence columns, bridging the universal algebra to
 the positivity side rather than stopping at a formal identity.
 
+**Exact finite window-margin lift, including the two nearest dimensions.**
+`app/item1_per_pair_check.cpp` now replaces its former `1e-6` verdict with an
+exact `Q(beta)` certificate. It constructs and verifies the left Perron
+covector, normalizes `v_0=1`, maximizes `|<x,v>|` over every dominant-core
+face-pair group by exact sign comparisons, requires exact equality with the
+recorded row formula, and requires every residual width margin to be strictly
+positive. It also requires that the exact maximum is attained by the predicted
+sparse vector (`-e_0+e_j-e_{j+1}` in row 0 or `-e_i+e_{n-1}` later), up to
+the signed mirror convention. For n=3,4,5,6,7 (dominant-core sizes
+14,46,108,210,362), the result is zero exact formula mismatches, zero
+structural-witness failures, and zero nonpositive margins; in every case
+the exact global minimum is `2/beta-1 > 0`. Thus the finite Tetrabonacci
+catalogue and the two nearest extensions, Pentanacci and Hexanacci, are closed
+at the exact arithmetic level; n=7 is an additional checked control. This is
+not yet a symbolic occurrence/exhaustion theorem for arbitrary n.
+
+The Lean module now matches those two nearest algebraic steps: a reusable
+positive-scaled-gap lemma yields explicit Pentanacci order
+`b>c>d>e>1` and Hexanacci order `b>c>d>e>f>1` from their consecutive left
+Perron coordinate equations and `beta>0`.
+
 **Rolled forward automatically to rounds 3-5, confirming the "family
 of families" framing rather than asserting it** (`app/class_ii_
 neighbor2_interior_regime_structure_check.cpp`): the enumeration and

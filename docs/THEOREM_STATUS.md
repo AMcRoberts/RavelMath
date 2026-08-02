@@ -837,6 +837,21 @@ For Tetrabonacci the file additionally proves the full first chain
 `b>c>d>1` whenever `beta>0`, closing its covector ordering directly from the
 four coordinate equations.
 
+The same file now proves the two nearest higher-dimensional order chains:
+Pentanacci `b>c>d>e>1` and Hexanacci `b>c>d>e>f>1`, using a shared lemma that
+positive `beta` transports positivity of `beta*(x-y)` back to `x-y`.
+
+The family-specific finite window side is independently exact for n=3..7.
+The explicit `make item1_per_pair_check` target reconstructs each dominant
+core, groups all nodes by face pair, uses the exactly verified **left** Perron
+covector in `Q(beta)`, and hard-fails on a row-formula mismatch, nonpositive
+residual margin, missing predicted sparse argmax witness (up to signed mirror),
+or failure of the predicted exact global worst
+`2/beta-1`. Current result: PASS for dominant-core sizes
+14/46/108/210/362 (Tribonacci through n=7), including the requested
+Tetrabonacci/Pentanacci/Hexanacci progression. This is an exact finite
+certificate over those computed cores, not an arbitrary-n catalogue theorem.
+
 Lean kernel-checks the candidate shell bounds and core-polynomial
 signs. With all four base rounds now closed, the global occurrence
 theorem's remaining obligations are recurrent-SCC exhaustion and

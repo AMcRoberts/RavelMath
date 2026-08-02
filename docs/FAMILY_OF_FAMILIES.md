@@ -263,6 +263,17 @@ dimension-changing edge in the family-of-families map on which the same
 algebraic mechanism transports literally, while the later window catalogue
 and topology may still change.
 
+That later finite window layer has now been crossed for the first three
+nontrivial dimension steps. The explicit `item1_per_pair_check` target uses
+exact `Q(beta)` arithmetic—not its retained floating diagnostics—to certify
+every dominant-core face-pair maximum, its predicted sparse witness up to
+signed mirror, and positive residual margin for
+Tribonacci through n=7. In particular Tetrabonacci, Pentanacci, and
+Hexanacci have core sizes 46, 108, and 210 and exact global worst margin
+`2/beta-1 > 0`; Lean independently proves their coordinate order chains
+through the first two nearest extensions. The finite n=3..7 certificate does
+not by itself assert a uniform arbitrary-n core catalogue.
+
 For each `2<=a<=A`:
 
 1. take the Class-II center and its three fixed-light neighbors;

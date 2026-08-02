@@ -101,6 +101,16 @@ theorem nbonacci_gap_step
     beta * (vi - vi1) = vi1 - vi2 := by
   linarith
 
+/-- A positive scaling factor transports strict positivity of a scaled gap
+back to the underlying coordinate gap.  This is the reusable order step in
+every finite `n`-bonacci chain. -/
+theorem positive_gap_of_positive_scaled_gap
+    (beta x y : ℝ) (hpos : 0 < beta) (hgap : 0 < beta * (x - y)) :
+    y < x := by
+  rcases (mul_pos_iff.mp hgap) with h | h
+  · exact sub_pos.mp h.2
+  · exact False.elim ((not_lt_of_ge (le_of_lt hpos)) h.1)
+
 /-- The Tetrabonacci first-gap instance: after scaling `b=beta`, the
 three-letter terminal constant `1` is replaced by the next coordinate `d`. -/
 theorem tetrabonacci_first_gap
@@ -138,3 +148,56 @@ theorem tetrabonacci_gap_order
     · exact sub_pos.mp h.2
     · exact False.elim ((not_lt_of_ge (le_of_lt hpos)) h.1)
   exact ⟨hd, hcd, hbc⟩
+
+/-- Pentanacci is the first dimension beyond the Tetrabonacci control.  The
+same consecutive-column recursion gives the complete strict coordinate order
+`b>c>d>e>1`. -/
+theorem pentanacci_gap_order
+    (beta b c d e : ℝ) (hbeta : b = beta) (hpos : 0 < beta)
+    (h0 : b + c = beta * b)
+    (h1 : b + d = beta * c)
+    (h2 : b + e = beta * d)
+    (h3 : b + 1 = beta * e) :
+    1 < e ∧ e < d ∧ d < c ∧ c < b := by
+  subst b
+  have he : 1 < e := by
+    apply positive_gap_of_positive_scaled_gap beta e 1 hpos
+    nlinarith [h3]
+  have hde : e < d := by
+    apply positive_gap_of_positive_scaled_gap beta d e hpos
+    nlinarith [h2, h3, he]
+  have hcd : d < c := by
+    apply positive_gap_of_positive_scaled_gap beta c d hpos
+    nlinarith [h1, h2, hde]
+  have hbc : c < beta := by
+    apply positive_gap_of_positive_scaled_gap beta beta c hpos
+    nlinarith [h0, h1, hcd]
+  exact ⟨he, hde, hcd, hbc⟩
+
+/-- Hexanacci is the second nearest dimension beyond Tetrabonacci.  Its five
+linked column gaps end at `beta*(f-1)=1`, forcing `b>c>d>e>f>1`. -/
+theorem hexanacci_gap_order
+    (beta b c d e f : ℝ) (hbeta : b = beta) (hpos : 0 < beta)
+    (h0 : b + c = beta * b)
+    (h1 : b + d = beta * c)
+    (h2 : b + e = beta * d)
+    (h3 : b + f = beta * e)
+    (h4 : b + 1 = beta * f) :
+    1 < f ∧ f < e ∧ e < d ∧ d < c ∧ c < b := by
+  subst b
+  have hf : 1 < f := by
+    apply positive_gap_of_positive_scaled_gap beta f 1 hpos
+    nlinarith [h4]
+  have hef : f < e := by
+    apply positive_gap_of_positive_scaled_gap beta e f hpos
+    nlinarith [h3, h4, hf]
+  have hde : e < d := by
+    apply positive_gap_of_positive_scaled_gap beta d e hpos
+    nlinarith [h2, h3, hef]
+  have hcd : d < c := by
+    apply positive_gap_of_positive_scaled_gap beta c d hpos
+    nlinarith [h1, h2, hde]
+  have hbc : c < beta := by
+    apply positive_gap_of_positive_scaled_gap beta beta c hpos
+    nlinarith [h0, h1, hcd]
+  exact ⟨hf, hef, hde, hcd, hbc⟩

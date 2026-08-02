@@ -73,7 +73,9 @@ matching private material lives in `~/claude/.ravel/keys/`. See
   `c>b`. It also proves the dimension-independent local `n`-bonacci gap
   recursion and its Tetrabonacci first-gap specialization
   `b*(b-c)=c-d`; the complete four-letter chain then proves the strict
-  covector ordering `b>c>d>1` from `beta>0`.
+  covector ordering `b>c>d>1` from `beta>0`. A reusable positive-scaled-gap
+  lemma now carries the same proof through the two nearest dimensions:
+  Pentanacci `b>c>d>e>1` and Hexanacci `b>c>d>e>f>1`.
 
 ## Incomplete extension
 

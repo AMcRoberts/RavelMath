@@ -292,6 +292,19 @@ $(CLASS_II_IDENTITY_TRANSPORT_PROBE_BIN): $(APPDIR)/class_ii_identity_transport_
 		$(MATH_INCDIR)/math/poly_z.hpp | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+# item1_per_pair_check: exact Q(beta) certification of the existing
+# n-bonacci dominant-core per-face-pair max-|t| formulas.  Equality,
+# left-eigenvector sidedness, the predicted sparse argmax witness, every
+# residual margin sign, and the global worst formula are hard failures;
+# doubles are diagnostic only.
+ITEM1_PER_PAIR_CHECK_BIN := $(BUILDDIR)/item1_per_pair_check
+item1_per_pair_check: $(ITEM1_PER_PAIR_CHECK_BIN)
+	./$(ITEM1_PER_PAIR_CHECK_BIN)
+$(ITEM1_PER_PAIR_CHECK_BIN): $(APPDIR)/item1_per_pair_check.cpp \
+		$(wildcard $(INCDIR)/ravel/*.hpp) \
+		$(wildcard $(MATH_INCDIR)/math/*.hpp) | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 # ====================================================================
 # Tests (paired _test.cpp files; standalone binaries with main())
 # ====================================================================
