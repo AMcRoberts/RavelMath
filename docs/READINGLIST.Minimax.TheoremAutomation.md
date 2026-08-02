@@ -202,6 +202,8 @@ certificate; its quotient has no nontrivial SCCs.
 A further controlled point passes at `n=6,bound=3`: 117,394 chambers,
 178,978 weighted edges, and a 13 MiB replayable certificate, again with no
 nontrivial quotient SCCs.
+The `n=8,bound=2` shell also passes: 388,678 chambers, 523,824 weighted
+edges, and a 41 MiB replayable certificate, with no nontrivial quotient SCCs.
 The larger known passing shell `n=5,bound=6` also emits and replays
 successfully: 371,198 chambers, 611,658 weighted edges, and a 41 MiB
 certificate. Treat this as a stress result, not as a universal theorem.
