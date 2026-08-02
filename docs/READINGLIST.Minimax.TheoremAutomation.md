@@ -234,6 +234,9 @@ quotients fail their strict-rank tests, while the exact `gaps` grammar passes.
 For n=3, bounds 8 and 12, the residue-free exact-gap certificates merge over
 4,964 chambers and 14,302 edges. Any universal template must retain this
 unbounded gap information; finite sign/order summaries are too coarse.
+The natural n=3 core-polytope facet violation (even augmented by raw `L1`)
+also fails, so the missing rank is not simply distance from the convex hull of
+the ternary core.
 
 Example:
 

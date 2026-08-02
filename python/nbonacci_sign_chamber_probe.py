@@ -292,6 +292,24 @@ def run(n: int, bound: int, mode: str, modulus: int,
             source_level = sum(source_magnitudes) + scale * sum(
                 value // modulus for value in source_magnitudes
             )
+        elif rank_base == "facet":
+            if n != 3:
+                raise ValueError("facet rank base currently requires n=3")
+            source_level = max(
+                abs(value) for value in (
+                    *source_state,
+                    source_state[0] + source_state[1],
+                    source_state[1] + source_state[2],
+                    sum(source_state),
+                )
+            )
+        elif rank_base == "facet-sum":
+            if n != 3:
+                raise ValueError("facet-sum rank base currently requires n=3")
+            facet = max(abs(value) for value in (
+                *source_state, source_state[0] + source_state[1],
+                source_state[1] + source_state[2], sum(source_state)))
+            source_level = facet + sum(source_magnitudes)
         else:
             source_level = 0
         for destination in outgoing[source]:
@@ -315,6 +333,25 @@ def run(n: int, bound: int, mode: str, modulus: int,
                     destination_level = sum(destination_magnitudes) + scale * sum(
                         value // modulus for value in destination_magnitudes
                     )
+                elif rank_base == "facet":
+                    if n != 3:
+                        raise ValueError("facet rank base currently requires n=3")
+                    destination_level = max(
+                        abs(value) for value in (
+                            *destination_state,
+                            destination_state[0] + destination_state[1],
+                            destination_state[1] + destination_state[2],
+                            sum(destination_state),
+                        )
+                    )
+                elif rank_base == "facet-sum":
+                    if n != 3:
+                        raise ValueError("facet-sum rank base currently requires n=3")
+                    facet = max(abs(value) for value in (
+                        *destination_state, destination_state[0] + destination_state[1],
+                        destination_state[1] + destination_state[2],
+                        sum(destination_state)))
+                    destination_level = facet + sum(destination_magnitudes)
                 else:
                     destination_level = 0
                 weighted_edges.add(
@@ -381,7 +418,7 @@ def main() -> int:
         help="minimum magnitude residue modulus, or 'auto' for n+1",
     )
     parser.add_argument("--rank-min", action="store_true")
-    parser.add_argument("--rank-base", choices=("min", "max", "sum", "quotient", "sum-quotient"))
+    parser.add_argument("--rank-base", choices=("min", "max", "sum", "quotient", "sum-quotient", "facet", "facet-sum"))
     parser.add_argument(
         "--emit-certificate",
         help="write a JSON chamber/rank certificate (requires --rank-base)",
