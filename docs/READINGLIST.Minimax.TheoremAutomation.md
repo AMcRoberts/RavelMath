@@ -320,6 +320,22 @@ window, while only the tail coordinate can create a new hit, via
 before adding more affine rank features; this is the likely finite symbolic
 object behind the shell DAG.
 
+The homogeneous limit is now independently testable with exact rational SMT:
+
+```sh
+RAVEL_PROBE_MEMORY_MB=10240 python3 \
+  python/nbonacci_homogeneous_shell_smt.py --n=10 --max-n
+```
+
+For every tested `2<=n<=10`, the zero-digit machine has a shell chain of
+`n+1` transitions but none of `n+2`. This is the cleanest next proof seam.
+The carry sums give the perturbed block identity
+`a_(t+n+1)-2*a_(t+1)+a_t = q(d_(t+1)-d_t)`, so the eventual certificate
+generator should first prove the homogeneous obstruction, then calculate a
+uniform slack margin for `q=1/M`. The SMT result is discovery/replay support;
+do not promote it to a universal theorem until the generic induction or a
+replayable Farkas certificate is present.
+
 Example:
 
 ```sh
