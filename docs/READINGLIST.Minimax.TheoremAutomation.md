@@ -261,6 +261,13 @@ n=4. Feature synthesis now has a hard feature-count cap and reports
 The bounded combined order-one-hot plus sign×gap family is also infeasible at
 n=4. The next candidate therefore needs genuinely sector-specific ordered
 gap coefficients, not additive interactions alone.
+That candidate is now implemented as sparse `sector-order-gaps` and
+`sector-order-gaps-scale`: the n=4 bounds 8/10 merge has 1,696 paired
+sign/order sectors, 194,444 chambers, and 349,088 edges. Both affine searches
+are infeasible; local quadratic gap terms are infeasible as well. Splitting
+by minimum residue yields a real LP witness but no rounded integer replay, so
+it remains discovery evidence only. Large coefficient vectors are summarized
+instead of printed, preventing another log-driven memory spike.
 
 Example:
 

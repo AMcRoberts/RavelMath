@@ -8,7 +8,7 @@ import json
 
 import numpy as np
 
-from nbonacci_rank_feature_search import features, parse
+from nbonacci_rank_feature_search import features, parse, sector_label
 
 
 def main() -> int:
@@ -21,8 +21,9 @@ def main() -> int:
         raise SystemExit("wrong certificate kind")
     names = data["chambers"]
     parsed = [parse(name) for name in names]
-    sectors = {signs: index for index, signs in enumerate(
-        sorted({item[0] for item in parsed}))}
+    keys = sorted({sector_label(item[0], item[1], data["family"], item[2])
+                   for item in parsed})
+    sectors = {key: index for index, key in enumerate(keys)}
     gap_count = len(parsed[0][1]) if parsed else 0
     vectors = np.asarray([features(name, data["family"], sectors, gap_count)
                           for name in names], dtype=np.int64)

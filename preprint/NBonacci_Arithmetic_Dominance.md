@@ -229,6 +229,15 @@ Feature synthesis now enforces a hard feature cap and reports inconclusive
 runs explicitly instead of allowing another unbounded LP.
 The bounded combination of order-one-hot and sign-by-gap interactions also
 fails at n=4; the next candidate needs sector-specific ordered-gap slopes.
+The sparse `sector-order-gaps` and scale-aware variants make that candidate
+explicit: one affine gap rank is allocated to each pair (sign pattern, gap
+order). On the merged n=4 bounds 8 and 10 certificate (194,444 chambers,
+349,088 edges; 1,696 paired sectors), both affine variants are infeasible.
+Adding local quadratic gap terms remains infeasible. Adding the minimum
+residue as a finite sector label gives a real LP witness, but rounded integer
+replay fails; it is discovery output, not a proof certificate. The search now
+builds these large systems sparsely and suppresses giant coefficient dumps,
+so escalation can be repeated under the 10 GiB cap.
 
 ## 5. What is proved and what remains
 
