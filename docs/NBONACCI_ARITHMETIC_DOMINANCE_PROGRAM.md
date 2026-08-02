@@ -134,6 +134,8 @@ memory cap for `n=3,B=30`, `n=4,B=12`, `n=5,B=6`, and `n=6,B=4`. The next
 peak RSS about 545 MiB). Extending to `n=4,B=20` also passes (1,332,130
 chambers; peak RSS about 3.3 GiB). The earlier 1 GiB `MEMORY_LIMIT` was
 therefore only a Python representation boundary, not a rank failure.
+The next-dimensional run `n=5,B=8` passes as well (855,564 chambers; largest
+quotient SCC 14).
 
 The dimension-matched residue (`modulus=auto`, meaning `n+1`) remains part of
 the chamber phase. Modulus four fails at `n=4,B=6`, while modulus five repairs
