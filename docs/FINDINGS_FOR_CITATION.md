@@ -881,3 +881,70 @@ close the neighbor-2 terminal raw-corona and `48a-31,41,11` Red
 theorem for `a>=7`. This still must not be cited as the universal
 boundary graph formula: derivation of the candidate contact set and
 occurrence/exhaustion of the full recurrent catalogues remain open.
+
+## Finding 10 — Item A's Class II: A1's nilpotent-cofactor divisibility is symbolically IMPOSSIBLE for every a>=2, not just numerically absent
+
+**Status: SYMBOLIC PROOF, conditional on Finding 9/Theorem 6's own
+still-open "universal exhaustion" premise (that the displayed
+eleven-state `K_a` really is the full dominant recurrent core for
+every `a>=2`, not just the tested `1<=a<=8`). Given that premise, this
+closes Item A's Thread A3 question for the `σ_{a,1}` family with an
+actual proof, not a wider numeric sweep — directly responding to a
+request to prove or disprove the pattern mathematically rather than
+just testing whether it holds at larger `a`.**
+
+Built entirely from two already-proven pieces: Theorem 6's explicit
+eleven-state matrix `T_a` for `σ_{a,1}` (`docs/CLASS_II_CONTACT_MATRIX.md`,
+`charpoly(T_a) = x^6[x^5-a^2x^3-a(a+1)]`, transcribed and independently
+re-verified via `sympy` -- exact match) and Finding 7's proven BP-core
+charpoly `x[x^3-(a+1)x^2+ax-1]`. Both are **a-independent in their
+state labels** -- `T_a`'s eleven `(i,x,j)` triples are the same fixed
+combinatorial list for every `a`; only the edge *weights* (`a`,
+`a-1`) vary. That makes the involution question a fixed, finite check
+good for every `a` at once, not a per-`a` numeric probe:
+
+1. **A2 (involution)**: pairing each state `(i,x,j)` with its mirror
+   `(j,-x,i)` inside the eleven-state list (verified via `sympy`, not
+   by hand) finds exactly **three** mirror pairs -- `{1,3}, {4,5},
+   {6,7}` -- and **five** states (`0,2,8,9,10`) whose mirror is
+   simply absent from the eleven-state set (three of them need
+   `j=2`, which no state in the list has at all). **6/11 matched,
+   always**, independent of `a` -- this is exactly the "6/11" ratio
+   Finding 5 recorded numerically for a tested case; now shown to be
+   the same ratio for every `a`, by direct combinatorial argument
+   rather than by re-running the pipeline at each `a`.
+2. **A1 (nilpotent cofactor)**: building `Q_sym` from the three
+   matched pairs, following the exact orbit/quotient construction in
+   `gb_bp_matrix_equality.cpp` (representative = first-encountered
+   element of each pair; edges to unpaired targets are dropped, per
+   the same rule the C++ driver uses), gives the explicit `3x3`
+   matrix
+
+   ```
+   Q_sym = [[0, 0, 0], [0, 1, 1], [a, a-1, a-1]]
+   ```
+
+   with characteristic polynomial `x^3 - a*x^2 = x^2(x-a)` --
+   **degree 3**. Finding 7's BP-core charpoly has **degree 4**. A
+   degree-4 polynomial cannot divide a degree-3 polynomial (other
+   than the zero polynomial, which `x^2(x-a)` is not, for any
+   specific integer `a`). **The A1 divisibility fails by a pure
+   degree-counting argument, for every integer `a>=2` at once** --
+   not because some coefficient happens not to cancel at each tested
+   `a`, but because the two sides can never even have matching
+   degree.
+
+**What this does and doesn't close**: this is a genuine proof that
+*if* `K_a` is the dominant recurrent core (Finding 9's open premise),
+then A1 fails and A2 is exactly 6/11-partial for every `a>=2` --
+answering "does the pattern hold indefinitely" without needing to run
+the pipeline at `a=100` or `a=1000`. It does NOT prove Finding 9's own
+open item (that `K_a` really does exhaust the dominant recurrent core
+for all `a`, not just the checked `1<=a<=8`) -- that remains exactly
+as open as it was. Reproducible: `python/class_ii_a1_a2_proof.py`.
+
+Cross-check against Thread A5 (Finding 6.6): `σ_{6,1}` and `σ_{7,1}`
+were tested numerically there (via the full pipeline, `|G_B|=128,148`
+matching the `20a+8` formula exactly) and both showed "partial
+involution, A1 not x^k" -- consistent with, though not by itself
+proof of, this symbolic result.
