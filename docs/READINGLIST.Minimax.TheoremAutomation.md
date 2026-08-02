@@ -183,6 +183,21 @@ with `python3 python/nbonacci_chamber_certificate_check.py PATH`; the second
 checker rejects positive difference-constraint cycles. Floating eigenvalues
 are orientation only and must not enter the certificate.
 
+To test whether a finite rank stabilizes as the box grows, compare two
+already-emitted certificates without rebuilding either graph:
+
+```sh
+python3 python/nbonacci_chamber_stability.py \
+  /tmp/n3_b8_rank.json /tmp/n3_b12_rank.json
+```
+
+This checks metadata, shared chamber names, translation-equivalence of the
+canonical integer offsets, and whether the larger offsets still satisfy every
+smaller weighted edge. `offset_translation=DIFF` is evidence against a
+uniform chamber rank, not a checker failure; the edge-violation count is the
+sound replay result. The Make target `nbonacci_chamber_stability` runs the
+bounded n=3 example end to end.
+
 Example:
 
 ```sh
