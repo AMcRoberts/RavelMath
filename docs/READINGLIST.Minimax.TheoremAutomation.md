@@ -396,6 +396,17 @@ The shared exact formula gives `n=7: k=20` and `n=8: k=28`, with SAT at the
 immediately coarser endpoints `1/19` and `1/27`. This is the next source of
 data for a symbolic slack recurrence.
 
+The shared margin scanner extends this without word enumeration:
+
+```sh
+python3 python/nbonacci_shared_margin_table.py \
+  --n=2 --n-max=11 --max-denominator=100 --timeout-ms=30000
+```
+
+It currently verifies `k_7=20`, `k_8=28`, `k_9=40`, `k_10=54`, and `k_11=80`.
+Unknown solver statuses are reported as inconclusive rather than promoted to
+cutoffs.
+
 For proof-mining experiments, emit the terminal Z3 proof object:
 
 ```sh

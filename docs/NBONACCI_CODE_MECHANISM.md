@@ -105,6 +105,11 @@ encodes all ternary digits in one exact mixed-integer linear formula:
 `q<1/28` is UNSAT for `n=8`, while `q<1/27` is SAT. This is the preferred
 automation path for higher dimensions.
 
+The shared margin scanner (`python/nbonacci_shared_margin_table.py`) confirms
+`k_9=40`, `k_10=54`, and `k_11=80` with exact SAT/UNSAT endpoint checks. It
+refuses to classify a timeout as a proof, so higher-dimensional runs remain
+explicitly inconclusive when the arithmetic solver does not finish.
+
 The homogeneous limit can now be checked independently with
 `python/nbonacci_homogeneous_shell_smt.py`.  Exact rational SMT gives the
 following stable pattern for every tested dimension `2<=n<=10`:
