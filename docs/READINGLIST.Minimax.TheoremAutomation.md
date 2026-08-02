@@ -221,6 +221,8 @@ The replay checker also enforces the exact involution `x ↦ -x`: every chamber
 must have its sign-negated partner with the same offset. This is a finite
 certificate reduction, not a numerical heuristic, and can be carried into
 the formal exterior proof.
+The Lean catalogue now also exposes `no_strict_rank_closed_subset`, the exact
+logical stitch from a closed exterior rank certificate to emptiness.
 
 `python/nbonacci_rank_feature_search.py` is the next discovery gate. It solves
 the recorded edge inequalities for small linear feature families. On the
