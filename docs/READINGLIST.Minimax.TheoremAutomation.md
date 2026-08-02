@@ -198,6 +198,15 @@ uniform chamber rank, not a checker failure; the edge-violation count is the
 sound replay result. The Make target `nbonacci_chamber_stability` runs the
 bounded n=3 example end to end.
 
+For the stronger cross-box test, use `python/nbonacci_chamber_merge.py` (or
+`make nbonacci_chamber_merge`). It identifies chambers by their symbolic name,
+unions the weighted constraints from multiple boxes, and searches for one
+common integer potential. The n=3 bounds 8 and 12 merge successfully, even
+though their independently normalized longest-path offsets differ.
+The same merged potential survives a fresh bound-16 certificate (22,100
+chambers and 51,120 weighted edges); this run introduces a 162-node quotient
+SCC but still passes the merged difference constraints.
+
 The replay checker also enforces the exact involution `x ↦ -x`: every chamber
 must have its sign-negated partner with the same offset. This is a finite
 certificate reduction, not a numerical heuristic, and can be carried into

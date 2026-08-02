@@ -181,6 +181,14 @@ persists and every smaller edge remains valid, but the canonical offsets are
 not translation-equivalent.  Box-specific longest-path offsets therefore
 cannot be promoted by simply taking a limit.
 
+This normalization issue is not itself an obstruction.  The merge tool
+`python/nbonacci_chamber_merge.py` identifies chambers symbolically and unions
+the two finite constraint systems; the n=3, bounds 8 and 12 systems admit one
+common integer potential.  Cross-box merging is therefore the preferred
+promotion test, while a genuine positive difference cycle is a sound failure.
+The same potential merges bounds 8, 12, and 16 (22,100 chambers and 51,120
+weighted edges), despite a new 162-node quotient SCC appearing at bound 16.
+
 ## 5. What is proved and what remains
 
 The following are proved or exactly replayable:

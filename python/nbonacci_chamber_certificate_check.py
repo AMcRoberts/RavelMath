@@ -22,7 +22,8 @@ def main() -> int:
     args = parser.parse_args()
     with open(args.certificate, encoding="utf-8") as stream:
         data = json.load(stream)
-    if data.get("kind") != "nbonacci-sign-chamber-rank-v1":
+    if data.get("kind") not in ("nbonacci-sign-chamber-rank-v1",
+                                 "nbonacci-sign-chamber-rank-merged-v1"):
         raise SystemExit("wrong certificate kind")
     chambers = data["chambers"]
     edges = [tuple(edge) for edge in data["weighted_edges"]]
@@ -57,11 +58,10 @@ def main() -> int:
                 heights[destination] = candidate
                 changed = True
         if not changed:
-            print(
-                f"chamber certificate PASS: n={data['n']} bound={data['bound']} "
-                f"chambers={len(chambers)} edges={len(edges)} "
-                f"sign_symmetry={symmetry_pairs}"
-            )
+            bound = data.get("bound", data.get("bounds"))
+            print(f"chamber certificate PASS: n={data['n']} bound={bound} "
+                  f"chambers={len(chambers)} edges={len(edges)} "
+                  f"sign_symmetry={symmetry_pairs}")
             return 0
     raise SystemExit("positive difference-constraint cycle found")
 

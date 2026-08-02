@@ -20,7 +20,8 @@ from scipy.optimize import linprog
 def load(path: str) -> dict:
     with open(path, encoding="utf-8") as stream:
         data = json.load(stream)
-    if data.get("kind") != "nbonacci-sign-chamber-rank-v1":
+    if data.get("kind") not in ("nbonacci-sign-chamber-rank-v1",
+                                 "nbonacci-sign-chamber-rank-merged-v1"):
         raise SystemExit("wrong certificate kind")
     return data
 
