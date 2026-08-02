@@ -153,13 +153,13 @@ theorem carryUpdate_sum {x : List ℤ} (hx : x ≠ []) (d : ℤ) :
   | nil => exact (hx rfl).elim
   | cons x₀ xs =>
       simp [carryUpdate, List.sum_append]
+      omega
 
 theorem carryUpdate_sum_digit_bound {x : List ℤ} (hx : x ≠ [])
     {d : ℤ} (hd : -1 ≤ d ∧ d ≤ 1) :
     (carryUpdate x d).sum - x.head hx ∈ Set.Icc (-1 : ℤ) 1 := by
-  rw [carryUpdate_sum x hx d]
-  simp only [sub_add_cancel]
-  exact hd
+  rw [carryUpdate_sum (x := x) hx d]
+  constructor <;> omega
 
 def nbonacciGeomSum {R : Type} [Ring R] (a : R) : ℕ → R
   | 0 => 0
@@ -347,3 +347,22 @@ theorem no_strict_rank_finite {α : Type} [Fintype α] [Nonempty α]
       (Finset.mem_image.mpr ⟨step x, Finset.mem_univ _, rfl⟩)
   have hinc := hstep x
   omega
+
+/-! A rank certificate only needs to cover the closed exterior subset. -/
+
+theorem no_strict_rank_closed_subset {α : Type} [Fintype α]
+    (T : Set α) (step : α → α) (rank : α → ℤ)
+    (hclosed : ∀ x, x ∈ T → step x ∈ T)
+    (hstep : ∀ x, x ∈ T → rank x < rank (step x)) :
+  T = ∅ := by
+  by_contra hnonempty
+  have hT : T.Nonempty := Set.nonempty_iff_ne_empty.mpr hnonempty
+  letI : Nonempty T := hT.to_subtype
+  letI : Fintype T := (Set.toFinite T).fintype
+  let stepT : T → T := fun x => ⟨step x, hclosed x.1 x.2⟩
+  let rankT : T → ℤ := fun x => rank x.1
+  have hstrict : ∀ x : T, rankT x < rankT (stepT x) := by
+    intro x
+    exact hstep x.1 x.2
+  have hfalse : False := no_strict_rank_finite stepT rankT hstrict
+  exact hfalse
