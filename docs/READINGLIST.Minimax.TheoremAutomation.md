@@ -258,6 +258,9 @@ n=3 sector rank does not lift by adding gap order without sign interaction.
 The bounded sign-coordinate×gap interaction family is likewise infeasible at
 n=4. Feature synthesis now has a hard feature-count cap and reports
 `INCONCLUSIVE` rather than launching an unbounded LP.
+The bounded combined order-one-hot plus sign×gap family is also infeasible at
+n=4. The next candidate therefore needs genuinely sector-specific ordered
+gap coefficients, not additive interactions alone.
 
 Example:
 

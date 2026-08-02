@@ -42,6 +42,9 @@ def sector_label(signs: str, gaps: list[int], family: str) -> str:
     if family == "order-gaps":
         levels = {value: index for index, value in enumerate(sorted(set(gaps)))}
         return ",".join(str(levels[value]) for value in gaps)
+    if family == "order-sign-interaction":
+        levels = {value: index for index, value in enumerate(sorted(set(gaps)))}
+        return ",".join(str(levels[value]) for value in gaps)
     return signs
 
 
@@ -65,6 +68,14 @@ def features(name: str, family: str, sectors: dict[str, int] | None = None,
         return result
     if family == "sign-interaction":
         result = sign_values + [float(value) for value in gaps]
+        result += [sign * gap for sign in sign_values for gap in gaps]
+        return result
+    if family == "order-sign-interaction":
+        levels = {value: index for index, value in enumerate(sorted(set(gaps)))}
+        order = ",".join(str(levels[value]) for value in gaps)
+        order_values = [order == key for key in sectors]
+        result = sign_values + [float(value) for value in gaps]
+        result += [float(value) for value in order_values]
         result += [sign * gap for sign in sign_values for gap in gaps]
         return result
     if family in ("sign", "quadratic", "rich"):
@@ -118,20 +129,23 @@ def feature_count(data: dict, family: str) -> int:
     if family == "sign-interaction":
         n = len(parsed[0][1])
         return 2 * n + n * n
+    if family == "order-sign-interaction":
+        n = len(parsed[0][1])
+        return len(sectors) + 2 * n + n * n
     return len(features(data["chambers"][0], family))
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("certificate")
-    parser.add_argument("--family", choices=("sign", "gaps", "quadratic", "rich", "sector-gaps", "sector-gaps-scale", "sector-gaps-mask", "mask-gaps", "order-gaps", "sign-interaction"),
+    parser.add_argument("--family", choices=("sign", "gaps", "quadratic", "rich", "sector-gaps", "sector-gaps-scale", "sector-gaps-mask", "mask-gaps", "order-gaps", "sign-interaction", "order-sign-interaction"),
                         action="append")
     parser.add_argument("--emit", help="write a rounded integer coefficient certificate")
     parser.add_argument("--max-features", type=int, default=5000,
                         help="skip LP families larger than this (default: 5000)")
     args = parser.parse_args()
     data = load(args.certificate)
-    families = args.family or ["sign", "gaps", "quadratic", "rich", "sector-gaps", "sector-gaps-scale", "sector-gaps-mask", "mask-gaps", "order-gaps", "sign-interaction"]
+    families = args.family or ["sign", "gaps", "quadratic", "rich", "sector-gaps", "sector-gaps-scale", "sector-gaps-mask", "mask-gaps", "order-gaps", "sign-interaction", "order-sign-interaction"]
     for family in families:
         count = feature_count(data, family)
         if count > args.max_features:
