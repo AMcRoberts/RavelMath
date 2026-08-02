@@ -243,6 +243,24 @@ yet closing the lemma:**
   in the exact run lengths found (`1,3,5,7,6` for `n=2..6`, with a gap at
   `n=4`) does not yet fit a clean formula -- read this as narrowing where
   to look, not as the pattern itself.
+- **A third, decisive negative result: box-boundedness alone is not the
+  binding constraint.** Fixing `a_0=1` and treating `a_1,...,a_{n-1}` as
+  free parameters in `[-1,1]`, every later value `a_n, a_{n+1}, ...` is an
+  explicit linear function of those free parameters (direct consequence of
+  `a_t = a_{t+1}+...+a_{t+n}`, the same recurrence in its cleanest form).
+  Checking, via LP feasibility (no exact-boundary-touch requirement, just
+  `|a_j|<=1`), how long a run of later values *can* stay inside the box:
+  feasible for at least 24 consecutive later values, tested `n=2..8` --
+  nowhere near the tight `n+1` survival bound. **This rules out any
+  growth-rate/Diophantine-approximation mechanism** (the kind the
+  conjugate-height and dual-eigenbasis attempts both implicitly assumed):
+  staying inside the box is cheap for a long time. The entire `n+1`
+  tightness comes specifically from requiring **exact** contact with the
+  boundary (`|a_j|=1` for some coordinate) at *every* intermediate window,
+  a genuinely combinatorial/discrete constraint, not a continuous
+  dynamical one. Future attempts on this lemma should look for a covering
+  or pigeonhole argument over the discrete choice of which coordinate
+  touches the boundary at each step, not a spectral/growth-rate bound.
 
 For inspection, the probe can emit Z3's proof object for the terminal query:
 
