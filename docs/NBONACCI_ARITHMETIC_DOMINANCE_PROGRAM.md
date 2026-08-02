@@ -301,6 +301,9 @@ The larger known passing shell `n=5,B=6` also emits and replays successfully:
 371,198 chambers, 611,658 weighted edges, and a 41 MiB certificate.
 The next shell `n=6,B=4` also passes: 531,186 chambers, 812,926 weighted
 edges, and a 57 MiB replayable certificate, with no nontrivial quotient SCCs.
+The `n=7,B=3` shell also emits and replays successfully: 822,844 chambers,
+1,181,154 weighted edges, and an 87 MiB certificate, again with no
+nontrivial quotient SCCs.
 - Add a checker that verifies every directed cycle in the certified exterior
   graph has positive total rank change (equivalently, no zero/nonpositive
   cycle survives); this is the finite obstruction audit for sublemma 4.
