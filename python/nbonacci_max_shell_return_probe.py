@@ -15,6 +15,7 @@ shell rank.
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import resource
 from collections import defaultdict, deque
@@ -70,7 +71,7 @@ def dag_rank(nodes, edges):
             indegree[target] -= 1
             if indegree[target] == 0:
                 queue.append(target)
-    return visited == len(nodes), max(rank.values(), default=0)
+    return visited == len(nodes), max(rank.values(), default=0), rank
 
 
 def main() -> int:
@@ -78,11 +79,33 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--n", type=int, required=True)
     parser.add_argument("--bound", type=int, required=True)
+    parser.add_argument("--emit-rank", help="write a replayable shell-rank JSON")
     args = parser.parse_args()
     if args.n < 2 or args.bound < 1:
         parser.error("require n>=2 and bound>=1")
     shell, relation = first_return_graph(args.n, args.bound)
-    acyclic, height = dag_rank(shell, relation)
+    acyclic, height, rank = dag_rank(shell, relation)
+    if args.emit_rank:
+        payload = {
+            "kind": "nbonacci-max-shell-return-rank-v1",
+            "n": args.n,
+            "bound": args.bound,
+            "shell": [list(state) for state in sorted(shell)],
+            "edges": [[list(source), list(target)]
+                      for source in sorted(relation)
+                      for target in sorted(relation[source])],
+            "rank": {",".join(map(str, state)): value
+                     for state, value in rank.items()},
+            "checked": acyclic and all(
+                rank[target] > rank[source]
+                for source, targets in relation.items()
+                for target in targets
+            ),
+        }
+        with open(args.emit_rank, "w", encoding="utf-8") as stream:
+            json.dump(payload, stream, indent=2, sort_keys=True)
+            stream.write("\n")
+        print(f"max-shell return probe: wrote {args.emit_rank}")
     print(
         f"max-shell return probe: n={args.n} bound={args.bound} "
         f"shell={len(shell)} return_edges={sum(map(len, relation.values()))} "
