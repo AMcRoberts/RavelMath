@@ -112,6 +112,10 @@ For normalized states the digit is `q d_t`, so the right side is
 `(n+1)`-block recurrence.  This is the algebraic interface the next
 certificate generator should use instead of expanding all coefficient paths.
 
+The identity itself is independently replayed by
+`python/nbonacci_block_defect_smt.py`; the current scan proves the negation
+UNSAT for every block position in dimensions `2` through `10`.
+
 There is a useful asymptotic reduction already exposed by the same code. After
 normalizing by `M`, the digit contribution is `q=1/M`. At `q=0` the machine is
 the homogeneous shift/tail map. Exhaustive canonical-word search for

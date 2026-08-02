@@ -347,6 +347,16 @@ Use this as extraction aid only. The next step is to compress the repeated
 linear-arithmetic pattern into a generic induction or a small rational Farkas
 witness.
 
+Before changing the shell automaton, replay the algebraic seam independently:
+
+```sh
+python3 python/nbonacci_block_defect_smt.py --n=10 --max-n
+```
+
+This checks the negation of the `(n+1)`-block defect at every position using
+exact rational arithmetic. It is a guard against accidentally mining a
+solver artifact caused by an indexing or normalization error.
+
 Example:
 
 ```sh
