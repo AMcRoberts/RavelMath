@@ -61,6 +61,8 @@ LIB      := $(BUILDDIR)/$(LIBNAME)
 # Main project non-header-only C++ impls.
 SRCS    := $(SRCDIR)/lua_bindings.cpp $(SRCDIR)/rauzy_fractal.cpp
 OBJECTS := $(BUILDDIR)/lua_bindings.o $(BUILDDIR)/rauzy_fractal.o
+EXTRA_SRCS := $(SRCDIR)/nbonacci_covering_witness.cpp
+EXTRA_OBJECTS := $(BUILDDIR)/nbonacci_covering_witness.o
 
 # Lua data pipeline.
 DATA_DIR         := lua/lua_src/ravel/data
@@ -166,8 +168,13 @@ $(BUILDDIR)/rauzy_fractal.o: $(SRCDIR)/rauzy_fractal.cpp \
 		$(INCDIR)/ravel/rauzy_fractal.hpp | $(BUILDDIR)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
-$(LIB): $(OBJECTS) $(MATH_LIB)
-	$(CXX) -shared -o $@ $(OBJECTS) $(LUA_LIBS) -L$(MATH_BUILDDIR) -lmath
+$(BUILDDIR)/nbonacci_covering_witness.o: $(SRCDIR)/nbonacci_covering_witness.cpp \
+		$(INCDIR)/ravel/nbonacci_covering_witness.hpp | $(BUILDDIR)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+
+$(LIB): $(OBJECTS) $(EXTRA_OBJECTS) $(MATH_LIB)
+	$(CXX) -shared -o $@ $(OBJECTS) $(EXTRA_OBJECTS) $(LUA_LIBS) -L$(MATH_BUILDDIR) -lmath
+	$(CXX) -c -o $(BUILDDIR)/nbonacci_covering_witness.o $(SRCDIR)/nbonacci_covering_witness.cpp $(CXXFLAGS) $(INCLUDES)
 
 # ====================================================================
 # Data pipeline (Lua side)

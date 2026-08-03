@@ -38,6 +38,7 @@
 #include <vector>
 
 #include "ravel/cyclotomic.hpp"
+#include "ravel/nbonacci_covering_witness.hpp"
 #include "ravel/spectral.hpp"
 #include "ravel/qbeta_eigenvalue.hpp"
 #include "ravel/tilt.hpp"
@@ -2171,6 +2172,156 @@ int l_contact_boundary_batch_run(lua_State* L) {
     return 1;
 }
 
+// ---------- n-bonacci covering witness (C++ core; Lua thin wrapper) ----------
+// ravel.nbonacci.covering_witness.get_simplest(n [, L]) -> {
+//   n : Nat, L : Nat (= n+1 if absent),
+//   found : Bool,
+//   indices : List Nat, signs : List Int, free_params : List Rat,
+//   sequence : List Rat,
+// } or nil if not found.
+// ravel.nbonacci.covering_witness.get_batch(n_min, n_max) -> List of
+//   the above records (one per n in [n_min, n_max]).
+// ravel.nbonacci.covering_witness.check_box_and_cover(idx_list, signs_list,
+//   fp_list, seq_list, n) -> Bool
+//   (verifies that the witness satisfies box and cover properties;
+//    used by the Lean-side chunks via the C++-side oracle.)
+static int nbonacci_cw_get_simplest(lua_State* L) {
+    luaL_checktype(L, 1, LUA_TNUMBER);
+    std::size_t n = static_cast<std::size_t>(lua_tointeger(L, 1));
+    std::size_t Lval = (n == 0) ? 1 : n + 1;
+    if (lua_gettop(L) >= 2 && !lua_isnil(L, 2)) {
+        luaL_checktype(L, 2, LUA_TNUMBER);
+        Lval = static_cast<std::size_t>(lua_tointeger(L, 2));
+    }
+    auto w = ravel::compute_simplest_covering_witness(n, Lval);
+    if (!w) {
+        lua_pushnil(L);
+        return 1;
+    }
+    lua_createtable(L, 0, 5);
+    lua_pushboolean(L, 1); lua_setfield(L, -2, "found");
+    auto push_int_list = [L](const char* name,
+                              const std::vector<long long>& xs) {
+        lua_createtable(L, xs.size(), 0);
+        for (std::size_t i = 0; i < xs.size(); ++i) {
+            lua_pushinteger(L, static_cast<lua_Integer>(xs[i]));
+            lua_rawseti(L, -2, static_cast<int>(i + 1));
+        }
+        lua_setfield(L, -2, name);
+    };
+    push_int_list("indices", w->indices);
+    push_int_list("signs", w->signs);
+    auto push_str_list = [L](const char* name,
+                              const std::vector<std::string>& xs) {
+        lua_createtable(L, xs.size(), 0);
+        for (std::size_t i = 0; i < xs.size(); ++i) {
+            lua_pushstring(L, xs[i].c_str());
+            lua_rawseti(L, -2, static_cast<int>(i + 1));
+        }
+        lua_setfield(L, -2, name);
+    };
+    push_str_list("free_params", w->free_params);
+    push_str_list("sequence", w->sequence);
+    return 1;
+}
+
+static int nbonacci_cw_get_batch(lua_State* L) {
+    luaL_checktype(L, 1, LUA_TNUMBER);
+    luaL_checktype(L, 2, LUA_TNUMBER);
+    std::size_t n_min = static_cast<std::size_t>(lua_tointeger(L, 1));
+    std::size_t n_max = static_cast<std::size_t>(lua_tointeger(L, 2));
+    lua_createtable(L, n_max - n_min + 1, 0);
+    for (std::size_t n = n_min; n <= n_max; ++n) {
+        auto w = ravel::compute_simplest_covering_witness(n, n + 1);
+        if (!w) {
+            lua_pushnil(L);
+        } else {
+            // Push the same table shape as get_simplest
+            lua_createtable(L, 0, 5);
+            lua_pushboolean(L, 1); lua_setfield(L, -2, "found");
+            auto push_int_list = [L, n, w](const char* name,
+                              const std::vector<long long>& xs) {
+                (void)n;
+                (void)w;
+                lua_createtable(L, xs.size(), 0);
+                for (std::size_t i = 0; i < xs.size(); ++i) {
+                    lua_pushinteger(L, static_cast<lua_Integer>(xs[i]));
+                    lua_rawseti(L, -2, static_cast<int>(i + 1));
+                }
+                lua_setfield(L, -2, name);
+            };
+            push_int_list("indices", w->indices);
+            push_int_list("signs", w->signs);
+            auto push_str_list = [L, n, w](const char* name,
+                              const std::vector<std::string>& xs) {
+                (void)n;
+                (void)w;
+                lua_createtable(L, xs.size(), 0);
+                for (std::size_t i = 0; i < xs.size(); ++i) {
+                    lua_pushstring(L, xs[i].c_str());
+                    lua_rawseti(L, -2, static_cast<int>(i + 1));
+                }
+                lua_setfield(L, -2, name);
+            };
+            push_str_list("free_params", w->free_params);
+            push_str_list("sequence", w->sequence);
+        }
+        lua_rawseti(L, -2, static_cast<int>(n - n_min + 1));
+    }
+    return 1;
+}
+
+static int nbonacci_cw_check(lua_State* L) {
+    // Check a witness: indices, signs, free_params, sequence, n.
+    // Returns true if box + cover both pass.
+    if (!lua_istable(L, 1) || !lua_istable(L, 2) || !lua_istable(L, 3)
+        || !lua_istable(L, 4) || !lua_isnumber(L, 5)) {
+        luaL_error(L, "nbonacci_cw_check: expected 5 args (table, table, table, table, number)");
+        return 0;
+    }
+    // Extract n
+    std::size_t n = static_cast<std::size_t>(lua_tointeger(L, 5));
+    // Extract each list
+    auto extract_int = [L](int idx, std::vector<long long>& out) {
+        luaL_checktype(L, idx, LUA_TTABLE);
+        std::size_t len = static_cast<std::size_t>(lua_rawlen(L, idx));
+        for (std::size_t k = 1; k <= len; ++k) {
+            lua_rawgeti(L, idx, static_cast<int>(k));
+            out.push_back(static_cast<long long>(lua_tointeger(L, -1)));
+            lua_pop(L, 1);
+        }
+    };
+    auto extract_str = [L](int idx, std::vector<std::string>& out) {
+        luaL_checktype(L, idx, LUA_TTABLE);
+        std::size_t len = static_cast<std::size_t>(lua_rawlen(L, idx));
+        for (std::size_t k = 1; k <= len; ++k) {
+            lua_rawgeti(L, idx, static_cast<int>(k));
+            out.push_back(std::string(lua_tostring(L, -1)));
+            lua_pop(L, 1);
+        }
+    };
+    ravel::covering_witness_t w;
+    extract_int(1, w.indices);
+    extract_int(2, w.signs);
+    extract_str(3, w.free_params);
+    extract_str(4, w.sequence);
+    w.n = static_cast<long long>(n);
+    w.L = static_cast<long long>(n) + 1;
+    std::string box_err = ravel::check_box(w);
+    if (!box_err.empty()) { lua_pushboolean(L, 0); return 1; }
+    std::string cover_err = ravel::check_cover(w);
+    if (!cover_err.empty()) { lua_pushboolean(L, 0); return 1; }
+    lua_pushboolean(L, 1);
+    return 1;
+}
+
+static const luaL_Reg nbonacci_covering_witness_funcs[] = {
+    {"get_simplest", nbonacci_cw_get_simplest},
+    {"get_batch",     nbonacci_cw_get_batch},
+    {"check",         nbonacci_cw_check},
+    {nullptr, nullptr}
+};
+
 void register_module(lua_State* L, const char* name, const luaL_Reg* funcs) {
     lua_newtable(L);
     luaL_setfuncs(L, funcs, 0);
@@ -2436,6 +2587,8 @@ int luaopen_spectre(lua_State* L) {
     register_module(L, "contact_boundary", contact_boundary_funcs);
     register_module(L, "rauzy_fractal", rauzy_fractal_funcs);
     register_module(L, "d_cont_check",  d_cont_check_funcs);
+    register_module(L, "nbonacci_covering_witness",
+                    nbonacci_covering_witness_funcs);
     return 1;
 }
 

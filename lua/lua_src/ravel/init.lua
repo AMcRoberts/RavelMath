@@ -75,6 +75,12 @@ M.spectral      = native.spectral
     M.contact_boundary = native.contact_boundary
     M.rauzy_fractal = native.rauzy_fractal
     M.d_cont_check  = native.d_cont_check
+    M.nbonacci_covering_witness = native.nbonacci_covering_witness
+    -- The actual Lua wrapper for the covering-witness binding:
+    -- nbonacci_covering_witness.lua distributes the C++-computed
+    -- data into chunks.  Loaded here so the proof probe can pull
+    -- it via the standard ravel namespace.
+    M.nbonacci_covering_witness_chunks = require("ravel.nbonacci_covering_witness")
     M.constants._cyclo = M.cyclo
         -- predict_dimension is pure-Lua (W1 + W5)
         M.predict_dimension = require("ravel.predict_dimension")
