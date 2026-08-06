@@ -1922,3 +1922,56 @@ enumeration. **Not yet extended**: substitutions with more than one
 junction letter, where jumps from different junctions interleave and
 the single composition-sequence picture no longer applies on its own
 — the next concrete target.
+
+## Finding 24 — reverse-engineering a substitution's minimal polynomial directly from "which walks finish" counting data
+
+**Status: A general, validated methodological tool, proposed directly
+by AM. Confirmed exact on two structurally different substitutions
+with different minimal polynomials, purely from counting data -- no
+incidence matrix ever built.**
+`include/ravel/proof/reverse_engineer_minimal_polynomial_from_returns.hpp`,
+`tests/reverse_engineer_minimal_polynomial_from_returns_test.cpp`.
+
+AM's proposed technique: instead of deriving a substitution's algebraic
+structure by hand (build the incidence matrix, compute its
+characteristic polynomial), recover it from "which walks finish" --
+count, for each depth K, how many Dumont-Thomas walks of that length
+starting at a fixed reference letter land EXACTLY back on that letter
+with zero depth remaining (a "clean return"), then fit the minimal
+integer linear recurrence this counting sequence satisfies.
+
+**Verified on two independent cases**: `sigma_{0,1}` recovers
+`g(K)=g(K-2)+g(K-3)` exactly (characteristic polynomial `x^3-x-1`, the
+plastic number's own minimal polynomial); the `x^3-2x^2-x+1`
+substitution (`sigma(0)=0,0,1 sigma(1)=2 sigma(2)=0,1`) recovers
+`g(K)=2g(K-1)+g(K-2)-g(K-3)` exactly (characteristic polynomial
+`x^3-2x^2-x+1`, that substitution's own known minimal polynomial) --
+different substitution, different polynomial, both recovered exactly
+from pure simulation with zero prior algebraic knowledge fed in.
+
+**Why this works, not just an empirical curiosity**: closed-walk
+counts in a graph are governed by powers of its adjacency matrix
+(transfer-matrix method), and by Cayley-Hamilton the matrix satisfies
+its own characteristic polynomial exactly -- so any closed-walk
+counting sequence built from a substitution's transition structure
+must satisfy the SAME linear recurrence the incidence matrix does.
+
+**A real error caught in the process**: the test's first negative
+control (a sequence with no small recurrence, to confirm the fitter
+doesn't spuriously match noise) used the squares `i^2` -- which turned
+out to actually satisfy a genuine order-3 linear recurrence
+(`a(n)=3a(n-1)-3a(n-2)+a(n-3)`, characteristic polynomial `(x-1)^3`,
+a standard fact about degree-d polynomial sequences) and the test
+caught its own bad control by failing. Replaced with the prime
+sequence, which has no such structure.
+
+**Consequence for the coincidence program**: this gives a way to
+recover the exact algebraic relation (the input to Finding 22's
+landmark-vector-cancellation reduction) directly from simulation,
+without first hand-deriving the incidence matrix -- valuable
+specifically because hand-derivation is exactly the kind of step this
+project's own discipline has repeatedly found error-prone under
+complexity (multiple junctions, larger alphabets). It complements,
+rather than replaces, Finding 23's explicit walk-realizability
+construction -- recovering the polynomial is not the same as knowing
+which of its implied relations are actually walk-realizable.
