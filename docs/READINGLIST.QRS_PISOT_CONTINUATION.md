@@ -420,3 +420,27 @@ re-scoped; the between-integer density question is a real open thread
 if this gets picked up again, likely needs either a bigger sweep or an
 actual read of Dufresnoy-Pisot's derived-set analysis rather than
 rediscovering it computationally.
+
+### 2026-08-06 (PC session, generic-degree classifier + exact sigma_{0,2} probe) — while waiting
+
+Filled in the other half of AM's "combination of 1 and 3" answer for
+the Task 3 pivot tool: exposed the existing degree-agnostic Pisot
+classification logic (already inside exact_pisot.c, just never wired
+past degree 4) as pisot_classify_degree_n, with an honest guard for
+the one real limitation (multiple complex-conjugate pairs at degree
+>=5 -- the modulus bound only certifies their combined product).
+Verified the guard fires correctly on a-bonacci degree 5-8 and does
+NOT over-fire on a hand-found single-pair degree-5 Pisot number. See
+Finding 30.
+
+Also started a genuinely exact (not floating-point) resolution attempt
+for sigma_{0,2}'s open beta-expansion question, using pure integer
+arithmetic in Z[beta] (beta is an algebraic integer, so the greedy
+recurrence never leaves the integer lattice -- no precision wall at
+all, unlike the earlier mpmath approach). Caught a real bug immediately
+(qbeta_sign's endpoint-disagreement fallback can silently return the
+wrong sign when the bracket isn't tight enough; fixed with a
+robust_sign that refines until the endpoints actually agree). As of
+this entry the search has run past 60,000 exact steps with zero
+repeated states and no termination -- genuinely still open, running in
+the background, not a precision artifact this time.
