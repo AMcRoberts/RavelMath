@@ -274,3 +274,25 @@ either (a) a general theorem for which substitutions collapse to a
 single-landmark-vector picture (any substitution with only one letter
 having image length >= 2, generalizing beyond sigma_{0,1}), or (b) the
 harder multi-landmark case where more than one letter branches.
+
+### 2026-08-06 (PC session, very late) — walk-realizability closed for the single-junction class
+
+Tried the obvious Cayley-Hamilton shortcut for the Diophantine reduction
+(Finding 22) first: minpoly `x^3-x-1` has all {-1,0,1} coefficients, giving
+`M^3=M+I` for free. Checked whether this gives a short coincidence witness
+directly -- it does not; the predicted landmark pattern is combinatorially
+unreachable given the substitution's forced-chain structure (a landmark at
+depth 2 forces the walk straight past depth 1 to the leaf). This is the
+"generalized with a twist" AM predicted: the linear algebra names which
+relations CAN exist; a separate combinatorial layer (which depth-sets are
+actually walk-realizable) decides which ones occur. That second layer is
+now closed exactly for the single-junction class (one letter with image
+length >= 2, everything else a deterministic chain back to it): achievable
+landmark-sets are exactly compositions into the junction's own jump sizes,
+verified zero-discrepancy against brute force (after fixing a real bug the
+cross-check caught: dropped landmark events made right before running out
+of depth). See Finding 23,
+`include/ravel/proof/single_junction_coincidence_composition.hpp`.
+
+Next: generalize past single-junction to substitutions with multiple
+branching letters, where jumps from different junctions interleave.
