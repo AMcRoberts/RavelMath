@@ -255,3 +255,22 @@ this beyond locating and confirming the phenomenon in one example
 (`/tmp/find_match.cpp`, not yet promoted into the tree — the next session
 should start by turning that probe into a real `include/ravel/proof/`
 header). This is the live next target for the coincidence question.
+
+### 2026-08-06 (PC session, later still) — the Diophantine angle, actually reduced
+
+Turned the "why does the interior match happen" observation into an exact
+theorem: `abelianization_from_walk` (verified against direct word
+materialization) shows any prefix's abelianization is
+`sum_ell M^{ell-1} p_ell` over the Dumont-Thomas walk. For `sigma_{0,1}`
+specifically, only letter 0 has a length->=2 image, so this collapses to
+a sparse sum of a single fixed "landmark vector" under matrix powers.
+Strong coincidence reduces exactly to a subset-sum collision question:
+`M^11 v0 + v0 = M^10 v0 + M^5 v0 + M^3 v0` is the concrete relation behind
+the depth-12 match found earlier. See Finding 22 and
+`include/ravel/proof/coincidence_as_landmark_vector_cancellation.hpp`.
+This is a real reduction (a well-posed linear-recurrence question), not
+yet a closed form or a general bound -- the next session should try
+either (a) a general theorem for which substitutions collapse to a
+single-landmark-vector picture (any substitution with only one letter
+having image length >= 2, generalizing beyond sigma_{0,1}), or (b) the
+harder multi-landmark case where more than one letter branches.
