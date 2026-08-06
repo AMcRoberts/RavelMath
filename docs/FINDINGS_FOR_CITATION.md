@@ -2337,3 +2337,32 @@ degree 5. Closing that gap needs either a genuinely different
 per-pair modulus certificate (a real extension, not attempted here)
 or picking a different high-degree family known to keep only one
 complex pair -- not investigated further this session.
+
+## Finding 31 — sigma_{0,2}'s beta-expansion: exact search rules out precision, still doesn't resolve
+
+**Status: negative/inconclusive result, honestly reported. The exact
+integer-arithmetic search (see Finding 30's probe_exact_beta_expansion.cpp)
+ran for 30 minutes real time and 123,500 steps with ZERO repeated
+states and no termination.**
+
+This decisively rules out precision as the explanation for Finding
+28's "UNRESOLVED" result -- the exact search uses pure integer
+arithmetic in Z[beta] (no floating point anywhere) plus exact rational
+Sturm-bracket sign comparisons, refined (via `robust_sign`, itself a
+real bug fix over the naive `qbeta_sign` fallback) until genuinely
+unambiguous at every step. Every one of the 123,500 states visited was
+distinct -- not a single collision. Schmidt's theorem guarantees
+eventual periodicity exists; this session's data now says the
+pre-period/period (if reachable at all within a tractable budget) is
+at minimum in the hundreds of thousands, likely much larger, or the
+per-step cost (which grew noticeably slower over the run, plausibly
+from growing integer-coefficient magnitudes) makes brute continuation
+impractical without a smarter approach (e.g., detecting boundedness of
+the coefficient lattice directly rather than searching for a literal
+repeat).
+
+**Left open, deliberately not force-closed**: continuing this search
+much further is a real wall-clock cost with no guarantee of resolving
+soon. Whether to keep pushing it, or treat sigma_{0,2} as "open,
+substantially better characterized than before" and move on, is a
+judgment call left to whoever picks this thread up next.
