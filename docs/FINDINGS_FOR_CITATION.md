@@ -2169,3 +2169,60 @@ the naive `K=gap`). The full converse -- every compatible gap, via some
 general bound or construction -- remains open. The `+10` constant
 offset observed for the non-multiple-of-`L` residue class is a
 suggestive, unexplained regularity, not yet investigated.
+
+## Finding 28 — Finding 6.5's unimodularity hypothesis for beta-expansion termination is refuted; sigma_{0,2} remains genuinely open
+
+**Status: NEGATIVE RESULT (the hypothesis), narrows Task 4's scope
+honestly. sigma_{0,2}'s termination status stays unresolved -- not
+solved here, but now isolated as a real outlier rather than folded
+into a plausible-looking pattern.**
+
+Finding 6.5 flagged sigma_{0,2} (det/norm = 2, the only non-unimodular
+candidate in that batch) as the sole case whose `d_beta(1)` didn't
+resolve to finite within 400 digits, and explicitly hedged: "may
+correlate with unimodularity... not yet confirmed." Tested that
+directly rather than leaving it as a plausible-sounding aside: searched
+small cubic monic integer polynomials `x^3 - p x^2 - q x - r` for the
+Pisot property, split hits by `|r|` (unimodular vs. non-unimodular),
+and ran the same exact-charpoly / 3000-dps near-integer-snapped greedy
+expansion (`python/beta_expansion_thread_a4.py`'s machinery, reused
+directly to avoid reintroducing either precision bug it already found)
+on 6 of each.
+
+**Result: 6/6 unimodular AND 6/6 non-unimodular candidates terminate.**
+Unimodularity is not the distinguishing factor -- the hypothesis is
+refuted on a clean, deliberately-varied sample, not just left unconfirmed.
+See `python/beta_expansion_unimodularity_check.py`.
+
+**A real bug caught while building this**: the first version of the
+Pisot-candidate filter picked the root of largest MODULUS as the
+candidate beta without checking it was real and positive, so
+`x^3 - x + 1` (dominant root `~-1.3247`, a negative real number) was
+accepted as "Pisot" and produced a spurious periodic-looking result
+purely from evaluating a beta-expansion at a number that isn't
+actually a Pisot number at all (Pisot numbers are real algebraic
+integers `> 1` by definition, not merely large-modulus roots). Fixed
+by requiring the dominant root be real and `> 1` before accepting a
+candidate; re-ran the whole search after the fix, not just patched the
+one bad case.
+
+**sigma_{0,2}, re-examined honestly**: re-ran its expansion (charpoly
+`x^3 - x - 2`) up to 2500 digits at 3000-dps precision (via the
+corrected pipeline) -- still `UNRESOLVED`, no period found up to
+`n/3` digits. The digit sequence shows no visible short-range
+structure. Schmidt's theorem (cited in Finding 6.5) guarantees SOME
+eventual period exists; it does not bound how long the pre-period or
+period can be, and 2500 digits at ~3000-dps precision is close to
+where accumulated rounding in the greedy algorithm's repeated
+multiply-by-beta step becomes a real risk (error grows roughly by a
+factor of beta per digit, so precision headroom is not unlimited) --
+so this result should be read as "not resolved at this budget," not
+as "confirmed non-periodic within any reasonable period," and further
+digits were deliberately not pushed given the accumulating precision
+risk rather than genuine new information.
+
+**What this means for Task 4**: the coarse "is it unimodular" signal
+is now ruled out as a cheap classifier. sigma_{0,2} remains the one
+concrete open outlier in this project's data, with no known correlate
+yet. The honest characterization (terminating vs. eventually-periodic,
+and why) remains open.
