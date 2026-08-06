@@ -296,3 +296,20 @@ of depth). See Finding 23,
 
 Next: generalize past single-junction to substitutions with multiple
 branching letters, where jumps from different junctions interleave.
+
+### 2026-08-06 (PC session, still later) — reverse-engineering the minimal polynomial from pure counting data
+
+AM proposed a genuinely useful methodological shortcut: instead of hand-
+deriving a substitution's incidence matrix and characteristic polynomial,
+count "which walks finish" (Dumont-Thomas walks that land exactly back on
+a reference letter with zero depth left) and fit the minimal linear
+recurrence that counting sequence satisfies. Verified exact on two
+substitutions with different minimal polynomials (plastic number's
+x^3-x-1 for sigma_{0,1}; x^3-2x^2-x+1 for its own substitution), zero
+prior algebraic knowledge needed. See Finding 24,
+`include/ravel/proof/reverse_engineer_minimal_polynomial_from_returns.hpp`.
+This is a real, general, reusable tool -- not yet applied to actually
+find a NEW multi-junction hard-coincidence example (the search for a
+good test case for Finding 23's generalization is still open; several
+candidates tried tonight were either constant-factor-trivial or not
+genuinely Pisot).
