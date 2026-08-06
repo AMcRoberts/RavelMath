@@ -2057,3 +2057,61 @@ arithmetic. A substitution can have a pair that is provably impossible
 to ever coincide (an incompatible gap under a `gcd>1` structure) sitting
 right next to a pair that resolves in single digits, within the exact
 same substitution.
+
+## Finding 26 — the gcd-obstruction is a proven theorem, and it extends to multi-junction substitutions unchanged
+
+**Status: closes both open questions from Finding 25. The gcd-
+obstruction is now a proven impossibility result (not an unresolved
+depth-40 search), and the proof holds identically for multi-junction
+substitutions -- verified computationally on the invariant itself, not
+just its consequence, under an explicit memory/time cap.**
+`include/ravel/proof/coincidence_gcd_obstruction_theorem.hpp`,
+`tests/coincidence_gcd_obstruction_theorem_test.cpp`.
+
+**Setup**: for any letter `x`, `dist(x)` = the number of forced
+deterministic steps from `x` to the nearest junction (`0` if `x` is
+itself a junction) -- well-defined for any letter given irreducibility.
+`g` = gcd of every jump size in the WHOLE junction graph, across all
+junctions.
+
+**Theorem**: for any state `(terminal, vector)` in
+`reachable(junction, d)`, `d + dist(terminal) ≡ 0 (mod g)`.
+
+**Proof, by induction on `d`** (this closes exactly the gap Finding 25
+left open -- the mid-chain-cutoff case, worked through explicitly):
+base case `d=0` gives `terminal=junction`, `dist=0`, trivially `0`.
+A clean edge (jump size `s ≤ d`, `s ≡ 0 mod g`) recurses into `d-s`;
+by induction `(d-s)+dist(term)≡0`, and since `s≡0 (mod g)`,
+`d+dist(term)≡0` too -- **this step never depends on whether the edge
+stays at the same junction or crosses to a different one**, which is
+exactly why the multi-junction case needs no separate argument. The
+mid-chain cutoff (`s > d`) lands on `chain[d-1]`, whose distance to
+the junction is `(s-1)-(d-1) = s-d` by construction of the chain, so
+`d + dist(terminal) = s ≡ 0 (mod g)` directly, since `s` is a jump size
+by definition. All three cases close the induction.
+
+**Consequence**: if two starting points' reachable sets at depths
+`K-r_a` and `K-r_b` ever shared a state, the theorem applied to that
+same state at both depths forces `r_a - r_b ≡ 0 (mod g)` by
+subtraction. So an incompatible-gap pair provably **cannot ever**
+coincide -- for any `K`, not merely "not found within a search bound."
+This is the rigorous half of Finding 25's proposed mechanism, now
+actually proved.
+
+**Verified directly, not just derived**: checked the INVARIANT itself
+(not its consequence) against real closures under an explicit
+`ulimit -v 10GB` + 30s cap, on two cases: the single-junction `gcd=1`
+substitution (vacuously consistent, 29174 states, 0 violations) and a
+newly-constructed genuine multi-junction `gcd=2` example (junctions at
+two different letters, with edges crossing directly between them --
+`0→2` and `2→0` both occur, jump sizes `{2,2,2,4}`), 789 states, 0
+violations. The small state counts are deliberate: this verifies an
+exact algebraic identity, not a search for a witness, so a modest
+bound is fully conclusive -- no large sweep was needed or run.
+
+**SCOPE, stated honestly**: this proves the incompatible-gap direction
+completely (a genuine impossibility result). It does NOT prove the
+converse -- that every compatible-gap pair eventually coincides -- that
+remains strong empirical support (every tested case, both single- and
+multi-junction), not a completed proof. Flagged as still open, not
+glossed over.
