@@ -1820,3 +1820,53 @@ unaffected — its conclusion (constant-factor connectivity is confined
 to the always-safe all-zero region) holds under the corrected
 criterion exactly as it did before, since an all-zero cycle is still
 never a violation either way.
+
+## Finding 22 — the Diophantine reduction: strong coincidence past the boundary case is exact landmark-vector cancellation under repeated matrix application
+
+**Status: A real reduction, verified exact by two independent
+computational methods, not a closed-form theorem. This is the
+concrete next-session starting point for the coincidence question.**
+`include/ravel/proof/coincidence_as_landmark_vector_cancellation.hpp`,
+`tests/coincidence_as_landmark_vector_cancellation_test.cpp`.
+
+Any position within `sigma^k(b)` corresponds to a Dumont-Thomas walk
+(the same prefix automaton property (F) already builds, read top-down).
+**Theorem (verified, not just derived by hand)**: the prefix's
+abelianization equals exactly `sum_ell M^{ell-1} * p_ell`, where `p_ell`
+is the abelianization of the sibling letters before the chosen child
+at level `ell`, and `M` is the incidence matrix. Verified to reproduce
+the true abelianization bit-for-bit against direct word materialization,
+independent of the recursive-decomposition method used to derive it.
+
+**The reduction**: at any level where the current letter's image has
+length 1 (no possible "second or later" child), the term is
+identically zero — no matrix power can rescue a zero vector. For
+`sigma_{0,1}` (`sigma(0)=[1,2], sigma(1)=[2], sigma(2)=[0]`, the non-AR
+control from Finding 5/16/17), only letter 0 has an image of length
+>= 2, so the ENTIRE abelianization of ANY prefix, from ANY starting
+letter, reduces to a sum over a sparse subset of depths of a single
+fixed "landmark vector" `v0 = (0,1,0)` transformed by `M^{depth-1}`.
+Strong coincidence between two starting letters therefore reduces
+exactly to: do two finite subsets of positive integers give the same
+subset-sum of `{M^n v0}`?
+
+**Confirmed concretely** on the actual depth-12 match for pair `(0,2)`
+found earlier tonight (position 17, the match that originally motivated
+this investigation): walk from letter 0 has landmark depths `{12,1}`;
+walk from letter 2 has landmark depths `{11,6,4}`; and
+`M^11 v0 + M^0 v0 = M^10 v0 + M^5 v0 + M^3 v0` exactly (both sides equal
+`(5,5,7)`, the substitution's real prefix abelianization at that
+position, independently confirmed by materializing the actual 37- and
+28-letter words and counting).
+
+**What this does and doesn't close**: it replaces a vague "why does
+coincidence eventually happen for non-constant-factor substitutions"
+with an exact, well-posed, attackable question — when do two subset-
+sums of an integer vector's orbit under repeated integer-matrix
+multiplication coincide. That is now a real object (linear recurrence
+sequences over Z, orbit-collision under a fixed matrix, adjacent in
+spirit to vanishing-sum/S-unit-equation territory, though not
+identical to it) rather than an open-ended search. No bound, no
+closed form, and no proof that a collision always eventually occurs
+is established here — this is the reduction, handed forward as the
+concrete next-session starting point, not the resolution.
