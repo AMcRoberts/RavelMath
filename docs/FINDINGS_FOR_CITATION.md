@@ -2287,3 +2287,53 @@ fixed-range search doesn't make sense) and replaces it with a better
 question that is now partially answered -- accumulation is real and
 constructive at integers; whether a comparably clean structure exists
 between them is open.
+
+## Finding 30 — the exact Pisot classifier generalized to arbitrary degree (honestly capped at one complex-conjugate pair)
+
+**Status: extends `pisot_classify_3x3`/`_4x4` (Task 1's original tool)
+to any degree 1-15, with an explicit, tested guard rather than a
+silent gap. Directly answers the "generate Pisot numbers of arbitrary
+degree" half of AM's combined request for the Task 3 pivot tool.**
+
+`pisot_classify_3x3`/`_4x4`'s internal classifier (`pisot_classify_poly`
+in `math/src/exact_pisot.c`) already certifies Pisot-ness rigorously
+for any degree via Sturm-isolated real roots plus an exact rational
+lower-bound argument for the secondary complex-pair modulus (see the
+extensive bug-history comments already in that file from earlier
+sessions). It was only ever WIRED to degree 3 and 4. Exposed it
+directly: `pisot_classify_degree_n(coeffs, degree, out)` in
+`math/include/exact_pisot.h` / `math/src/exact_pisot.c`.
+
+**A real limitation, made explicit rather than left implicit.** The
+modulus-bound argument (`|det| = beta * prod(real secondaries) *
+|complex product|^2`, lower-bounding `beta*prod(real)` to squeeze the
+complex factor below 1) only bounds the COMBINED modulus-squared
+product across ALL complex-conjugate pairs together. With exactly one
+pair (guaranteed at degree <=4, since a real quartic has at most one
+conjugate pair among its non-dominant roots) that combined bound IS
+the pair's own bound. At degree >=5, a polynomial can have two or more
+complex pairs, and a combined product < 1 does NOT imply each factor
+is individually < 1 -- so the method genuinely cannot certify those
+cases. Added an explicit guard (`n_complex > 1` refuses with `rc=0`,
+not a guess) rather than let it silently mis-certify.
+
+**Verified both directions, not just the refusal.** The a-bonacci
+family at degree 5-8 (`a=1,2,3`) correctly refuses (`rc=0`) -- these
+have two complex pairs among their secondary roots, confirmed by direct
+check, matching the guard's own stated reason, not a different bug.
+A hand-found degree-5 counterexample with only ONE complex pair
+(`x^5-x^4-x^3-x^2+1`, found via a small mpmath sweep specifically
+looking for a single-pair degree-5 Pisot case) correctly SUCCEEDS
+(`rc=1`, `is_pisot=1`, `beta in [1.7784796161, 1.7784796161]`) --
+confirming the guard is scoped to the genuine limitation, not
+over-blocking degree 5 wholesale.
+
+**Practical consequence for the nearest-Pisot tool (Finding 29)**: the
+a-bonacci convergence to integer accumulation points is real at every
+degree, but this classifier can only VERIFY it (and hence be used to
+push the approximation tighter) up to degree 4 for that particular
+family, since a-bonacci polynomials pick up a second complex pair at
+degree 5. Closing that gap needs either a genuinely different
+per-pair modulus certificate (a real extension, not attempted here)
+or picking a different high-degree family known to keep only one
+complex pair -- not investigated further this session.

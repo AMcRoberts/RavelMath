@@ -30,6 +30,14 @@ int pisot_classify_3x3(const long long M[3][3], pisot_info_t* out);
  * Pisot.  Same conventions as pisot_classify_3x3. */
 int pisot_classify_4x4(const long long M[4][4], pisot_info_t* out);
 
+/* Classify an arbitrary-degree (1..15) monic integer polynomial
+ * directly from coefficients (low-to-high, coeffs[0..degree-1]; the
+ * leading coeffs[degree]=1 is implicit and not included). Rigorous
+ * for any degree, but returns 0 (failure, not a guess) whenever the
+ * polynomial has more than one complex-conjugate pair -- see the
+ * comment at pisot_classify_degree_n's definition in exact_pisot.c. */
+int pisot_classify_degree_n(const long long* coeffs, int degree, pisot_info_t* out);
+
 /* Render a rational num/den as a decimal string (10 digits past the
  * decimal point).  `buf` must be at least 64 bytes. */
 void mpq_class_str(char* buf, int buf_size,
