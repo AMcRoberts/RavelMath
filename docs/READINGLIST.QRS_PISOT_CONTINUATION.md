@@ -336,3 +336,22 @@ compatibility for a SPECIFIC pair within a given substitution.
 Next: (1) finish the rigorous proof of the gcd-obstruction, handling the
 mid-chain-cutoff case explicitly; (2) extend beyond single-junction to see
 whether an analogous obstruction exists for multi-junction substitutions.
+
+### 2026-08-06 (PC session, final stretch) — gcd-obstruction proven, extends to multi-junction unchanged
+
+Closed both open items from the previous entry in one proof: d + dist(terminal)
+≡ 0 (mod g) holds by induction (base case, clean-edge case, and the
+previously-missing mid-chain-cutoff case, all worked through explicitly),
+where g = gcd of every jump size across the WHOLE junction graph. The
+clean-edge induction step never depends on whether an edge stays at one
+junction or crosses to a different one -- so the multi-junction case falls
+out for free, no separate argument needed. Verified the invariant itself
+(not just its consequence) against a genuine multi-junction gcd=2 example
+under an explicit memory/time cap (10GB, 30s) -- small state counts by
+design, since this checks an exact identity, not a search. See Finding 26,
+include/ravel/proof/coincidence_gcd_obstruction_theorem.hpp.
+
+What remains open, honestly: the CONVERSE (every compatible-gap pair
+eventually coincides) is still empirical, not proven. That's the next
+real target if this thread gets picked up again -- likely needs a
+genuinely different argument (existence, not impossibility).
