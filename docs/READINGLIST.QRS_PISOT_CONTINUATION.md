@@ -382,3 +382,19 @@ search, landing at K=gap+10 -- an unexplained but suggestively constant
 offset). The full converse is still open; next angle if this gets picked
 up again is probably explaining that +10 offset, which smells like a
 second, nonzero-landmark loop whose contribution eventually cancels.
+
+### 2026-08-06 (PC session, task 4 pass) — Finding 6.5's unimodularity hypothesis refuted
+
+Tested the hedge from Finding 6.5 directly (did sigma_{0,2}'s
+non-termination correlate with being non-unimodular?) with a fresh
+6-vs-6 sample of small cubic Pisot candidates. Caught a real bug first
+(a negative-real-root false positive in the Pisot filter -- fixed by
+requiring the dominant root be real and >1, not just largest modulus)
+then re-ran clean: 6/6 unimodular and 6/6 non-unimodular candidates all
+terminate. Unimodularity is refuted as the distinguishing factor.
+sigma_{0,2} itself, re-run to 2500 digits at 3000-dps, is still
+UNRESOLVED -- no visible period, and pushed no further given rounding
+risk starts to matter around that budget. See Finding 28,
+python/beta_expansion_unimodularity_check.py. Task 4 (terminating vs.
+eventually-periodic characterization) stays open; this narrows what
+doesn't explain it rather than closing it.
