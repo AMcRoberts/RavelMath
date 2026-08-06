@@ -1870,3 +1870,55 @@ identical to it) rather than an open-ended search. No bound, no
 closed form, and no proof that a collision always eventually occurs
 is established here — this is the reduction, handed forward as the
 concrete next-session starting point, not the resolution.
+
+## Finding 23 — the walk-realizability layer closed exactly for the single-junction class: coincidence reduces to a verified composition model
+
+**Status: EXACT, verified against brute force with zero discrepancies
+(one real implementation bug found and fixed via that same
+cross-check). Closes the second layer of the Diophantine reduction
+(Finding 22) for a precisely-named structural class.**
+`include/ravel/proof/single_junction_coincidence_composition.hpp`,
+`tests/single_junction_coincidence_composition_test.cpp`.
+
+Finding 22 reduced coincidence to a linear-algebra question (do two
+subset-sums of an integer vector's orbit under a matrix collide) but
+left open which subsets are actually *realizable* as genuine walks.
+Tried the natural shortcut first: Cayley-Hamilton on the incidence
+matrix gives universal, v0-independent relations for free whenever the
+minimal polynomial has all coefficients in `{-1,0,1}` — true here,
+`x^3-x-1` (the plastic number's own minimal polynomial), giving
+`M^3 = M + I` exactly. Checked whether this directly produces a short
+coincidence witness: it does NOT. The predicted landmark-depth pattern
+`{2,1}` is combinatorially unreachable — after a landmark at depth 2,
+the deterministic chain (`2->0`) forces the walk straight to depth 0,
+skipping depth 1 entirely, so that specific exponent pair can never
+co-occur no matter how the walk is built. The linear algebra says a
+relation *can* exist abstractly; a separate, independent combinatorial
+constraint governs which relations are actually *walked*.
+
+**That second layer is now closed exactly** for substitutions with one
+junction letter (image length >= 2) and every other letter forming a
+deterministic single-successor chain back to it (`sigma_{0,1}`'s
+exact shape). The achievable landmark-depth-sets are exactly the
+compositions of `(depth - run_in)` into the junction's own "jump
+sizes" (one per child index: `1 + deterministic-chain-length-back-to-
+junction`), where a jump landing on a nonzero-index child commits a
+landmark event the instant it is chosen — even if the walk runs out of
+depth before completing the rest of that jump's deterministic tail.
+Verified exact against full brute-force Dumont-Thomas enumeration
+across every depth 1-8 and all three starting letters, zero
+discrepancies, after fixing a real bug the cross-check itself caught:
+the first version silently dropped landmark events made right before
+the walk ran out of depth, because it skipped the whole branch instead
+of recording the leaf directly.
+
+**Consequence**: for this class, the coincidence question is no longer
+"why does this eventually happen" — it is a completely mechanical
+composition-counting question (structurally the same family as
+counting compositions of an integer into fixed part sizes, e.g. the
+`{2,3}` case here is exactly the classical Padovan/Perrin-style
+counting sequence), directly computable without brute-force word
+enumeration. **Not yet extended**: substitutions with more than one
+junction letter, where jumps from different junctions interleave and
+the single composition-sequence picture no longer applies on its own
+— the next concrete target.
