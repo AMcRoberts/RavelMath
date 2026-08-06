@@ -1975,3 +1975,85 @@ complexity (multiple junctions, larger alphabets). It complements,
 rather than replaces, Finding 23's explicit walk-realizability
 construction -- recovering the polynomial is not the same as knowing
 which of its implied relations are actually walk-realizable.
+
+## Finding 25 — an exact coincidence closure (built on a new shared generic-closure contract), and a real gcd-obstruction discovered with it
+
+**Status: the closure tool is exact and verified (three independent
+cross-checks against the depth-12 ground truth). The gcd-obstruction
+is a strong, cleanly-confirmed empirical finding with a proposed
+mechanism -- NOT yet a completed rigorous proof; stated honestly as
+such below.**
+`include/ravel/generic_memoized_dag_closure.hpp`,
+`include/ravel/proof/coincidence_closure.hpp`,
+`tests/coincidence_closure_test.cpp`,
+`tests/coincidence_gcd_obstruction_test.cpp`.
+
+**The tool.** Replaces raw word materialization (which scales with the
+exponentially-growing word length, and stalled past depth 30 on the
+sparser variants explored tonight) with an exact, deduped closure over
+`(terminal_letter, exact_landmark_vector)` states -- the same
+architectural pattern `corona.hpp` already uses for contact-boundary
+closure, applied here to coincidence instead. The key fact making this
+well-founded: the weight `M^{depth_here-1}` applied to a landmark event
+depends only on the REMAINING depth at the moment of the choice, not
+on the eventual total K, so `reachable(junction, remaining_depth)` is
+computable by plain memoized recursion over a genuinely acyclic state
+space (remaining_depth strictly decreases). Factored the acyclic-DAG-
+memoization contract itself into a new shared header,
+`generic_memoized_dag_closure.hpp` -- deliberately NOT retrofitted onto
+`corona.hpp` or the property-(F) zero-expansion closure, both of which
+have genuinely different shapes (cyclic state spaces, round-level
+pruning) that would cost real correctness risk on tested code for no
+functional gain; the new coincidence closure's state space really is a
+DAG and fits the shared base honestly.
+
+A real bug caught and fixed while building this, the same way every
+other bug tonight was caught -- by re-deriving carefully rather than
+trusting the first draft: the initial version, on a mid-chain depth
+cutoff, used the edge's eventual target junction as the terminal
+letter. That's wrong whenever the chain has length > 1 and the walk
+runs out of depth before reaching the end of it -- the terminal is
+whichever letter the chain has actually reached, not where it was
+headed. Fixed by storing the full chain on each edge and indexing
+directly into it.
+
+**Verified three independent ways** against the already-established
+ground truth (`sigma_{0,1}`'s pair (0,2), brute-force materialization
+found depth 12): the closure reproduces K=12 directly; the gap-based
+sweep (below) reproduces K=12 again for gap=1 in the `gcd=1` case;
+and the earlier `single_check`/`sparse_closure` exploration's
+qualitative behavior (fast growth, no internal collisions) matches
+what the closure predicts analytically from the substitution's own
+eigenvalue.
+
+**The gcd-obstruction finding.** Reduced every coincidence pair to a
+single number: the "gap" (the difference in deterministic run-in
+length each starting letter needs before its first junction visit).
+Swept gaps 1 through 7-8 on two structurally different single-junction
+substitutions: one with junction jump sizes `{4,2}` (`gcd=2`), one with
+`{3,2}` (`gcd=1`). Result, exact and clean: in the `gcd=2` case, EVERY
+even gap resolves quickly (K=4,6,10 for gaps 2,4,6) and EVERY odd gap
+fails to resolve at all within a depth-40 search (gaps 1,3,5,7); in
+the `gcd=1` case, EVERY tested gap resolves (within depth 17), with no
+obstruction of any kind. **Proposed mechanism** (plausible, not yet a
+completed proof): since every junction jump size is divisible by `g =
+gcd(jump sizes)`, the sequence of junction-visit depths reachable from
+a fixed starting depth K stays congruent to K mod g throughout the
+entire recursive walk structure -- suggesting a residue-class
+obstruction that a pair with an incompatible gap can never cross. The
+part not yet nailed down rigorously is the mid-chain-cutoff case
+(a walk that runs out of depth partway through a jump, landing at some
+arbitrary intermediate letter, not necessarily preserving the same mod-g
+residue in an obviously provable way) -- the empirical evidence across
+both tested cases is airtight, but a full proof accounting for that
+case explicitly has not been written down. Flagged honestly as the
+next concrete step, not glossed over as already closed.
+
+**Consequence**: this reframes what "hard" means for the coincidence
+question yet again. It is not primarily about how sparse the branching
+structure is (Finding 23's original framing) -- it is about whether a
+specific pair's gap is compatible with the junction's own jump-size
+arithmetic. A substitution can have a pair that is provably impossible
+to ever coincide (an incompatible gap under a `gcd>1` structure) sitting
+right next to a pair that resolves in single digits, within the exact
+same substitution.

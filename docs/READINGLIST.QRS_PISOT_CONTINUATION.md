@@ -313,3 +313,26 @@ find a NEW multi-junction hard-coincidence example (the search for a
 good test case for Finding 23's generalization is still open; several
 candidates tried tonight were either constant-factor-trivial or not
 genuinely Pisot).
+
+### 2026-08-06 (PC session, very very late) — exact coincidence closure built, a real gcd-obstruction found with it
+
+Built an exact, deduped memoized closure (ravel/proof/coincidence_closure.hpp,
+on a new shared ravel/generic_memoized_dag_closure.hpp contract, matching
+corona.hpp's own architectural pattern) replacing raw word materialization,
+which had stalled past depth 30 on the sparser variants. Used it -- not more
+raw searching -- to actually explain the sparse-chain behavior: reduced
+every coincidence pair to a single "gap" number (difference in
+deterministic run-in length), and found a clean, sharp pattern -- when the
+junction's own jump sizes share a common factor g>1, pairs whose gap isn't
+divisible by g NEVER coincide (checked exhaustively to depth 40, zero
+exceptions across two structurally different substitutions), while
+compatible-gap pairs resolve quickly. Proposed mechanism (residue-class
+obstruction from jump-size divisibility) is strong and well-supported but
+not yet a completed rigorous proof -- the mid-chain-cutoff case needs an
+explicit argument. See Finding 25. This reframes "which pairs are hard" a
+second time tonight: not about overall sparsity, but about gap-vs-gcd
+compatibility for a SPECIFIC pair within a given substitution.
+
+Next: (1) finish the rigorous proof of the gcd-obstruction, handling the
+mid-chain-cutoff case explicitly; (2) extend beyond single-junction to see
+whether an analogous obstruction exists for multi-junction substitutions.
