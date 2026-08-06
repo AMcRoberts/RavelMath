@@ -2226,3 +2226,64 @@ is now ruled out as a cheap classifier. sigma_{0,2} remains the one
 concrete open outlier in this project's data, with no known correlate
 yet. The honest characterization (terminating vs. eventually-periodic,
 and why) remains open.
+
+## Finding 29 — Task 3 pivoted: Pisot numbers have genuine constructive accumulation points at every integer >= 2, but the between-integer structure remains open
+
+**Status: the accumulation-point half is exact and provable (a
+direct consequence of a well-known family, verified computationally
+here at degrees 3-4 via the certified `pisot_classify_3x3/4x4`
+classifier, not newly discovered). The "deep vs. shallow region"
+density claim is only weakly suggested by a small sample -- reported
+honestly as inconclusive, not oversold.**
+
+AM correctly pointed out that Task 3 ("targeted search for
+undiscovered Pisot numbers in (1.65, 2.41)") assumed a false premise
+-- Pisot numbers are not confined to a finite range -- and asked a
+better-posed structural question instead: is there a "mountain range"
+shape to where Pisot numbers accumulate (deep/dense regions vs.
+shallow/sparse ones), and can an arbitrary target root be matched to
+an actual nearby Pisot number.
+
+**Constructive accumulation at every integer (proved, not just
+observed).** The "a-bonacci" family (charpoly
+`x^n - a(x^{n-1}+...+x+1)`, generalizing Tribonacci/Tetrabonacci's
+`a=1` case to any positive integer weight `a`) has dominant root
+increasing monotonically in `n`, converging to exactly `a+1` from
+below. Verified exactly (via `pisot_classify_3x3`/`_4x4`, no floating
+point in the classification) for `a=1..5`, comparing `n=3` to `n=4`:
+every case is Pisot, strictly increasing toward `a+1`, still below it.
+So every integer `>= 2` is a genuine Pisot accumulation point,
+approached by an explicit, arbitrary-degree family -- a "peak" of
+unbounded depth in AM's image (arbitrarily many distinct-degree Pisot
+numbers in any neighborhood of `a+1`, one per `n`, for every `a`).
+
+**A practical tool, honestly bounded.** `nearest_pisot_near_integer()`
+in `app/probe_pisot_accumulation_structure.cpp` returns an actual
+verified Pisot number near a target close to an integer, using the
+best of the `n=3` and `n=4` a-bonacci candidates. Tested on four
+targets (1.9, 3.05, 4.5, 2.99), errors ranging ~0.016 to ~0.47 (the
+`4.5` case is genuinely a "valley" -- equidistant from two peaks,
+where this family alone doesn't help). Closing the gap arbitrarily
+needs `pisot_classify` wired up at higher degree (not built here) to
+push `n` further; this tool caps out at whatever `n=4` gives.
+
+**Density claim (the "shallow" half), reported honestly as weak.** A
+dense small-coefficient cubic sweep (`x^3-px^2-qx-r`, `p in [0,4]`,
+`q,r in [-4,4]`, 82 distinct Pisot roots found in `(1,5)`) shows a
+mild lean toward more hits near integers than near midpoints (13 vs.
+10 near 4/3.5, 7 vs. 4 near 3/2.5) but near 2 the counts are
+statistically meaningless (1 vs. 1). This is NOT strong evidence of a
+real "valley" structure at this sample size and coefficient bound --
+it is reported as suggestive at best, and should not be cited as a
+confirmed density result. A genuine density argument would need
+either a much larger coefficient/degree sweep or an analytic argument
+(the classical literature -- Dufresnoy-Pisot 1978's derived-set
+analysis of the Pisot numbers -- goes considerably further than
+anything reproduced here, and was not consulted for this finding
+beyond the accumulation-point fact already well known from it).
+
+**What this means for Task 3**: closes it as originally scoped (the
+fixed-range search doesn't make sense) and replaces it with a better
+question that is now partially answered -- accumulation is real and
+constructive at integers; whether a comparably clean structure exists
+between them is open.
