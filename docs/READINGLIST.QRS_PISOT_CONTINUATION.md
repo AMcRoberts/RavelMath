@@ -398,3 +398,25 @@ risk starts to matter around that budget. See Finding 28,
 python/beta_expansion_unimodularity_check.py. Task 4 (terminating vs.
 eventually-periodic characterization) stays open; this narrows what
 doesn't explain it rather than closing it.
+
+### 2026-08-06 (PC session, task 3 pivot) — accumulation points, not a fixed-range search
+
+AM correctly flagged that Task 3's premise was wrong: Pisot numbers
+aren't confined to a finite range, so searching a fixed window doesn't
+make sense. Asked instead whether there's a "mountain range" structure
+to where they accumulate -- deep (dense) vs shallow (sparse) regions --
+and whether an arbitrary target can be matched to a real nearby Pisot
+number. Answered the constructive half exactly: the a-bonacci family
+(x^n - a(x^{n-1}+...+1)) converges monotonically to a+1 from below for
+every positive integer a, verified via the existing certified
+pisot_classify_3x3/4x4 (no floating point in the classification step),
+so every integer >=2 is a genuine, arbitrarily-deep accumulation point.
+Built a practical (but honestly capped at n=4) nearest-Pisot tool from
+this. Did NOT oversell the "valley" half -- a small dense cubic sweep
+showed only a mild, not statistically compelling, lean toward more
+hits near integers. See Finding 29,
+app/probe_pisot_accumulation_structure.cpp. Task 3 closed as
+re-scoped; the between-integer density question is a real open thread
+if this gets picked up again, likely needs either a bigger sweep or an
+actual read of Dufresnoy-Pisot's derived-set analysis rather than
+rediscovering it computationally.
