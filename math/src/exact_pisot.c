@@ -732,7 +732,23 @@ static int pisot_classify_poly(const long long *coeffs, int degree,
          * is_pisot=1. Set it only after the complex-pair check, and only
          * when there is no complex pair or its modulus is confirmed < 1. */
 
-        if (n_complex > 0) {
+        if (n_complex > 1) {
+            /* The running-product trick below bounds beta * prod(real
+             * secondaries), and hence the COMBINED modulus-squared
+             * product of ALL complex pairs together via |det| -- it does
+             * NOT bound each pair's modulus individually. With exactly
+             * one complex pair that combined bound IS the pair's own
+             * bound, which is what pisot_classify_3x3/4x4 rely on (degree
+             * <=4 has at most one complex pair, always). For degree>=5
+             * with two or more complex pairs this method cannot certify
+             * Pisot-ness at all (a combined product < 1 does not imply
+             * each factor < 1) -- refuse rather than silently return a
+             * possibly-wrong answer, matching this project's standing
+             * preference for a loud failure over a wrong one.
+             */
+            ok = 0;
+        }
+        if (n_complex > 0 && ok) {
             /* For Pisot, |complex|^2 < 1. |det| = beta * prod(|real secondary
              * roots|) * |complex|^2, so it suffices to exhibit a RIGOROUS
              * LOWER bound L on beta * prod(|real secondary roots|) with
@@ -840,6 +856,23 @@ int pisot_classify_4x4(const long long M[4][4], pisot_info_t* out) {
     long long coeffs[5];
     char_poly_4x4(M, coeffs);
     return pisot_classify_poly(coeffs, 4, out);
+}
+
+/* Classify an arbitrary-degree (1..15, poly_t's internal capacity)
+ * monic integer polynomial directly from its coefficients (low-to-
+ * high, coeffs[degree] is implicitly 1 and NOT included -- pass only
+ * coeffs[0..degree-1]). Exposes the same certified logic
+ * pisot_classify_3x3/4x4 use, generalized: rigorous for any degree,
+ * but returns failure (0) rather than a guess whenever the
+ * polynomial has more than one complex-conjugate pair, since the
+ * modulus bound this method uses only certifies the COMBINED product
+ * of all complex pairs, not each pair individually (see the comment
+ * at the n_complex>1 check inside pisot_classify_poly). Degree <=4
+ * never hits that limit (at most one complex pair is possible), so
+ * this is a strict generalization for those degrees and a partial,
+ * honestly-scoped one beyond. */
+int pisot_classify_degree_n(const long long* coeffs, int degree, pisot_info_t* out) {
+    return pisot_classify_poly(coeffs, degree, out);
 }
 
 /* =================================================================
