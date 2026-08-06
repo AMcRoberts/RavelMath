@@ -1,0 +1,18 @@
+Round 81 validation
+===================
+
+New C++ test:
+  concrete operator Q/R majorant PASS
+
+Covered cases:
+  - exact norm derivation for permutation, sign, shear, and identity fibres
+  - exact assembly of the twisted block transfer
+  - exact Q/R weighted majorant construction
+  - universal block-power induction schema
+  - exact replay through power 5 for a 2-vertex/2-fibre example
+  - exact replay through power 6 for scalar [2]
+  - malformed fibre rejection
+
+Lean status:
+  emitted: lean/generated/concrete_operator_qr_spectral_closure.lean
+  kernel check unavailable: no Lean/Mathlib toolchain in archive/environment

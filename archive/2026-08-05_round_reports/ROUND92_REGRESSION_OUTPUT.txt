@@ -1,0 +1,59 @@
+D=2 m=1 boundary=6 universal=4 macros=9 phase=0
+D=3 m=1 boundary=29 universal=9 macros=25 phase=0
+D=4 m=1 boundary=113 universal=16 macros=49 phase=0
+D=2 m=2 boundary=0 universal=8 macros=16 phase=0
+D=3 m=2 boundary=40 universal=21 macros=49 phase=12
+D=4 m=2 boundary=128 universal=40 macros=100 phase=46
+D=2 m=3 boundary=0 universal=18 macros=25 phase=0
+D=3 m=3 boundary=64 universal=53 macros=81 phase=36
+D=4 m=3 boundary=489 universal=106 macros=169 phase=317
+D=2 m=4 boundary=0 universal=36 macros=36 phase=0
+D=3 m=4 boundary=202 universal=113 macros=121 phase=154
+D=4 m=4 boundary=1164 universal=232 macros=256 phase=927
+D=2 m=5 boundary=0 universal=64 macros=49 phase=0
+D=3 m=5 boundary=327 universal=209 macros=169 phase=277
+D=4 m=5 boundary=2842 universal=436 macros=361 phase=2458
+D=2 m=6 boundary=0 universal=104 macros=64 phase=0
+D=3 m=6 boundary=620 universal=349 macros=225 phase=552
+D=4 m=6 boundary=5690 universal=736 macros=484 phase=5136
+D=5 m=1 boundary=382 universal=25 macros=81 phase=0
+D=5 m=2 boundary=753 universal=65 macros=169 phase=279
+D=5 m=3 boundary=3467 universal=177 macros=289 phase=2288
+generalized multinacci primitive intertwiner PASS
+generalized multinacci general-m intertwiner PASS
+D=2 m=1 states=6 edges=6 words=6
+D=3 m=1 states=29 edges=41 words=41
+D=4 m=1 states=113 edges=189 words=189
+D=2 m=2 states=0 edges=0 words=0
+D=3 m=2 states=28 edges=47 words=47
+D=4 m=2 states=82 edges=185 words=185
+D=2 m=3 states=0 edges=0 words=0
+D=3 m=3 states=28 edges=59 words=59
+D=4 m=3 states=172 edges=543 words=543
+D=2 m=4 states=0 edges=0 words=0
+D=3 m=4 states=48 edges=150 words=150
+D=4 m=4 states=237 edges=967 words=967
+D=2 m=5 states=0 edges=0 words=0
+D=3 m=5 states=50 edges=184 words=184
+D=4 m=5 states=384 edges=1956 words=1956
+D=2 m=6 states=0 edges=0 words=0
+D=3 m=6 states=68 edges=318 words=318
+D=4 m=6 states=554 edges=3301 words=3301
+D=5 m=1 states=382 edges=688 words=688
+D=5 m=2 states=474 edges=1281 words=1281
+D=5 m=3 states=1179 edges=4310 words=4310
+generalized multinacci admissible subgrammar PASS
+D=2 m=1 states=6 macro=6 expanded=6 roof=1 voltage(-,0,+)=2,2,2
+D=3 m=1 states=29 macro=41 expanded=29 roof=1 voltage(-,0,+)=11,19,11
+D=4 m=1 states=113 macro=189 expanded=113 roof=1 voltage(-,0,+)=48,93,48
+D=5 m=1 states=382 macro=688 expanded=382 roof=1 voltage(-,0,+)=171,345,172
+D=2 m=2 states=0 macro=0 expanded=0 roof=0 voltage(-,0,+)=0,0,0
+D=3 m=2 states=28 macro=47 expanded=40 roof=2 voltage(-,0,+)=20,7,20
+D=4 m=2 states=82 macro=185 expanded=128 roof=2 voltage(-,0,+)=74,40,71
+D=5 m=2 states=474 macro=1281 expanded=753 roof=2 voltage(-,0,+)=446,395,440
+D=2 m=3 states=0 macro=0 expanded=0 roof=0 voltage(-,0,+)=0,0,0
+D=3 m=3 states=28 macro=59 expanded=64 roof=3 voltage(-,0,+)=25,9,25
+D=4 m=3 states=172 macro=543 expanded=489 roof=3 voltage(-,0,+)=226,97,220
+D=5 m=3 states=1179 macro=4310 expanded=3467 roof=3 voltage(-,0,+)=1690,958,1662
+generalized multinacci signed renewal twist PASS
+finite positive grammar majorant PASS

@@ -1,0 +1,27 @@
+Round 95 focused validation
+===========================
+
+PASS: cyclotomic_obstruction_test
+  - exact Phi_1, Phi_2, Phi_3, Phi_4, Phi_6, Phi_12 construction
+  - exact multi-factor extraction and reconstruction
+  - polynomial-level Z/2 character-sector witness
+  - matrix-level Z/2 group-ring sector evaluation via exact Faddeev-LeVerrier
+  - unweighted directed period 4
+  - weighted renewal period 6
+  - nearest-left profile Phi_2 detection through D=64
+
+PASS: coefficient_profile_parity_obstruction_test
+  - nearest-left profile has Phi_2 iff D is even through D=256
+  - result now delegates to the general cyclotomic certificate
+
+PASS: coefficient_profile_renewal_twist_test
+  - left, n-bonacci, interior, Perry, and right-outside profiles for D=3,4,5
+
+Lean:
+  - lean/generated/cyclotomic_obstruction.lean emitted
+  - no sorry
+  - not kernel-run: configured Lean/Mathlib environment absent
+
+Environment note:
+  Makefile evaluation prints the existing missing lua5.4 pkg-config warning.
+  The focused C++ tests do not depend on Lua and passed.

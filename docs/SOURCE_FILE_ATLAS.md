@@ -87,6 +87,25 @@ Most `ravel` headers are header-oriented; `src/rauzy_fractal.cpp` and
 | `math/tests/test_qbeta.cpp` | Quotient-ring arithmetic. |
 | `math/tests/test_sturm.cpp` | Root counts, isolation, and algebraic sign tests. |
 
+## Reflective proof system
+
+For invocation and operating procedure, read `MATHEMATICAL_API.md` → `Reflective proof engine`. The table below records ownership only.
+
+| File | Responsibility |
+|---|---|
+| `math/include/math/proof_reflection.hpp` | Optional scoped reflection, typed semantic nodes, provenance DAG, and structural certificates produced by ordinary math-library operations. |
+| `math/include/math/poly_matrix.hpp` | Symbolic polynomial-matrix families, exact matrix operations, and the reflected structures used by campaign generation. |
+| `include/ravel/proof/reflection_declaration.hpp` | Closed reader for the Lua reflection activation boundary. |
+| `include/ravel/proof/proof_campaign_engine.hpp` | Campaign operation vocabulary, typed specifications, task graph, executor, closed proof artifacts, and campaign Lean serialization. |
+| `include/ravel/proof/reflective_lean_renderer.hpp` | Legacy trace-oriented renderer; not the closure path for executable campaigns. |
+| `app/nbonacci_charmpoly_proof_general.cpp` | Thin universal-`n` integration trigger; it must not own proof derivations. |
+| `lua/lua_src/ravel/proof/nbonacci_charpoly_schema.lua` | Lua activation and campaign-selection data. |
+| `lean/Ravel/Matrix/EraseIndex.lean` | Shared Lean support for erased row/column index transport. |
+| `scripts/safe_lean_check.sh` | Disposable-workspace Lean check that protects ridealong dependencies. |
+| `tests/proof_reflection_test.cpp` | Reflection-path regression. |
+| `tests/proof_campaign_engine_test.cpp` | Campaign scheduling and proof-operation regression. |
+| `tests/qmatrix_typed_ir_test.cpp` | Typed matrix-family and erased-index-transform regression. |
+
 ## Spectral, substitution, and boundary library
 
 ### Core substitution and geometry headers
@@ -105,9 +124,10 @@ Most `ravel` headers are header-oriented; `src/rauzy_fractal.cpp` and
 | `include/ravel/cyclotomic.hpp` | Arithmetic and planar embedding for the rank-four twelfth-cyclotomic coordinate ring. |
 | `include/ravel/faces.hpp` | Cube-face intervals and intersection dimension tests. |
 | `include/ravel/ambient_graph.hpp` | Parent decompositions, exact lattice solves, and type-1/type-2 ambient-graph edges. |
-| `include/ravel/d_cont_check.hpp` | Geometric construction and verification of the finite contact digit set `D_cont`. |
-| `include/ravel/corona.hpp` | Simple nodes `SNode<d>`, signed contacts, corona composition, and Red pruning. |
+| `include/ravel/d_cont_check.hpp` | Exact face-projected construction and verification of `D_cont`; projected enumeration is default, with the historical box scan available in legacy mode. |
+| `include/ravel/corona.hpp` | Simple nodes `SNode<d>`, signed contacts, local/inverse corona composition, request-driven `CoronaSurface`, projected Algorithm 2, and Red pruning. |
 | `include/ravel/contact_boundary.hpp` | End-to-end `D_cont -> precontact -> C -> ±C -> G_B` computation and report. |
+| `include/ravel/corona_projection.hpp` | Legacy compatibility views and serialization for already materialized corona graphs; new consumers should prefer `CoronaSurface` in `corona.hpp`. |
 | `include/ravel/rauzy_fractal.hpp` | Contracting-space point generation and finite Rauzy-fractal diagnostics. |
 
 ### Symbolic dynamics and graph headers
@@ -122,7 +142,8 @@ Most `ravel` headers are header-oriented; `src/rauzy_fractal.cpp` and
 | `include/ravel/bp_dump_analysis.hpp` | Bounded sparse analysis of serialized balanced-pair core data. |
 | `include/ravel/return_substitution.hpp` | Return-word discovery, factorization, induced substitution, and return-phase system. |
 | `include/ravel/return_contact_lift.hpp` | Reachable product of a contact graph with a prefix/return-phase system. |
-| `include/ravel/substitution_neighborhood.hpp` | Adjacent unequal-letter swaps and incidence-matrix/Parikh-fiber comparison. |
+| `include/ravel/substitution_neighborhood.hpp` | Generic adjacent unequal-letter swaps and incidence-matrix/Parikh-fiber comparison. |
+| `include/ravel/family_closed_forms.hpp` | Closed-form Class-II and n-bonacci adjacent-swap counts plus executable certificates against the generic generator. |
 | `include/ravel/pisot_substitution_properties.hpp` | Frequencies, common factors/finals, dual substitution, return words, rotation data, complexity, and carry sequences. |
 | `include/ravel/survey.hpp` | Enumerated/random substitution surveys, spectral classification, and Perron-frequency estimates. |
 
@@ -432,7 +453,7 @@ top-level `Makefile`.
 |---|---|
 | `ambient_graph_test.cpp`, `corona_test.cpp`, `d_cont_check_test.cpp`, `contact_boundary_test.cpp` | Ambient edges, corona/Red, contact digits, and full boundary construction. |
 | `balanced_pair` coverage through `contact_boundary_test.cpp`, plus `bp_dump_analysis_test.cpp` | Balanced-pair radius and bounded serialized-core analysis. |
-| `class_ii_boundary_family_test.cpp`, `class_ii_neighbor_d_matrix_test.cpp`, `substitution_neighborhood_test.cpp`, `family_of_families_test.cpp` | Class-II catalogues, affine matrices, adjacent-swap fibers, and family relations. |
+| `class_ii_boundary_family_test.cpp`, `class_ii_neighbor_d_matrix_test.cpp`, `substitution_neighborhood_test.cpp`, `family_of_families_test.cpp`, `family_closed_forms_test.cpp` | Class-II catalogues, affine matrices, adjacent-swap fibers, and family relations. |
 | `graph_divisor_test.cpp`, `gb_bp_hop_rule_test.cpp`, `involution_helpers_test.cpp`, `weighted_digraph_file_test.cpp` | Quotients, SCCs, free involutions, hop rules, and graph parsing. |
 | `return_substitution_test.cpp`, `return_contact_lift_test.cpp` | Return words, phase systems, and labelled product graph. |
 | `dual_test.cpp`, `dual_format_test.cpp`, `spectral_dual_test.cpp`, `spectral_general_test.cpp` | Automatic differentiation, presentation, and spectral paths. |
@@ -469,3 +490,33 @@ executable code.
   `lua/lua_src/ravel/tests/`.
 - Formalize a stable mathematical statement under `lean/`, and enroll
   it in `make lean-check` only when it is `sorry`-free.
+
+### Adjacent twisted renewal composition
+
+- `include/ravel/proof/adjacent_twisted_renewal.hpp`
+  - reusable composite certificate joining competitor macro paths, predicted-core
+    twisted transport, shared role embedding, Bellman profile commutation, and
+    inherited strict renewal;
+  - emits named obstruction evidence and standalone Lean theorem text.
+- `app/adjacent_competitor_transport.cpp`
+  - derives the concrete graph/path/profile premises from projected corona
+    images and invokes the composite operation;
+  - `ADJ_RENEWAL_EXPLAIN` is the audit-facing proof narrative.
+
+### Recurrent-family exhaustion
+- `include/ravel/proof/recurrent_family_exhaustion.hpp` — executable finite
+  recurrent-SCC family classifier and the separate adjacent-dimensional
+  induction boundary.
+- `tests/recurrent_family_exhaustion_test.cpp` — proof-operation contract test.
+- `tests/recurrent_family_exhaustion_real_test.cpp` — independent n=6
+  truth-graph exhaustion replay.
+- `docs/RECURRENT_FAMILY_EXHAUSTION_2026-08-04.md` — theorem status and the
+  remaining rejected-boundary no-return seam.
+
+## Generalized multinacci unit family
+
+| File | Responsibility |
+|---|---|
+| `include/ravel/generalized_multinacci.hpp` | Reusable construction of the unimodular confluent-Parry/generalized-multinacci rule `sigma(i)=0^m(i+1)`, its exact integer polynomial, and a Perron-root approximation for pipeline metadata. |
+| `app/generalized_multinacci_unit_probe.cpp` | Reuses the full balanced-pair/contact-boundary dominance pipeline on arbitrary `(D,m)` and reports the first `m=2` cases. |
+| `tests/generalized_multinacci_family_test.cpp` | Verifies the `m=1` n-bonacci specialization, `m=2` rule, exact polynomial, and the silver-ratio base case. |

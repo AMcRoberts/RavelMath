@@ -171,7 +171,8 @@ std::string poly_as_lean_str(const PolyZ& p) {
             terms.push_back("Polynomial.C (" + std::to_string(c) + " : ℤ)");
         } else {
             // Coefficient * X^k: Polynomial.C c * X^k
-            terms.push_back("Polynomial.C (" + std::to_string(c) + " : ℤ) * " + x_power(k));
+            std::string c_expr = "Polynomial.C (" + std::to_string(c) + " : ℤ)";
+            terms.push_back(c_expr + " * (" + x_power(k) + ")");
         }
     }
     if (terms.empty()) return "0";
@@ -312,19 +313,21 @@ int main(int argc, char** argv) {
             f << "(i.e. the result of `det_poly_matrix` applied to\n";
             f << "`r_matrix_for_n n`).  At n=2..8, this is `(-1)^(n-1)`. -/\n";
             f << "noncomputable def rMatrix_det_at (n : ℕ) : Polynomial ℤ :=\n";
+            f << "  match n with\n";
             for (std::size_t n = n_min; n <= n_max; ++n) {
-                f << "| n == " << n << " => " << poly_as_lean_str(results[n].r_det) << "\n";
+                f << "  | " << n << " => " << poly_as_lean_str(results[n].r_det) << "\n";
             }
-            f << "  | _ => 0  -- default; only n=2..8 verified by C++\n\n";
+            f << "  | _ => 0\n\n";
             f << "/-- The C++-computed det of the q-matrix at each n.\n";
             f << "The body is the C++ probe's symbolic output for the\n";
             f << "actual qMatrix det.  At n=2..8, this is the geometric\n";
             f << "sum `1 + X + ... + X^(n-1)`. -/\n";
             f << "noncomputable def qMatrix_det_at (n : ℕ) : Polynomial ℤ :=\n";
+            f << "  match n with\n";
             for (std::size_t n = n_min; n <= n_max; ++n) {
-                f << "| n == " << n << " => " << poly_as_lean_str(results[n].q_det) << "\n";
+                f << "  | " << n << " => " << poly_as_lean_str(results[n].q_det) << "\n";
             }
-            f << "  | _ => 0  -- default; only n=2..8 verified by C++\n\n";
+            f << "  | _ => 0\n\n";
             // CHUNK 5: the cofactor examples.  Each one USES the
             // qMatrix piece (via qMatrix_det_at) and the rMatrix
             // piece (via rMatrix_det_at), and is verified by
@@ -351,11 +354,12 @@ int main(int argc, char** argv) {
                 // Int.  (-1)^n is either 1 (n even) or -1 (n odd).
                 std::string sign_str = (n % 2 == 0) ? "1" : "-1";
                 std::string cofactor_str = "Polynomial.X * (" + q_det_str
-                    + ") + Polynomial.C (" + sign_str
-                    + " : ℤ) * (" + r_det_str + ")";
+                    + ") + (Polynomial.C (" + sign_str
+                    + " : ℤ)) * (" + r_det_str + ")";
+                std::string rhs_str = charpoly_str;
                 f << "example : (" << cofactor_str
-                  << " : Polynomial ℤ) = (" << charpoly_str
-                  << " : Polynomial ℤ) := by ring\n";
+                  << " : Polynomial ℤ) = (" << rhs_str
+                  << " : Polynomial ℤ) := by norm_num [map_neg, Polynomial.C_mul]; ring\n";
             }
             f << "\nend RavelMath\n";
             std::printf("\nwrote %s\n", out_path.c_str());

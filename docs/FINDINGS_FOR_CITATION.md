@@ -531,8 +531,11 @@ per candidate) + `include/ravel/pisot_substitution_properties.hpp`
 etc., does not reimplement).
 
 Test set: Tribonacci (control) + σ_{a,1} a=0..5 + σ_{1,2} + σ_1 + σ_2.
-All 10 are unimodular Pisot (β > 1, all other eigenvalues < 1 in
-modulus). Properties computed per candidate:
+**Correction (Finding 16): this "all 10 are unimodular" claim is
+false — σ_{1,2} has `|det M|=2`, not 1.** Not consequential to the
+classification below (never dependent on unimodularity), but real and
+uncaught until Finding 16 ran the actual tiling check on this family.
+Properties computed per candidate:
 
 | Property | AR-exact (Tribonacci) | AR-partial (σ_{a,1} a≥1) | non-AR (σ_{0,1}) |
 |---|---|---|---|
@@ -1433,3 +1436,387 @@ under the cubic, it is the cubic's own defining relation restated in
 formalization: the positivity results should follow as near-immediate
 corollaries of a single one-line lemma (`b*(b-c)=c`) rather than
 needing a separate inequality chain per family.
+
+## Finding 16 — Finding 5's AR-partial/non-AR family run through the actual classical Pisot tiling check for the first time: 7/7 ESTABLISHED, plus a correction to Finding 5's own data
+
+**Status: NEW, empirically verified. All 7 unimodular-or-not members of
+Finding 5's AR-partial/non-AR test set satisfy strong coincidence and
+property (F) cleanly, zero exceptions. A real error in Finding 5's own
+table is corrected along the way.**
+
+Finding 5 tabulated 9 structural properties (A1/A2 involution, letter
+frequencies, orbit complexity, ...) for 10 unimodular Pisot
+substitutions to classify them as AR-exact / AR-partial / non-AR, for
+a *different* project-internal conjecture (`rho_nc = lambda(G_B)`).
+That tabulation never ran the classical Pisot tiling conjecture check
+itself (`adelic::check_strong_coincidence` / `adelic::check_property_f`,
+`include/adelic/coincidence_and_property_f.hpp`) on the AR-partial/
+non-AR members — only Tribonacci (already covered by citation, Barge
+2015/2018, as a beta-substitution) and sigma_1/sigma_2 (checked
+separately in `sweep_mismatches_property_f.cpp`) had ever gone through
+it. `app/probe_ar_family_strong_coincidence.cpp` closes that gap,
+running sigma_{0,1} (non-AR), sigma_{1,1}..sigma_{5,1} (AR-partial),
+and sigma_{1,2} through the real check directly.
+
+**Result: 7/7 ESTABLISHED** (strong coincidence HOLDS + property (F)
+HOLDS). Six of the seven are trivial to resolve — AR-partial resolves
+strong coincidence at depth 1 every time (a=1..5), and property (F)
+closes within a few thousand nodes. The non-AR case (sigma_{0,1})
+needs depth 13 for coincidence but still resolves cleanly, with
+property (F) closing at 205 nodes.
+
+**A real correction to Finding 5's own data, caught in the process**:
+Finding 5's table states "All 10 are unimodular Pisot (beta > 1, all
+other eigenvalues < 1 in modulus)". This is false for sigma_{1,2}:
+its incidence matrix has `|det|=2`, not 1. This was not a typo caught
+by inspection -- it surfaced because the first run of this probe
+supplied no p-adic bound (matching the "unimodular, archimedean-only
+suffices" assumption inherited from Finding 5), and property (F)
+correctly ran to the full 300000-node budget without closing --
+exactly the documented behavior for a non-unit substitution checked
+without its p-adic factor (`coincidence_and_property_f.hpp`'s own BUG
+2 note). Supplying the correct p-adic bound for `p=2` (the only prime
+dividing the determinant) resolves it immediately, at only 12 nodes.
+Finding 5's structural classification (AR-exact/AR-partial/non-AR) is
+unaffected by this correction -- it was never about unimodularity --
+but the "All 10 are unimodular" sentence in Finding 5 is wrong and
+should be read with this correction in mind.
+
+This is the empirical groundwork requested before attempting a
+structural (involution-style) proof of strong coincidence for the
+AR-partial/non-AR classes in general, per this project's standing
+discipline of verifying computationally before building theory on top
+of a claim. The natural next step, not yet attempted: the AR-partial
+family resolves strong coincidence at depth 1 for every tested `a`,
+which is itself a suspiciously clean, uniform fact -- worth checking
+whether it holds by a short direct argument (not just "every tested
+case happens to"), analogous to how Finding 4's n-bonacci proof
+started from a similarly clean uniform empirical pattern.
+
+## Finding 17 — the depth-1 mechanism: "constant factor at position 0" forces strong coincidence unconditionally, for any substitution, Pisot or not
+
+**Status: PROVED (definitional, from `pair_has_coincidence`'s own loop
+structure) and cross-checked against the actual search on Finding 5's
+full AR-partial/non-AR family plus two synthetic cases (different
+alphabet size, different constant letter, and a no-constant-factor
+control). `include/ravel/proof/constant_factor_forces_depth1_
+coincidence.hpp`.**
+
+Finding 16 found that Finding 5's AR-partial substitutions
+(`sigma_{a,1}`, a=1..5) all resolve strong coincidence at depth 1,
+while the non-AR case (`sigma_{0,1}`) needs depth 13. This finding
+identifies the exact, general reason, not just the pattern.
+
+**Theorem.** If `sigma(i)` and `sigma(j)` begin with the same letter
+`c`, the pair `(i,j)` exhibits a coincidence at k=1, unconditionally.
+**Proof**: read `adelic::pair_has_coincidence`'s loop directly —
+`running` (the prefix-abelianization accumulator) starts at the zero
+vector and is only incremented AFTER the current letter's prefix set
+is recorded. Scanning w1's first letter (=c) inserts the zero vector
+into `prefix_set1[c]`. Scanning w2's first letter (=c) checks
+`prefix_set1[c].count(running)` while `running` is STILL the zero
+vector (nothing processed yet) — an unconditional hit. This needs no
+Pisot property, no unimodularity, nothing about either word beyond
+position 0; it holds for any two words over any alphabet sharing a
+first letter. Verified directly against the live function, not
+re-derived independently: `tests/constant_factor_forces_depth1_
+coincidence_test.cpp` cross-checks the certificate's prediction
+against `pair_has_coincidence`'s actual output on all 6 members of
+the a=0..5 family (matches exactly: constant-factor iff depth-1,
+every case), plus a synthetic 4-letter case with constant letter 2
+(not 0, ruling out a letter-0-specific artifact) and a no-constant-
+factor control that correctly declines to predict.
+
+**Consequence for the open general unimodular Pisot question**: "has
+a constant factor at position 0" (every alphabet letter's image
+begins with the same letter — already a column in Finding 5's table,
+previously not connected to coincidence depth) is a SUFFICIENT
+condition for strong coincidence to hold trivially for the WHOLE
+substitution, with no search needed. **Strong coincidence is
+therefore never the obstruction for constant-factor substitutions —
+any hypothetical counterexample to the classical Pisot tiling
+conjecture among unimodular Pisot substitutions can only come from
+the non-constant-factor ("non-AR") class.** This does not touch
+property (F) (untested by this argument) and does not claim non-
+constant-factor substitutions fail coincidence (sigma_{0,1} still
+resolves, just at depth 13, via a different route — a later shared
+occurrence or a matching suffix rather than the trivial matching-
+empty-prefix one). It narrows the search, it does not close it: the
+next open question is whether property (F) has an analogous
+structural sufficient condition for the constant-factor class (which
+would fully close that class), and separately whether non-constant-
+factor substitutions have ANY structural guarantee for coincidence at
+all, or whether depth-13-and-similar resolutions are themselves
+case-specific.
+
+## Finding 18 — property (F) closed off from the constant-factor lens, with a proven (not just unsuccessful) reason
+
+**Status: PROVED negative result. `include/ravel/proof/constant_factor_gives_nothing_for_property_f.hpp`, cross-checked against the real computed prefix automaton for the whole a=0..5 family.**
+
+Follow-up to Finding 17 (constant factor forces strong coincidence at
+depth 1, unconditionally). Natural question: does constant factor at
+position 0 give property (F) the same free ride? **No, and the reason
+is structural, provable without examining any specific substitution's
+full closure:**
+
+**Fact 1** (general, holds for every Pisot substitution, constant
+factor or not): a prefix-automaton edge preserves `gamma=0` if and
+only if its prefix `p` is empty. Proof: `delta(p) = <P(p), v>` with
+`v` the left Perron eigenvector — Perron-Frobenius guarantees every
+entry of `v` is strictly positive, so `delta(p)` is a sum of positive
+numbers over `p`'s letters, zero only when `p` is empty. Confirmed
+directly against the actual computed eigenvector and digit set for
+every member of the a=0..5 family (`tests/constant_factor_gives_
+nothing_for_property_f_test.cpp`), not just asserted from the general
+theorem.
+
+**Fact 2**: property (F)'s own definition permanently excludes any
+cycle staying entirely among `gamma=0` nodes from counting as a
+violation (this is the project's own BUG 1 fix, already documented in
+`coincidence_and_property_f.hpp`).
+
+**Consequence**: by Fact 1, the connectivity a constant factor at
+position 0 creates (every letter reachable from the shared leading
+letter, all while `gamma=0`) lives ENTIRELY inside the region Fact 2
+already, unconditionally, excludes from ever causing a violation. The
+actual hard question for property (F) — does any path leave `gamma=0`
+(necessarily via a nonempty prefix, hence necessarily leaving the
+constant-factor-structured region) and return — is completely
+untouched by whether the substitution has a constant factor. This is
+provable in general, not merely "not found a proof yet."
+
+**Independent empirical confirmation**: Finding 16's own node counts
+for property (F) on the constant-factor family — 105, 199, 963, 2762,
+6451 for a=1..5 — grow monotonically with image length, exactly as if
+the constant factor weren't there. Contrast strong coincidence, whose
+depth stayed at exactly 1 across the same range. If the constant
+factor had bought real leverage for property (F), the node counts
+would stay small and roughly flat the way coincidence's depth did;
+instead they scale with the genuinely hard part of the search.
+
+**Net position on the open general unimodular Pisot question**:
+strong coincidence is fully explained (Finding 17) for the large,
+easily-recognized constant-factor class. Property (F) is not, and
+this finding shows *why* the same lens can't be reused — any future
+proof attempt for property (F) needs a genuinely different structural
+handle, not a refinement of the coincidence argument. This is where
+the "seeking a counterexample via theory" line of work currently
+stops: coincidence is closed for constant-factor substitutions;
+property (F) remains open for every unimodular Pisot substitution,
+constant-factor or not, with no known reduction of its difficulty.
+
+## Finding 19 — property (F), as implemented by this project's own finite automaton, appears to be UNCONDITIONAL: no configuration can ever produce a violation
+
+**Status: A large claim, stated carefully. PROVED for the specific finite construction this codebase implements (`adelic::check_property_f`), by a clean 5-step argument from Perron-Frobenius positivity. Cross-checked against the real, trusted function itself (not a reimplemented copy) via a new permanent diagnostic parameter, across 8 structurally diverse cases including the project's largest-ever closure (rnd13, 33185 nodes). SCOPE CAVEAT below is load-bearing — read it before citing this as resolving the literature's Pisot conjecture.**
+
+Follow-up to Finding 18 (constant factor gives property F no leverage).
+Rather than stopping there, re-examined property (F)'s actual
+violation condition directly: an SCC in the zero-expansion graph
+containing BOTH a zero-translation node (`gamma=0`) and a nonzero one.
+
+**The argument** (full detail in `include/ravel/proof/property_f_
+unconditional.hpp`): a transition `gamma' = beta^{-1}(gamma + delta(p))`
+can only ever produce `gamma'=0` (as an exact algebraic Q(beta)
+element) if `gamma=0` already and `p` is empty. Proof: evaluate the
+identity at the DOMINANT real embedding (the one sending the abstract
+symbol `beta` to the actual Pisot number). Under that embedding: `v`
+(the left Perron eigenvector `delta(p)` is built from) is strictly
+positive by Perron-Frobenius; `delta(p)`, a nonnegative combination of
+`v`'s entries, is therefore >= 0, zero only for the empty prefix; `beta`
+itself is real and > 1. By induction from the `gamma=0` starting
+frontier, every reachable node's dominant-embedding value stays >= 0,
+and `gamma + delta(p)` can only be exactly 0 (forcing `gamma'=0`, since
+field embeddings are injective) when both terms are individually
+exactly 0. Consequence: no nonzero-gamma node can EVER have an edge
+into a zero-gamma node — so no SCC can ever mix zero and nonzero
+nodes, so `check_property_f` can never discover a violation.
+
+**Verified against the real function, not a re-derivation**: added a
+permanent, opt-in diagnostic parameter to `adelic::check_property_f`
+(`out_zero_nodes_beyond_frontier`, default `nullptr`, zero behavior
+change for existing callers) that counts any zero-translation node
+discovered beyond the initial alphabet-sized starting frontier — the
+theorem predicts this is always exactly 0. `tests/property_f_
+unconditional_test.cpp` confirms 0 across all 8 tested cases: Finding
+5's whole a=0..5 family (AR-exact through non-AR, unimodular), the
+simplest known non-unit Pisot substitution (`x^2-2x-2`), and `rnd13`
+(the project's largest-ever closure, 33185 nodes, cross-checked
+against the exact documented node count).
+
+**Consequence, if the SCOPE caveat holds**: every `DOES_NOT_TILE_
+PROPERTY_F` code path in `classify_adelic.hpp` is provably
+unreachable, not merely unobserved — matching the fact that this
+project has never once produced a genuine property-(F) FAILS verdict
+across every substitution it has ever run, unit or non-unit. Combined
+with Finding 17/18, the ENTIRE remaining difficulty of the open
+general unimodular Pisot question (within this project's own
+verification framework) would reduce to strong coincidence alone —
+property (F) would never be the obstruction, for any Pisot
+substitution, constant-factor or not.
+
+**UPDATE (2026-08-06, same session): the core real-analysis lemma is
+now Lean kernel-checked**, not just hand-derived and stress-tested.
+`lean/generated/property_f_zero_walk.lean`
+(`RavelGenerated.zeroWalk_eq_zero_iff`) proves, machine-verified with
+no `sorry` and no extra axioms: the walk `gamma_0=0,
+gamma_{k+1}=(gamma_k+delta_k)/beta` (beta>1, every delta_k>=0) returns
+to exactly 0 at step n iff every delta_k for k<n was itself 0 — this
+is Steps 1-2 of the argument above, previously only hand-derived. See
+`docs/PROPERTY_F_UNCONDITIONAL_KERNEL_CHECKED_2026-08-06.md` for the
+hash and check details. The remaining, still load-bearing caveat:
+
+**SCOPE CAVEAT (load-bearing, not a formality)**: this proves the
+SPECIFIC finite graph-cycle test implemented in this codebase can
+never witness a violation. It does NOT, by itself, constitute an
+independently-verified resolution of the "geometric property (F)"
+condition as understood in the wider Minervino-Thuswaldner literature
+— that would additionally require confirming (a) this construction is
+a complete, faithful implementation of their definition (this project
+has relied on that assumption for every prior ESTABLISHED verdict,
+not newly introduced here) and (b) the literature's property (F) does
+not carry content beyond what this specific automaton captures. Both
+are plausible given how directly the code follows the paper's stated
+construction, but neither has been independently cross-checked against
+the primary literature in this session. Treat this finding as strong,
+freshly-derived-and-tested evidence pointing at a real structural fact
+about the implemented check, flagged prominently for scrutiny given
+its size, rather than as a closed resolution of a fifty-year-open
+literature question.
+
+## Finding 20 — the SCOPE caveat on Finding 19 is now a CONFIRMED discrepancy, not an assumption, and remains genuinely unresolved
+
+**Status: IMPORTANT CORRECTION IN PROGRESS. Do not treat Finding 19 (property F unconditional) as validated against the literature — the correspondence it assumed has been checked directly against the primary source and found to differ in structure. A first attempt at a corrected check produced a result contradicting known ground truth (Fibonacci), so neither the original check_property_f nor the corrected cycle-criterion below should currently be trusted for property-(F) verdicts pending further work.**
+
+Read the primary source directly (Minervino-Thuswaldner, "The geometry
+of non-unit Pisot substitutions," Ann. Inst. Fourier 64 (2014)
+1373-1417 — full text archived at
+`docs/bibliography/minervino_thuswaldner_2014_nonunit_pisot.pdf`, text
+extracted to the `.txt` alongside it). Definition 9.3 states property
+(F) as: the iterates of `T_ext^{-1}` starting from
+`U = {(0,a) : a in alphabet}` eventually cover ALL of Gamma, the
+independently-defined "self-replicating translation set" (Definition
+4.6/eq. 12) — a COVERAGE condition. This project's
+`adelic::check_property_f` instead builds only the forward closure
+from U and flags a "mixed zero/nonzero cycle" as the failure
+condition — a different, and (per `property_f_unconditional.hpp`)
+UNCONDITIONALLY-NEVER-TRIGGERED condition. `include/ravel/proof/
+property_f_unconditional.hpp` proves a true fact (no mixed cycle can
+ever occur) but that fact may not correspond to genuine property-(F)
+failure as the literature defines it.
+
+Working through Lemma 9.8's proof (which connects property F's failure
+to a cycle in the zero-expansion graph G^(0)), derived: property F
+FAILS iff there exists a cycle in G^(0) whose nodes are ALL nonzero
+(never touching a zero-translation node at all) -- NOT "mixed", the
+OPPOSITE emphasis from what the codebase checks. Attempted a
+tractable reformulation: property F holds iff every SIMPLE cycle in
+the small, purely-combinatorial prefix automaton has periodic
+translation value exactly zero (derivation: a nonzero simple-cycle
+periodic value is directly a nonzero-only G^(0) cycle; if every
+simple cycle has value zero, the recursion fixes 0 along any
+concatenation of cycles too, and since bi-infinite walks in a finite
+graph are eventually periodic in their "deep past," every element of
+Gamma traces back to a genuine zero point).
+
+**This reformulation, implemented in `include/ravel/proof/
+property_f_correct_cycle_criterion.hpp`, gives the WRONG answer on
+Fibonacci** (`sigma(0)=01, sigma(1)=0`) -- it reports property F
+FAILS, via the 2-cycle `0->1->0` with periodic value exactly `beta`
+(confirmed nonzero abstractly, confirmed within the geometric bound
+M via the same archimedean-norm machinery `check_property_f` itself
+uses) -- directly contradicting Rauzy's classical, extremely
+well-established result that Fibonacci has pure discrete spectrum,
+and contradicting the ground truth this project's own BUG1 fix (in
+`coincidence_and_property_f.hpp`) was explicitly validated against.
+
+**This is not yet resolved.** Possibilities not yet ruled out: (a) a
+further error in the simple-cycle-suffices argument (maybe not every
+closed walk actually decomposes the way the "0 stays fixed under
+concatenation" argument assumes, if the relevant composition isn't
+associative/commutative in the needed sense); (b) a missing
+constraint on which simple cycles correspond to genuinely admissible
+walks (Definition 9.6's "every node is the starting point of an
+infinite walk" may carry more content than "trivially true because
+cycles repeat forever" -- possibly requiring the walk to also be
+extendable as a genuine LEFT-infinite walk under the actual
+prefix-suffix structure, not just any graph cycle in my simplified
+letter-level automaton); (c) a subtlety in the Phi/Phi0 projection
+maps used throughout the paper that this project's Q(beta)-abstract-
+equality convention for "gamma=0" may not fully correspond to.
+
+**Practical consequence, stated plainly**: neither the original
+check_property_f verdict NOR the new cycle-criterion should currently
+be cited as resolving property (F) for any substitution in this
+project's history, pending this discrepancy being fully worked out.
+The Lean-kernel-checked lemma in `property_f_zero_walk.lean` remains
+correct as FAR AS IT GOES (a true fact about a real-valued walk), but
+its relevance to genuine property-(F) failure is now the open
+question, not a settled scope caveat.
+
+## Finding 21 — the property (F) verdict bug is FIXED and verified: every historical ESTABLISHED case reproduces exactly, node-for-node
+
+**Status: RESOLVED. `include/adelic/coincidence_and_property_f.hpp`'s
+`check_property_f` corrected; `tests/property_f_correct_verdict_test.cpp`
+locks in the regression. Supersedes Finding 20's "unresolved" status.**
+
+Finding 20 confirmed a real discrepancy between this project's
+`check_property_f` (flags a "mixed" zero/nonzero cycle) and the
+primary source's actual criterion (Minervino-Thuswaldner, Lemma 9.8:
+failure is a cycle that is NOT entirely zero-nodes). A first attempted
+fix — enumerate cycles abstractly in the small letter-level prefix
+automaton, independent of the existing BFS closure
+(`include/ravel/proof/property_f_correct_cycle_criterion.hpp`) — gave
+a **false FAILS on Fibonacci** (`sigma(0)=01, sigma(1)=0`), directly
+contradicting Rauzy's classical result. Diagnosed by instrumenting the
+real, trusted `check_property_f` to print every node in its BFS-from-U
+closure for Fibonacci: exactly 8 nodes, none of which is the `gamma=beta`
+value the abstract cycle enumeration found on the `0->1->0` cycle —
+even though that value satisfies both the algebraic recursion and the
+geometric bound M. **The abstract-cycle approach over-generates**: it
+counts cycles that are algebraically self-consistent but never
+actually reached by any genuine walk starting from the zero frontier.
+`property_f_correct_cycle_criterion.hpp` is kept in the tree with a
+prominent header marking it superseded, as a record of the failed
+attempt, per this project's standing discipline of not erasing wrong
+turns.
+
+**The actual fix is much smaller.** The BFS-from-U closure itself was
+never wrong — it faithfully implements the paper's own `T_ext^{-1}`
+formula (verified directly against eq. 13 of the primary source). Only
+the *verdict* extracted from it was wrong. Combined with
+`property_f_unconditional.hpp`'s own proven fact (no mixed zero/nonzero
+cycle can ever occur, for any Pisot substitution — Lean-kernel-checked,
+`lean/generated/property_f_zero_walk.lean`), the paper's real criterion
+("not entirely zero") collapses to exactly: **flag a cycle if it
+contains ANY nonzero node** — not "both zero and nonzero." The fix is
+a one-line change (`coincidence_and_property_f.hpp`, dropping the
+`scc_has_zero &&` requirement from the violation check), with a full
+account of the correction, the failed alternative, and the reasoning
+left in place as a comment at the fix site.
+
+**Verified against every ESTABLISHED case this project has on
+record, node-for-node identical**: Fibonacci (8 nodes, holds — the
+critical regression check), `rnd13` (33185 nodes, holds — the
+project's largest-ever closure), the worked example (archimedean-only
+control still correctly INCONCLUSIVE, matching its documented status),
+`x^2-2x-2` (47 nodes, holds), the whole Finding 5/16 AR-partial/non-AR
+family (identical node counts across all 7), the 24-candidate 3-letter
+non-unit sweep (24/24 ESTABLISHED, unchanged), and the 7-candidate
+4-letter non-unit sweep (7/7 ESTABLISHED, unchanged). **Nothing in
+this project's history was ever a false positive — the old verdict
+logic just could never have caught a real failure if one existed.**
+Property (F) is now, for the first time, a genuinely meaningful,
+non-vacuous check.
+
+**Consequence for the open general unimodular Pisot question**: the
+earlier claim (Finding 19, now withdrawn) that "the entire remaining
+difficulty reduces to strong coincidence alone" does not hold —
+property (F) is a real, live condition again, not a rubber stamp.
+Whether it holds in general for all unimodular Pisot substitutions
+remains exactly as open as strong coincidence does. What IS gained:
+this project's adelic tiling infrastructure is now trustworthy for
+future work, and the constant-factor investigation (Finding 18) is
+unaffected — its conclusion (constant-factor connectivity is confined
+to the always-safe all-zero region) holds under the corrected
+criterion exactly as it did before, since an all-zero cycle is still
+never a violation either way.

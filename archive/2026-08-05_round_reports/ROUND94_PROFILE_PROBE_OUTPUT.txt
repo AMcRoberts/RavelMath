@@ -1,0 +1,17 @@
+D=3 left-outside profile=101 states=20 edges=25 words=Q:15,R:10,
+D=3 nbonacci profile=111 states=29 edges=41 words=Q:19,R:22,
+D=3 middle profile=211 states=25 edges=41 words=Q:11,R:23,RR:7,
+D=3 perry profile=221 states=28 edges=47 words=Q:7,R:28,RR:12,
+D=3 right-outside profile=321 states=26 edges=49 words=Q:2,R:19,RR:22,RRR:6,
+D=4 left-outside profile=1101 states=462 edges=666 words=Q:426,R:240,
+D=4 nbonacci profile=1111 states=113 edges=189 words=Q:93,R:96,
+D=4 middle profile=2111 states=108 edges=208 words=Q:72,R:106,RR:30,
+D=4 perry profile=2221 states=82 edges=185 words=Q:40,R:99,RR:46,
+D=4 right-outside profile=3221 states=95 edges=253 words=Q:42,R:107,RR:81,RRR:23,
+D=5 left-outside profile=11101 states=2851 edges=4829 words=Q:2707,R:2122,
+D=5 nbonacci profile=11111 states=382 edges=688 words=Q:345,R:343,
+D=5 middle profile=22111 states=179 edges=411 words=Q:110,R:213,RR:88,
+D=5 perry profile=22221 states=474 edges=1281 words=Q:395,R:607,RR:279,
+D=5 right-outside profile=32221 states=354 edges=1052 words=Q:232,R:434,RR:309,RRR:77,
+coefficient profile renewal twist PASS
+coefficient profile parity obstruction PASS

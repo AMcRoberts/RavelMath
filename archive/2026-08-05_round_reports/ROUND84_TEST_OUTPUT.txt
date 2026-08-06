@@ -1,0 +1,5 @@
+$ make finite_positive_grammar_majorant_test norm_weighted_qr_majorant_test twist_dominance_extensions_test concrete_operator_qr_majorant_test
+finite positive grammar majorant PASS
+norm-weighted Q/R majorant PASS
+twist dominance extensions PASS
+concrete operator Q/R majorant PASS

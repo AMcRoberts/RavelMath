@@ -1,0 +1,30 @@
+D=2 m=1 states=6 edges=6 roof=1
+D=3 m=1 states=29 edges=41 roof=1
+D=4 m=1 states=113 edges=189 roof=1
+D=2 m=2 states=0 edges=0 roof=0
+D=3 m=2 states=28 edges=47 roof=2
+D=4 m=2 states=82 edges=185 roof=2
+D=2 m=3 states=0 edges=0 roof=0
+D=3 m=3 states=28 edges=59 roof=3
+D=4 m=3 states=172 edges=543 roof=3
+D=2 m=4 states=0 edges=0 roof=0
+D=3 m=4 states=48 edges=150 roof=4
+D=4 m=4 states=237 edges=967 roof=4
+D=2 m=5 states=0 edges=0 roof=0
+D=3 m=5 states=50 edges=184 roof=5
+D=4 m=5 states=384 edges=1956 roof=5
+D=2 m=6 states=0 edges=0 roof=0
+D=3 m=6 states=68 edges=318 roof=6
+D=4 m=6 states=554 edges=3301 roof=6
+generalized multinacci general-m PASS
+
+Symbolic certificate:
+  scheduler coefficient Q = m+1
+  scheduler coefficient R^d = 2(m+1-d), 1<=d<=m
+  macro word G_0 = Q
+  macro word G_d = R^d
+  side twist = sign(q-p)
+  roof bound = m
+
+Lean artifact emitted: lean/generated/generalized_multinacci_general_m.lean
+Lean kernel run not performed: configured Mathlib ridealong is absent from this archive/environment.

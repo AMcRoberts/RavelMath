@@ -1,0 +1,18 @@
+ROUND 94 VALIDATION
+
+Built and ran:
+  coefficient_profile_renewal_twist_test
+  coefficient_profile_parity_obstruction_test
+
+Results:
+  coefficient profile renewal twist PASS
+  coefficient profile parity obstruction PASS
+
+Exact graph probes:
+  D = 3,4,5
+  profiles = nearest left-outside, n-bonacci, interior control,
+             uniform Perry, nearest right-outside
+
+Symbolic parity test:
+  D = 3,...,256
+  p_D(-1)=0 exactly iff D is even for profile (1,...,1,0,1).

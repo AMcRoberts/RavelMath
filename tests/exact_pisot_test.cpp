@@ -236,6 +236,60 @@ int main() {
         pisot_info_clear(&info);
     }
 
+    /* Smallest verified non-unit Pisot number found by a systematic
+     * companion-matrix search (deg 3, |c2|,|c1|<=8, |c0| in [2,10]; deg 4,
+     * |c3|,|c2|,|c1|<=6, |c0| in [2,8]): x^3-x^2-2x-2, beta~2.26953,
+     * |det|=2. Cross-checked independently with mathlib::sturm_chain
+     * (exactly one real root; the dominant one, isolated to beta~2.26953),
+     * consistent with a genuine Pisot number. Every Pisot number below 2
+     * is provably a unit (|norm| = beta * prod|conjugates| < beta < 2
+     * forces the nonzero integer norm to be exactly 1), so this is a real
+     * boundary case, not an arbitrary example -- and finding it required
+     * fixing two real classifier bugs first (see the surrounding history
+     * in exact_pisot.c): a missing accounting for real roots <= -1, and
+     * `is_pisot` being set unconditionally before the complex-secondary-
+     * pair modulus check even ran (which itself used a broken bound --
+     * seeded with beta_lo_num*beta_lo_den instead of beta_lo, and an
+     * unsound mpz_divexact). Without both fixes this search reported
+     * false-positive "Pisot" numbers with beta as low as ~1.05. */
+    {
+        const long long M[3][3] = {{1, 2, 2}, {1, 0, 0}, {0, 1, 0}};
+        pisot_info_t info;
+        int rc = pisot_classify_3x3(M, &info);
+        printf("[smallest_known_nonunit_pisot]   rc=%d  is_pisot=%d\n", rc, info.is_pisot);
+        if (rc != 0) {
+            char buf[64];
+            mpq_class_str(buf, sizeof(buf), info.beta_lo_num, info.beta_lo_den);
+            printf("    beta_lo=%s  ", buf);
+            mpq_class_str(buf, sizeof(buf), info.beta_hi_num, info.beta_hi_den);
+            printf("beta_hi=%s  (NUMERICALLY: beta=2.269530842...)\n", buf);
+        }
+        CHECK(rc != 0, "smallest_known_nonunit_pisot: pisot_classify_3x3 returns nonzero");
+        CHECK(info.is_pisot == 1, "smallest_known_nonunit_pisot is_pisot == 1");
+        CHECK(info.has_complex_pair == 1, "smallest_known_nonunit_pisot has_complex_pair == 1");
+        CHECK(info.is_complex_modulus_lt_1 == 1, "smallest_known_nonunit_pisot complex |.|^2 < 1");
+        CHECK(mpz_cmp_ui(info.det_abs, 2) == 0, "smallest_known_nonunit_pisot |det M| == 2");
+        double beta_lo = mpz_get_d(info.beta_lo_num) / mpz_get_d(info.beta_lo_den);
+        double beta_hi = mpz_get_d(info.beta_hi_num) / mpz_get_d(info.beta_hi_den);
+        CHECK(beta_lo < 2.27 && beta_hi > 2.269, "smallest_known_nonunit_pisot beta brackets 2.26953");
+        pisot_info_clear(&info);
+    }
+
+    /* Regression for the two classifier bugs fixed alongside the search
+     * above: this polynomial (real root ~1.0945, complex-pair modulus
+     * ~2.34) must NOT classify as Pisot. Before the fix it did. */
+    {
+        const long long M[3][3] = {{3, 1, 6}, {1, 0, 0}, {0, 1, 0}}; /* x^3+3x^2+x-6 */
+        pisot_info_t info;
+        int rc = pisot_classify_3x3(M, &info);
+        printf("[false_positive_regression_x3_3x2_x_m6]   rc=%d  is_pisot=%d  "
+               "is_complex_modulus_lt_1=%d\n", rc, info.is_pisot, info.is_complex_modulus_lt_1);
+        CHECK(rc != 0, "false_positive_regression: pisot_classify_3x3 returns nonzero");
+        CHECK(info.is_pisot == 0, "false_positive_regression is_pisot == 0 (real root ~1.09, "
+              "complex pair modulus ~2.34, not Pisot)");
+        pisot_info_clear(&info);
+    }
+
     printf("\n=== Note: EXPLODED entries are Pisot (validate_exploded) ===\n");
     printf("The 12 'EXPLODED' survey entries (rnd1_canon, rnd4_canon, ...)\n"
            "all have |det M| = 2.  validate_exploded.cpp runs the\n"

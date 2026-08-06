@@ -1,5 +1,7 @@
 # Research status
 
+> **2026-08-03 proof-system note.** The n-bonacci universal-n work now serves as the integration test for the reflective proof engine. The campaign is internally closed through generic operations, but Lean kernel acceptance remains pending the complete matching toolchain and compiled dependencies. Older chunk-generator and Lua-emitter status notes are archived under `docs/archive/2026-08-03_pre_generic_proof_system/`.
+
 This is the concise entry point for the mathematical and engineering
 state of the project. Detailed claim strength is recorded in
 `THEOREM_STATUS.md`; the exact active Class-II seam is recorded in
@@ -7,9 +9,7 @@ state of the project. Detailed claim strength is recorded in
 
 ## Verified engineering boundary
 
-The latest complete validation passed `make check` and
-`make lean-check`; enrolled Lean files were sorry-free. A fresh checkout
-does not include generated build outputs and should rerun those commands.
+Historical complete-tree validation passed `make check` and `make lean-check` with the enrolled Lean files sorry-free. The compressed handoff does not currently contain a complete executable Lean/Mathlib build, so this package must not repeat that claim until `scripts/safe_lean_check.sh` succeeds under the matching restored artifacts.
 
 ## Class-II family
 

@@ -1,0 +1,18 @@
+D=3 word=Q multiplicity=7
+D=3 word=R multiplicity=28
+D=3 word=RR multiplicity=12
+D=4 word=Q multiplicity=40
+D=4 word=R multiplicity=99
+D=4 word=RR multiplicity=46
+D=5 word=Q multiplicity=395
+D=5 word=R multiplicity=607
+D=5 word=RR multiplicity=279
+generalized multinacci boundary word lift PASS
+D=2 base=0 macro_edges=0 phase_states=0 expanded=0
+D=3 base=28 macro_edges=47 phase_states=12 expanded=40
+D=4 base=82 macro_edges=185 phase_states=46 expanded=128
+D=5 base=474 macro_edges=1281 phase_states=279 expanded=753
+generalized multinacci phase-expanded boundary PASS
+generalized multinacci prefix phase PASS
+finite positive grammar majorant PASS
+generalized multinacci family PASS

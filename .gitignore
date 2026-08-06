@@ -21,3 +21,4 @@ __pycache__/
 # Locally preserved literature.  Full texts may carry redistribution
 # restrictions; keep the archive in full local checkpoints, not public Git.
 /refs/FullText/
+/build/

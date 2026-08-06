@@ -97,9 +97,16 @@ std::vector<std::vector<SignInt>> later_values(std::size_t n, std::size_t r) {
     a_v[0][0] = SignInt(1);
     for (std::size_t j = 1; j < n; ++j) a_v[j][j] = SignInt(1);
     for (std::size_t t = 0; t <= r; ++t) {
-        SignInt sum(0);
-        for (std::size_t j = 1; j < n; ++j) sum = sum + a_v[t + j][j];
-        a_v[t + n][0] = a_v[t][0] - sum;
+        // Propagate every basis coefficient through the recurrence.
+        // The previous extraction updated only the constant column and
+        // therefore solved the wrong linear system for n > 2.
+        for (std::size_t basis = 0; basis < n; ++basis) {
+            SignInt sum(0);
+            for (std::size_t j = 1; j < n; ++j) {
+                sum = sum + a_v[t + j][basis];
+            }
+            a_v[t + n][basis] = a_v[t][basis] - sum;
+        }
     }
     return a_v;
 }
@@ -225,9 +232,7 @@ Candidate make_candidate(std::size_t n, std::size_t L,
 Candidate find_simplest(std::size_t n, std::size_t L) {
     std::vector<std::size_t> candidates_idx;
     for (std::size_t j = 1; j < n + L; ++j) candidates_idx.push_back(j);
-    std::vector<long long> sign_choices{-1, 1};
     std::vector<Candidate> valid;
-    std::vector<std::size_t> subset(n - 1);
     std::vector<bool> choose(candidates_idx.size(), false);
     // Initial: FIRST n-1 entries true (largest in lex order);
     // step through all C(candidates_idx.size(), n-1) subsets via
@@ -237,18 +242,8 @@ Candidate find_simplest(std::size_t n, std::size_t L) {
         std::vector<std::size_t> indices;
         for (std::size_t i = 0; i < choose.size(); ++i)
             if (choose[i]) indices.push_back(candidates_idx[i]);
-        std::printf("    iter choose=[");
-        for (std::size_t i = 0; i < choose.size(); ++i)
-            std::printf("%c", choose[i] ? 'T' : 'F');
-        std::printf("] indices=[");
-        for (std::size_t i = 0; i < indices.size(); ++i) {
-            if (i) std::printf(",");
-            std::printf("%zu", indices[i]);
-        }
-        std::printf("]\n");
-        std::fflush(stdout);
+        std::vector<long long> signs(n - 1);
         for (std::size_t s = 0; s < (1ull << (n - 1)); ++s) {
-            std::vector<long long> signs(n - 1);
             for (std::size_t k = 0; k < n - 1; ++k)
                 signs[k] = (s >> k) & 1 ? 1 : -1;
             // Build the (n-1) x (n-1) matrix A' of free-param
@@ -269,7 +264,6 @@ Candidate find_simplest(std::size_t n, std::size_t L) {
             std::vector<SignInt> sol(n - 1, SignInt(0));
             bool ok = true;
             for (std::size_t col = 0; col < n - 1; ++col) {
-                // Find pivot
                 std::size_t piv = n - 1;
                 for (std::size_t i = col; i < n - 1; ++i) {
                     if (!A_p[i][col].is_zero()) { piv = i; break; }
@@ -289,7 +283,6 @@ Candidate find_simplest(std::size_t n, std::size_t L) {
                 }
             }
             if (!ok) continue;
-            // Back-substitution
             for (std::size_t i = n - 1; i > 0; --i) {
                 std::size_t k = i - 1;
                 SignInt s = rhs_p[k];
@@ -300,77 +293,20 @@ Candidate find_simplest(std::size_t n, std::size_t L) {
                 sol[k] = s / A_p[k][k];
             }
             if (!ok) continue;
-            if (!in_closed_unit_box(sol[0]) ||
-                (n >= 3 && !in_closed_unit_box(sol[1]))) {
-                // Quick box check on the first two
-            }
             bool all_box = true;
             for (const auto& v : sol) if (!in_closed_unit_box(v)) { all_box = false; break; }
-            if (!all_box) {
-                std::printf("    SKIP id=[");
-                for (std::size_t i = 0; i < indices.size(); ++i) {
-                    if (i) std::printf(",");
-                    std::printf("%zu", indices[i]);
-                }
-                std::printf("] s=%zu (box)\n", s);
-                continue;
-            }
+            if (!all_box) continue;
             auto seq = reconstruct_sequence(n, L, sol);
-            if (!is_covering(n, L, seq)) {
-                std::printf("    SKIP id=[");
-                for (std::size_t i = 0; i < indices.size(); ++i) {
-                    if (i) std::printf(",");
-                    std::printf("%zu", indices[i]);
-                }
-                std::printf("] s=%zu (cover)\n", s);
-                continue;
+            bool sequence_in_box = true;
+            for (const auto& v : seq) {
+                if (!in_closed_unit_box(v)) { sequence_in_box = false; break; }
             }
-            std::printf("    CANDIDATE id=[");
-            for (std::size_t i = 0; i < indices.size(); ++i) {
-                if (i) std::printf(",");
-                std::printf("%zu", indices[i]);
-            }
-            std::printf("] signs=[");
-            for (std::size_t i = 0; i < signs.size(); ++i) {
-                if (i) std::printf(",");
-                std::printf("%lld", (long long)signs[i]);
-            }
-            std::printf("] free=[");
-            for (std::size_t i = 0; i < sol.size(); ++i) {
-                if (i) std::printf(",");
-                std::printf("%s", sol[i].to_string().c_str());
-            }
-            std::printf("] seq=[");
-            for (std::size_t i = 0; i < seq.size(); ++i) {
-                if (i) std::printf(",");
-                std::printf("%s", seq[i].to_string().c_str());
-            }
-            std::printf("]\n");
+            if (!sequence_in_box) continue;
+            if (!is_covering(n, L, seq)) continue;
             valid.push_back(make_candidate(n, L, indices, signs, sol, seq));
         }
     } while (std::prev_permutation(choose.begin(), choose.end()));
-    if (valid.empty()) {
-        std::printf("    no valid candidate at n=%zu L=%zu\n", n, L);
-        return Candidate{};
-    }
-    for (const auto& v : valid) {
-        std::printf("    candidate: idx=[");
-        for (std::size_t i = 0; i < v.indices.size(); ++i) {
-            if (i) std::printf(",");
-            std::printf("%zu", v.indices[i]);
-        }
-        std::printf("] signs=[");
-        for (std::size_t i = 0; i < v.signs.size(); ++i) {
-            if (i) std::printf(",");
-            std::printf("%lld", (long long)v.signs[i]);
-        }
-        std::printf("] score=%ld free_params=[", (long long)v.simplicity_score);
-        for (std::size_t i = 0; i < v.free_params.size(); ++i) {
-            if (i) std::printf(",");
-            std::printf("%s", v.free_params[i].to_string().c_str());
-        }
-        std::printf("]\n");
-    }
+    if (valid.empty()) return Candidate{};
     return *std::min_element(valid.begin(), valid.end(),
         [](const Candidate& a, const Candidate& b) {
             return a.simplicity_score < b.simplicity_score;

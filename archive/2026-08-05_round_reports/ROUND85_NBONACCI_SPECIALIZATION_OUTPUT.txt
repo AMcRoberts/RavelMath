@@ -1,0 +1,36 @@
+=== generalized multinacci unit family m=1, indices 0..2 (D=index+2) ===
+sigma(i)=0^m(i+1), sigma(D-1)=0; polynomial x^D-m(x+...+x^(D-1))-1
+
+index=0 D=2 m=1 (beta=1.6180339887): BP-rho_nc=1.000000 lambda(G_B)=1.000000 ratio=1.000000 (MATCH, double-precision)
+  [exact-rational] Perron-root comparison: PROVEN EQUAL
+    BP-core bracket:  [1, 1]  (1 iters)
+    G_B-core bracket: [1, 1]  (1 iters)
+  |G_B|=6 recurrent core involution [i,x,j]<->[j,-x,i]: 2/2 (EXACT)
+  diagnostics: converged=yes corona_capped=no closure_stopped_early=no convergence_rounds=1 max_a_size_reached=0 d_cont=3 pre_contact=3 contact=3 signed_contact=6
+  recurrent SCC sizes (all, largest first): 2  (total recurrent nodes across all SCCs: 2)
+  involution over the UNION of all recurrent SCCs: 2/2 matched (2 same-SCC, 0 cross-SCC)
+  index=0 D=2 m=1: G_B recurrent SCC sizes (largest first): 2  (1 SCC)
+  index=0 D=2 m=1: only one recurrent SCC -- extract_recurrent_core's choice is trivially correct, no wrong-SCC risk here.
+  index=0 D=2 m=1: G_B-quotient charpoly exactly divides BP-core charpoly? YES
+index=1 D=3 m=1 (beta=1.8392867552): BP-rho_nc=1.395337 lambda(G_B)=1.395337 ratio=1.000000 (MATCH, double-precision)
+  [exact-rational] Perron-root comparison: inconclusive (brackets overlap -- expected for an irrational shared root)
+    BP-core bracket:  [273498955/196119721, 532739843/381652923]  (60 iters)
+    G_B-core bracket: [327575939/234809338, 457196383/327575939]  (60 iters)
+  |G_B|=29 recurrent core involution [i,x,j]<->[j,-x,i]: 14/14 (EXACT)
+  diagnostics: converged=yes corona_capped=no closure_stopped_early=no convergence_rounds=2 max_a_size_reached=0 d_cont=9 pre_contact=14 contact=14 signed_contact=28
+  recurrent SCC sizes (all, largest first): 14  (total recurrent nodes across all SCCs: 14)
+  involution over the UNION of all recurrent SCCs: 14/14 matched (14 same-SCC, 0 cross-SCC)
+  index=1 D=3 m=1: G_B recurrent SCC sizes (largest first): 14  (1 SCC)
+  index=1 D=3 m=1: only one recurrent SCC -- extract_recurrent_core's choice is trivially correct, no wrong-SCC risk here.
+  index=1 D=3 m=1: G_B-quotient charpoly exactly divides BP-core charpoly? no
+index=2 D=4 m=1 (beta=1.9275619755): BP-rho_nc=1.623354 lambda(G_B)=1.623354 ratio=1.000000 (MATCH, double-precision)
+  [exact-rational] Perron-root comparison: inconclusive (brackets overlap -- expected for an irrational shared root)
+    BP-core bracket:  [1897017709737/1170429019321, 5003534369017/3080607552185]  (60 iters)
+    G_B-core bracket: [1356257347897/836020452799, 5804450103009/3573726846097]  (60 iters)
+  |G_B|=113 recurrent core involution [i,x,j]<->[j,-x,i]: 46/46 (EXACT)
+  diagnostics: converged=yes corona_capped=no closure_stopped_early=no convergence_rounds=2 max_a_size_reached=0 d_cont=18 pre_contact=38 contact=38 signed_contact=76
+  recurrent SCC sizes (all, largest first): 46 4 2  (total recurrent nodes across all SCCs: 52)
+  involution over the UNION of all recurrent SCCs: 52/52 matched (52 same-SCC, 0 cross-SCC)
+  index=2 D=4 m=1: G_B recurrent SCC sizes (largest first): 46 4 2  (3 SCCs)
+  index=2 D=4 m=1: extract_recurrent_core's largest-by-size SCC (46 nodes) MATCHES extract_dominant_recurrent_core's choice (46 nodes) -- no correction needed
+  index=2 D=4 m=1: G_B-quotient charpoly exactly divides BP-core charpoly? no

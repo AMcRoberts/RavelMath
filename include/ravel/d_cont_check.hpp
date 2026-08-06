@@ -30,6 +30,10 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <cstdlib>
+#include <stdexcept>
+#include <string>
+#include <string_view>
 #include <vector>
 
 #include "ravel/core.hpp"
@@ -99,51 +103,28 @@ std::size_t verify_D_cont_table(const Substitution<d>& subst,
     return count;
 }
 
-// search_D_cont(subst, bound): geometric D_cont derivation by
-// exhaustive search over x in [-bound, bound]^d and (i, j) in A^2.
-// Returns every (i, x, j) satisfying:
-//   * if x == 0 then i < j (anti-symmetrization);
-//   * [x, j] in H_sigma;
-//   * face intersection dim of [x, i] with [x, j] equals d - 2
-//     (a (d-2)-dimensional face contact).
-//
-// For d = 3 and bound = 2 the search space is 5^3 * 9 = 1125
-// candidates, runs in milliseconds.  bound = 3 takes ~10x longer
-// (5^3 -> 7^3 = 343 per letter pair).
-//
-// For unimodular cubic Pisot substitutions (σ_{a,b} family and
-// Tribonacci/Plastic/Supergolden-class), the d_cont lies entirely
-// in [-2, 2]^d -- bound = 2 is sufficient.  For non-unimodular or
-// higher-degree substitutions you may need bound = 3 or 4 to find
-// the full D_cont; the search is geometric and will find the right
-// elements if they're in the box.
-//
-// This is the missing piece that lets `ravel.contact_boundary.*`
-// run end-to-end on arbitrary Pisot substitutions without hand-
-// curated D_cont inputs: pair `search_D_cont` with
-// `compute_contact_boundary_dispatch` and the only required caller
-// input is the substitution itself.
-template <std::size_t d>
-std::vector<DCandidate<d>> search_D_cont(const Substitution<d>& subst,
-                                          long long bound = 2) {
-    // See is_in_D_cont's identical guard: face-intersection geometry
-    // is unit-cube-specific and not yet generalized.
-    if (!subst.is_unit_cube_tile()) {
-        throw std::domain_error(
-            "search_D_cont: face-intersection geometry is not yet "
-            "generalized beyond the unit-cube tile (subst.tile_faces "
-            "is non-default); see core.hpp's tile_faces comment");
-    }
-    std::vector<DCandidate<d>> found;
-    for (std::size_t i = 0; i < d; ++i) {
-        for (std::size_t j = 0; j < d; ++j) {
-            // Iterate x in [-bound, bound]^d.  We use a recursive
-            // helper to keep the type signature clean for any d.
-            std::array<long long, d> x{};
-            search_D_cont_recursive<d>(subst, x, 0, i, j, bound, found);
-        }
-    }
-    return found;
+// D_cont search execution mode.  The projected face enumerator is exact for
+// the unit-cube geometry: the d-2 intersection condition itself forces the
+// coordinate pattern, so there is no reason to scan the full box.  The legacy
+// box enumerator remains available for differential verification.
+enum class DContSearchMode {
+    projected_faces,
+    legacy_box,
+};
+
+inline DContSearchMode default_d_cont_search_mode() {
+    const char* own = std::getenv("RAVEL_D_CONT_MODE");
+    const char* shared = std::getenv("RAVEL_CORONA_MODE");
+    const std::string_view value = own != nullptr ? own
+        : (shared != nullptr ? shared : "projected");
+    if (value == "legacy" || value == "box" || value == "materialized" ||
+        value == "full")
+        return DContSearchMode::legacy_box;
+    if (value == "projected" || value == "surface" || value == "faces" ||
+        value == "lazy" || value.empty())
+        return DContSearchMode::projected_faces;
+    throw std::invalid_argument("unknown D_cont search mode: " +
+                                std::string(value));
 }
 
 template <std::size_t d>
@@ -155,26 +136,124 @@ void search_D_cont_recursive(const Substitution<d>& subst,
                              long long bound,
                              std::vector<DCandidate<d>>& out) {
     if (k == d) {
-        // Anti-symmetrization at the origin: skip (i, 0, i).
         bool all_zero = true;
-        for (std::size_t m = 0; m < d; ++m) if (x[m] != 0) { all_zero = false; break; }
+        for (std::size_t m = 0; m < d; ++m)
+            if (x[m] != 0) { all_zero = false; break; }
         if (all_zero && i >= j) return;
         if (!subst.in_H_sigma_exact(x, j)) return;
-        // Use the SPECIFIC D_cont filter: origin face [0, i] ∩ [x, j]
-        int dim = d_cont_face_intersection_dim<d>(x, i, j);
-        if (dim == static_cast<int>(d) - 2) {
-            DCandidate<d> c;
-            c.i = static_cast<long long>(i);
-            c.x = x;
-            c.j = static_cast<long long>(j);
-            out.push_back(c);
-        }
+        if (d_cont_face_intersection_dim<d>(x, i, j)
+                == static_cast<int>(d) - 2)
+            out.push_back(DCandidate<d>{
+                static_cast<long long>(i), x,
+                static_cast<long long>(j)});
         return;
     }
-    for (long long v = -bound; v <= bound; ++v) {
-        x[k] = v;
-        search_D_cont_recursive<d>(subst, x, k + 1, i, j, bound, out);
+    for (long long value = -bound; value <= bound; ++value) {
+        x[k] = value;
+        search_D_cont_recursive<d>(
+            subst, x, k + 1, i, j, bound, out);
     }
+}
+
+template <std::size_t d>
+std::vector<DCandidate<d>> search_D_cont_legacy_box(
+        const Substitution<d>& subst, long long bound = 2) {
+    if (!subst.is_unit_cube_tile())
+        throw std::domain_error(
+            "search_D_cont: face-intersection geometry is not yet "
+            "generalized beyond the unit-cube tile");
+    if (bound < 0)
+        throw std::invalid_argument("search_D_cont: negative bound");
+    std::vector<DCandidate<d>> found;
+    for (std::size_t i = 0; i < d; ++i)
+        for (std::size_t j = 0; j < d; ++j) {
+            std::array<long long, d> x{};
+            search_D_cont_recursive<d>(
+                subst, x, 0, i, j, bound, found);
+        }
+    return found;
+}
+
+// Enumerate exactly the lattice translations whose unit-cube faces can meet
+// in dimension d-2.
+//
+// i != j:
+//   x_i in {-1,0}, x_j in {0,1}, every other coordinate is 0.
+// i == j:
+//   x_i = 0 and exactly one other coordinate is +1 or -1.
+//
+// These are not heuristic bounds.  They follow coordinate-by-coordinate from
+// intersecting {0}/[0,1] with {x_k}/[x_k,x_k+1].
+template <std::size_t d>
+std::vector<std::array<long long, d>> d_cont_face_translation_candidates(
+        std::size_t i, std::size_t j, long long bound = 2) {
+    if (i >= d || j >= d)
+        throw std::out_of_range("D_cont face index out of range");
+    if (bound < 0)
+        throw std::invalid_argument("D_cont candidate bound is negative");
+    std::vector<std::array<long long, d>> result;
+    if (i != j) {
+        for (const long long xi : {-1LL, 0LL})
+            for (const long long xj : {0LL, 1LL}) {
+                if (std::llabs(xi) > bound || std::llabs(xj) > bound)
+                    continue;
+                std::array<long long, d> x{};
+                x[i] = xi;
+                x[j] = xj;
+                result.push_back(x);
+            }
+    } else if (bound >= 1) {
+        for (std::size_t k = 0; k < d; ++k) {
+            if (k == i) continue;
+            std::array<long long, d> positive{};
+            positive[k] = 1;
+            result.push_back(positive);
+            auto negative = positive;
+            negative[k] = -1;
+            result.push_back(negative);
+        }
+    }
+    return result;
+}
+
+template <std::size_t d>
+std::vector<DCandidate<d>> search_D_cont_projected_faces(
+        const Substitution<d>& subst, long long bound = 2) {
+    if (!subst.is_unit_cube_tile())
+        throw std::domain_error(
+            "search_D_cont: face-intersection geometry is not yet "
+            "generalized beyond the unit-cube tile");
+    std::vector<DCandidate<d>> found;
+    for (std::size_t i = 0; i < d; ++i)
+        for (std::size_t j = 0; j < d; ++j)
+            for (const auto& x :
+                 d_cont_face_translation_candidates<d>(i, j, bound)) {
+                bool all_zero = true;
+                for (const auto value : x)
+                    all_zero = all_zero && value == 0;
+                if (all_zero && i >= j) continue;
+                DCandidate<d> candidate{
+                    static_cast<long long>(i), x,
+                    static_cast<long long>(j)};
+                // Retain both independent predicates as a replay check on the
+                // symbolic candidate derivation.
+                if (is_in_D_cont<d>(subst, candidate))
+                    found.push_back(candidate);
+            }
+    return found;
+}
+
+// Geometric D_cont derivation.  Projected face enumeration is the default;
+// pass legacy_box explicitly or set RAVEL_CORONA_MODE=legacy (or
+// RAVEL_D_CONT_MODE=legacy) for the historical exhaustive box scan.
+template <std::size_t d>
+std::vector<DCandidate<d>> search_D_cont(
+        const Substitution<d>& subst,
+        long long bound = 2,
+        DContSearchMode mode = default_d_cont_search_mode()) {
+    return mode == DContSearchMode::legacy_box
+        ? search_D_cont_legacy_box<d>(subst, bound)
+        : search_D_cont_projected_faces<d>(subst, bound);
 }
 
 }  // namespace ravel

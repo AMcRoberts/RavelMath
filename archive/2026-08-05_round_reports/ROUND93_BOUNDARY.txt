@@ -1,0 +1,10 @@
+D=3 word=Q multiplicity=7
+D=3 word=R multiplicity=28
+D=3 word=RR multiplicity=12
+D=4 word=Q multiplicity=40
+D=4 word=R multiplicity=99
+D=4 word=RR multiplicity=46
+D=5 word=Q multiplicity=395
+D=5 word=R multiplicity=607
+D=5 word=RR multiplicity=279
+generalized multinacci boundary word lift PASS

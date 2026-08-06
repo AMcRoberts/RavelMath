@@ -1,0 +1,67 @@
+
+=== arithmetic hull n=3 coefficient_bound=1 ===
+exact enumeration: translations=27 labelled_nodes=108 edges=168
+cyclic_SCCs=1 generated_core=14 missing=0 core_SCC=EXACT outgoing=32 incoming=12 returning_outgoing=0 reverse_basin_outside=14 no_return=PASS
+SCC 0 [CORE] nodes=14 edges=18 q=7 period=1 rho~=1.395336994464 translation_envelope=(8,1.835086681641) gap~=0.000000000000 maxcoeff=1 reflectiveWeight=PASS replay=PASS weightGrammar=7/7 grammarReplay=PASS symbolicWeight=4/7 factor=FAIL collisions=3 refinedWeight=7/7 rounds=1 factor=PASS roleUpper=4/7 dominance=PASS replay=PASS support=2:12,3:2
+finite quotient core maximality: PASS terminal=0 injection=0 renewal=0 paired=0
+arithmetic-supergraph dominance: estimate=PASS exact=not-requested catalogue=PASS
+
+=== arithmetic hull n=4 coefficient_bound=1 ===
+exact enumeration: translations=81 labelled_nodes=548 edges=938
+cyclic_SCCs=3 generated_core=46 missing=0 core_SCC=EXACT outgoing=150 incoming=30 returning_outgoing=0 reverse_basin_outside=30 no_return=PASS
+SCC 0 [CORE] nodes=46 edges=70 q=23 period=1 rho~=1.623353871215 translation_envelope=(20,2.819220283316) gap~=0.000000000000 maxcoeff=1 reflectiveWeight=PASS replay=PASS weightGrammar=23/23 grammarReplay=PASS symbolicWeight=10/23 factor=FAIL collisions=13 refinedWeight=23/23 rounds=2 factor=PASS roleUpper=10/23 dominance=PASS replay=PASS support=2:36,3:10
+SCC 1 nodes=4 edges=4 q=1 period=4 rho~=1.000000000000 translation_envelope=(4,1.000000000000) gap~=0.623353871215 maxcoeff=1 reflectiveWeight=PASS replay=PASS weightGrammar=1/1 grammarReplay=PASS symbolicWeight=1/1 factor=PASS collisions=0 refinedWeight=1/1 rounds=1 factor=PASS roleUpper=1/1 dominance=PASS replay=PASS support=4:4
+  core projection: none image=0 missing_core_edges=0
+SCC 2 nodes=2 edges=2 q=1 period=2 rho~=1.000000000000 translation_envelope=(2,1.000000000000) gap~=0.623353871215 maxcoeff=1 reflectiveWeight=PASS replay=PASS weightGrammar=1/1 grammarReplay=PASS symbolicWeight=1/1 factor=PASS collisions=0 refinedWeight=1/1 rounds=1 factor=PASS roleUpper=1/1 dominance=PASS replay=PASS support=4:2
+  core projection: none image=0 missing_core_edges=0
+finite quotient core maximality: PASS terminal=2 injection=0 renewal=0 paired=0
+arithmetic-supergraph dominance: estimate=PASS exact=not-requested catalogue=PASS
+
+=== arithmetic hull n=5 coefficient_bound=1 ===
+exact enumeration: translations=243 labelled_nodes=2390 edges=4302
+cyclic_SCCs=3 generated_core=108 missing=0 core_SCC=EXACT outgoing=456 incoming=56 returning_outgoing=0 reverse_basin_outside=52 no_return=PASS
+SCC 0 [CORE] nodes=108 edges=180 q=54 period=1 rho~=1.756227577860 translation_envelope=(40,3.820945282252) gap~=0.000000000000 maxcoeff=1 reflectiveWeight=PASS replay=PASS weightGrammar=54/54 grammarReplay=PASS symbolicWeight=13/54 factor=FAIL collisions=41 refinedWeight=54/54 rounds=3 factor=PASS roleUpper=13/54 dominance=PASS replay=PASS support=2:80,3:28
+SCC 1 nodes=48 edges=60 q=24 period=1 rho~=1.290597092568 translation_envelope=(24,1.655862773269) gap~=0.465630485291 maxcoeff=1 reflectiveWeight=PASS replay=PASS weightGrammar=24/24 grammarReplay=PASS symbolicWeight=13/24 factor=FAIL collisions=11 refinedWeight=24/24 rounds=1 factor=PASS roleUpper=13/24 dominance=FAIL replay=PASS support=4:40,5:8
+  core projection: none image=0 missing_core_edges=0
+SCC 2 nodes=18 edges=22 q=9 period=1 rho~=1.229810148680 translation_envelope=(12,1.464283280965) gap~=0.526417429180 maxcoeff=1 reflectiveWeight=PASS replay=PASS weightGrammar=9/9 grammarReplay=PASS symbolicWeight=5/9 factor=FAIL collisions=4 refinedWeight=9/9 rounds=1 factor=PASS roleUpper=5/9 dominance=FAIL replay=PASS support=4:16,5:2
+  core projection: none image=0 missing_core_edges=0
+finite quotient core maximality: PASS terminal=0 injection=2 renewal=0 paired=0
+arithmetic-supergraph dominance: estimate=PASS exact=not-requested catalogue=PASS
+
+=== arithmetic hull n=6 coefficient_bound=1 ===
+exact enumeration: translations=729 labelled_nodes=9594 edges=17694
+cyclic_SCCs=7 generated_core=210 missing=0 core_SCC=EXACT outgoing=1090 incoming=90 returning_outgoing=0 reverse_basin_outside=80 no_return=PASS
+SCC 0 nodes=236 edges=344 q=118 period=1 rho~=1.507473453217 translation_envelope=(84,2.651276555009) gap~=0.329010213869 maxcoeff=1 reflectiveWeight=PASS replay=PASS weightGrammar=118/118 grammarReplay=PASS symbolicWeight=32/118 factor=FAIL collisions=86 refinedWeight=118/118 rounds=2 factor=PASS roleUpper=32/118 dominance=FAIL replay=PASS support=4:176,5:60
+  core projection: none image=0 missing_core_edges=0
+SCC 1 [CORE] nodes=210 edges=370 q=105 period=1 rho~=1.836483667086 translation_envelope=(70,4.799702939075) gap~=0.000000000000 maxcoeff=1 reflectiveWeight=PASS replay=PASS weightGrammar=105/105 grammarReplay=PASS symbolicWeight=19/105 factor=FAIL collisions=84 refinedWeight=105/105 rounds=4 factor=PASS roleUpper=19/105 dominance=PASS replay=PASS support=2:150,3:60
+SCC 2 nodes=80 edges=112 q=40 period=1 rho~=1.404481597473 translation_envelope=(42,1.969528469199) gap~=0.432002069613 maxcoeff=1 reflectiveWeight=PASS replay=PASS weightGrammar=40/40 grammarReplay=PASS symbolicWeight=11/40 factor=FAIL collisions=29 refinedWeight=40/40 rounds=2 factor=PASS roleUpper=11/40 dominance=FAIL replay=PASS support=4:66,5:14
+  core projection: none image=0 missing_core_edges=0
+SCC 3 nodes=6 edges=6 q=1 period=6 rho~=1.000000000000 translation_envelope=(6,1.000000000000) gap~=0.836483667086 maxcoeff=1 reflectiveWeight=PASS replay=PASS weightGrammar=1/1 grammarReplay=PASS symbolicWeight=1/1 factor=PASS collisions=0 refinedWeight=1/1 rounds=1 factor=PASS roleUpper=1/1 dominance=PASS replay=PASS support=6:6
+  core projection: none image=0 missing_core_edges=0
+SCC 4 nodes=6 edges=6 q=1 period=6 rho~=1.000000000000 translation_envelope=(6,1.000000000000) gap~=0.836483667086 maxcoeff=1 reflectiveWeight=PASS replay=PASS weightGrammar=1/1 grammarReplay=PASS symbolicWeight=1/1 factor=PASS collisions=0 refinedWeight=1/1 rounds=1 factor=PASS roleUpper=1/1 dominance=PASS replay=PASS support=6:6
+  core projection: none image=0 missing_core_edges=0
+SCC 5 nodes=6 edges=6 q=1 period=6 rho~=1.000000000000 translation_envelope=(6,1.000000000000) gap~=0.836483667086 maxcoeff=1 reflectiveWeight=PASS replay=PASS weightGrammar=1/1 grammarReplay=PASS symbolicWeight=1/1 factor=PASS collisions=0 refinedWeight=1/1 rounds=1 factor=PASS roleUpper=1/1 dominance=PASS replay=PASS support=6:6
+  core projection: none image=0 missing_core_edges=0
+SCC 6 nodes=2 edges=2 q=1 period=2 rho~=1.000000000000 translation_envelope=(2,1.000000000000) gap~=0.836483667086 maxcoeff=1 reflectiveWeight=PASS replay=PASS weightGrammar=1/1 grammarReplay=PASS symbolicWeight=1/1 factor=PASS collisions=0 refinedWeight=1/1 rounds=1 factor=PASS roleUpper=1/1 dominance=PASS replay=PASS support=6:2
+  core projection: none image=0 missing_core_edges=0
+finite quotient core maximality: PASS terminal=4 injection=0 renewal=2 paired=0
+arithmetic-supergraph dominance: estimate=PASS exact=not-requested catalogue=PASS
+
+=== arithmetic hull n=7 coefficient_bound=1 ===
+exact enumeration: translations=2187 labelled_nodes=36666 edges=68670
+cyclic_SCCs=7 generated_core=362 missing=0 core_SCC=EXACT outgoing=2232 incoming=132 returning_outgoing=0 reverse_basin_outside=114 no_return=PASS
+SCC 0 nodes=766 edges=1214 q=383 period=1 rho~=1.655610559359 translation_envelope=(224,3.912392641616) gap~=0.231171558703 maxcoeff=1 reflectiveWeight=PASS replay=PASS weightGrammar=383/383 grammarReplay=PASS symbolicWeight=44/383 factor=FAIL collisions=338 refinedWeight=383/383 rounds=3 factor=PASS roleUpper=44/383 dominance=FAIL replay=PASS support=4:536,5:230
+  core projection: none image=0 missing_core_edges=0
+SCC 1 [CORE] nodes=362 edges=662 q=181 period=1 rho~=1.886782118062 translation_envelope=(112,5.761757926687) gap~=0.000000000000 maxcoeff=1 reflectiveWeight=PASS replay=PASS weightGrammar=181/181 grammarReplay=PASS symbolicWeight=20/181 factor=FAIL collisions=159 refinedWeight=181/181 rounds=5 factor=PASS roleUpper=20/181 dominance=PASS replay=PASS support=2:252,3:110
+SCC 2 nodes=250 edges=382 q=125 period=1 rho~=1.535116834913 translation_envelope=(112,2.491552069987) gap~=0.351665283149 maxcoeff=1 reflectiveWeight=PASS replay=PASS weightGrammar=125/125 grammarReplay=PASS symbolicWeight=16/125 factor=FAIL collisions=108 refinedWeight=125/125 rounds=3 factor=PASS roleUpper=16/125 dominance=FAIL replay=PASS support=4:196,5:54
+  core projection: none image=0 missing_core_edges=0
+SCC 3 nodes=102 edges=130 q=51 period=1 rho~=1.252057218757 translation_envelope=(48,1.586158014011) gap~=0.634724899306 maxcoeff=1 reflectiveWeight=PASS replay=PASS weightGrammar=51/51 grammarReplay=PASS symbolicWeight=20/51 factor=FAIL collisions=31 refinedWeight=51/51 rounds=2 factor=PASS roleUpper=20/51 dominance=FAIL replay=PASS support=6:84,7:18
+  core projection: none image=0 missing_core_edges=0
+SCC 4 nodes=77 edges=93 q=77 period=1 rho~=1.185144556205 translation_envelope=(48,1.402451170125) gap~=0.701637561857 maxcoeff=1 reflectiveWeight=PASS replay=PASS weightGrammar=77/77 grammarReplay=PASS symbolicWeight=36/77 factor=FAIL collisions=41 refinedWeight=77/77 rounds=2 factor=PASS roleUpper=36/77 dominance=FAIL replay=PASS support=6:67,7:10
+  core projection: none image=0 missing_core_edges=0
+SCC 5 nodes=77 edges=93 q=77 period=1 rho~=1.185144556205 translation_envelope=(48,1.402451170125) gap~=0.701637561857 maxcoeff=1 reflectiveWeight=PASS replay=PASS weightGrammar=77/77 grammarReplay=PASS symbolicWeight=34/77 factor=FAIL collisions=43 refinedWeight=77/77 rounds=2 factor=PASS roleUpper=34/77 dominance=FAIL replay=PASS support=6:67,7:10
+  core projection: none image=0 missing_core_edges=0
+SCC 6 nodes=22 edges=26 q=11 period=1 rho~=1.162004394495 translation_envelope=(16,1.321209839138) gap~=0.724777723567 maxcoeff=1 reflectiveWeight=PASS replay=PASS weightGrammar=11/11 grammarReplay=PASS symbolicWeight=5/11 factor=FAIL collisions=6 refinedWeight=11/11 rounds=2 factor=PASS roleUpper=5/11 dominance=FAIL replay=PASS support=6:20,7:2
+  core projection: none image=0 missing_core_edges=0
+finite quotient core maximality: PASS terminal=0 injection=3 renewal=3 paired=0
+arithmetic-supergraph dominance: estimate=PASS exact=not-requested catalogue=PASS

@@ -1,0 +1,2 @@
+plastic three-generator grammar PASS
+states=101 edges=125 G0=79 G+=28 G-=18 paired=92 unpaired=33

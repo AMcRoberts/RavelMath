@@ -1,0 +1,29 @@
+D=2 m=1 states=6 macro=6 expanded=6 roof=1 voltage(-,0,+)=2,2,2
+D=3 m=1 states=29 macro=41 expanded=29 roof=1 voltage(-,0,+)=11,19,11
+D=4 m=1 states=113 macro=189 expanded=113 roof=1 voltage(-,0,+)=48,93,48
+D=5 m=1 states=382 macro=688 expanded=382 roof=1 voltage(-,0,+)=171,345,172
+D=2 m=2 states=0 macro=0 expanded=0 roof=0 voltage(-,0,+)=0,0,0
+D=3 m=2 states=28 macro=47 expanded=40 roof=2 voltage(-,0,+)=20,7,20
+D=4 m=2 states=82 macro=185 expanded=128 roof=2 voltage(-,0,+)=74,40,71
+D=5 m=2 states=474 macro=1281 expanded=753 roof=2 voltage(-,0,+)=446,395,440
+D=2 m=3 states=0 macro=0 expanded=0 roof=0 voltage(-,0,+)=0,0,0
+D=3 m=3 states=28 macro=59 expanded=64 roof=3 voltage(-,0,+)=25,9,25
+D=4 m=3 states=172 macro=543 expanded=489 roof=3 voltage(-,0,+)=226,97,220
+D=5 m=3 states=1179 macro=4310 expanded=3467 roof=3 voltage(-,0,+)=1690,958,1662
+generalized multinacci signed renewal twist PASS
+D=3 word=Q multiplicity=7
+D=3 word=R multiplicity=28
+D=3 word=RR multiplicity=12
+D=4 word=Q multiplicity=40
+D=4 word=R multiplicity=99
+D=4 word=RR multiplicity=46
+D=5 word=Q multiplicity=395
+D=5 word=R multiplicity=607
+D=5 word=RR multiplicity=279
+generalized multinacci boundary word lift PASS
+D=2 base=0 macro_edges=0 phase_states=0 expanded=0
+D=3 base=28 macro_edges=47 phase_states=12 expanded=40
+D=4 base=82 macro_edges=185 phase_states=46 expanded=128
+D=5 base=474 macro_edges=1281 phase_states=279 expanded=753
+generalized multinacci phase-expanded boundary PASS
+generalized multinacci prefix phase PASS

@@ -1,0 +1,7 @@
+generalized multinacci general-m intertwiner PASS
+m tested: 1..128
+symbolic cut catalogue: (m+1)^2
+roof words checked per m: m+1
+scheduler multiplicity sum: (m+1)^2
+negative tests: invalid Q intertwiner rejected; m=0 rejected
+Lean artifact emitted; kernel check not run in this archive

@@ -156,6 +156,105 @@ PolyZ chi = charpoly_faddeev_leverrier(M);
 `charpoly_faddeev_leverrier` checks that every rational division is
 integral and verifies Cayley–Hamilton before returning.
 
+
+## Reflective proof engine
+
+This is the public entry point for operating the self-observing proof system. Read this section before using the engine, then follow the linked manual and contracts.
+
+### What the engine does
+
+```text
+Lua activation
+→ ordinary exact math-library execution
+→ semantic reflection trace
+→ generated executable proof campaign
+→ reusable derivation operations
+→ dependency-closed proof artifacts
+→ Lean serialization
+→ one kernel check
+```
+
+The application is only a trigger. Mathematical definitions and observations belong in the math library; theorem data belongs in campaign specifications; reusable derivations belong in the executor; Lean verifies the finished result.
+
+### Public locations
+
+| Purpose | Location |
+|---|---|
+| Reflection trace, typed semantic nodes, scoped activation | `math/include/math/proof_reflection.hpp` |
+| Symbolic polynomial-matrix families and reflected operations | `math/include/math/poly_matrix.hpp` |
+| Lua activation declaration reader | `include/ravel/proof/reflection_declaration.hpp` |
+| Campaign vocabulary, specifications, generator, executor, artifacts, renderer | `include/ravel/proof/proof_campaign_engine.hpp` |
+| Legacy trace renderer; do not use for campaign closure | `include/ravel/proof/reflective_lean_renderer.hpp` |
+| Universal-`n` integration trigger | `app/nbonacci_charmpoly_proof_general.cpp` |
+| Lua activation schema | `lua/lua_src/ravel/proof/nbonacci_charpoly_schema.lua` |
+| Shared erased-index Lean support | `lean/Ravel/Matrix/EraseIndex.lean` |
+| Isolated Lean invocation | `scripts/safe_lean_check.sh` |
+
+### Core API
+
+Activate reflection around ordinary math-library work:
+
+```cpp
+#include "math/poly_matrix.hpp"
+#include "math/proof_reflection.hpp"
+#include "ravel/proof/proof_campaign_engine.hpp"
+#include "ravel/proof/reflection_declaration.hpp"
+
+auto declaration = ravel::proof::load_reflection_declaration(schema_path);
+if (!declaration.enabled) throw std::runtime_error("reflection disabled");
+
+mathlib::reflection::Trace trace("theorem.identifier");
+{
+    mathlib::reflection::ScopedTrace active(&trace);
+    // Call ordinary exact math-library operations here.
+}
+
+ravel::proof::CampaignGenerator generator;
+ravel::proof::ProofCampaignExecutor executor;
+auto result = executor.run(generator.generate(trace), trace);
+
+std::string report = result.report();
+std::string lean = ravel::proof::render_closed_campaign_lean(result);
+```
+
+Principal public objects:
+
+- `mathlib::reflection::Trace` — typed semantic provenance for one theorem campaign.
+- `mathlib::reflection::ScopedTrace` — optional activation woven through ordinary math calls.
+- `ravel::proof::CampaignOperation` — installed executable derivation vocabulary.
+- `ravel::proof::CampaignTask` and `ProofCampaign` — dependency-linked executable plan.
+- `ravel::proof::ProofCampaignExecutor::run(...)` — executes ready tasks until closure or a typed block.
+- `ravel::proof::ClosedProofArtifact` — renderable definitions and theorems with no open goals.
+- `ravel::proof::CampaignResult` — task states, diagnostics, artifacts, and `all_closed()`.
+- `ravel::proof::render_closed_campaign_lean(...)` — serializes only closed artifacts.
+
+Installed derivation operations are declared by `CampaignOperation`. They currently cover triangular support and determinant composition, piecewise erased-index equality, sparse cofactor recurrence, first-order recurrence closure, cofactor decomposition, polynomial normalization, and final theorem composition.
+
+### Correct operating procedure
+
+1. Enable reflection through the Lua declaration.
+2. Run the ordinary symbolic problem through the math library; do not put proof logic in the trigger.
+3. Generate the campaign from the resulting `Trace`.
+4. Require every campaign operation to have an installed executor.
+5. Run the executor to closure.
+6. Inspect typed blocked states instead of editing generated Lean.
+7. Render only dependency-closed artifacts.
+8. Run `scripts/safe_lean_check.sh` when the matching Lean/Mathlib toolchain is complete.
+
+`TaskState::Closed` means internally dependency-closed. It does **not** mean Lean accepted the module. Report kernel acceptance separately.
+
+When a derivation is missing, implement the reusable derivation operation. Do not perform the derivation manually in the application, campaign data, C++ strings, tests, or generated Lean.
+
+### Authoritative follow-on reading
+
+Read these in order after this section:
+
+1. `PROOF_SYSTEM_MANUAL.md` — operating workflow, outputs, and troubleshooting.
+2. `PROOF_SYSTEM_CONTRACTS.md` — non-negotiable architecture and acceptance rules.
+3. `PROOF_SYSTEM_EXTENSION_GUIDE.md` — how to add a missing reusable derivation operation.
+4. `SAFE_LEAN_CHECK.md` — isolated kernel-check procedure.
+5. The applicable campaign reading list, such as `READINGLIST.NBONACCI_SHOOT_THE_MOON.md`.
+
 ## Algebraic numbers in `Q(beta)`
 
 Let `c(beta)=0` be monic of degree `d`. `QBetaRing(c)` represents
@@ -384,6 +483,36 @@ A cap or stopped closure is a bounded result, not a theorem.
 Low-level calls in `corona.hpp` expose `build_signed_contact_set`,
 `c_corona`, simple forward/backward targets, and conversion from
 `ANode` to `SNode`.
+
+The default high-dimensional path is request-driven:
+
+```cpp
+ravel::CoronaSurface<6> surface(substitution, contact);
+ravel::CoronaProjectionRequest<6> request;
+request.seeds = embedded_states;
+request.accept = relevant_state_predicate;
+request.operations =
+    static_cast<unsigned>(ravel::CoronaSurfaceOperation::simple_forward) |
+    static_cast<unsigned>(ravel::CoronaSurfaceOperation::simple_backward);
+auto image = surface.project(request);
+if (!image.complete()) {
+    // A cap or unfinished frontier is not a theorem.
+}
+```
+
+For Algorithm 2 with filtering during corona generation:
+
+```cpp
+auto trace = ravel::algorithm2_projected_trace<6>(
+    substitution, contact, predicate,
+    ravel::CoronaConnectorPolicy::evolving_layer);
+```
+
+`trace.rejected_boundary` is proof-relevant audit data.  The projected mode is
+the default.  Set `RAVEL_CORONA_MODE=legacy` or pass an explicit legacy mode to
+use historical full materialization.  `search_D_cont` follows the same default
+and uses exact face-pattern enumeration; `RAVEL_D_CONT_MODE=legacy` restores
+the old box scan.  See `CORONA_SURFACE_PROJECTION.md`.
 
 ## Balanced pairs
 
@@ -785,3 +914,21 @@ Use `docs/LITERATURE_AUDIT_CLASS_II.md` for what the cited literature
 does and does not establish for the Class-II family. Use
 `docs/THEOREM_STATUS.md` before promoting any numerical or bounded
 certificate to a general claim.
+
+
+### Family adjacent-swap closed forms
+
+Owner: `include/ravel/family_closed_forms.hpp`.
+
+- `class_ii_adjacent_swap_count_closed_form(a,b)` returns `3` in the
+  nondegenerate chamber `a,b>=1`.
+- `nbonacci_adjacent_swap_count_closed_form(n)` returns `n-1` for `n>=2`.
+- `certify_class_ii_adjacent_swap_count(a,b)` and
+  `certify_nbonacci_adjacent_swap_count(n)` independently construct the
+  substitutions, invoke `adjacent_swap_neighbors`, compare the exact counts,
+  and verify incidence preservation.
+
+These are exact word-combinatorics operations, not spectral or topological
+claims. The n-bonacci executable constructor uses `int8_t` letters and is
+therefore limited to `n<=127`; the mathematical formula and Lean statement are
+not dimension-limited.

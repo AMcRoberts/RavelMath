@@ -1,0 +1,5 @@
+shift-branch three-generator continuation PASS for D=2..256
+quartic next Pisot candidate PASS: x^4-x^3-1 root bracket (1.38027,1.38028)
+quartic next Pisot three-generator PASS states=445 edges=556 classes=331,158,67
+quartic next Pisot intertwiner PASS states=445 boundary_edges=556 universal_edges=25
+Lean artifact emitted; local kernel check not performed in this archive.

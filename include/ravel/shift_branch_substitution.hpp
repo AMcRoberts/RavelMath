@@ -1,0 +1,23 @@
+#pragma once
+#include <cstdint>
+#include <stdexcept>
+#include <vector>
+namespace ravel {
+inline std::vector<std::vector<std::int8_t>> shift_branch_rule(std::size_t D) {
+    if (D < 2 || D > 127) throw std::invalid_argument("shift_branch_rule requires 2 <= D <= 127");
+    std::vector<std::vector<std::int8_t>> r(D);
+    for (std::size_t i=0;i+1<D;++i) r[i] = {static_cast<std::int8_t>(i+1)};
+    r[D-1] = {0,1};
+    return r;
+}
+inline std::vector<long long> shift_branch_characteristic_coefficients(std::size_t D) {
+    if (D < 2) throw std::invalid_argument("D >= 2 required");
+    std::vector<long long> c(D+1,0); c[0] = -1; c[1] = -1; c[D] = 1; return c;
+}
+inline std::vector<std::vector<std::int8_t>> quartic_next_pisot_rule() {
+    return {{1},{2},{3},{0,3}};
+}
+inline std::vector<long long> quartic_next_pisot_characteristic_coefficients() {
+    return {-1,0,0,-1,1}; // x^4-x^3-1
+}
+}

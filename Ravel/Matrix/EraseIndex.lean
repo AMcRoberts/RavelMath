@@ -1,0 +1,150 @@
+import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+import Mathlib.Algebra.Polynomial.Basic
+import Mathlib.Tactic
+
+namespace Ravel.Matrix.EraseIndex
+
+/-- The final valid index of a nonempty `Fin n`. Keeping this witness in the
+Lean support layer avoids asking generated proofs to normalize nested
+`Nat.sub` expressions merely to name the last row or column. -/
+def last {n : ℕ} (hn : 0 < n) : Fin n :=
+  ⟨n - 1, by omega⟩
+
+/-- The last index of `Fin (n - 1)` when `n` has at least two elements.
+This constructor avoids exposing a generated proof to the normalization of
+`0 < n - 1` inside a larger dependent matrix term. -/
+def lastPred {n : ℕ} (hn : 2 ≤ n) : Fin (n - 1) :=
+  ⟨n - 2, by omega⟩
+
+@[simp] theorem lastPred_val {n : ℕ} (hn : 2 ≤ n) :
+    (lastPred hn).val = n - 2 := rfl
+
+/-- The first index of `Fin (n - 1)` when `n` has at least two elements.
+Generated proofs use this constructor instead of rebuilding the dependent
+positivity witness for `0 < n - 1` inside a matrix expression. -/
+def firstPred {n : ℕ} (hn : 2 ≤ n) : Fin (n - 1) :=
+  ⟨0, by omega⟩
+
+@[simp] theorem firstPred_val {n : ℕ} (hn : 2 ≤ n) :
+    (firstPred hn).val = 0 := rfl
+
+/-- Monotone embedding that skips one position in a nonempty `Fin n`.
+The existence of `k : Fin n` supplies the nonemptiness evidence, so callers do
+not need to pass a separate proof that `0 < n`. -/
+def skip {n : ℕ} (k : Fin n) : Fin (n - 1) → Fin n :=
+  fun i => if h : i.val < k.val then
+    ⟨i.val, by omega⟩
+  else
+    ⟨i.val + 1, by omega⟩
+
+@[simp] theorem skip_val_of_lt {n : ℕ} (k : Fin n) (i : Fin (n - 1))
+    (h : i.val < k.val) : (skip k i).val = i.val := by
+  simp [skip, h]
+
+@[simp] theorem skip_val_of_ge {n : ℕ} (k : Fin n) (i : Fin (n - 1))
+    (h : k.val ≤ i.val) : (skip k i).val = i.val + 1 := by
+  simp [skip, Nat.not_lt.mpr h]
+
+@[simp] theorem skip_zero_val {n : ℕ} (hn : 0 < n) (i : Fin (n - 1)) :
+    (skip (⟨0, hn⟩ : Fin n) i).val = i.val + 1 := by
+  apply skip_val_of_ge
+  exact Nat.zero_le _
+
+@[simp] theorem skip_last_val {n : ℕ} (hn : 0 < n) (i : Fin (n - 1)) :
+    (skip (last hn) i).val = i.val := by
+  apply skip_val_of_lt
+  change i.val < n - 1
+  omega
+
+@[simp] theorem skip_lastPred_val {n : ℕ} (hn : 2 ≤ n) (i : Fin (n - 2)) :
+    (skip (lastPred hn) i).val = i.val := by
+  apply skip_val_of_lt
+  change i.val < n - 2
+  omega
+
+@[simp] theorem skip_firstPred_val {n : ℕ} (hn : 2 ≤ n) (i : Fin (n - 2)) :
+    (skip (firstPred hn) i).val = i.val + 1 := by
+  apply skip_val_of_ge
+  simp
+
+
+/-- Normalize the two row embeddings used when a principal zero-row deletion
+is followed by deletion of the final residual row.  This exposes the composed
+offset directly, rather than leaving nested `skip` terms for arithmetic
+tactics to unfold. -/
+@[simp] theorem skip_zero_skip_lastPred_val {n : ℕ} (hn : 2 ≤ n)
+    (i : Fin (n - 2)) :
+    (skip (⟨0, by omega⟩ : Fin n) (skip (lastPred hn) i)).val = i.val + 1 := by
+  calc
+    (skip (⟨0, by omega⟩ : Fin n) (skip (lastPred hn) i)).val
+        = (skip (lastPred hn) i).val + 1 :=
+          skip_zero_val (by omega) (skip (lastPred hn) i)
+    _ = i.val + 1 := by rw [skip_lastPred_val hn]
+
+/-- Normalize the two column embeddings used by the residual-core transport:
+first delete column one of the source matrix, then delete the first column of
+the residual minor. -/
+@[simp] theorem skip_one_skip_firstPred_val {n : ℕ} (hn : 2 ≤ n)
+    (j : Fin (n - 2)) :
+    (skip (⟨1, by omega⟩ : Fin n) (skip (firstPred hn) j)).val =
+      j.val + 2 := by
+  have hge : (⟨1, by omega⟩ : Fin n).val ≤ (skip (firstPred hn) j).val := by
+    change 1 ≤ (skip (firstPred hn) j).val
+    rw [skip_firstPred_val hn]
+    exact Nat.succ_le_succ (Nat.zero_le j.val)
+  calc
+    (skip (⟨1, by omega⟩ : Fin n) (skip (firstPred hn) j)).val
+        = (skip (firstPred hn) j).val + 1 :=
+            skip_val_of_ge
+              (⟨1, by omega⟩ : Fin n)
+              (skip (firstPred hn) j)
+              hge
+    _ = j.val + 2 := by
+      rw [skip_firstPred_val hn]
+
+@[simp] theorem skip_finLast_val {n : ℕ} (i : Fin n) :
+    (skip (Fin.last n) i).val = i.val := by
+  apply skip_val_of_lt
+  exact i.isLt
+
+theorem skip_injective {n : ℕ} (k : Fin n) : Function.Injective (skip k) := by
+  intro i j hij
+  apply Fin.ext
+  by_cases hi : i.val < k.val
+  · by_cases hj : j.val < k.val
+    · simpa [skip, hi, hj] using congrArg Fin.val hij
+    · have hj' : k.val ≤ j.val := Nat.le_of_not_gt hj
+      have : i.val = j.val + 1 := by
+        simpa [skip, hi, hj] using congrArg Fin.val hij
+      omega
+  · have hi' : k.val ≤ i.val := Nat.le_of_not_gt hi
+    by_cases hj : j.val < k.val
+    · have : i.val + 1 = j.val := by
+        simpa [skip, hi, hj] using congrArg Fin.val hij
+      omega
+    · simpa [skip, hi, hj, Nat.succ.injEq] using congrArg Fin.val hij
+
+/-- The concrete matrix operation corresponding to a reflected erase-index node.
+It accepts any square `Fin n` matrix and returns the square matrix obtained by
+erasing one row and one column. -/
+def minor {n : ℕ} {R : Type*}
+    (A : Matrix (Fin n) (Fin n) R)
+    (r c : Fin n) : Matrix (Fin (n - 1)) (Fin (n - 1)) R :=
+  fun i j => A (skip r i) (skip c j)
+
+/-- Companion to `minor`: drop the first row and the first column, leaving
+every other entry in place. The result is a `Fin (n - 1) × Fin (n - 1)` matrix
+whose `(i, j)`-th entry is the source's `(i + 1, j + 1)`-th entry.
+
+This is the shape of the q-minor reduction: erasing `(0, 0)` from
+`qMatrix (n + 1)` to obtain `qMatrix n`. The `qMatrix` family itself
+is generated by the proof campaign engine (see
+`docs/EXECUTABLE_PROOF_CAMPAIGN_ENGINE.md`); the engine emits a closed
+artifact containing the typed `qMatrix` definition and the
+`qMatrix_minor_eq_qMatrix` theorem with its case-analysis proof. The
+emitted Lean module is kernel-checked when the toolchain is available. -/
+def minorShift {n : ℕ} (hn : 0 < n) {R : Type*}
+    (A : Matrix (Fin n) (Fin n) R) : Matrix (Fin (n - 1)) (Fin (n - 1)) R :=
+  fun i j => A ⟨i.val + 1, by omega⟩ ⟨j.val + 1, by omega⟩
+
+end Ravel.Matrix.EraseIndex

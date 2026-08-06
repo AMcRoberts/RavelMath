@@ -13,6 +13,7 @@
 -- covering witness, in which case the Lean side skips that n.
 
 local M = {}
+local ravel = require("ravel")
 local cw = ravel.nbonacci_covering_witness
 
 -- The simplest covering witness at a single (n, L).  The C++ side

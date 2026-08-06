@@ -1,0 +1,7 @@
+round 101 validation
+third-smallest Pisot Q/R/S closure PASS parents=9 role_edges=81 classes=53,14,14
+Parry factorization PASS: (x^2+1)(x^5-x^4-x^3+x^2-1)=x^7-x^6-x^3-1
+prefix catalogue PASS: {epsilon,0}
+defect classes PASS: 0,+e0,-e0
+fourth/fifth primitive generator audit: REJECTED
+full d=7 boundary enumeration: not completed; no state/edge count claimed
