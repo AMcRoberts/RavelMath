@@ -355,3 +355,30 @@ What remains open, honestly: the CONVERSE (every compatible-gap pair
 eventually coincides) is still empirical, not proven. That's the next
 real target if this thread gets picked up again -- likely needs a
 genuinely different argument (existence, not impossibility).
+
+### 2026-08-06 (PC session, resumed) — a proved partial converse: the leftmost-loop corollary
+
+Picked the converse back up (Finding 26's open item). Instead of guessing
+at a general argument, drove the existing CoincidenceClosure at
+compatible gaps it hadn't been asked about yet and looked at the MINIMAL
+witnessing K, not just existence. Found real structure: on the Finding-26
+multi-junction gcd=2 example, gap in {0,4,8,12} coincide at exactly
+K=gap, while gap in {2,6,10} need K=gap+10. Traced the K=gap cases to an
+exact mechanism: child_index=0 always carries the zero landmark vector
+(no siblings before the first child), so the deterministic "always take
+the leftmost branch" walk accumulates zero cost throughout; being
+deterministic over a finite graph it's eventually periodic, and when the
+start junction lies on its own cycle, that gives a genuine zero-landmark
+closed loop of some length L (a multiple of g, but possibly a PROPER
+multiple -- L=4 here, not 2). Repeating that loop m times is then an
+exact, constructed witness for gap=mL at K=mL, no search needed. Proved
+and verified (including a negative check that gap=2 is correctly NOT
+covered). See Finding 27,
+include/ravel/proof/coincidence_converse_leftmost_loop.hpp.
+
+Honest scope: this only covers the sub-lattice of gaps that are
+multiples of L, not every compatible gap (gap=2,6,10 still need the full
+search, landing at K=gap+10 -- an unexplained but suggestively constant
+offset). The full converse is still open; next angle if this gets picked
+up again is probably explaining that +10 offset, which smells like a
+second, nonzero-landmark loop whose contribution eventually cancels.

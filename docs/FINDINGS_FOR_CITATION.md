@@ -2115,3 +2115,57 @@ converse -- that every compatible-gap pair eventually coincides -- that
 remains strong empirical support (every tested case, both single- and
 multi-junction), not a completed proof. Flagged as still open, not
 glossed over.
+
+## Finding 27 — a proved (partial) converse: the leftmost-loop corollary
+
+**Status: a genuine sub-case of Finding 26's open converse, closed
+rigorously — not the full converse.**
+
+Drove the existing Finding-25/26 `CoincidenceClosure` at gaps it hadn't
+been pointed at yet (not a new search tool -- the same verified
+machinery, asked a new question of it): for the Finding-26 multi-junction
+`gcd=2` example, swept every compatible gap up to `6g` and recorded the
+*minimal* witnessing depth `K`, not just whether one exists. The result
+had structure: `gap ∈ {0,4,8,12}` coincide at exactly `K=gap`, while
+`gap ∈ {2,6,10}` need `K=gap+10`. The `K=gap` cases are not an artifact
+of search order -- they have an exact construction behind them.
+
+**The leftmost loop.** `child_index=0` at any junction always carries
+the zero landmark vector (it's the abelianization of siblings *before*
+the chosen child; child 0 has none). So the walk that always takes
+`child_index=0` -- "always take the leftmost branch" -- accumulates the
+zero vector at every step, by construction, regardless of which
+junctions it passes through. This walk is deterministic (each junction
+has a unique `child_index=0`), so starting from any junction over a
+finite junction graph it is eventually periodic. If the starting
+junction `J` lies on its own eventual cycle, that cycle is a closed
+walk from `J` back to `J` using only zero-landmark edges; call its
+total jump-size length `L` (necessarily a multiple of `g`, being a sum
+of jump sizes, but possibly a *proper* multiple -- `L=4` vs. `g=2` in
+the example above).
+
+**Corollary (proved, not observed).** For any junction `J` on its own
+leftmost cycle of length `L`, and every `m ≥ 0`, the pair with
+`gap = mL` coincides at *exactly* `K = mL`: repeating the leftmost
+cycle `m` times is a walk of depth `mL` from `J` back to `J`
+contributing the zero vector throughout, i.e. `reachable(J, mL)`
+contains `(J, zero_vector)` -- the unique element of `reachable(J, 0)`.
+That is precisely the `K=gap` witness condition, produced by direct
+construction, no search required.
+
+See `include/ravel/proof/coincidence_converse_leftmost_loop.hpp`,
+`leftmost_loop_length()`, verified against both known examples in
+`tests/coincidence_converse_leftmost_loop_test.cpp` (including a
+negative check: `gap=2` on the multi-junction example is correctly
+*not* covered by this corollary alone, confirming `L=4` and not `L=2`
+is the real loop length there).
+
+**SCOPE, stated honestly**: this covers exactly the sub-lattice of
+gaps that are multiples of the leftmost-cycle length `L`, which can be
+a strict multiple of `g` (as in the worked example). It says nothing
+about compatible gaps outside that sub-lattice (`gap=2,6,10` above,
+which do coincide but need the full search and land at `K=gap+10`, not
+the naive `K=gap`). The full converse -- every compatible gap, via some
+general bound or construction -- remains open. The `+10` constant
+offset observed for the non-multiple-of-`L` residue class is a
+suggestive, unexplained regularity, not yet investigated.
