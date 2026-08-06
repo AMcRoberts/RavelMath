@@ -26,6 +26,7 @@
 #include "math/poly_z.hpp"
 #include "math/poly_q.hpp"
 #include "math/qbeta.hpp"
+#include "math/bezout.hpp"  // gcd_of, used by qbeta_sign below
 
 namespace mathlib {
 

@@ -43,6 +43,8 @@ local test_files = {
     "ravel.tests.test_fibonacci_selection",
     "ravel.tests.test_rauzy_fractal",
     "ravel.tests.test_wide_survey",
+    "ravel.tests.test_nbonacci_proof_schema",
+    "ravel.tests.test_nbonacci_strategy_tree",
 }
 
 local failed = 0

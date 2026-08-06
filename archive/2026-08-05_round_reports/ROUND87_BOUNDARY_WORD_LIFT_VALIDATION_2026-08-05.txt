@@ -1,0 +1,7 @@
+generalized multinacci boundary word lift PASS for D=2,3,4,5
+phase-expanded primitive Q/R first-return recovery PASS for D=2,3,4,5
+generalized multinacci prefix phase PASS
+finite positive grammar majorant PASS
+generalized multinacci family PASS
+
+Lean kernel validation not run: project archive does not contain the configured Lean/Mathlib toolchain.

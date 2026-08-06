@@ -148,6 +148,10 @@ int main() {
     const auto exact_trace = algorithm2_trace<3>(
         subst, C, CoronaConnectorPolicy::fixed_signed_contact,
         50, 0, CoronaEdgeArithmetic::exact_rational);
+    const auto projected_all_trace = algorithm2_projected_trace<3>(
+        subst, C, [](const SNode<3>&) { return true; },
+        CoronaConnectorPolicy::fixed_signed_contact,
+        50, 0, CoronaEdgeArithmetic::exact_rational);
     CHECK(fixed_trace.converged, "fixed-contact corona trace converges");
     CHECK(fixed_trace.final_nodes == G_B,
           "algorithm2 returns the fixed-contact trace result");
@@ -155,9 +159,56 @@ int main() {
           "sigma_1 fixed/evolving connector semantics agree");
     CHECK(fixed_trace.final_nodes == exact_trace.final_nodes,
           "sigma_1 rounded/exact edge arithmetic agrees");
+    CHECK(projected_all_trace.converged,
+          "unrestricted projected Algorithm 2 converges");
+    CHECK(projected_all_trace.predicate_closed,
+          "unrestricted projected Algorithm 2 has empty rejected boundary");
+    CHECK(projected_all_trace.final_nodes == exact_trace.final_nodes,
+          "projected Algorithm 2 agrees exactly with legacy materialization");
     CHECK(exact_trace.edge_arithmetic
               == CoronaEdgeArithmetic::exact_rational,
           "corona trace records exact edge arithmetic");
+
+    CHECK(default_corona_execution_mode()
+              == CoronaExecutionMode::projected_surface,
+          "request-driven corona surface is the default mode");
+    CoronaSurface<3> surface(subst, C);
+    CoronaProjectionRequest<3> projection_request;
+    projection_request.seeds.push_back(*fixed_trace.final_nodes.begin());
+    projection_request.accept = [&](const SNode<3>& node) {
+        return fixed_trace.final_nodes.count(node) != 0;
+    };
+    projection_request.operations =
+        static_cast<unsigned>(CoronaSurfaceOperation::simple_forward) |
+        static_cast<unsigned>(CoronaSurfaceOperation::simple_backward);
+    projection_request.edge_arithmetic = CoronaEdgeArithmetic::exact_rational;
+    const auto projected_image = surface.project(projection_request);
+    CHECK(projected_image.complete(),
+          "request-driven image certifies closure under requested operations");
+    std::set<SNode<3>> expected_component;
+    std::vector<SNode<3>> component_frontier{*fixed_trace.final_nodes.begin()};
+    expected_component.insert(component_frontier.front());
+    for (std::size_t head = 0; head < component_frontier.size(); ++head) {
+        const auto current = component_frontier[head];
+        for (const auto& [next, witness] :
+             simple_forward_targets_exact<3>(subst, current)) {
+            (void)witness;
+            if (fixed_trace.final_nodes.count(next) != 0 &&
+                expected_component.insert(next).second)
+                component_frontier.push_back(next);
+        }
+        for (const auto& [next, witness] :
+             simple_backward_targets<3>(subst, current)) {
+            (void)witness;
+            if (fixed_trace.final_nodes.count(next) != 0 &&
+                expected_component.insert(next).second)
+                component_frontier.push_back(next);
+        }
+    }
+    CHECK(projected_image.nodes == expected_component,
+          "one recurrent seed projects its complete closed boundary component");
+    CHECK(!projected_image.edges.empty(),
+          "request-driven image preserves induced transition witnesses");
     CHECK(fixed_trace.layers.size() == 3,
           "sigma_1 fixed-contact trace records initial, growth, fixed layers");
     bool red_traces_partition = true;

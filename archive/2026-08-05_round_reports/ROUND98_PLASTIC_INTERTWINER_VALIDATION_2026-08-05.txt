@@ -1,0 +1,5 @@
+plastic three-generator intertwiner PASS
+boundary_states=101 universal_roles=9 boundary_edges=125 universal_edges=16
+plastic three-generator grammar PASS
+states=101 edges=125 G0=79 G+=28 G-=18 paired=92 unpaired=33
+finite positive grammar majorant PASS

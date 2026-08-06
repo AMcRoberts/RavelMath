@@ -76,7 +76,7 @@ TRANSITION_FILES := $(addprefix $(TRANSITIONS_DIR)/spectre_transitions_,$(addsuf
 # Phony targets
 # ====================================================================
 
-.PHONY: all build check clean
+.PHONY: all build check clean shoot-the-moon ravel_proof_runner
 .PHONY: math apps tests lua data tables lean-check
 .PHONY: d_cont_check_test tile_faces_test number_field_parity_test poly_discriminant_bigint_test ambient_graph_test corona_test
 .PHONY: contact_boundary_test exact_pisot_test spectral_general_test
@@ -87,9 +87,10 @@ TRANSITION_FILES := $(addprefix $(TRANSITIONS_DIR)/spectre_transitions_,$(addsuf
 .PHONY: prefix_automaton_test padic_test dedekind_factorization_test
 .PHONY: ideal_arithmetic_test coincidence_and_property_f_test local_field_test graph_divisor_test maximal_order_test gb_bp_hop_rule_test nbonacci_margin_invariant_test nbonacci_margin_core_graph_test nbonacci_block_identity_test nbonacci_covering_witness_test
 .PHONY: rnd13_factor_probe rnd13_prefix_automaton_probe classify_adelic_tiling test_bp_gb_divisor adelic_boundary_spectral_radius gb_bp_involution_check
-.PHONY: class_ii_symmetry_probe class_ii_boundary_family_test substitution_neighborhood_test
+.PHONY: class_ii_symmetry_probe class_ii_boundary_family_test substitution_neighborhood_test family_closed_forms_test
 .PHONY: class_ii_corona_literature_probe
 .PHONY: nbonacci_periodic_carry_probe nbonacci_carry_cycle_probe nbonacci_sign_chamber_probe nbonacci_chamber_stability nbonacci_chamber_merge nbonacci_rank_feature_search nbonacci_sector_gap_rank nbonacci_block_spectrum_probe nbonacci_block_forcing_probe nbonacci_block_l1_growth_probe nbonacci_max_shell_return_probe nbonacci_max_shell_return_stability nbonacci_shell_word_probe nbonacci_conjugate_height_probe nbonacci_conjugate_height_bound nbonacci_dominance_theorem_pipeline nbonacci_homogeneous_shell_smt nbonacci_homogeneous_shell_unsat_core nbonacci_shell_covering_search nbonacci_shell_covering_proof nbonacci_covering_witness_enumerator nbonacci_covering_witness_enumerate nbonacci_data_shaker nbonacci_padic_fingerprint nbonacci_csy_state_count nbonacci_csy_dynamics nbonacci_charmpoly_proof_probe nbonacci_homogeneous_shell_core_enumerate
+.PHONY: strict_shell_pump_test
 .PHONY: class_ii_neighbor_probe
 .PHONY: return_contact_lift_probe
 .PHONY: class_ii_terminal_transport_probe
@@ -109,7 +110,7 @@ lua: $(LIB) data
 math: $(MATH_LIB)
 	$(MAKE) -C $(MATH_DIR) check
 
-LEAN_ENV ?= ../LEAN/free_involution_perron/free_involution_perron
+LEAN_ENV ?= ../LEAN/projects/nbonacci_charmpoly
 lean-check: nbonacci_charmpoly_proof_probe
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/free_involution_perron_core.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/return_contact_lift.lean)
@@ -129,6 +130,7 @@ lean-check: nbonacci_charmpoly_proof_probe
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/class_ii_round234_shape_closure.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/perron_column_difference.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/nbonacci_margin_catalogue.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/Ravel/Matrix/EraseIndex.lean)
 	@if rg -n '^[[:space:]]*sorry([[:space:]]|$$)' \
 		lean/free_involution_perron_core.lean \
 		lean/return_contact_lift.lean \
@@ -144,7 +146,8 @@ lean-check: nbonacci_charmpoly_proof_probe
 		lean/class_ii_round1_red_pruning.lean \
 		lean/class_ii_round234_shape_closure.lean \
 		lean/perron_column_difference.lean \
-		lean/nbonacci_margin_catalogue.lean; then \
+		lean/nbonacci_margin_catalogue.lean \
+		lean/Ravel/Matrix/EraseIndex.lean; then \
 		echo "ERROR: enrolled Lean file contains sorry"; exit 1; \
 	else \
 		echo "Enrolled Lean files are sorry-free."; \
@@ -217,6 +220,22 @@ CYLINDER_MEASURE_BIN := $(BUILDDIR)/cylinder_measure
 cylinder_measure: $(CYLINDER_MEASURE_BIN)
 $(CYLINDER_MEASURE_BIN): $(APPDIR)/cylinder_measure.cpp | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+# ultrametric_chsh / ultrametric_orientation: C++ port of
+# python/ultrametric_chsh.py, ultrametric_orientation.py, and
+# ultrametric_scaling.py (the Spectre-tiling substitution-ultrametric
+# vs. CA-lightcone locality experiments). No math/ library dependency
+# -- pure geometry + graph BFS, see include/ravel/spectre_lineage.hpp
+# and include/ravel/spectre_ca.hpp.
+ULTRAMETRIC_CHSH_BIN := $(BUILDDIR)/ultrametric_chsh
+ultrametric_chsh: $(ULTRAMETRIC_CHSH_BIN)
+$(ULTRAMETRIC_CHSH_BIN): $(APPDIR)/ultrametric_chsh.cpp $(INCDIR)/ravel/spectre_geometry.hpp $(INCDIR)/ravel/spectre_ca.hpp $(INCDIR)/ravel/substitution_lineage.hpp | $(BUILDDIR)
+	$(CXX) $(CXXFLAGS) -Iinclude $< -o $@
+
+ULTRAMETRIC_ORIENTATION_BIN := $(BUILDDIR)/ultrametric_orientation
+ultrametric_orientation: $(ULTRAMETRIC_ORIENTATION_BIN)
+$(ULTRAMETRIC_ORIENTATION_BIN): $(APPDIR)/ultrametric_orientation.cpp $(INCDIR)/ravel/spectre_geometry.hpp $(INCDIR)/ravel/spectre_ca.hpp $(INCDIR)/ravel/substitution_lineage.hpp | $(BUILDDIR)
+	$(CXX) $(CXXFLAGS) -Iinclude $< -o $@
 
 # contact_boundary_4x4: full contact-boundary pipeline + in-process
 # exact Q(beta) eigenvalue for the G_B adjacency matrix.
@@ -474,6 +493,17 @@ nbonacci_charmpoly_proof_probe: $(NBONACCI_CHARMPOLY_PROOF_PROBE_BIN)
 	./$(NBONACCI_CHARMPOLY_PROOF_PROBE_BIN) --n-min=2 --n-max=8 \
 		--out=out/nbonacci_charmpoly_proof.lean
 
+NBONACCI_CHARMPOLY_PROOF_GENERAL_BIN := $(BUILDDIR)/nbonacci_charmpoly_proof_general
+$(NBONACCI_CHARMPOLY_PROOF_GENERAL_BIN): \
+		$(APPDIR)/nbonacci_charmpoly_proof_general.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+nbonacci_charmpoly_proof_general: $(NBONACCI_CHARMPOLY_PROOF_GENERAL_BIN)
+	@mkdir -p out
+	./$(NBONACCI_CHARMPOLY_PROOF_GENERAL_BIN) --n=8 \
+		--trace-out=out/nbonacci_reflective_trace.txt \
+		--lean-out=out/nbonacci_reflective_trace.lean
+
 NBONACCI_COVERING_ENUM_DIR ?= out/nbonacci_covering_enumerator
 nbonacci_covering_witness_enumerate: $(NBONACCI_COVERING_WITNESS_ENUMERATOR_BIN)
 	@mkdir -p $(NBONACCI_COVERING_ENUM_DIR)
@@ -638,12 +668,18 @@ TESTS_DEFAULT := \
 	class_ii_boundary_family_test \
 	substitution_neighborhood_test \
 	family_of_families_test \
+	family_closed_forms_test \
 	pisot_numeration_topology_test \
 	openai_unit_distance_test \
 	csy_carry_automaton_test \
 	csy_finite_carry_automaton_test \
 	class_ii_neighbor_d_matrix_test \
-	lean_class_ii_catalogue_cross_check_test
+	lean_class_ii_catalogue_cross_check_test \
+	proof_reflection_test \
+	proof_campaign_engine_test \
+	generalized_campaign_test \
+	legacy_campaign_bridge_test \
+	qmatrix_typed_ir_test
 
 tests: $(TESTS_DEFAULT)
 
@@ -820,6 +856,13 @@ family_of_families_test: $(FAMILY_OF_FAMILIES_TEST_BIN)
 $(FAMILY_OF_FAMILIES_TEST_BIN): $(TESTDIR)/family_of_families_test.cpp | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
+FAMILY_CLOSED_FORMS_TEST_BIN := $(BUILDDIR)/family_closed_forms_test
+family_closed_forms_test: $(FAMILY_CLOSED_FORMS_TEST_BIN)
+$(FAMILY_CLOSED_FORMS_TEST_BIN): $(TESTDIR)/family_closed_forms_test.cpp \
+		$(INCDIR)/ravel/family_closed_forms.hpp \
+		$(INCDIR)/ravel/substitution_neighborhood.hpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
 NBONACCI_MARGIN_INVARIANT_TEST_BIN := $(BUILDDIR)/nbonacci_margin_invariant_test
 nbonacci_margin_invariant_test: $(NBONACCI_MARGIN_INVARIANT_TEST_BIN)
 $(NBONACCI_MARGIN_INVARIANT_TEST_BIN): $(TESTDIR)/nbonacci_margin_invariant_test.cpp \
@@ -846,11 +889,18 @@ $(NBONACCI_BLOCK_IDENTITY_TEST_BIN): $(TESTDIR)/nbonacci_block_identity_test.cpp
 # reconstructs the sequence from the free params via the
 # homogeneous recurrence and verifies the box and cover
 # properties.  Exact integer arithmetic (no floats, no Z3).
-# No header dependencies beyond the standard library.
+# Also exercises the reusable C++ core and therefore links its object.
 NBONACCI_COVERING_WITNESS_TEST_BIN := $(BUILDDIR)/nbonacci_covering_witness_test
 nbonacci_covering_witness_test: $(NBONACCI_COVERING_WITNESS_TEST_BIN)
-$(NBONACCI_COVERING_WITNESS_TEST_BIN): $(TESTDIR)/nbonacci_covering_witness_test.cpp | $(BUILDDIR)
-	$(CXX) $(CXXFLAGS) $< -o $@
+$(NBONACCI_COVERING_WITNESS_TEST_BIN): $(TESTDIR)/nbonacci_covering_witness_test.cpp \
+		$(BUILDDIR)/nbonacci_covering_witness.o | $(BUILDDIR)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(BUILDDIR)/nbonacci_covering_witness.o -o $@
+
+CMATRIX_TEST_BIN := $(BUILDDIR)/characteristic_matrix_source_test
+characteristic_matrix_source_test: $(CMATRIX_TEST_BIN)
+$(CMATRIX_TEST_BIN): tests/characteristic_matrix_source_test.cpp \
+		$(INCDIR)/ravel/proof/characteristic_matrix_source.hpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
 nbonacci_covering_witness_enumerator: $(NBONACCI_COVERING_WITNESS_ENUMERATOR_BIN)
 nbonacci_data_shaker: $(NBONACCI_DATA_SHAKER_BIN) nbonacci_covering_witness_enumerate
@@ -1742,3 +1792,842 @@ clean:
 # harmless on the first build; every subsequent build tracks only the
 # headers each translation unit actually includes.
 -include $(wildcard $(BUILDDIR)/*.d)
+
+# ====================================================================
+# Universal n-bonacci proof campaign
+# ====================================================================
+
+RAVEL_PROOF_RUNNER_BIN := $(BUILDDIR)/ravel_proof_runner
+RAVEL_PROOF_RUNNER_SRCS := $(APPDIR)/ravel_proof_runner.cpp $(SRCDIR)/proof/lua_strategy_loader.cpp $(SRCDIR)/proof/index_bijection_registry.cpp
+RAVEL_PROOF_RUNNER_HDRS := $(INCDIR)/ravel/proof/lua_strategy_loader.hpp
+
+ravel_proof_runner: $(RAVEL_PROOF_RUNNER_BIN)
+
+$(RAVEL_PROOF_RUNNER_BIN): $(RAVEL_PROOF_RUNNER_SRCS) $(RAVEL_PROOF_RUNNER_HDRS) | $(BUILDDIR)
+	$(CXX) $(CXXFLAGS) $(LUA_CFLAGS) $(INCLUDES) $(RAVEL_PROOF_RUNNER_SRCS) $(LUA_LIBS) $(MATH_LIB) -o $@
+
+# One-button entry point. The runner writes a timestamped run package under
+# out/shoot_the_moon/ and stops at the first required failed foundation gate,
+# while preserving the complete alternate-course tree for every obligation.
+shoot-the-moon:
+	./scripts/shoot_the_moon.sh
+
+
+PROOF_REFLECTION_TEST_BIN := $(BUILDDIR)/proof_reflection_test
+$(PROOF_REFLECTION_TEST_BIN): $(TESTDIR)/proof_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+proof_reflection_test: $(PROOF_REFLECTION_TEST_BIN)
+	./$(PROOF_REFLECTION_TEST_BIN)
+.PHONY: proof_reflection_test
+
+PROOF_CAMPAIGN_ENGINE_TEST_BIN := $(BUILDDIR)/proof_campaign_engine_test
+$(PROOF_CAMPAIGN_ENGINE_TEST_BIN): $(TESTDIR)/proof_campaign_engine_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+proof_campaign_engine_test: $(PROOF_CAMPAIGN_ENGINE_TEST_BIN)
+	./$(PROOF_CAMPAIGN_ENGINE_TEST_BIN)
+.PHONY: proof_campaign_engine_test
+
+
+GENERALIZED_CAMPAIGN_TEST_BIN := $(BUILDDIR)/generalized_campaign_test
+$(GENERALIZED_CAMPAIGN_TEST_BIN): $(TESTDIR)/generalized_campaign_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+generalized_campaign_test: $(GENERALIZED_CAMPAIGN_TEST_BIN)
+	./$(GENERALIZED_CAMPAIGN_TEST_BIN)
+.PHONY: generalized_campaign_test
+
+
+LEGACY_CAMPAIGN_BRIDGE_TEST_BIN := $(BUILDDIR)/legacy_campaign_bridge_test
+$(LEGACY_CAMPAIGN_BRIDGE_TEST_BIN): $(TESTDIR)/legacy_campaign_bridge_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+legacy_campaign_bridge_test: $(LEGACY_CAMPAIGN_BRIDGE_TEST_BIN)
+	./$(LEGACY_CAMPAIGN_BRIDGE_TEST_BIN)
+.PHONY: legacy_campaign_bridge_test
+
+
+MULTI_COMPARTMENT_CLOSURE_TEST_BIN := $(BUILDDIR)/multi_compartment_closure_test
+$(MULTI_COMPARTMENT_CLOSURE_TEST_BIN): $(TESTDIR)/multi_compartment_closure_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+multi_compartment_closure_test: $(MULTI_COMPARTMENT_CLOSURE_TEST_BIN)
+	./$(MULTI_COMPARTMENT_CLOSURE_TEST_BIN)
+.PHONY: multi_compartment_closure_test
+
+QMATRIX_TYPED_IR_TEST_BIN := $(BUILDDIR)/qmatrix_typed_ir_test
+$(QMATRIX_TYPED_IR_TEST_BIN): $(TESTDIR)/qmatrix_typed_ir_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+qmatrix_typed_ir_test: $(QMATRIX_TYPED_IR_TEST_BIN)
+	./$(QMATRIX_TYPED_IR_TEST_BIN)
+.PHONY: qmatrix_typed_ir_test
+
+SHARED_POLYNOMIAL_CLOSURE_TEST_BIN := $(BUILDDIR)/shared_polynomial_closure_test
+$(SHARED_POLYNOMIAL_CLOSURE_TEST_BIN): $(TESTDIR)/shared_polynomial_closure_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+shared_polynomial_closure_test: $(SHARED_POLYNOMIAL_CLOSURE_TEST_BIN)
+	./$(SHARED_POLYNOMIAL_CLOSURE_TEST_BIN)
+.PHONY: shared_polynomial_closure_test
+
+.PHONY: theorem_capability_index theorem_capability_machine_test ravel_truth_machine
+
+theorem_capability_index:
+	./tools/build_theorem_capability_index.py --root . --out config/theorem_capabilities.tsv
+
+theorem_capability_machine_test: theorem_capability_index
+	mkdir -p out
+	$(CXX) $(CXXFLAGS) $(INCLUDES) tests/theorem_capability_machine_test.cpp -o out/theorem_capability_machine_test
+	./out/theorem_capability_machine_test
+
+ravel_truth_machine: theorem_capability_index
+	mkdir -p out
+	$(CXX) $(CXXFLAGS) $(INCLUDES) app/ravel_truth_machine.cpp -o out/ravel_truth_machine
+
+.PHONY: typed_theorem_application_test ravel_truth_apply
+
+typed_theorem_application_test: | $(BUILDDIR)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) tests/typed_theorem_application_test.cpp -o out/typed_theorem_application_test
+	./out/typed_theorem_application_test
+
+ravel_truth_apply: typed_theorem_application_test | $(BUILDDIR)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) app/ravel_truth_apply.cpp -o out/ravel_truth_apply
+	./out/ravel_truth_apply --output=out/truth_machine_fast_power_reduction.lean
+
+GRAPH_STRUCTURAL_CAMPAIGN_TEST_BIN := $(BUILDDIR)/graph_structural_campaign_test
+$(GRAPH_STRUCTURAL_CAMPAIGN_TEST_BIN): $(TESTDIR)/graph_structural_campaign_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+graph_structural_campaign_test: $(GRAPH_STRUCTURAL_CAMPAIGN_TEST_BIN)
+	./$(GRAPH_STRUCTURAL_CAMPAIGN_TEST_BIN)
+
+.PHONY: graph_structural_campaign_test
+
+GRAPH_CERTIFICATE_CONVERSION_TEST_BIN := $(BUILDDIR)/graph_certificate_conversion_test
+$(GRAPH_CERTIFICATE_CONVERSION_TEST_BIN): $(TESTDIR)/graph_certificate_conversion_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+graph_certificate_conversion_test: $(GRAPH_CERTIFICATE_CONVERSION_TEST_BIN)
+	./$(GRAPH_CERTIFICATE_CONVERSION_TEST_BIN)
+
+.PHONY: graph_certificate_conversion_test
+
+cycle_charpoly_campaign_test: out/cycle_charpoly_campaign_test
+	./out/cycle_charpoly_campaign_test > out/cycle_charpoly_campaign_validation.lean
+
+out/cycle_charpoly_campaign_test: tests/cycle_charpoly_campaign_test.cpp include/ravel/proof/cycle_charpoly_campaign.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -Iinclude tests/cycle_charpoly_campaign_test.cpp -o $@
+
+
+out/universal_dominance_campaign_test: tests/universal_dominance_campaign_test.cpp include/ravel/proof/universal_dominance_campaign.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude tests/universal_dominance_campaign_test.cpp -o $@
+
+universal_dominance_campaign_test: out/universal_dominance_campaign_test
+	./out/universal_dominance_campaign_test
+
+out/universal_dominance_campaign: app/universal_dominance_campaign.cpp include/ravel/proof/universal_dominance_campaign.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude app/universal_dominance_campaign.cpp -o $@
+
+universal_dominance_campaign: out/universal_dominance_campaign
+	./out/universal_dominance_campaign
+
+
+out/phase_rank_transport_test: tests/phase_rank_transport_test.cpp include/ravel/proof/phase_rank_transport.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude $< -o $@
+
+phase_rank_transport_test: out/phase_rank_transport_test
+	./out/phase_rank_transport_test
+
+out/radial_translation_defect_test: tests/radial_translation_defect_test.cpp include/ravel/proof/radial_translation_defect.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude $< -o $@
+
+radial_translation_defect_test: out/radial_translation_defect_test
+	./out/radial_translation_defect_test
+
+
+out/covering_translation_tube_test: tests/covering_translation_tube_test.cpp include/ravel/proof/covering_translation_tube.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude $< -o $@
+
+covering_translation_tube_test: out/covering_translation_tube_test
+	./out/covering_translation_tube_test
+
+out/defect_spliced_tube_test: tests/defect_spliced_tube_test.cpp include/ravel/proof/covering_translation_tube.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude $< -o $@
+
+defect_spliced_tube_test: out/defect_spliced_tube_test
+	./out/defect_spliced_tube_test
+
+out/uniform_radius_one_synthesis_test: tests/uniform_radius_one_synthesis_test.cpp include/ravel/proof/uniform_radius_one_synthesis.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude $< -o $@
+
+uniform_radius_one_synthesis_test: out/uniform_radius_one_synthesis_test
+	./out/uniform_radius_one_synthesis_test
+
+
+out/symbolic_radius_one_controller_test: tests/symbolic_radius_one_controller_test.cpp include/ravel/proof/symbolic_radius_one_controller.hpp include/ravel/proof/uniform_radius_one_synthesis.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude $< -o $@
+
+symbolic_radius_one_controller_test: out/symbolic_radius_one_controller_test
+	./out/symbolic_radius_one_controller_test
+
+
+out/coupled_winning_predicate_test: tests/coupled_winning_predicate_test.cpp include/ravel/proof/coupled_winning_predicate.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude $< -o $@
+
+coupled_winning_predicate_test: out/coupled_winning_predicate_test
+	./out/coupled_winning_predicate_test
+
+
+out/continuation_controller_family_test: tests/continuation_controller_family_test.cpp include/ravel/proof/continuation_controller_family.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude $< -o $@
+
+continuation_controller_family_test: out/continuation_controller_family_test
+	./out/continuation_controller_family_test
+
+
+out/universal_shell_pumping_test: tests/universal_shell_pumping_test.cpp include/ravel/proof/universal_shell_pumping.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude $< -o $@
+
+universal_shell_pumping_test: out/universal_shell_pumping_test
+	./out/universal_shell_pumping_test
+
+
+out/cyclic_continuation_controller_test: tests/cyclic_continuation_controller_test.cpp include/ravel/proof/cyclic_continuation_controller.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude $< -o $@
+
+cyclic_continuation_controller_test: out/cyclic_continuation_controller_test
+	./out/cyclic_continuation_controller_test
+
+
+out/strict_shell_pump_test: tests/strict_shell_pump_test.cpp include/ravel/proof/strict_shell_pump.hpp include/ravel/proof/cyclic_continuation_controller.hpp include/ravel/proof/covering_translation_tube.hpp include/ravel/proof/symbolic_radius_one_controller.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude -Imath/include -Imath/include/mini-gmp $< -o $@
+
+strict_shell_pump_test: out/strict_shell_pump_test
+	./out/strict_shell_pump_test
+
+out/predicted_core_scc_identification_test: tests/predicted_core_scc_identification_test.cpp include/ravel/proof/predicted_core_scc_identification.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude -Imath/include -Imath/include/mini-gmp $< math/out/libmath.a -o $@
+
+predicted_core_scc_identification_test: out/predicted_core_scc_identification_test
+	./out/predicted_core_scc_identification_test
+
+nbonacci_predicted_core_exhaustion_test: nbonacci_arithmetic_hull
+	./out/nbonacci_arithmetic_hull --bound=1 --dump-core-exhaustion 3 4 5 6 7
+
+strict_shell_pump_existence_test:
+	$(CXX) $(CXXFLAGS) -Iinclude tests/strict_shell_pump_existence_test.cpp -o /tmp/strict_shell_pump_existence_test
+	/tmp/strict_shell_pump_existence_test
+
+out/first_return_completeness_prover: app/first_return_completeness_prover.cpp include/ravel/proof/symbolic_residual_induction.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude app/first_return_completeness_prover.cpp -o $@
+
+first_return_completeness_prover: out/first_return_completeness_prover
+	./out/first_return_completeness_prover 3 lean/generated/first_return_residual_induction.lean
+
+out/symbolic_residual_induction_test: tests/symbolic_residual_induction_test.cpp include/ravel/proof/symbolic_residual_induction.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude tests/symbolic_residual_induction_test.cpp -o $@
+
+symbolic_residual_induction_test: out/symbolic_residual_induction_test
+	./out/symbolic_residual_induction_test
+
+out/ravel-prove: app/ravel_prove.cpp include/ravel/proof/first_return_completeness_automation.hpp include/ravel/proof/symbolic_residual_induction.hpp include/ravel/proof/first_return_proof_strategist.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude app/ravel_prove.cpp -o $@
+
+ravel-prove: out/ravel-prove
+	./out/ravel-prove first-return-completeness 3 4 out/first_return_completeness.checkpoint
+
+out/first_return_completeness_automation_test: tests/first_return_completeness_automation_test.cpp include/ravel/proof/first_return_completeness_automation.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude tests/first_return_completeness_automation_test.cpp -o $@
+
+first_return_completeness_automation_test: out/first_return_completeness_automation_test
+	./out/first_return_completeness_automation_test
+
+out/first_return_joint_product_test: tests/first_return_joint_product_test.cpp include/ravel/proof/first_return_joint_product.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude $< -o $@
+
+first_return_joint_product_test: out/first_return_joint_product_test
+	./out/first_return_joint_product_test
+
+out/first_return_joint_role_quotient_test: tests/first_return_joint_role_quotient_test.cpp include/ravel/proof/first_return_joint_role_quotient.hpp include/ravel/proof/first_return_joint_product.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude $< -o $@
+
+first_return_joint_role_quotient_test: out/first_return_joint_role_quotient_test
+	./out/first_return_joint_role_quotient_test
+
+out/parametric_predicate_updates_test: tests/parametric_predicate_updates_test.cpp include/ravel/proof/parametric_predicate_updates.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude tests/parametric_predicate_updates_test.cpp -o $@
+
+parametric_predicate_updates_test: out/parametric_predicate_updates_test
+	./out/parametric_predicate_updates_test
+
+out/residual_signature_transfer_test: tests/residual_signature_transfer_test.cpp include/ravel/proof/residual_signature_transfer.hpp include/ravel/proof/parametric_predicate_updates.hpp include/ravel/proof/first_return_joint_product.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude tests/residual_signature_transfer_test.cpp -o $@
+
+residual_signature_transfer_test: out/residual_signature_transfer_test
+	./out/residual_signature_transfer_test
+
+out/symbolic_residual_formula_test: tests/symbolic_residual_formula_test.cpp include/ravel/proof/symbolic_residual_formula.hpp include/ravel/proof/first_return_joint_product.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude tests/symbolic_residual_formula_test.cpp -o $@
+
+symbolic_residual_formula_test: out/symbolic_residual_formula_test
+	./out/symbolic_residual_formula_test
+
+out/realized_first_return_completeness_test: tests/realized_first_return_completeness_test.cpp include/ravel/proof/realized_first_return_completeness.hpp
+	@mkdir -p out lean/generated
+	$(CXX) $(CXXFLAGS) -Iinclude $< -o $@
+
+realized_first_return_completeness_test: out/realized_first_return_completeness_test
+	./out/realized_first_return_completeness_test
+
+out/first_return_obligation_discharge_test: tests/first_return_obligation_discharge_test.cpp include/ravel/proof/first_return_obligation_discharge.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude tests/first_return_obligation_discharge_test.cpp -o $@
+
+.PHONY: first_return_obligation_discharge_test
+first_return_obligation_discharge_test: out/first_return_obligation_discharge_test
+	./out/first_return_obligation_discharge_test
+
+out/cyclic_splice_completion_test: tests/cyclic_splice_completion_test.cpp include/ravel/proof/cyclic_splice_completion.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude $< -o $@
+
+.PHONY: cyclic_splice_completion_test
+cyclic_splice_completion_test: out/cyclic_splice_completion_test
+	./out/cyclic_splice_completion_test
+
+cyclic_splice_compactness_test:
+	$(CXX) $(CXXFLAGS) -Iinclude tests/cyclic_splice_compactness_test.cpp -o out/cyclic_splice_compactness_test
+	./out/cyclic_splice_compactness_test
+
+periodic_word_controller_cycle_test:
+	$(CXX) $(CXXFLAGS) -Iinclude tests/periodic_word_controller_cycle_test.cpp -o out/periodic_word_controller_cycle_test
+	./out/periodic_word_controller_cycle_test
+
+.PHONY: defect_corrected_radial_transport_test
+defect_corrected_radial_transport_test:
+	$(CXX) $(CXXFLAGS) -Iinclude tests/defect_corrected_radial_transport_test.cpp -o out/defect_corrected_radial_transport_test
+	./out/defect_corrected_radial_transport_test
+
+out/defect_corrected_shell_rank_test: tests/defect_corrected_shell_rank_test.cpp include/ravel/proof/defect_corrected_shell_rank.hpp include/ravel/proof/defect_corrected_radial_transport.hpp include/ravel/proof/phase_rank_transport.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -Iinclude $< -o $@
+
+defect_corrected_shell_rank_test: out/defect_corrected_shell_rank_test
+	./out/defect_corrected_shell_rank_test
+
+out/block_height_shell_rank_test: tests/block_height_shell_rank_test.cpp include/ravel/proof/block_height_shell_rank.hpp include/ravel/proof/defect_corrected_shell_rank.hpp include/ravel/proof/phase_rank_transport.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -Iinclude $< -o $@
+
+.PHONY: block_height_shell_rank_test
+block_height_shell_rank_test: out/block_height_shell_rank_test
+	./out/block_height_shell_rank_test
+
+out/block_height_chamber_rank_test: tests/block_height_chamber_rank_test.cpp include/ravel/proof/block_height_shell_rank.hpp include/ravel/proof/generated_n4_block_height_chamber_rank.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -Iinclude $< -o $@
+
+.PHONY: block_height_chamber_rank_test
+block_height_chamber_rank_test: out/block_height_chamber_rank_test
+	./out/block_height_chamber_rank_test
+
+out/sign_symmetric_chamber_rank_test: tests/sign_symmetric_chamber_rank_test.cpp include/ravel/proof/sign_symmetric_chamber_rank.hpp include/ravel/proof/generated_n4_block_height_chamber_rank.hpp include/ravel/proof/block_height_shell_rank.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -Iinclude $< -o $@
+
+.PHONY: sign_symmetric_chamber_rank_test
+sign_symmetric_chamber_rank_test: out/sign_symmetric_chamber_rank_test
+	./out/sign_symmetric_chamber_rank_test
+
+out/sign_flux_chamber_fit: app/sign_flux_chamber_fit.cpp include/ravel/proof/block_height_shell_rank.hpp include/ravel/proof/sign_symmetric_chamber_rank.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -Iinclude $< -o $@
+
+sign_flux_chamber_fit: out/sign_flux_chamber_fit
+	./out/sign_flux_chamber_fit
+
+out/sign_flux_chamber_fit_triplet: app/sign_flux_chamber_fit_triplet.cpp include/ravel/proof/block_height_shell_rank.hpp include/ravel/proof/sign_symmetric_chamber_rank.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -Iinclude $< -o $@
+
+sign_flux_chamber_fit_triplet: out/sign_flux_chamber_fit_triplet
+	./out/sign_flux_chamber_fit_triplet
+
+out/boundary_flux_sparse_fit: app/boundary_flux_sparse_fit.cpp include/ravel/proof/block_height_shell_rank.hpp include/ravel/proof/sign_symmetric_chamber_rank.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< -o $@
+
+boundary_flux_sparse_fit: out/boundary_flux_sparse_fit
+	./out/boundary_flux_sparse_fit
+
+out/lazy_sparse_boundary_rank: app/lazy_sparse_boundary_rank.cpp include/ravel/proof/block_height_shell_rank.hpp include/ravel/proof/sign_symmetric_chamber_rank.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -Iinclude $< -o $@
+
+lazy_sparse_boundary_rank: out/lazy_sparse_boundary_rank
+	./out/lazy_sparse_boundary_rank
+
+out/reflective_boundary_grammar_test: tests/reflective_boundary_grammar_test.cpp include/ravel/proof/reflective_boundary_grammar.hpp include/ravel/proof/ordered_boundary_queue.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude $(CPPFLAGS) -o $@ $<
+
+reflective_boundary_grammar_test: out/reflective_boundary_grammar_test
+	./out/reflective_boundary_grammar_test
+
+out/derive_reflective_boundary_grammar: app/derive_reflective_boundary_grammar.cpp include/ravel/proof/reflective_boundary_grammar.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude $(CPPFLAGS) -o $@ $<
+
+derive_reflective_boundary_grammar: out/derive_reflective_boundary_grammar
+	./out/derive_reflective_boundary_grammar 20 lean/generated/reflective_boundary_grammar.lean
+
+GRADED_CORE_DESCENT_TEST_BIN := $(BUILDDIR)/graded_core_descent_test
+$(GRADED_CORE_DESCENT_TEST_BIN): $(TESTDIR)/graded_core_descent_test.cpp
+	@mkdir -p $(BUILDDIR)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< -o $@
+
+graded_core_descent_test: $(GRADED_CORE_DESCENT_TEST_BIN)
+	./$(GRADED_CORE_DESCENT_TEST_BIN)
+
+out/reflective_collatz_weight_test: tests/reflective_collatz_weight_test.cpp math/out/libmath.a
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -Iinclude -Imath/include -Imath/include/mini-gmp $< math/out/libmath.a -o $@
+
+reflective_collatz_weight_test: out/reflective_collatz_weight_test
+	./out/reflective_collatz_weight_test
+
+out/reflective_weight_grammar_test: tests/reflective_weight_grammar_test.cpp math/out/libmath.a
+	$(CXX) $(CXXFLAGS) -Iinclude -Imath/include $< math/out/libmath.a $(LDFLAGS) $(LDLIBS) -o $@
+
+reflective_weight_grammar_test: out/reflective_weight_grammar_test
+	./out/reflective_weight_grammar_test
+
+REFLECTIVE_WEIGHT_FAMILY_TEST_BIN := $(BUILDDIR)/reflective_weight_family_test
+reflective_weight_family_test: $(REFLECTIVE_WEIGHT_FAMILY_TEST_BIN)
+	./$(REFLECTIVE_WEIGHT_FAMILY_TEST_BIN)
+$(REFLECTIVE_WEIGHT_FAMILY_TEST_BIN): \
+		$(TESTDIR)/reflective_weight_family_test.cpp \
+		$(INCDIR)/ravel/proof/reflective_weight_family.hpp \
+		$(INCDIR)/ravel/proof/reflective_collatz_weight.hpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+PAIRED_MATRIX_DOMINANCE_TEST_BIN := $(BUILDDIR)/paired_matrix_dominance_test
+paired_matrix_dominance_test: $(PAIRED_MATRIX_DOMINANCE_TEST_BIN)
+	./$(PAIRED_MATRIX_DOMINANCE_TEST_BIN)
+
+$(PAIRED_MATRIX_DOMINANCE_TEST_BIN): $(TESTDIR)/paired_matrix_dominance_test.cpp $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(LIBS) -o $@
+
+PATH_COUNT_CONE_TEST_BIN := $(BUILDDIR)/path_count_cone_test
+path_count_cone_test: $(PATH_COUNT_CONE_TEST_BIN)
+	$(PATH_COUNT_CONE_TEST_BIN)
+$(PATH_COUNT_CONE_TEST_BIN): $(TESTDIR)/path_count_cone_test.cpp $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+GRADED_TRANSFER_TEST_BIN := $(BUILDDIR)/graded_transfer_test
+graded_transfer_test: $(GRADED_TRANSFER_TEST_BIN)
+	@$(GRADED_TRANSFER_TEST_BIN)
+
+$(GRADED_TRANSFER_TEST_BIN): $(TESTDIR)/graded_transfer_test.cpp $(MATH_LIB)
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) $(LDLIBS) -o $@
+
+PHASE_HANDOFF_RENEWAL_TEST_BIN := $(BUILDDIR)/phase_handoff_renewal_test
+phase_handoff_renewal_test: $(PHASE_HANDOFF_RENEWAL_TEST_BIN)
+	$(PHASE_HANDOFF_RENEWAL_TEST_BIN)
+
+$(PHASE_HANDOFF_RENEWAL_TEST_BIN): $(TESTDIR)/phase_handoff_renewal_test.cpp $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(LIBS) -o $@
+
+FACE_RELATIVE_SIGN_GRAMMAR_TEST_BIN := $(BUILDDIR)/face_relative_sign_grammar_test
+face_relative_sign_grammar_test: $(FACE_RELATIVE_SIGN_GRAMMAR_TEST_BIN)
+	@$(FACE_RELATIVE_SIGN_GRAMMAR_TEST_BIN)
+
+$(FACE_RELATIVE_SIGN_GRAMMAR_TEST_BIN): $(TESTDIR)/face_relative_sign_grammar_test.cpp $(MATH_LIB)
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+SIGNED_INTERVAL_BELLMAN_TEST_BIN := $(BUILDDIR)/signed_interval_bellman_test
+signed_interval_bellman_test: $(SIGNED_INTERVAL_BELLMAN_TEST_BIN)
+$(SIGNED_INTERVAL_BELLMAN_TEST_BIN): $(TESTDIR)/signed_interval_bellman_test.cpp
+	@mkdir -p $(BUILDDIR)
+	$(CXX) $(CXXFLAGS) -I$(INCDIR) -I$(MATHDIR)/include -I$(MATHDIR)/include/mini-gmp $< $(MATHDIR)/src/mini-gmp.c $(MATHDIR)/src/mini-mpq.c -o $@
+
+TWISTED_DIMENSION_EXTENSION_TEST_BIN := $(BUILDDIR)/twisted_dimension_extension_test
+twisted_dimension_extension_test: $(TWISTED_DIMENSION_EXTENSION_TEST_BIN)
+	$(TWISTED_DIMENSION_EXTENSION_TEST_BIN)
+$(TWISTED_DIMENSION_EXTENSION_TEST_BIN): $(TESTDIR)/twisted_dimension_extension_test.cpp
+	@mkdir -p $(BUILDDIR)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< -o $@
+
+DERIVE_TWISTED_DIMENSION_EXTENSION_BIN := $(BUILDDIR)/derive_twisted_dimension_extension
+derive_twisted_dimension_extension: $(DERIVE_TWISTED_DIMENSION_EXTENSION_BIN)
+	$(DERIVE_TWISTED_DIMENSION_EXTENSION_BIN) 10 lean/generated/twisted_dimension_extension.lean
+$(DERIVE_TWISTED_DIMENSION_EXTENSION_BIN): app/derive_twisted_dimension_extension.cpp
+	@mkdir -p $(BUILDDIR) lean/generated
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< -o $@
+
+TWISTED_BELLMAN_TRANSPORT_TEST_BIN := $(BUILDDIR)/twisted_bellman_transport_test
+twisted_bellman_transport_test: $(TWISTED_BELLMAN_TRANSPORT_TEST_BIN)
+	$(TWISTED_BELLMAN_TRANSPORT_TEST_BIN)
+$(TWISTED_BELLMAN_TRANSPORT_TEST_BIN): $(TESTDIR)/twisted_bellman_transport_test.cpp $(MATH_LIB)
+	@mkdir -p $(BUILDDIR)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+DERIVE_TWISTED_BELLMAN_TRANSPORT_BIN := $(BUILDDIR)/derive_twisted_bellman_transport
+derive_twisted_bellman_transport: $(DERIVE_TWISTED_BELLMAN_TRANSPORT_BIN)
+	$(DERIVE_TWISTED_BELLMAN_TRANSPORT_BIN) lean/generated/twisted_bellman_transport.lean
+$(DERIVE_TWISTED_BELLMAN_TRANSPORT_BIN): $(APPDIR)/derive_twisted_bellman_transport.cpp $(MATH_LIB)
+	@mkdir -p $(BUILDDIR) lean/generated
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+ADJACENT_COMPETITOR_TRANSPORT_BIN := $(BUILDDIR)/adjacent_competitor_transport
+adjacent_competitor_transport: $(ADJACENT_COMPETITOR_TRANSPORT_BIN)
+
+$(ADJACENT_COMPETITOR_TRANSPORT_BIN): $(APPDIR)/adjacent_competitor_transport.cpp $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+CORONA_PROJECTION_TEST_BIN := $(BUILDDIR)/corona_projection_test
+.PHONY: corona_projection_test
+corona_projection_test: $(CORONA_PROJECTION_TEST_BIN)
+	$(CORONA_PROJECTION_TEST_BIN)
+
+$(CORONA_PROJECTION_TEST_BIN): $(TESTDIR)/corona_projection_test.cpp $(MATH_LIB)
+	@mkdir -p $(BUILDDIR)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+ADJACENT_TWISTED_RENEWAL_TEST_BIN := $(BUILDDIR)/adjacent_twisted_renewal_test
+adjacent_twisted_renewal_test: $(ADJACENT_TWISTED_RENEWAL_TEST_BIN)
+	$(ADJACENT_TWISTED_RENEWAL_TEST_BIN)
+
+$(ADJACENT_TWISTED_RENEWAL_TEST_BIN): $(TESTDIR)/adjacent_twisted_renewal_test.cpp $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+RECURRENT_FAMILY_EXHAUSTION_TEST_BIN := $(BUILDDIR)/recurrent_family_exhaustion_test
+.PHONY: recurrent_family_exhaustion_test
+recurrent_family_exhaustion_test: $(RECURRENT_FAMILY_EXHAUSTION_TEST_BIN)
+	$(RECURRENT_FAMILY_EXHAUSTION_TEST_BIN)
+
+$(RECURRENT_FAMILY_EXHAUSTION_TEST_BIN): $(TESTDIR)/recurrent_family_exhaustion_test.cpp $(MATH_LIB)
+	@mkdir -p $(BUILDDIR)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+RECURRENT_FAMILY_EXHAUSTION_REAL_TEST_BIN := $(BUILDDIR)/recurrent_family_exhaustion_real_test
+.PHONY: recurrent_family_exhaustion_real_test
+recurrent_family_exhaustion_real_test: $(RECURRENT_FAMILY_EXHAUSTION_REAL_TEST_BIN)
+	$(RECURRENT_FAMILY_EXHAUSTION_REAL_TEST_BIN)
+
+$(RECURRENT_FAMILY_EXHAUSTION_REAL_TEST_BIN): $(TESTDIR)/recurrent_family_exhaustion_real_test.cpp $(MATH_LIB)
+	@mkdir -p $(BUILDDIR)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+REJECTED_BOUNDARY_EXHAUSTION_TEST_BIN := $(BUILDDIR)/rejected_boundary_exhaustion_test
+.PHONY: rejected_boundary_exhaustion_test
+rejected_boundary_exhaustion_test: $(REJECTED_BOUNDARY_EXHAUSTION_TEST_BIN)
+	$(REJECTED_BOUNDARY_EXHAUSTION_TEST_BIN)
+
+$(REJECTED_BOUNDARY_EXHAUSTION_TEST_BIN): $(TESTDIR)/rejected_boundary_exhaustion_test.cpp $(MATH_LIB)
+	@mkdir -p $(BUILDDIR)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+out/predicted_core_symbolic_induction_test: tests/predicted_core_symbolic_induction_test.cpp include/ravel/proof/predicted_core_scc_identification.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude -Imath/include -Imath/include/mini-gmp $< math/out/libmath.a -o $@
+
+predicted_core_symbolic_induction_test: out/predicted_core_symbolic_induction_test
+	./out/predicted_core_symbolic_induction_test
+
+out/radial_linear_feature_factorization_test: tests/radial_linear_feature_factorization_test.cpp include/ravel/proof/radial_linear_feature_factorization.hpp include/ravel/proof/block_height_shell_rank.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -Iinclude $< -o $@
+
+.PHONY: radial_linear_feature_factorization_test
+radial_linear_feature_factorization_test: out/radial_linear_feature_factorization_test
+	./out/radial_linear_feature_factorization_test
+
+out/segment_relation_splice_test: tests/segment_relation_splice_test.cpp include/ravel/proof/segment_relation_splice.hpp include/ravel/proof/cyclic_splice_completion.hpp
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -Iinclude $< -o $@
+
+.PHONY: segment_relation_splice_test
+segment_relation_splice_test: out/segment_relation_splice_test
+	./out/segment_relation_splice_test
+
+out/stepped_face_residual_seriality_test: tests/stepped_face_residual_seriality_test.cpp include/ravel/proof/stepped_face_residual_seriality.hpp include/ravel/proof/first_return_joint_product.hpp
+	$(CXX) $(CXXFLAGS) -Iinclude tests/stepped_face_residual_seriality_test.cpp -o $@
+
+.PHONY: stepped_face_residual_seriality_test
+stepped_face_residual_seriality_test: out/stepped_face_residual_seriality_test
+	./out/stepped_face_residual_seriality_test
+
+out/stepped_face_role_junction_test: tests/stepped_face_role_junction_test.cpp include/ravel/proof/stepped_face_role_junction.hpp include/ravel/proof/first_return_joint_product.hpp include/ravel/proof/cyclic_splice_compactness.hpp
+	$(CXX) $(CXXFLAGS) -Iinclude tests/stepped_face_role_junction_test.cpp -o $@
+
+.PHONY: stepped_face_role_junction_test
+stepped_face_role_junction_test: out/stepped_face_role_junction_test
+	./out/stepped_face_role_junction_test
+
+out/maximum_shell_exclusion_test: tests/maximum_shell_exclusion_test.cpp include/ravel/proof/maximum_shell_exclusion.hpp
+	$(CXX) $(CXXFLAGS) -Iinclude tests/maximum_shell_exclusion_test.cpp -o $@
+
+.PHONY: maximum_shell_exclusion_test
+maximum_shell_exclusion_test: out/maximum_shell_exclusion_test
+	./out/maximum_shell_exclusion_test
+
+out/parametric_radial_rank_test: tests/parametric_radial_rank_test.cpp include/ravel/proof/parametric_radial_rank.hpp
+	$(CXX) $(CXXFLAGS) -Iinclude tests/parametric_radial_rank_test.cpp -o $@
+
+.PHONY: parametric_radial_rank_test
+parametric_radial_rank_test: out/parametric_radial_rank_test
+	./out/parametric_radial_rank_test
+
+out/parametric_block_height_rank_test: tests/parametric_block_height_rank_test.cpp include/ravel/proof/parametric_block_height_rank.hpp include/ravel/proof/parametric_radial_rank.hpp
+	$(CXX) $(CXXFLAGS) -Iinclude tests/parametric_block_height_rank_test.cpp -o $@
+
+.PHONY: parametric_block_height_rank_test
+parametric_block_height_rank_test: out/parametric_block_height_rank_test
+	./out/parametric_block_height_rank_test
+
+out/parametric_maximum_shell_reduction_test: tests/parametric_maximum_shell_reduction_test.cpp include/ravel/proof/parametric_maximum_shell_reduction.hpp include/ravel/proof/shell_shadow_simulation.hpp include/ravel/proof/shell_shadow_rank_transport.hpp
+	$(CXX) $(CXXFLAGS) -Iinclude tests/parametric_maximum_shell_reduction_test.cpp -o $@
+
+.PHONY: parametric_maximum_shell_reduction_test
+parametric_maximum_shell_reduction_test: out/parametric_maximum_shell_reduction_test
+	./out/parametric_maximum_shell_reduction_test
+
+out/shell_two_interior_factorization_test: tests/shell_two_interior_factorization_test.cpp include/ravel/proof/shell_two_interior_factorization.hpp
+	$(CXX) $(CXXFLAGS) -Iinclude tests/shell_two_interior_factorization_test.cpp -o $@
+
+.PHONY: shell_two_interior_factorization_test
+shell_two_interior_factorization_test: out/shell_two_interior_factorization_test
+	./out/shell_two_interior_factorization_test
+
+BRANCHING_TERMINAL_REDUCTION_TEST_BIN := $(BUILDDIR)/branching_terminal_reduction_test
+.PHONY: branching_terminal_reduction_test
+branching_terminal_reduction_test: $(BRANCHING_TERMINAL_REDUCTION_TEST_BIN)
+	$(BRANCHING_TERMINAL_REDUCTION_TEST_BIN)
+$(BRANCHING_TERMINAL_REDUCTION_TEST_BIN): $(TESTDIR)/branching_terminal_reduction_test.cpp $(MATH_LIB)
+	@mkdir -p $(BUILDDIR)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) $(LDFLAGS) -o $@
+
+PERMUTATION_SKEW_PRODUCT_TEST_BIN := $(BUILDDIR)/permutation_skew_product_test
+.PHONY: permutation_skew_product_test
+permutation_skew_product_test: $(PERMUTATION_SKEW_PRODUCT_TEST_BIN)
+	$(PERMUTATION_SKEW_PRODUCT_TEST_BIN)
+$(PERMUTATION_SKEW_PRODUCT_TEST_BIN): $(TESTDIR)/permutation_skew_product_test.cpp $(MATH_LIB)
+	@mkdir -p $(BUILDDIR)
+	$(CXX) $(CXXFLAGS) -I$(INCDIR) $< $(MATH_LIB) $(LDFLAGS) -o $@
+
+UNIVERSAL_DOMINANCE_REDUCTION_TEST_BIN := $(BUILDDIR)/universal_dominance_reduction_test
+.PHONY: universal_dominance_reduction_test
+universal_dominance_reduction_test: $(UNIVERSAL_DOMINANCE_REDUCTION_TEST_BIN)
+	$(UNIVERSAL_DOMINANCE_REDUCTION_TEST_BIN)
+$(UNIVERSAL_DOMINANCE_REDUCTION_TEST_BIN): $(TESTDIR)/universal_dominance_reduction_test.cpp $(MATH_LIB)
+	@mkdir -p $(BUILDDIR)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) $(LDFLAGS) -o $@
+
+PATH_INJECTIVE_SIMULATION_TEST_BIN := $(BUILDDIR)/path_injective_simulation_test
+.PHONY: path_injective_simulation_test
+path_injective_simulation_test: $(PATH_INJECTIVE_SIMULATION_TEST_BIN)
+	$(PATH_INJECTIVE_SIMULATION_TEST_BIN)
+$(PATH_INJECTIVE_SIMULATION_TEST_BIN): $(TESTDIR)/path_injective_simulation_test.cpp $(MATH_LIB)
+	@mkdir -p $(BUILDDIR)
+	$(CXX) $(CXXFLAGS) -I$(INCDIR) $< $(MATH_LIB) $(LDFLAGS) -o $@
+
+FINITE_QUOTIENT_CORE_MAXIMALITY_TEST_BIN := $(BUILDDIR)/finite_quotient_core_maximality_test
+.PHONY: finite_quotient_core_maximality_test
+finite_quotient_core_maximality_test: $(FINITE_QUOTIENT_CORE_MAXIMALITY_TEST_BIN)
+	./$(FINITE_QUOTIENT_CORE_MAXIMALITY_TEST_BIN)
+
+$(FINITE_QUOTIENT_CORE_MAXIMALITY_TEST_BIN): $(TESTDIR)/finite_quotient_core_maximality_test.cpp $(MATH_LIB)
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $(TESTDIR)/finite_quotient_core_maximality_test.cpp $(MATH_LIB) $(LDLIBS) -o $@
+
+CONDITION_F_COMPONENT_MAXIMALITY_TEST_BIN := $(BUILDDIR)/condition_f_component_maximality_test
+.PHONY: condition_f_component_maximality_test
+condition_f_component_maximality_test: $(CONDITION_F_COMPONENT_MAXIMALITY_TEST_BIN)
+	$(CONDITION_F_COMPONENT_MAXIMALITY_TEST_BIN)
+
+$(CONDITION_F_COMPONENT_MAXIMALITY_TEST_BIN): $(TESTDIR)/condition_f_component_maximality_test.cpp $(MATH_LIB)
+	@mkdir -p $(BUILDDIR)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $(TESTDIR)/condition_f_component_maximality_test.cpp $(MATH_LIB) $(LDLIBS) -o $@
+
+CONDITION_F_CYCLIC_VOLTAGE_FOURIER_TEST_BIN := $(BUILDDIR)/condition_f_cyclic_voltage_fourier_test
+.PHONY: condition_f_cyclic_voltage_fourier_test
+condition_f_cyclic_voltage_fourier_test: $(CONDITION_F_CYCLIC_VOLTAGE_FOURIER_TEST_BIN)
+	$(CONDITION_F_CYCLIC_VOLTAGE_FOURIER_TEST_BIN)
+$(CONDITION_F_CYCLIC_VOLTAGE_FOURIER_TEST_BIN): $(TESTDIR)/condition_f_cyclic_voltage_fourier_test.cpp
+	@mkdir -p $(BUILDDIR)
+	$(CXX) $(CXXFLAGS) -I$(INCDIR) $< -o $@
+
+CONDITION_F_PARENT_PAIR_RECURRENCE_TEST_BIN := $(BUILDDIR)/condition_f_parent_pair_recurrence_test
+.PHONY: condition_f_parent_pair_recurrence_test
+condition_f_parent_pair_recurrence_test: $(CONDITION_F_PARENT_PAIR_RECURRENCE_TEST_BIN)
+	$(CONDITION_F_PARENT_PAIR_RECURRENCE_TEST_BIN)
+$(CONDITION_F_PARENT_PAIR_RECURRENCE_TEST_BIN): $(TESTDIR)/condition_f_parent_pair_recurrence_test.cpp
+	@mkdir -p $(BUILDDIR)
+	$(CXX) $(CXXFLAGS) -I$(INCDIR) $< -o $@
+
+CONDITION_F_LOCAL_CHANNEL_RECURRENCE_TEST_BIN := $(BUILDDIR)/condition_f_local_channel_recurrence_test
+.PHONY: condition_f_local_channel_recurrence_test
+condition_f_local_channel_recurrence_test: $(CONDITION_F_LOCAL_CHANNEL_RECURRENCE_TEST_BIN)
+	$(CONDITION_F_LOCAL_CHANNEL_RECURRENCE_TEST_BIN)
+$(CONDITION_F_LOCAL_CHANNEL_RECURRENCE_TEST_BIN): $(TESTDIR)/condition_f_local_channel_recurrence_test.cpp
+	@mkdir -p $(BUILDDIR)
+	$(CXX) $(CXXFLAGS) -I$(INCDIR) $< -o $@
+
+CONDITION_F_PAIR_UNIVERSAL_REDUCTION_TEST_BIN := $(BUILDDIR)/condition_f_pair_universal_reduction_test
+.PHONY: condition_f_pair_universal_reduction_test
+condition_f_pair_universal_reduction_test: $(CONDITION_F_PAIR_UNIVERSAL_REDUCTION_TEST_BIN)
+	$(CONDITION_F_PAIR_UNIVERSAL_REDUCTION_TEST_BIN)
+$(CONDITION_F_PAIR_UNIVERSAL_REDUCTION_TEST_BIN): $(TESTDIR)/condition_f_pair_universal_reduction_test.cpp
+	@mkdir -p $(BUILDDIR)
+	$(CXX) $(CXXFLAGS) -I$(INCDIR) $< -o $@
+
+CONDITION_F_BOUNDARY_INTERFACE_TEST_BIN := $(BUILDDIR)/condition_f_boundary_interface_test
+.PHONY: condition_f_boundary_interface_test
+condition_f_boundary_interface_test: $(CONDITION_F_BOUNDARY_INTERFACE_TEST_BIN)
+	$(CONDITION_F_BOUNDARY_INTERFACE_TEST_BIN)
+$(CONDITION_F_BOUNDARY_INTERFACE_TEST_BIN): $(TESTDIR)/condition_f_boundary_interface_test.cpp
+	@mkdir -p $(BUILDDIR)
+	$(CXX) $(CXXFLAGS) -I$(INCDIR) $< -o $@
+
+MARKED_ATOM_CORE_EXTENSION_TEST_BIN := $(BUILDDIR)/marked_atom_core_extension_test
+$(MARKED_ATOM_CORE_EXTENSION_TEST_BIN): $(TESTDIR)/marked_atom_core_extension_test.cpp
+	@mkdir -p $(BUILDDIR)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< -o $@ $(LDFLAGS)
+marked_atom_core_extension_test: $(MARKED_ATOM_CORE_EXTENSION_TEST_BIN)
+	./$(MARKED_ATOM_CORE_EXTENSION_TEST_BIN)
+
+CONDITION_F_PAIR_BOUNDARY_SUBSTITUTION_TEST_BIN := $(BUILDDIR)/condition_f_pair_boundary_substitution_test
+.PHONY: condition_f_pair_boundary_substitution_test
+condition_f_pair_boundary_substitution_test: $(CONDITION_F_PAIR_BOUNDARY_SUBSTITUTION_TEST_BIN)
+	$(CONDITION_F_PAIR_BOUNDARY_SUBSTITUTION_TEST_BIN)
+$(CONDITION_F_PAIR_BOUNDARY_SUBSTITUTION_TEST_BIN): $(TESTDIR)/condition_f_pair_boundary_substitution_test.cpp
+	@mkdir -p $(BUILDDIR)
+	$(CXX) $(CXXFLAGS) -I$(INCDIR) $< -o $@
+
+lean_condition_f_joint_qr_playground:
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/condition_f_joint_qr_playground.lean)
+
+# Round 79: continued twist-dominance theorems.
+.PHONY: twist_dominance_extensions_test
+TWIST_DOMINANCE_EXTENSIONS_TEST_BIN := $(BUILDDIR)/twist_dominance_extensions_test
+twist_dominance_extensions_test: $(TWIST_DOMINANCE_EXTENSIONS_TEST_BIN)
+	$(TWIST_DOMINANCE_EXTENSIONS_TEST_BIN)
+$(TWIST_DOMINANCE_EXTENSIONS_TEST_BIN): $(TESTDIR)/twist_dominance_extensions_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+.PHONY: norm_weighted_qr_majorant_test
+NORM_WEIGHTED_QR_MAJORANT_TEST_BIN := $(BUILDDIR)/norm_weighted_qr_majorant_test
+norm_weighted_qr_majorant_test: $(NORM_WEIGHTED_QR_MAJORANT_TEST_BIN)
+	$(NORM_WEIGHTED_QR_MAJORANT_TEST_BIN)
+
+$(NORM_WEIGHTED_QR_MAJORANT_TEST_BIN): $(TESTDIR)/norm_weighted_qr_majorant_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDES) $< -o $@ $(LDFLAGS) $(LDLIBS)
+
+.PHONY: lean_norm_weighted_qr_majorant
+lean_norm_weighted_qr_majorant:
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/norm_weighted_qr_majorant.lean)
+
+.PHONY: concrete_operator_qr_majorant_test
+CONCRETE_OPERATOR_QR_MAJORANT_TEST_BIN := $(BUILDDIR)/concrete_operator_qr_majorant_test
+concrete_operator_qr_majorant_test: $(CONCRETE_OPERATOR_QR_MAJORANT_TEST_BIN)
+	$(CONCRETE_OPERATOR_QR_MAJORANT_TEST_BIN)
+
+$(CONCRETE_OPERATOR_QR_MAJORANT_TEST_BIN): $(TESTDIR)/concrete_operator_qr_majorant_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -Iinclude $< -o $@
+
+.PHONY: lean_concrete_operator_qr_spectral_closure
+lean_concrete_operator_qr_spectral_closure:
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/concrete_operator_qr_spectral_closure.lean)
+
+# Round 84: arbitrary finite positive generator grammar.
+.PHONY: finite_positive_grammar_majorant_test
+FINITE_POSITIVE_GRAMMAR_MAJORANT_TEST_BIN := $(BUILDDIR)/finite_positive_grammar_majorant_test
+finite_positive_grammar_majorant_test: $(FINITE_POSITIVE_GRAMMAR_MAJORANT_TEST_BIN)
+	$(FINITE_POSITIVE_GRAMMAR_MAJORANT_TEST_BIN)
+$(FINITE_POSITIVE_GRAMMAR_MAJORANT_TEST_BIN): $(TESTDIR)/finite_positive_grammar_majorant_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDES) $< -o $@ $(LDFLAGS) $(LDLIBS)
+
+.PHONY: lean_finite_positive_grammar_majorant
+lean_finite_positive_grammar_majorant:
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/finite_positive_grammar_majorant.lean)
+
+# Round 85: generalized multinacci unit family and first m=2 cases.
+.PHONY: generalized_multinacci_family_test generalized_multinacci_unit_probe
+GENERALIZED_MULTINACCI_FAMILY_TEST_BIN := $(BUILDDIR)/generalized_multinacci_family_test
+GENERALIZED_MULTINACCI_UNIT_PROBE_BIN := $(BUILDDIR)/generalized_multinacci_unit_probe
+
+generalized_multinacci_family_test: $(GENERALIZED_MULTINACCI_FAMILY_TEST_BIN)
+	$(GENERALIZED_MULTINACCI_FAMILY_TEST_BIN)
+$(GENERALIZED_MULTINACCI_FAMILY_TEST_BIN): $(TESTDIR)/generalized_multinacci_family_test.cpp $(INCDIR)/ravel/generalized_multinacci.hpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDES) $< -o $@ $(LDFLAGS) $(LDLIBS) $(MATH_LIB)
+
+generalized_multinacci_unit_probe: $(GENERALIZED_MULTINACCI_UNIT_PROBE_BIN)
+	$(GENERALIZED_MULTINACCI_UNIT_PROBE_BIN) 2 2 exact 60
+$(GENERALIZED_MULTINACCI_UNIT_PROBE_BIN): $(APPDIR)/generalized_multinacci_unit_probe.cpp $(INCDIR)/ravel/generalized_multinacci.hpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDES) $< -o $@ $(LDFLAGS) $(LDLIBS) $(MATH_LIB)
+
+generalized_multinacci_prefix_phase_test: math/out/libmath.a
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude -Imath/include -Imath/include/mini-gmp tests/generalized_multinacci_prefix_phase_test.cpp -o out/generalized_multinacci_prefix_phase_test math/out/libmath.a
+
+generalized_multinacci_boundary_word_lift_test: math/out/libmath.a
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude -Imath/include -Imath/include/mini-gmp tests/generalized_multinacci_boundary_word_lift_test.cpp -o out/generalized_multinacci_boundary_word_lift_test math/out/libmath.a
+
+generalized_multinacci_phase_expanded_boundary_test: math/out/libmath.a
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude -Imath/include -Imath/include/mini-gmp tests/generalized_multinacci_phase_expanded_boundary_test.cpp -o out/generalized_multinacci_phase_expanded_boundary_test math/out/libmath.a
+
+generalized_multinacci_admissible_subgrammar_test: math/out/libmath.a
+	mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude -Imath/include -Imath/include/mini-gmp tests/generalized_multinacci_admissible_subgrammar_test.cpp -o out/generalized_multinacci_admissible_subgrammar_test math/out/libmath.a
+
+generalized_multinacci_primitive_intertwiner_test: math/out/libmath.a
+	mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude -Imath/include -Imath/include/mini-gmp tests/generalized_multinacci_primitive_intertwiner_test.cpp -o out/generalized_multinacci_primitive_intertwiner_test math/out/libmath.a
+
+.PHONY: generalized_multinacci_symbolic_embedding_test
+generalized_multinacci_symbolic_embedding_test: math/out/libmath.a
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude -Imath/include -Imath/include/mini-gmp tests/generalized_multinacci_symbolic_embedding_test.cpp -o out/generalized_multinacci_symbolic_embedding_test math/out/libmath.a
+	./out/generalized_multinacci_symbolic_embedding_test
+
+.PHONY: cyclotomic_obstruction_test
+cyclotomic_obstruction_test: out/cyclotomic_obstruction_test
+	./out/cyclotomic_obstruction_test
+
+out/cyclotomic_obstruction_test: tests/cyclotomic_obstruction_test.cpp include/ravel/proof/cyclotomic_obstruction.hpp math/out/libmath.a
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< -o $@ math/out/libmath.a
+
+.PHONY: delayed_self_branch_three_generator_continuation_test
+delayed_self_branch_three_generator_continuation_test: math/out/libmath.a
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude -Imath/include -Imath/include/mini-gmp tests/delayed_self_branch_three_generator_continuation_test.cpp -o out/delayed_self_branch_three_generator_continuation_test math/out/libmath.a
+	./out/delayed_self_branch_three_generator_continuation_test
+
+.PHONY: quartic_fourth_generator_audit_test
+quartic_fourth_generator_audit_test: math/out/libmath.a
+	@mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude -Imath/include -Imath/include/mini-gmp tests/quartic_fourth_generator_audit_test.cpp -o out/quartic_fourth_generator_audit_test math/out/libmath.a
+	./out/quartic_fourth_generator_audit_test

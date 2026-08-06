@@ -1,0 +1,22 @@
+Round 79 validation
+===================
+
+Lean:
+- condition_f_joint_qr_playground.lean: AM reports no messages; kernel PASS.
+
+C++:
+- twist_dominance_extensions_test: PASS
+- condition_f_cyclic_voltage_fourier_test: PASS
+- condition_f_prefix_two_matrix_test: PASS (8191 colored words)
+- condition_f_pair_boundary_substitution_test: PASS (11 classes, 55 terms at D=7)
+- condition_f_joint_pair_comparison_test: PASS
+- universal_dominance_reduction_test: PASS
+- condition_f_component_maximality_test: PASS
+- condition_f_channel_count_collapse_test: PASS
+
+New theorem coverage:
+- gauge/switching invariance: PASS
+- product finite twist: PASS
+- unitary/contractive operator twist: PASS
+- expansive operator twist counterexample detected: PASS
+- norm-weighted augmentation fallback: PASS

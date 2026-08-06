@@ -1,0 +1,2558 @@
+THE GEOMETRY OF NON-UNIT PISOT SUBSTITUTIONS
+MILTON MINERVINO AND JÖRG M. THUSWALDNER
+
+Abstract. Let σ be a non-unit Pisot substitution and let α be the associated Pisot number.
+It is known that one can associate certain fractal tiles, so-called Rauzy fractals, with σ. In our
+setting, these fractals are subsets of a certain open subring of the adèle ring AQ(α) . We present
+several approaches on how to define Rauzy fractals and discuss the relations between them. In
+particular, we consider Rauzy fractals as the natural geometric objects of certain numeration
+systems, define them in terms of the one-dimensional realization of σ and its dual (in the spirit
+of Arnoux and Ito), and view them as the dual of multi-component model sets for particular cut
+and project schemes. We also define stepped surfaces suited for non-unit Pisot substitutions.
+We provide basic topological and geometric properties of Rauzy fractals associated with nonunit Pisot substitutions, prove some tiling results for them, and provide relations to subshifts
+defined in terms of the periodic points of σ, to adic transformations, and a domain exchange.
+We illustrate our results by examples on two and three letter substitutions.
+
+1. Introduction
+In order to derive dynamical properties of unit Pisot substitutions, Arnoux and Ito [4] associated
+fractal tiles to these substitutions. These so-called Rauzy fractals have been studied extensively
+in the meantime (see e.g. [7, 8, 18, 19, 25, 28, 30]). Siegel [27] defined these fractals also for
+Pisot substitutions that are not necessarily unit. This requires to extend the representation space
+for these sets by certain p-adic factors (Figure 1 shows an example of a tiling induced by such
+a Rauzy fractal). In his fundamental PhD thesis, Sing [29] studied various properties of these
+non-unit Rauzy fractals in the context of model sets and recently, Akiyama et al. [3] investigated
+them in the context of beta-numeration (see also [9] for some number theoretic properties of these
+sets).
+Q3
+
+R
+Figure 1. Tiling of the representation space Kσ associated with the 2-letter
+non-unit substitution σ(1) = 15 2, σ(2) = 13 .
+Rauzy fractals have been defined in different ways and were studied in different contexts. So
+far, most of these approaches have been considered only in the case of unit Pisot substitutions.
+In the first part of the present paper we present and unify these approaches in the general case
+Date: August 31, 2012.
+2010 Mathematics Subject Classification. 05B45, 11A63, 11F85, 28A80.
+Key words and phrases. Rauzy fractal, tiling, p-adic completion, beta-numeration.
+The authors are supported by the Doctoral Program W1230 “Discrete Mathematics” granted by the Austrian
+Science Fund (FWF).
+1
+
+2
+
+M. MINERVINO AND J. M. THUSWALDNER
+
+of a non-unit Pisot substitution σ. Here, if α is the Pisot number associated with σ, the Rauzy
+fractal associated with σ is defined in a certain subring Kσ of the adèle ring AQ(α) , whose nonArchimedean factors are determined by the prime divisors of the principal ideal (α) of the ring of
+integers O of Q(α). In particular, we define Rauzy fractals in the following contexts.
+• We review Dumont-Thomas numeration (cf. [14]), which is a generalization of the wellknown notion of beta-numeration, and view Rauzy fractals as the natural geometric objects
+related to this kind of numeration (called Dumont-Thomas subtiles in this context).
+• We extend the geometric realization of a substitution and its dual which was first studied
+by Arnoux and Ito [4] to the non-unit case and define Rauzy fractals as renormalized pieces
+of stepped hypersurfaces with p-adic factors (and call them E1∗ -subtiles in this setting; see
+Figure 2).
+• We present Sing’s [29] construction of Rauzy fractals via cut and project schemes and
+define them in terms of a graph directed iterated function system. In this framework
+Rauzy fractals occur as the dual prototiles of the multi-component model set associated
+with this cut and project scheme.
+We show how these different approaches are related, provide conjugacies of the underlying mappings, and prove that the respective Rauzy fractals are all the same (up to affine transformations).
+In the second part of this paper we establish geometric and topological properties of Rauzy
+fractals, some of which occur in Sing’s Thesis [29] in the context of model sets, some of them are
+new. In particular, carrying over the model set definition of Rauzy fractals to Dumont-Thomas
+numeration, we prove that Rauzy fractals can be regarded as the solution of a graph directed
+set equation governed by the prefix-suffix automaton of σ. This set equation provides a natural
+subdivision of the subtiles of a Rauzy fractal and highlights its self-affine structure that is inherited
+from the underlying substitution. We discuss how Rauzy fractals are related to certain subshifts
+defined in terms of periodic points of the substitution σ and relate adic transformations to domain
+exchanges of subpieces of Rauzy fractals.
+We show that Rauzy fractals always admit a multiple tiling of the representation space Kσ .
+Moreover, extending results of [3] on non-unit beta numeration we prove a tiling criterion for Rauzy
+fractals. In particular, we show that Rauzy fractals admit a tiling of the representation space
+provided that the representations of the underlying Dumont-Thomas numeration obey a certain
+finiteness condition which is an extension of the well-known property (F) of beta-numeration (see
+[17]). An example for such a tiling is depicted in Figure 1.
+We illustrate the results of our paper with examples for a two as well as a three letter substitution.
+
+−5
+Figure 2. Text
+(U) for the substitution σ(1) = 21213 , σ(2) = 12.
+
+2. Preliminaries
+2.1. Pisot substitutions. Let A = {1, 2, . . . , n} be a finite alphabet, and denote by A∗ the set
+of finite words over A. The set A∗ endowed with the concatenation of words is a free monoid with
+the empty word  as identity element. Given w ∈ A∗ and a ∈ A, let |w| be the length of the finite
+word w, |w|a be the number of occurrences of a in w. We denote by Aω the set of (right) infinite
+words and by ω A the set of left-infinite words over A. The topology on Aω is the product topology
+of the discrete topology on A. This implies that Aω is a compact Cantor set. A bi-infinite word
+
+THE GEOMETRY OF NON-UNIT PISOT SUBSTITUTIONS
+
+3
+
+over A is a two-sided sequence in AZ . We can equip AZ with a topology in an analogous way as
+we did for Aω . A right or bi-infinite word u is purely periodic if there exists v ∈ A∗ \ {} such
+that u = v ω . Recall that u is uniformly recurrent if every word occurring in u occurs in an infinite
+number of positions with bounded gaps.
+A substitution is an endomorphism of the free monoid A∗ with the condition that the image of
+each letter is non-empty and, for at least one letter a ∈ A, σ k (a) → ∞. A substitution naturally
+extends to the set of infinite and bi-infinite sequences. A one-sided (two-sided) periodic point of
+σ is an infinite (bi-infinite) word u that satisfies σ k (u) = u, for some k > 0. If k = 1, then u is
+called fixed point of σ.
+We can naturally associate with a substitution σ an incidence matrix Mσ with entries (Mσ )a,b =
+|σ(b)|a , for all a, b ∈ A. The map P : A∗ → Nn , w 7→ (|w|1 , . . . , |w|n )t is called the abelianisation
+map. Obviously, we have Mσ ◦ P = P ◦ σ. A substitution is primitive if Mσ is a primitive matrix.
+Every primitive substitution σ has at least one periodic point and without loss of generality we
+can assume that σ has at least one fixed point. Indeed, if k is the period length then we may just
+work with σ k instead of σ.
+The prefix-suffix automaton associated to the substitution σ is the directed graph with set of
+p
+vertices A and set of labeled edges a −
+→ b if there exist p, s ∈ A∗ such that σ(a) = pbs.
+Recall that an algebraic integer α > 1 is a Pisot number if all its algebraic conjugates α0
+other than α itself satisfy |α0 | < 1. A substitution σ is a Pisot substitution if the dominant
+eigenvalue of Mσ is a Pisot number. Furthermore we say that a Pisot substitution is unit if α is
+a unit, otherwise we call it non-unit. We say that a primitive substitution σ is irreducible if the
+characteristic polynomial of Mσ is irreducible over Q. It is not hard to show that each irreducible
+Pisot substitution is primitive (see e.g. [13]).
+We introduce the following important combinatorial condition on substitutions.
+Definition 2.1. A substitution σ over the alphabet A satisfies the strong coincidence condition
+if for every pair (b1 , b2 ) ∈ A2 , there exists k ∈ N and a ∈ A such that σ k (b1 ) = p1 as1 and
+σ k (b2 ) = p2 as2 with P(p1 ) = P(p2 ) or P(s1 ) = P(s2 ).
+2.2. Substitution dynamical systems. Recall that the two-sided shift S : AZ → AZ is a
+homeomorphism on AZ and let u ∈ AZ . The set Xu := {S j u : j ∈ N} is a shift space, and we
+call it the symbolic dynamical system associated with u. If σ is a primitive substitution, then
+all σ-periodic words are uniformly recurrent, and thus have the same language. The symbolic
+dynamical system associated with σ is the system associated with any of these. We will denote it
+by (Xσ , S). It is known that (Xσ , S) is minimal and uniquely ergodic (see [16, 24]). Every word
+in Xσ has a unique decomposition w = S k (σ(v)), with v ∈ Xσ and 0 ≤ k < |σ(v0 )|. This means
+that any word in Xσ can be uniquely written in the form
+w = . . . | |{z}
+· · · | w−k · · · w−1 .w0 · · · wl | |{z}
+· · · | |{z}
+··· | ···
+|
+{z
+}
+σ(v−1 )
+
+σ(v0 )
+
+σ(v1 )
+
+σ(v2 )
+
+with · · · v−1 v0 v1 · · · ∈ Xσ . Let p = w−k · · · w−1 the prefix of σ(v0 ) of length k and let s = w1 · · · wl
+its suffix. The word w is completely defined by the word v and the decomposition of σ(v0 ) of the
+form pw0 s. Let P be the finite set of all such decompositions, i.e.,
+(1)
+
+P = {(p, a, s) ∈ A∗ × A × A∗ : ∃ b ∈ A, σ(b) = pas}.
+
+We can define a desubstitution map χ on Xσ (which sends w to v), and a partition map ρ from
+Xσ to P, corresponding to the decomposition of σ(v0 ). These two maps are continuous.
+χ : Xσ → Xσ , w 7→ v
+ρ : Xσ → P, w 7→ (p, w0 , s)
+
+such that w = S k σ(v), and 0 ≤ k < |σ(v0 )| ,
+such that σ(v0 ) = pw0 s, and k = |p| .
+
+Let XPl be the set of left-infinite sequences (pi , ai , si )i≥0 = · · · (p1 , a1 , s1 )(p0 , a0 , s0 ) ∈ ω P
+such that σ(ai+1 ) = pi ai si , for all i ≥ 0. The subshift XPl is of finite type. The prefix-suffix
+development is the map EP : Xσ → XPl defined by EP (w) = (ρ(χi (w)))i≥0 = (pi , ai , si )i≥0 . If an
+infinite number of prefixes and suffixes are non-empty then we have the combinatorial expansion
+w = limk→∞ σ k (pk ) · · · σ(p1 )p0 .w0 s0 σ(s1 ) · · · σ k (sk ), where the triples (pi , ai , si ) play the role of
+
+4
+
+M. MINERVINO AND J. M. THUSWALDNER
+
+digits. It is shown in [12] that the map EP is continuous and onto XPl , and it is one-to-one except
+on the orbit of periodic points of σ, where it is k-to-one with k > 1.
+If we project each of the (pi , ai , si ) of an element of XPl on the first component we obtain the
+labels of a left-infinite walk in the prefix-suffix automaton of the substitution σ. We will see in
+Section 4 that the hierarchical desubstitution structure of Xσ is reflected in a natural way in the
+theory of Dumont-Thomas expansions.
+2.3. Algebraic framework. We recall some notions from algebraic number theory. For more
+details we refer e.g. to [23].
+Let K be a number field and O its ring of integers. A prime (or place) p is a class of equivalent
+valuations of K. An Archimedean equivalence class is called an infinite prime and it will be
+denoted by p | ∞, while a non-Archimedean equivalence class is called a finite prime, denoted by
+p - ∞. The set of all infinite primes will be denoted by S∞ . The infinite primes p | ∞ are obtained
+from the Galois embeddings τ : K → C, and we define | · |p : K → R by |x|p = |τ x| if p is real,
+2
+|x|p = |τ x| if p is complex. If p is finite, we define | · |p : K → R by |x|p = N(p)−vp (x) , where
+N(p) = pfp|(p) is the norm of the ideal p lying over (p), fp|(p) its inertia degree, vp : K ∗ → Z the
+p-adic valuation, defined by the unique prime ideal factorization
+Y
+(x) := xO =
+pvp (x) .
+p
+
+Note that vp (x) = 0 for almost all p. Furthermore, given any x ∈ K ∗ , we have the important
+product formula
+Y
+(2)
+|x|p = 1.
+p
+
+We write Kp for the completion of K with respect to | · |p . Denote by Op the ring of integers
+of the completion Kp , i.e., the valuation ring
+Op = {x ∈ Kp : vp (x) ≥ 0}.
+By Ostrowski’s theorem every Kp is either isomorphic to R or C, for infinite primes p, or to a
+finite extension
+P∞ of Qp , for finite primes p. Furthermore, for p finite, we can express any element
+of Kp as i=m di ν i , where m ∈ Z, ν is a uniformiser, i.e., vp (ν) = 1, and the di are taken in a
+fixed system of representatives of the residue class field Op /pOp .
+For p | ∞ we equip Kp with the real Lebesgue measure in case p is real and with the complex
+Lebesgue measure otherwise. If p - ∞ we equip Kp with the Haar measure µp (x + pk ) = N(p)−k .
+We know (see for instance [26, Proposition 2, Chapter II]) that for every measurable subset M of
+a local field Kp and for every x ∈ Kp ,
+(3)
+
+µp (x · M ) = |x|p µp (M ).
+
+Consider the adèle ring AK of K and the open subrings
+Y
+Y
+AK,S =
+Kp ×
+Op ,
+p∈S
+
+p/
+∈S
+
+for some finite set of primes S containing S∞ . Let OS = {x ∈ K : |x|p ≤ 1 for all p ∈
+/ S} be
+the set of S-integers. We know that AK = K + AK,S∞ and K ∩ AS∞ = OS∞ . Moreover, K is a
+discrete, co-compact subgroup of AK .
+3. The representation space
+Let σ be an irreducible Pisot substitution with incidence matrix Mσ and Pisot root α. Consider
+the number field K = Q(α) of degree n and signature (r, s), and let K∞ = K ⊗Q R ∼
+= Rr × Cs .
+Define the locally compact ring
+Y
+Y
+Kα = K∞ ×
+Kp =
+Kp ,
+p|(α)
+
+p∈Sα
+
+THE GEOMETRY OF NON-UNIT PISOT SUBSTITUTIONS
+
+5
+
+where Sα = {p : p | ∞ or p | (α)}. We have injective ring homomorphisms Φ and Φ∞ which
+diagonally embed K into Kα and K∞ , respectively. More precisely
+Y
+ξ,
+Φ : K −→ Kα , ξ 7−→
+p∈Sα
+
+Φ∞ : K −→ K∞ ,
+
+Y
+
+ξ 7−→
+
+ξ.
+
+p∈S∞
+
+Note that K acts multiplicatively on Kα by ξ · (zp )p∈Sα = (ξzp )p∈Sα , for ξ ∈ K.
+The representation space is defined as
+Y
+Kσ =
+Kp ,
+p∈Sα \{p1 }
+
+where p1 is the infinite prime satisfying |α|p1 = α. We equip Kα and Kσ with the product of
+the metrics induced by | · |p and with the product measure µKα , respectively µ, of the measures
+µp , for p ∈ Sα , respectively p ∈ Sα \ {p1 }. Notice that multiplication by α acts as a uniform
+contraction in Kσ . Let π : Kα → Kσ be the projection which modules out the p1 -coordinate, and
+let πp1 : Kα → Kp1 be the projection defined by πp1 ((zp )p ) = zp1 . We will denote by Φ0 = π ◦ Φ
+the diagonal embedding of K into Kσ .
+In case the substitution σ is unit the representation space will consist only of Archimedean
+completions, because in this case (α) = O and there is no finite prime p satisfying p | (α).
+Lemma 3.1. Let M ⊂ Kσ be a measurable set. Then
+µ(α · M ) = α−1 · µ(M ).
+Proof. By (3) we obtain
+µ(α · M ) =
+
+Y
+
+|α|p · µ(M ),
+
+p∈Sα \{p1 }
+
+and using the product formula (2) we easily deduce that
+
+Q
+
+p∈Sα \{p1 } |α|p = α
+
+−1
+
+.
+
+
+
+Recall that a subset W ⊂ Kα is called a Delone set if it is uniformly discrete and relatively
+dense. This means that there are radii r, R > 0 so that each ball of radius r (respectively R)
+contains at most (respectively at least) one point of W .
+Lemma 3.2. The set Φ(OSα ) is a Delone set in Kα .
+Proof. The subring AK,Sα intersects the uniformly discrete subring K in OSα , so Φ(OSα ) is likewise
+uniformly discrete in the closed subring Kα . In order to show the relative denseness, note that
+AK,Sα is clopen in AK , so AK,Sα /OSα (with its quotient topology) is a clopen subgroup of the
+compact group AK /K and, hence, is compact. As Kα /Φ(OSα ) is a quotient of AK,Sα /OSα , it is
+also compact.
+
+Let vα = (v1 , . . . , vn ) be a left eigenvector of Mσ associated to α, assume that vα is scaled in
+a way that vi ∈ Q(α), and consider the Z-module V = hv1 , . . . , vn iZ .
+Lemma 3.3. V is a free Z-module of rank n. Consequently, the numbers vi are rationally independent.
+Proof. As vα is an eigenvector, we get that αV ⊂ V . Moreover, vα 6= 0 which implies that
+V 6= {0}. Thus, since α is irrational of degree n, the elements vj , αvj , . . . , αn−1 vj ∈ V are linearly
+independent over Q. Therefore hvj , αvj , . . . , αn−1 vj iZ ⊂ V and, hence, V has rank n.
+
+Since V is an abelian group and αV ⊂ V we have that V is a finitely generated Z[α−1 ]-module.
+As vi ∈ Q(α) there is q ∈ Z such that vi ∈ q −1 Z[α] holds for each i ∈ {1, . . . , n}. Thus each
+generator of V is taken in q −1 Z[α] and, hence, V · Z[α−1 ] is a (fractional) ideal of the ring Z[α−1 ].
+Lemma 3.4. The following assertions hold:
+(1) OSα = O[α−1 ].
+(2) V · Z[α−1 ] is a subgroup of finite index of OSα .
+
+6
+
+M. MINERVINO AND J. M. THUSWALDNER
+
+Proof. Since α−1 ∈ OSα and O ⊆ OSα the inclusion OSα ⊇ O[α−1 ] follows. To prove the reverse
+inclusion, choose x ∈ OSα and let p | (α). Then there exists k ∈ N such that αk x p ≤ 1. Since Sα
+is a finite set of primes, setting h = max{k ∈ N : αk x p ≤ 1, for p | (α)} we get αh x ∈ O, and,
+hence, OSα ⊆ O[α−1 ].
+V is a subgroup of finite index of q −1 O, for some q ∈ Z, which implies that there exists m ∈ N
+1
+such that mq −1 O ⊆ V . Thus V · Z[α−1 ] ⊆ q −1 O[α−1 ] ⊆ m
+V · Z[α−1 ] and it suffices to show that
+1
+−1
+−1
+V · Z[α ] is a subgroup of finite index of m V · Z[α ]. Suppose on the contrary that mV · Z[α−1 ]
+is a subgroup of V · Z[α−1 ] of infinite index, in particular V · Z[α−1 ]/mV · Z[α−1 ] > mn . Let
+x1 , . . . , xmn +1 be mn + 1 pairwise different representatives of V · Z[α−1 ]/mV · Z[α−1 ]. Since
+x1 , . . . , xmn +1 ∈ V · Z[α−1 ], there exists l ∈ N such that x1 , . . . , xmn +1 ∈ V h1, α−1 , . . . , α−l iZ . As
+V h1, α−1 , . . . , α−l iZ is a Z-module of rank at most n, V h1, α−1 , . . . , α−l iZ /mV h1, α−1 , . . . , α−l iZ
+has index at most mn , which implies that there exist i, j ∈ {1, . . . , mn + 1} such that xi ≡
+xj mod mV h1, α−1 , . . . , α−l iZ , contradicting xi 6≡ xj mod mV · Z[α−1 ].
+
+Lemma 3.5. Φ(V · Z[α−1 ]) is a Delone set in Kα .
+Proof. This follows immediately by Lemma 3.2 and Lemma 3.4.
+
+
+
+−1
+
+Thus Φ(V · Z[α ]) is a discrete subgroup of Kα and, hence, a lattice. We look now for a
+fundamental domain of Kα modulo the lattice Φ(V · Z[α−1 ]). We define dp = min{vp (x) : x ∈ V },
+for every p | (α).
+Lemma 3.6. The set
+D=
+
+( n
+X
+
+)
+ri Φ∞ (vi ) : ri ∈ [0, 1)
+
+×
+
+i=1
+
+Y
+
+pdp
+
+p|(α)
+
+is a fundamental domain for Kα mod Φ(V · Z[α−1 ]).
+Proof. Let w1 , . . . , wn be an integral basis of O over Z. We claim that the set
+( n
+)
+X
+Y
+D0 :=
+ri Φ∞ (wi ) : ri ∈ [0, 1) ×
+Op
+i=1
+
+p|(α)
+
+is a fundamental domain for Kα mod Φ(OSα ).
+To prove this claim let z := (zp )p∈Sα ∈ Kα . WePknow that Φ∞ (w1 ), . . . , Φ∞ (wn ) is a basis of
+n
+the real vector space K∞ . Thus z∞ := (zp )p|∞ = i=1 ri Φ∞ (wi ) ∈ K∞ for some ri ∈ R, and we
+Pn
+denote by ι(z∞ ) the element i=1 bri cwi ∈ O. For p | (α), zp ∈ Kp can be written as
+zp =
+
+−1
+X
+i=−m
+
+ci ν i +
+
+∞
+X
+
+ci ν i ,
+
+m ∈ N,
+
+i=0
+
+where ν is a uniformiser and the ci are taken in a system of representatives of the residue class
+field Op /pOp . Basically we view zp as the sum of a p-adic fractional part, that we denote by
+λp (zp ), and a p-adic integral part. Define
+X
+!
+X
+y=
+λp (zp ) + ι z∞ − Φ∞
+λp (zp )
+.
+p|(α)
+
+p|(α)
+
+One
+Pn checks that y ∈ OSα and z − Φ(y) ∈ D0 . Indeed, z∞ − Φ∞ (y) is an element of the form
+of y, and, for p | (α), observe that both zp −
+i=1
+Pri Φ∞ (wi ) with ri ∈ [0, 1), by definition
+P
+Φp ( p|(α) λp (zp )) and Φp (ι(z∞ − Φ∞ ( p|(α) λp (zp )))) are in Op . Furthermore z − Φ(x) ∈
+/ D0 for
+all x ∈ OSα \ {y} (note that the intervals for the ai in the definition of D0 are half-open).
+Now we replace the lattice Φ(OSα ) with the sublattice Φ(V ·Z[α−1 ]). As w1 , . . . , wn is a Q-basis
+for K, the same holds for v1 , . . . , vn . The completion of V at p, i.e., Vp := V ⊗Z Zp is isomorphic
+P−1
+P∞
+i
+i
+to pdp . We can express an element zp of the completion Kp as zp =
+i=−m ci ν +
+i=0 ci ν
+where ν is a uniformiser and the ci are taken in a set of representatives of the residue class field
+Vp /pVp isomorphic to pdp /pdp +1 . Thus we can adapt all the arguments given above to get a unique
+element y ∈ V · Z[α−1 ] such that z − Φ(y) ∈ D.
+
+
+THE GEOMETRY OF NON-UNIT PISOT SUBSTITUTIONS
+
+7
+
+4. The geometry of Dumont-Thomas numeration
+4.1. Dumont-Thomas numeration. Dumont and Thomas [14] studied numeration systems associated with a primitive substitution σ. This notion of numeration allows to expand real numbers
+with respect to a real base α > 1, which is the Perron-Frobenius eigenvalue of the substitution.
+Dumont-Thomas expansions depend on the prefix-suffix automaton of the substitution and on the
+left eigenvector vα associated with α. The digit set for the expansions is D = {δ(p) : (p, a, s) ∈ P},
+where P is defined in (1) and δ is the map given by
+δ : A∗ → Q(α), δ(p) = hP(p), vα i.
+Notice that D ⊂ V is finite and depends on the normalization of vα . A sequence (δ(pi ))i≥1 ∈ Dω
+is called (σ, a)-admissible if there exists a walk in the prefix-suffix automaton labeled by (pi )i≥1
+starting from a with infinitely many non-empty suffixes.
+Proposition 4.1 (Dumont-Thomas [14]). Let σ be a primitive substitution on the alphabet A and
+fix a ∈ A. For every x ∈ [0, δ(a)), there exists a unique (σ, a)-admissible sequence (δ(pi ))i≥1 ∈ Dω
+such that
+X
+(4)
+x=
+δ(pi )α−i .
+i≥1
+
+We will call an expansion of this form a (σ, a)-expansion and we will denote its sequence of
+digits by (x)σ,a .
+For x ∈ R+ , let m ≥ −1 be the smallest integer such that α−m−1 x ∈ [0, δ(a)), for some a ∈ A.
+Then we can expand α−m−1 x using Proposition 4.1 and obtain a walk labeled by (p−i )i≥−m such
+that
+m
+X
+X
+δ(pm−i )αm−i +
+δ(p−j )α−j ⇐⇒ (x)σ,a = δ(pm ) · · · δ(p0 ).δ(p−1 )δ(p−2 ) · · ·
+x=
+i=0
+
+Set X =
+
+S
+
+a∈A
+
+j≥1
+
+
+[0, δ(a)) × {a} and define the map
+Tσ : X → X,
+
+
+(y, b) 7→ αy − δ(p), a ,
+
+where a ∈ A and p ∈ A∗ are uniquely determined by σ(b) = pas and αy − δ(p) ∈ [0, δ(a)). Given
+any (y, b) ∈ X we get its (σ, b)-expansion by computing its Tσ -orbit. Notice that Tσ is not injective
+and the pre-image has the form
+[
+(5)
+Tσ−1 (x, a) =
+{(α−1 (x + δ(p)), b)}, for (x, a) ∈ X.
+p
+
+b−→a
+
+It is easy to see from this identity that for (x, a) ∈ X we have
+(6)
+
+αm Tσ−m (x, a) = x + αm Tσ−m (0, a),
+
+∀m ∈ N,
+
+where x + (z, a) = (x + z, a) is used.
+4.2. Integers and fractional parts. We will be interested in “integers” and “fractional parts”
+obtained from the Dumont-Thomas numeration system generated by the substitution σ, i.e., all
+those x ∈ R+ such that only non-negative (respectively negative) powers of α occur in its (σ, a)expansion, for some a ∈ A.
+In the sequel, for a sequence of subsets {Ak }k∈N of a topological space, we write Limk→∞ Ak
+for the topological limit (if it exists; see e.g. [20, Chapter II, §29] for the definition of this object).
+(k)
+Let Zσ,a = αk · Tσ−k (0, a) ⊂ R be the set of real numbers corresponding to all finite walks of
+Pk−1
+pk−1
+length k in the prefix-suffix automaton ending at state a, i.e., the sums i=0 δ(pi )αi , where ak −→
+p1
+p0
+· · · −→ a1 −→ a. To such an element we associate the left-sequence of digits δ(pk−1 ) · · · δ(p1 )δ(p0 ). ∈
+∗
+D. Observe that these sets are not nested (see Example 1).
+(k)
+
+Definition 4.2. The set of (σ, a)-integers is the topological limit Zσ,a = Limk→∞ Zσ,a . We call
+the union of the Zσ,a for a ∈ A σ-integers and denote it by Zσ .
+
+8
+
+M. MINERVINO AND J. M. THUSWALDNER
+
+The topological limit in the definition exists since for every interval [0, `] ⊂ R+ there exists
+(k)
+(k)
+k0 ∈ N such that Limk→∞ Zσ,a ∩ [0, `] = Zσ,a ∩ [0, `], for each k ≥ k0 .
+Notice that the set of σ-integers is a subset of V and is discrete and closed. The set Zσ,a is
+Pk−1
+(k)
+the set of those finite sums i=0 δ(pi )αi ∈ Zσ,a , k ∈ N, whose associated sequence of digits can
+S
+(k)
+be left-padded by zeros. In particular, Zσ,a ( k≥0 Zσ,a , that is, not every approximation is a
+(σ, a)-integer.
+Definition 4.3. The set of (σ, a)-fractional parts is defined as
+Frac(σ, a) = V · Z[α−1 ] ∩ [0, δ(a)),
+
+(7)
+and Frac(σ) =
+parts.
+
+S
+
+a∈A Frac(σ, a) = V ·Z[α
+
+−1
+
+]∩[0, maxa∈A δ(a)), will be called the set of σ-fractional
+
+An element x ∈ Frac(σ, a) has a (σ, a)-expansion (x)σ,a = .δ(p−1 )δ(p−2 ) · · · , where (p−k )k≥1 is
+the label of an infinite walk in the prefix-suffix automaton starting at state a.
+Lemma 4.4. Tσ maps Frac(σ) onto Frac(σ).
+Proof. Given (x, a) ∈ Frac(σ, a), Tσ (y, b) = (x, a) for all (y, b) such that y = α−1 (x + δ(p)) and
+σ(b) = pas. Notice that there exists at least one (y, b) of this form since the prefix-suffix automaton
+is strongly connected by the primitivity of σ. It is clear that y ∈ V · Z[α−1 ]. Furthermore, if
+(x)σ,a = .δ(p1 )δ(p2 ) · · · , then (y)σ,b = .δ(p)δ(p1 )δ(p2 ) · · · which implies that y ∈ [0, δ(b)).
+
+Example 1. Let σ be the substitution σ(1) = 121, σ(2) = 11. We have
+
+
+2 2
+Mσ =
+,
+det(xI − Mσ ) = x2 − 2x − 2.
+1 0
+This√ substitution is an irreducible non-unit Pisot substitution with associated Pisot root α =
+1 + 3. A left eigenvector associated to α for Mσ is vα = ( α2 , 1). From the prefix-suffix automaton
+of the substitution depicted in Figure 3 we can see that the set of digits is D = {δ(), δ(1), δ(12)}.
+In Figure 4 we illustrate the map Tσ and its combinatorial structure. If the letter a of a point
+
+Figure 3. The prefix-suffix-automaton of the substitution σ(1) = 121, σ(2) = 11.
+(x, a) ∈ X is equal to 1 then the function depicted in the left square is used to compute the
+first coordinate of its image, if it is 2, we use the one in the right square. Moreover, the second
+coordinate of the image of (x, a) is 1 if the line of the linear piece is black, and 2 if it is light gray.
+For example, given (x, 1) ∈ [1, α−1
+2 ) × {1}, which is in the left square, after one iteration of Tσ it
+will jump to the right square. We compute as an example the orbit of ( 41 , 1):
+( 14 , 1)
+
+Tσ
+
+/ ( α , 1)
+4
+
+Tσ
+
+/ ( 1 , 2)
+
+Tσ
+
+2
+
+/ (0, 1) z
+
+3
+
+Tσ
+(k)
+
+Thus we have ( 14 )σ,1 = .0δ(1)δ(1). Observe that ( α4 , 1) = ( 3α
+2 + 1, 1) ∈ Zσ,1 for all k ≥ 2, thus
+δ(1)
+δ(1)
+(2)
+3α
+3α
+2 + 1 is a (σ, 1)-integer. On the other hand ( 2 + 1, 2) ∈ Zσ,2 , with associated walk 2 −→ 1 −→ 2,
+(3)
+but ( 3α
+/ Zσ,2 , and this is due to the fact that we cannot left-pad its expansion by 0s,
+2 + 1, 2) ∈
+
+i.e., we can extend the walk in the automaton on the left only by adding a digit δ(1). As another
+(2)
+
+δ(1)
+
+δ(12)
+
+example we have δ(1)δ(12). ∈ Zσ,1 , with associated walk 2 −→ 1 −→ 1, but it cannot be extended
+to any infinite walk. In this sense, it remains an approximation. We list some other expansions:
+( α−1
+3 )σ,2 = .δ(1)0
+
+(α − 2)σ,1 = .δ(1)δ(1)0δ(12),
+
+( α−1
+4 )σ,1 = .0δ(12)δ(12)
+
+THE GEOMETRY OF NON-UNIT PISOT SUBSTITUTIONS
+α
+2
+
+α
+2
+
+1
+
+1
+
+0
+
+1
+2
+
+α−1
+2
+
+α
+2
+
+0
+
+1
+2
+
+1
+
+9
+
+α
+2
+
+Figure 4. The map Tσ
+4.3. Tiles associated with Dumont-Thomas Numeration. We are now in a position to
+define tiles for Dumont-Thomas numeration. These tiles form a generalization of the tiles defined
+in Akiyama [2] and Akiyama et al. [3] in the context of beta-numeration.
+Definition 4.5. The Dumont-Thomas subtiles associated with an irreducible Pisot substitution
+σ are defined as
+Rσ (a) = Φ0 (Zσ,a )
+
+(8)
+
+(a ∈ A).
+
+The Dumont-Thomas central tile is defined as
+Rσ =
+
+(9)
+
+[
+
+Rσ (a).
+
+a∈A
+
+An example of a Dumont-Thomas central tile is depicted in Figure 5.
+For z = (zp )p∈Sα \{p1 } ∈ Kσ define the norm kzk = max{|zp |p : p ∈ Sα \ {p1 }}, and set
+(10)
+
+M=
+
+max{kΦ0 (δ(p))k : δ(p) ∈ D}
+.
+1 − kΦ0 (α)k
+
+Note that the Dumont-Thomas subtiles Rσ (a) are closed by definition. Furthermore they are
+contained in the closed ball B(0, M ) = {z ∈ Kσ : kzk ≤ M }. Thus they are non-empty compact
+sets. We will prove more properties of these tiles later.
+Again generalizing [2] (see also [3] and [8]) for x ∈ Frac(σ) we define the x-tiles as
+[
+Rx =
+Φ0 ( Lim αk Tσ−k (x, a)).
+{a∈A: x∈[0,δ(a))}
+
+k→∞
+
+Using (6) we easily see that they are unions of subtiles translated by Φ0 (x) that depend on the
+number of basic intervals which contain x, i.e.,
+[
+Rx =
+Rσ (a) + Φ0 (x).
+{a∈A: x∈[0,δ(a))}
+
+For this reason it suffices to consider subtiles in the sequel.
+Definition 4.6. The stepped surface for an irreducible Pisot substitution σ with associated Pisot
+root α is
+(11)
+
+S = {(Φ(x), a) ∈ Kα × A : x ∈ Frac(σ, a)}.
+
+The set of projected points of the stepped surface into Kσ given by
+(12)
+
+Γ = π(S) = {(Φ0 (x), a) ∈ Kσ × A : x ∈ Frac(σ, a)}
+
+will be called the translation set.
+iAmbiguity with colors and grayscale is due on whether you are reading an electronic version of the paper or a
+printed one.
+
+10
+
+M. MINERVINO AND J. M. THUSWALDNER
+
+Z2
+
+R
+Figure 5. The central tile Rσ for σ(1) = 21213 , σ(2) = 12 subdivided in the
+purple (dark gray) subtile
+and thePyellow (light gray) subtile Rσ (2).i Here
+P∞ Rσ (1)
+∞
+i
+we represented each i=0 di α ∈ Z2 by i=0 di 2−i−1 ∈ [0, 1], with di ∈ {0, 1}.
+As we will see later, this set is the natural translation set for a (multiple) tiling induced by the
+subtiles.
+For our purposes (particularly in Section 10) we will interpret (γ, a) ∈ Kα × A either as a
+colored translation vector or as a colored face of the fundamental domain Kα /Φ(V · Z[α−1 ]) (see
+Lemma 3.6). To be more precise, in this latter case, (γ, a) will be represented as γ + Da , where
+X
+ Y
+Da =
+ri Φ∞ (vi ) : ri ∈ [0, 1) ×
+pdp ,
+i6=a
+
+p|(α)
+
+and dp = min{vp (x) : x ∈ V }.
+The set function Tσ−1 defined in (5) is defined on subsets of R × A. Thus Tσ−1 cannot be
+extended to Kα × A in a natural way. However, its restriction to subsets of Q(α) × A admits a
+−1
+natural extension to Kα × A. We call this extension Text
+. Its precise definition is
+[
+−1
+−1
+(13)
+Text
+: Kα × A −→ 2Kα ×A , Text
+(γ, a) =
+{(α−1 (γ + Φ(δ(p))), b)}.
+p
+
+b−→a
+−1
+We can iterate Text
+for m times and get
+[
+−1 m
+(Text
+) (γ, a) =
+(14)
+(α−m (γ + Φ(δ(p0 ) + αδ(p1 ) + · · · + αm−1 δ(pm−1 ))), bm )
+pm−1
+
+p
+
+p
+
+bm → ··· 1
+→b1 0
+→a
+
+[
+
+=
+
+(α−m (γ + Φ(δ(p))), b).
+
+σ m (b)=pas
+−1
+Proposition 4.7. The set S is invariant under Text
+.
+
+Proof. We prove the proposition in two steps:
+−1
+• If (Φ(x), a) ∈ S then Text
+(Φ(x), a) ∈ S. This is equivalent in showing that every element
+−1
+of Tσ (x, a) ∈ Frac(σ). But this is a direct consequence of Lemma 4.4.
+−1
+−1
+• Distinct faces have disjoint images. Suppose (Φ(y), b) ∈ Text
+(Φ(x1 ), a1 ) ∩ Text
+(Φ(x2 ), a2 ),
+that is
+(y, b) ∈ Tσ−1 (x1 , a1 ) ∩ Tσ−1 (x2 , a2 ).
+
+This implies that Tσ (y, b) = (x1 , a1 ) and Tσ (y, b) = (x2 , a2 ), which is impossible unless
+(x1 , a1 ) = (x2 , a2 ), since y has a unique (σ, b)-expansion.
+
+−1
+Observe that we can write Rσ (a) in terms of the extended mapping Text
+:
+
+(15)
+
+(k)
+
+0
+(k)
+k −k
+Rσ (a) = Φ0 ( Lim Zσ,a ) = Lim Φ0 (Z(k)
+σ,a ) = limH Φ (Zσ,a ) = limH π(α Text (0, a)),
+k→∞
+
+k→∞
+
+k→∞
+
+k→∞
+
+where limH denotes the limit with respect to the Hausdorff metric. Indeed, the third equality
+(k)
+holds since all Φ0 (Zσ,a ) are contained in a compact set, and the fourth follows easily recalling the
+(k)
+−1
+definition of Zσ,a and observing that Text
+◦ Φ = Φ ◦ Tσ−1 and Φ0 = π ◦ Φ.
+
+THE GEOMETRY OF NON-UNIT PISOT SUBSTITUTIONS
+
+11
+
+−4
+Figure 6. Text
+((0, 1) ∪ (0, 2)) for the substitution σ(1) = 21213 , σ(2) = 12.
+
+Q2
+
+R
+−4
+Figure 7. Text
+((0, 1) ∪ (0, 2)) projected into Kσ .
+
+(i)
+
+4.4. Projective limit. For a ∈ A, let us consider again the sets Zσ,a = αi · Tσ−i (0, a), i ≥ 1,
+(i)
+which can be thought as approximations of the set of integers Zσ,a . The sets Zσ,a together with
+P
+(i) Pj−1
+(j)
+i−1
+j
+the continuous maps fi : Zσ,a → Zσ,a , k=0 δ(pk )αk 7→ k=0 δ(pk )αk , for i, j ∈ N+ and j ≥ i,
+form a projective system. Consider the projective limit
+n
+o
+Y
+(16)
+Ẑσ,a = lim Z(i)
+= (xi )∞
+∈
+Z(i)
+: for all j ≥ i, fij (xj ) = xi ,
+σ,a
+i=1
+σ,a
+←−
+i
+
+i≥1
+
+S
+and the union Ẑσ = a∈A Ẑσ,a .
+Q
+(i)
+(i)
+If we give to each Zσ,a the discrete topology and to i≥1 Zσ,a the product topology, the space
+Ẑσ,a inherits a topology which turns it into a compact space.
+We can equip Ẑσ,a with two other topologies. Indeed, equip Ẑσ,a with the topology defined by
+the distance
+d(x, y) = 2− max{m∈N: xm =ym } ,
+
+for x = (xi )i≥1 , y = (yi )i≥1 ∈ Ẑσ,a .
+
+In this way Ẑσ,a is a compact Cantor set isomorphic to the subshift of finite type formed by
+the left-infinite sequences (δ(pi ))i≥0 ∈ ω D such that (pi )i≥0 is the labeling of a left-infinite walk
+p2
+p1
+p0
+· · · −→ a2 −→ a1 −→ a in the prefix-suffix automaton of σ.
+On the other hand we can equip Ẑσ,a with the topology defined by the distance d(x, y) =
+P
+kΦ0 (x) − Φ0 (y)k. An element of Ẑσ,a can be represented as an infinite sum i≥0 δ(pi )αi , where
+P`
+(`+1)
+each truncation i=0 δ(pi )αi is contained in Zσ,a . Extending Φ0 continuously, we can use this
+mapping in order to map the infinite sums in Ẑσ,a to Kσ . The image Φ0 (Ẑσ,a ) is exactly the
+Dumont-Thomas subtile Rσ (a).
+The definition of the projective limit Ẑσ,a encompasses these two points of view, thus we can
+consider one of its elements either as an admissible left infinite sequence or as an infinite sum.
+Another advantage is that we have all the approximations (i.e., the truncations) of the elements
+included in this vision. In both interpretations multiplication by α acts as a contraction. We come
+back to Ẑσ,a in Section 8.2.
+
+12
+
+M. MINERVINO AND J. M. THUSWALDNER
+
+5. Geometric realizations of a substitution
+The aim of this section is to generalize the formalism of one-dimensional geometric realizations
+of substitutions and their dual (see Arnoux and Ito [4]) to the non-unit case. This will lead to
+another definition of Rauzy fractal and stepped surface for a non-unit Pisot substitution.
+5.1. The maps E1 and E1∗ . A consequence of dealing with non-unit Pisot substitutions is that
+Mσ : Zn → Zn is notSinvertible. We define a suitable bigger space where Mσ acts and is invertible.
+Indeed, let Z = k≥0 Mσ−k Zn . We denote by F the infinite dimensional real vector space of
+the maps Z × A → R that take value zero except for a finite set. For x ∈ Z, a ∈ A denote by [x, a]
+the element of F which takes value 1 at (x, a) and 0 elsewhere; the set {[x, a] : x ∈ Z, a ∈ A} is a
+basis of F. The support of an element of F is the set of (x, a) on which it is not zero.
+We define the one-dimensional geometric realization E1 of σ on F by
+X
+E1 [y, b] =
+[Mσ y − P(p), a].
+p
+
+b−→a
+∗
+
+Denote by F the space of linear forms on F with finite support, i.e., those linear forms for which
+there exists a finite subset X of Z × A such that the form is 0 on any element of F whose support
+does not intersect X; this space admits as basis the set {[x, a]∗ : x ∈ Z, a ∈ A}. We can associate
+to E1 its dual map E1∗ on F ∗ .
+Proposition 5.1. The dual map E1∗ is defined on F ∗ by
+X
+(17)
+E1∗ [x, a]∗ =
+[Mσ−1 (x + P(p)), b]∗ .
+p
+
+b−→a
+
+Proof. By definition of the dual map we have
+hE1∗ [x, a]∗ , [y, b]i = h[x, a]∗ , E1 [y, b]i
+X
+= h[x, a]∗ ,
+[Mσ y − P(p), c]i.
+p
+
+b−→c
+
+This product can take only 0 and 1 as values and is not zero if and only if c = a and Mσ y−P(p) = x.
+Since Mσ is invertible as a map from Z to Z, this implies y = Mσ−1 (x + P(p)).
+
+Denote by H the hyperplane of Rn orthogonal to vα , and let H≥ be the set {x ∈ Rn : hx, vα i ≥
+0}, i.e., the half-space above H. The half-space H< strictly below H is defined in the same fashion.
+We look for all those x ∈ Z that are close to the hyperplane H, in particular, we want x ∈ H≥ and
+x − ea ∈ H< to be true for some a ∈ A. One problem arises: we get too many points with this
+property and we would like to have a discrete set. Thus we enlarge again our space by adding the
+non-Archimedean completions
+in order to distribute the points with respect to their p-adic height.
+Q
+Define Zext = Z × p|(α) Kp and a map
+Ψ : Z −→ Zext ,
+x 7−→ (x, hx, vα i, . . . , hx, vα i).
+As Mσt acts as a multiplication by α along vα we can extend Mσ naturally to Zext .
+
+Indeed, it
+acts as a multiplication by α in each of the non-Archimedean factors. Without
+risk
+of
+confusion
+Q
+this extension will again be denoted by Mσ . Moreover, set Hext = H × p|(α) Kp . This is the
+space where the subtiles will live. We can also carry over the definition of F to the space Fext of
+mappings from Ψ(Z) × A to R:
+Z ×A
+
+Ψ
+
+/ Ψ(Z) × A
+
+[x,a]
+
+ x
+R
+
+[Ψ(x),a]
+
+∗
+Similarly we carry over the space F ∗ to Fext
+. Thus we can extend the maps E1 and E1∗ respectively
+∗
+on Fext and Fext , denoting them again by the same names.
+
+THE GEOMETRY OF NON-UNIT PISOT SUBSTITUTIONS
+
+13
+
+We can interpret geometrically an element [x, a] ∈ Fext as a segment {x − θΨ(ea ) : θ ∈ [0, 1]}
+in Zext . In this way we get the “broken line” with reversed orientation associated with the fixed
+point u = u0 u1 . . . of the substitution in terms of E1 :
+[
+(18)
+− Lu =
+E1n [0, u0 ].
+n≥0
+
+P
+From now on we will only consider elements of F ∗ that are of the form k [xk , ak ]∗ (all the
+coefficients will be 1). Thus we shall consider E1∗ as a transformation acting directly on subsets
+of Ψ(Z) × A.
+5.2. E1∗ -subtiles and the stepped surface.
+Definition 5.2. Let πu : Rn → H be the projection onto H along the right eigenvector uα of Mσ
+corresponding to α, renormalizedQsuch that huα , vα i = 1. Let us consider πu × id : Zext → Hext ,
+where id is the identity map on p|(α) Kp . The E1∗ -subtiles associated with an irreducible Pisot
+substitution σ are defined as
+(19)
+
+Tσ (a) = limH (πu × id)(Mσk · (E1∗ )k [0, a]∗ )
+
+(a ∈ A).
+
+k→∞
+
+Furthermore the central tile of the substitution is defined as
+[
+(20)
+Tσ =
+Tσ (a).
+a∈A
+
+Observe that the limit in Equation (19) exists by a similar argument as the one in [10, Lemma
+3.4].
+We now generalize the notion of stepped surface given in [4] for the unit case. Define it as the
+set
+(21)
+
+Gext = {[Ψ(x), a]∗ ∈ Zext × A : x ∈ H≥ , x − ea ∈ H< }.
+
+We will provide in Section 7 connections between the two different notions of tiles and stepped
+surfaces seen so far.
+6. Model sets
+In this section we describe Sing’s approach (see [29]) of studying Rauzy fractals from the view
+point of cut-and-project schemes and model sets. We also want to justify here the terminology of
+calling the set Γ defined in (12) a translation set.
+Definition 6.1 (see e.g. [5, Section 5]). A cut and project scheme, or CPS, is a triple (G, H, L̃)
+consisting of a locally compact group G which is the union of countably many compact sets, called
+the physical space, a locally compact group H called the internal space and a lattice L̃ in G × H,
+such that two natural projections π1 : G×H → G, π2 : G×H → H satisfy the following properties:
+(i) The restriction π1 |L̃ is injective.
+(ii) The image π2 (L̃) is dense in H.
+Setting L = π1 (L̃), the star-map is defined as (·)? = π2 ◦ (π1 |L̃ )−1 : L → H, and is well-defined
+on L by injectivity of π1 |L̃ . With these definitions, we have L̃ = {(x, x? ) : x ∈ L}. We say that
+a cut and project scheme (G, H, L̃) is symmetric if (H, G, L̃) is a cut and project scheme as well.
+Given a cut and project scheme (G, H, L̃) and a subset W ⊂ H define Λ(W ) = {x ∈ L : x? ∈ W }.
+We call such a set Λ(W ), or more generally any translate of such a set, a model set if W is a
+non-empty compact set and W = int(W ). We say that a model set is regular if ∂W has zero Haar
+measure. In addition, we say that a set Q is an inter model set if Λ(int(W )) ⊂ Q ⊂ Λ(W ).
+Sn
+A finite family Λ = (Λ1 , . . . , Λn ) is a multi-component Delone set if supp(Λ) = a=1 Λa is a
+Delone set. Similarly we say that Λ is a multi-component model set if each Λa = Λ(Wa ) is a model
+set with respect to the same CPS. The next results can be found in [29].
+Lemma 6.2. Φ(V · Z[α−1 ]) = αΦ(V · Z[α−1 ]).
+
+14
+
+M. MINERVINO AND J. M. THUSWALDNER
+
+Proof. We know that αV · Z[α−1 ] ⊂ V · Z[α−1 ], therefore αΦ(V · Z[α−1 ]) ⊂ Φ(V · Z[α−1 ]). The set
+αΦ(V · Z[α−1 ]) is a sublattice of Φ(V · Z[α−1 ]). Let D0 be a fundamental domain of Kα /αΦ(V ·
+Z[α−1 ]) and recall that D is a fundamental domain of Kα /Φ(V · Z[α−1 ]) (see Lemma 3.6). Then,
+by (3) and (2)
+Y
+|α|p · µKα (D) = µKα (D),
+µKα (D0 ) =
+p∈Sα
+
+and the claim follows.
+
+
+
+Proposition 6.3. (R, Kσ , Φ(V · Z[α−1 ])) forms a symmetric cut and project scheme:
+Y
+π p1
+π
+R
+←−
+Kα
+−→ Kσ =
+Kp
+p∈Sα \{p1 }
+
+∪
+V · Z[α−1 ]
+
+∪
+1−1
+
+Φ(V · Z[α−1 ])
+
+←→
+
+∪
+1−1
+
+←→
+
+Φ0 (V · Z[α−1 ])
+
+Proof. The set Φ(V · Z[α−1 ]) is a lattice by Lemma 3.5. The projections πp1 and π are injective
+on Φ(V · Z[α−1 ]) by construction. By Kronecker’s theorem V is dense in R and so is V · Z[α−1 ]. It
+remains to prove that Φ0 (V · Z[α−1 ]) is dense in Kσ (see [29, Lemma 6.55]). Since Φ(V · Z[α−1 ])
+is a lattice in Kα , it is relatively dense. Hence Φ0 (V · Z[α−1 ]) must be relatively dense in Kσ , i.e.,
+there exists a radius R > 0 such that B(0, R) + Φ0 (V · Z[α−1 ]) = Kσ . Multiplying this equation
+by α (which is equivalent to a contraction in Kσ ) and by Lemma 6.2 we get the denseness.
+
+For (Y, d) metric space, let H(Y ) be the space of non-empty compact subsets of Y , equipped
+with the Hausdorff metric dH . In the model set setting, Sing [29] associates to each primitive
+substitution σ an expanding matrix function system Θ on Rn defined by
+[
+(22)
+Θab =
+{tδ(p) ◦ f0 }, for a, b ∈ A,
+p
+
+b−→a
+
+where f0 (x) = αx and tδ(p) (x) = x + δ(p). Then its substitution matrix SΘ = (|Θab |)a,b∈A equals
+Mσ . Given such a Θ we can define the adjoint iterated function system Θ # on H(R)n by
+[
+#
+(23)
+Θab
+=
+{f0−1 ◦ tδ(p) }, for a, b ∈ A.
+p
+
+a−→b
+
+Then obviously SΘ # = Mσt . Note that Θ # is just a way to write a graph directed iterated function
+system in the sense of Mauldin and Williams [21] in matrix form. By the general theory of graph
+directed iterated function systems (see [21]) there exists a unique attractor for Θ # , and it is easy
+to see that it is A = (Aa )a∈A ⊂ H(R)n , where the Aa = [0, δ(a)] are called natural intervals.
+Geometrically we can interpret σ as a tiling of the line: given a fixed point u = u0 u1 · · · ∈ Aω of
+σ, we represent each letter a by the “type a” interval Aa ; starting with the first of these intervals we
+can construct the entire line inflating repetitively Aa by α and subdividing it into the corresponding
+intervals given by the substitution (compare this to the action of the one-dimensional geometric
+realization E1 defined in Section 5.1; in particular, we refer to (18)).
+Given the tiling of the line, denote the set of left endpoints of the type a intervals by Λa .
+Precisely, define Λ = (Λa )a∈A by
+[
+(24)
+Λ=
+Θ k (∅, · · · , ∅, {0}, ∅, · · · , ∅)t ,
+k≥0
+
+where {0} is at position u0 . Then Λ = (Λa )a∈A is a substitution multi-component Delone set, i.e.,
+Λ = Θ(Λ) and together with A = Θ # (A) this forms the representation with natural intervals
+Λ + A of a fixed point u of σ.ii
+Example 2. Consider the substitution of Example 1, σ(1) = 121, σ(2) = 11. Then we obtain the
+following expanding matrix function system Θ and its adjoint iterated function system Θ # :
+
+
+
+
+{f0 , fδ(12) } {f0 , fδ(1) }
+{g0 , gδ(12) } {gδ(1) }
+#
+Θ=
+,
+Θ =
+,
+{fδ(1) }
+∅
+{g0 , gδ(1) }
+∅
+
+THE GEOMETRY OF NON-UNIT PISOT SUBSTITUTIONS
+
+15
+
+where fd (x) = αx + d and gd (x) = α−1 (x + d), for d ∈ D = {δ(), δ(1), δ(12)}. We get the tiling
+of the line applying repetitively the process of inflation and subdivision on the interval [0, δ(1)]:
+0
+
+α
+2
+
+·α
+
+7−→
+
+0
+
+α+1
+
+3α + 2
+
+0
+
+·α
+
+7−→
+
+·α
+
+7−→ · · ·
+
+Furthermore we have that the sets Λa of left endpoints of the type a intervals, for a ∈ A, satisfy
+the point set equations
+Λ1 = αΛ1 ∪ αΛ1 + δ(12) ∪ αΛ2 ∪ αΛ2 + δ(1),
+Λ2 = αΛ1 + δ(1),
+and the natural intervals satisfy
+A1 = α−1 A1 ∪ α−1 (A1 + δ(12)) ∪ α−1 (A2 + δ(1)),
+A2 = α−1 A1 ∪ α−1 (A1 + δ(1)).
+We can extend Θ to the graph directed iterated function system Θ ? on H(Kσ )n relative to the
+CPS (R, Kσ , Φ(V · Z[α−1 ])) with star-map Φ0 . As done before we can consider the adjoint (Θ ? )#
+on Kσn relative to the CPS (R, Kσ , Φ(V · Z[α−1 ])), which is an expanding matrix function system.
+This can now be used to define Rauzy fractals in this context.
+Definition 6.4. Let Ω = (Ωa )a∈A ⊂ H(Kσ )n be the solution of the graph directed iterated
+function system Θ ? (Ω) = Ω. Ω is called the dual prototile. The regular multi-component inter
+model set Υ = (Υa )a∈A in Kσn associated with the CPS (Kσ , R, Φ(V · Z[α−1 ])), defined by Υa =
+Λ([0, δ(a))), is called translation set.
+Observe that, for a ∈ A,
+(25)
+Υa = Λ([0, δ(a))) = {π(z) ∈ Kσ : z = (zp )p ∈ Φ(V · Z[α−1 ]), zp1 ∈ [0, δ(a))} = Φ0 (Frac(σ, a)),
+which shows that the translation set Γ = supp(Υ ).
+Lemma 6.5. Γ is a Delone set.
+Proof. It suffices to prove that each Φ0 (Frac(σ, a)) is a model set, because by [22, Proposition 2.6]
+model sets are Delone sets. But this follows from (25).
+
+7. Relations between different approaches
+The aim of this section is to provide connections between the different approaches seen so far.
+We start establishing relations between the geometric realization of a substitution and DumontThomas numeration.
+Lemma 7.1. The Q-basis {v1 , . . . , vn } of Q(α) has the property that multiplication by α in Q(α)
+is conjugate to the action of Mσ on Qn , that is, the diagram
+Q(α)
+
+·α
+
+/ Q(α)
+
+Mσ
+
+
+/ Qn
+
+f
+
+
+Qn
+
+f
+
+commutes. Here f : Q(α) → Qn maps z = z1 v1 +· · ·+zn vn to the vector (z1 , . . . , zn )t . Furthermore
+V · Z[α−1 ] ∼
+= Z as Z-modules.
+Proof. The commutativity of the diagram follows because vα is a left eigenvector of Mσ . The
+isomorphism V · Z[α−1 ] ∼
+= Z follows because V = hv1 , . . . , vn iZ ∼
+= Zn and the multiplication by α
+on V is conjugate to the action of Mσ on Z.
+
+iiWe could have defined Θ using the functions t
+
+−δ(p) ◦ f0 , to obtain by duality Θ
+
+#
+
+. In this way, we would have
+obtained a negative tiling of the line −(Λ + A), with Λa set of right endpoints of the type a intervals.
+
+16
+
+M. MINERVINO AND J. M. THUSWALDNER
+
+Regarding Q(α) as a vector space with basis {v1 , . . . , vn } is particularly convenient because, for
+every x ∈ Z, the scalar product hx, vα i is an element of Q(α). We use the connection between
+V · Z[α−1 ] and Z to associate with every Ψ(x) ∈ Zext the embedding of hx, vα i ∈ Q(α) in Kα .
+Precisely we have the following statement.
+Lemma 7.2. The following diagram is commutative:
+Ψ
+
+Z
+f −1
+
+
+Φ
+V · Z[α−1 ]
+
+/ Zext πu ×id / Hext
+F
+
+
+/ Kα
+
+G
+
+
+/ Kσ
+
+π
+
+where
+
+(26)
+
+F =
+
+Φ∞ (v1 )t
+
+···
+0
+
+Φ∞ (vn )t
+
+0
+I
+
+
+,
+
+I denotes the identity matrix whose size equals the number of finite primes p satisfying p | (α),
+and G is the matrix obtained from F by erasing the first row.
+Proof. For the left-square diagram, let x ∈ Z, then Ψ(x) = (x, hx, vα i, . . . , hx, vα i) and applying
+F we get the vector (Φ∞ (hx, vα i), hx, vα i, . . . , hx, vα i). Now, embedding f −1 (x) = hx, vα i by Φ
+we get exactly the same vector.
+Q
+For the right-square diagram, let x = (x1 , x2 ) ∈ Zext , where x1 ∈ Z and x2 ∈ p|(α) Kp . Let
+α(i) , i = 2, . . . , n, be the Galois conjugates of α = α(1) . Let vα(i) and uα(i) be respectively the left
+and right eigenvectors for α(i) . Taking uα such that huα , vα i = 1, it follows easily that {uα(i) }ni=1 ,
+{vα(i) }ni=1 are dual bases. Then every x1 ∈ Z ⊂ Rn admits the decomposition (cf. [13, Section
+2.1])
+n
+X
+hx1 , vα(i) iuα(i) .
+x1 = hx1 , vα iuα +
+i=2
+
+Therefore
+(πu × id)(x) = (hx1 , vα(2) iuα(2) + . . . + hx1 , vα(n) iuα(n) , x2 ).
+Applying G to this vector we get
+G(πu × id)(x) = (hx1 , vα(2) i, . . . , hx1 , vα(n) i, x2 ),
+{uα(i) }ni=1
+
+since
+and {vα(i) }ni=1 are dual bases. We obtain the same result projecting F x =
+(Φ∞ (hx1 , vα i), x2 ) by π.
+
+Notice that F is invertible because {v1 , . . . , vn } are rationally independent. The following
+result surveys and clarifies the connection established between the Dumont-Thomas numeration
+and geometric representations of substitutions.
+Theorem 7.3. Each square in the diagram
+
+Ψ
+
+Ψ
+
+
+Zext
+
+F
+
+ 
+Kα
+
+/Z
+
+Mσ
+
+Z
+
+
+/ Zext
+
+Mσ
+
+
+V · Z[α−1 ]
+Φ
+·α
+
+f −1
+
+
+/ V · Z[α−1 ]
+
+·α
+
+ 
+/ Kα
+
+Φ
+
+THE GEOMETRY OF NON-UNIT PISOT SUBSTITUTIONS
+
+17
+
+is commutative.
+Theorem 7.3 provides the connection between the two stepped surfaces Gext in (21) and S in (11).
+Indeed, considering a point Ψ(x) ∈ Zext is equivalent to taking a point Φ(hx, vα i) ∈ Φ(V · Z[α−1 ]),
+up to conjugation. Furthermore, the condition x ∈ H≥ , x − ea ∈ H< can be translated in the
+Q(α)-world to 0 ≤ hx, vα i < hea , vα i = δ(a).
+The advantage of dealing in the number field world, i.e., with Kα instead of the space Zext ,
+is that the stepped surface and the translation set are parametrized by one coordinate x ∈ V ·
+Z[α−1 ] ∩ [0, δ(a)), for some a ∈ A.
+−1
+By Theorem 7.3, Text
+and the dual geometrical substitution E1∗ are conjugate.
+Lemma 7.4. The following diagram is commutative:
+Ψ(Z) × A
+
+E1∗
+
+/ 2Ψ(Z)×A
+
+F
+
+
+Kα × A
+
+−1
+Text
+
+
+
+F
+
+/ 2Kα ×A
+
+with F defined in Equation (26) and where by convention F [x, a]∗ equals (F (x), a).
+Next we provide the relations between the Dumont-Thomas numeration and the model set
+approach, and we connect the latter with the maps E1 and E1∗ .
+(k)
+We can refine the sets Zσ,a defined in Section 4.2 by taking only those finite integers associated
+with walks in the prefix-suffix automaton starting at a state b and ending at state a. Call these
+S
+(k)
+(k)
+(k)
+sets Zb,a . By definition Zσ,a = b∈A Zb,a . Moreover, if the word σ(b) starts with b we easily see
+(k)
+
+that the sequence (Zb,a )k≥0 is nested.
+Lemma 7.5. Let u = u0 u1 · · · be the fixed point of σ and let Λ be as in (24). Then we have
+(Zu0 ,a )a∈A = Λ. Furthermore (Zσ,a )a∈A = Limk→∞ Θ k ({0})a∈A , and in particular (Zσ,a )a∈A =
+Θ(Zσ,a )a∈A .
+Proof. We have Θ k (∅, . . . , ∅, {0}, ∅, . . . , ∅)t = (Θ ka,u0 (0))a∈A , whose elements are of the form
+pk
+
+p0
+
+(k)
+
+αk δ(pk ) + · · · + δ(p0 ) where u0 → · · · → a. But these are elements of Zu0 ,a . Recalling that
+S
+(k)
+(k)
+
+Zσ,a = u0 ∈A Zu0 ,a , we get the second statement.
+Lemma 7.6. Let h : Ψ(Z) × A → Rn , [Ψ(y), a] 7→ (∅, . . . , ∅, {h−y, vα i}, ∅, . . . , ∅)t , v : X → Rn ,
+(x, a) 7→ (∅, . . . , ∅, {x}, ∅, . . . , ∅)t , with x at position a, and let C = v ◦ G ◦ (πu × id), where G is as
+in Lemma 7.2 and πu × id as in Definition 5.2. Then the diagrams
+Ψ(Z) × A
+
+E1
+
+/ 2Ψ(Z)×A
+
+Θ
+
+
+/ Rn
+
+h
+
+
+Rn
+
+X
+
+Tσ−1
+
+v
+
+h
+
+
+Rn
+
+/ 2X
+
+Ψ(Z) × A
+
+v
+
+Θ
+
+#
+
+E1∗
+
+C
+
+
+/ Rn
+
+
+Kσn
+
+/ 2Ψ(Z)×A
+C
+
+(Θ ? )#
+
+
+/ Kσn
+
+are commutative.
+Proof. For the first diagram we have
+Θ(h([Ψ(x), a])) = (Θ1a (h−x, vα i), . . . , Θna (h−x, vα i))t
+ [
+t
+[
+=
+{αh−x, vα i + δ(p)}, · · · ,
+{αh−x, vα i + δ(p)}
+p
+
+a−→1
+
+p
+
+a−→n
+
+ X
+
+=h
+[Ψ(Mσ x − P(p)), b] = h(E1 [Ψ(x), a]).
+p
+
+a−→b
+
+18
+
+M. MINERVINO AND J. M. THUSWALDNER
+
+For the second diagram
+#
+#
+Θ # (v(x, a)) = (Θ1a
+(x), · · · , Θna
+(x))t =
+
+ [
+
+{α−1 (x + δ(p))}, · · · ,
+
+p
+
+=v
+
+t
+{α−1 (x + δ(p))}
+
+p
+
+1−→a
+
+ [
+
+[
+
+n−→a
+
+
+
+{(α−1 (x + δ(p)), b)} = v(Tσ−1 (x, a)).
+
+p
+
+b−→a
+−1
+By the second diagram (Θ ? )# ◦ (v ◦ π) = (v ◦ π) ◦ Text
+, if we denote again by v the map v acting on
+−1
+∗
+Kσ ×A. Moreover we know that Text and E1 are conjugate by F . Then, using π ◦F = G◦(πu ×id),
+the commutativity of the third diagram follows by C.
+
+
+It has been already shown in Section 6 that the two translation sets Υ and Γ are the same. By
+Lemma 7.6 we can translate Proposition 4.7 to Υ = (Θ ? )# (Υ ) (cf. [29, Proposition 6.72]).
+We end this section by giving the relation between all kinds of Rauzy fractals defined so far.
+Theorem 7.7. Let σ be an irreducible Pisot substitution over the alphabet A and fix a ∈ A.
+Let Rσ (a) be the associated Dumont-Thomas subtile, Tσ (a) the associated E1∗ -subtile and Ωa the
+associated dual prototile. If G is the matrix defined in Lemma 7.2, then
+Rσ (a) = Ωa = G Tσ (a).
+Proof. We start with proving the first identity. Recall that Ω = (Ωa )a∈A is the attractor of
+the graph directed iterated function system Θ ? , and the Dumont-Thomas subtiles are defined by
+Rσ (a) = Φ0 (Zσ,a ). Then by Lemma 7.5
+(Rσ (a))a∈A = Θ ? (Φ0 (Zσ,a ))a∈A = Θ ? (Rσ (a))a∈A
+and the result follows by uniqueness of the attractor of Θ ? .
+To prove the second identity, starting from (15) we get
+−k
+Rσ (a) = limH π(αk Text
+(0, a))
+k→∞
+
+−k
+= limH π(αk Text
+(F (0), a))
+k→∞
+
+= limH π(αk F (E1∗ )k [0, a]∗ )
+
+(by Lemma 7.4)
+
+= limH π(F Mσk (E1∗ )k [0, a]∗ )
+
+(by Theorem 7.3)
+
+= limH G(πu × id)(Mσk (E1∗ )k [0, a]∗ )
+
+(by Lemma 7.2)
+
+k→∞
+
+k→∞
+
+k→∞
+
+= G Tσ (a).
+
+
+
+Remark 7.8. Rauzy fractals can be defined alternatively as the closure of the projections onto
+the contracting hyperplane of vertices of the broken line associated to the fixed point u = u0 u1 · · ·
+of the substitution (see e.g. [8, 11]). It turns out that this is equivalent to taking the closure of
+S
+(k)
+the embedding by Φ0 of k≥0 Zu0 ,a , for each a ∈ A. In fact, these Rauzy fractals coincide with the
+Dumont-Thomas central tiles, since they are both solutions of the graph directed iterated function
+system Θ ? .
+8. Basic properties of the tiles
+−1
+In all what follows we will work in the number field setting, i.e., with Text
+. For the sake of
+−1
+−1
+−1
+simplicity we will denote Text acting on Kσ × A again by Text , instead of writing π ◦ Text
+. For
+this reason we write the Dumont-Thomas subtiles as
+
+(27)
+
+−k
+Rσ (a) = limH αk · Text
+(0, a),
+k→∞
+
+We show now some of their properties.
+
+for a ∈ A.
+
+THE GEOMETRY OF NON-UNIT PISOT SUBSTITUTIONS
+
+19
+
+8.1. Topological properties. The following proposition gives information on the p-adic height
+of the central tile.
+Proposition 8.1. If z = (zp )p∈Sα \{p1 } ∈ Rσ , for every p | (α) we have zp ∈ pdp , where dp =
+min{vp (x) : x ∈ V }.
+P∞
+0
+k
+Proof.
+P∞ If z ∈ kRσ , we can write z = k=0 Φ (δ(pk )α ). For p | (α),k the p-th component of z is zp =
+k=0 δ(pk )α ∈ Kp . We deduce that vp (zp ) ≥ mink≥0 {vp (δ(pk )α )} = minδ(p)∈D {vp (δ(p))} = dp ,
+thus zp ∈ pdp .
+
+Next we prove that the subtiles cover the representation space (cf. [3] for the non-unit betaexpansion setting).
+Proposition 8.2. Let σ be an irreducible Pisot substitution. The subtiles Rσ (a) provide a uniformly locally finite covering of the representation space Kσ governed by Γ, in particular
+[
+Kσ =
+Rσ (a) + γ.
+(γ,a)∈Γ
+
+Proof. Let Cσ = (γ,a)∈Γ Rσ (a) + γ. Every point of Cσ is of the form z + Φ0 (x), where z =
+P
+P
+0
+i
+−i
+∈ Frac(σ, a). We have αCσ ⊆ Cσ , since by
+i≥0 Φ (δ(pi )α ) ∈ Rσ (a), x =
+i≥1 δ(p−i )α
+Lemma 4.4 we have Tσ (x, a) ∈ Frac(σ, b) and αz + Φ0 (δ(p−1 )) ∈ Rσ (b), for some b ∈ A. By
+Lemma 6.5, Cσ is relatively dense in Kσ . Furthermore, as αCσ ⊆ Cσ and α is a contraction,
+Cσ is dense in Kσ . By compactness of the subtiles and uniformly discreteness of Γ we obtain
+Kσ = Cσ .
+
+S
+
+In the following theorem we state important properties of our tiles (cf. [29, Corollary 6.66]).
+Theorem 8.3. The following assertions hold for the subtiles Rσ (a), a ∈ A, of an irreducible Pisot
+substitution.
+(i) The subtiles Rσ (a) are the solution of the graph directed iterated function system
+[
+[
+(28)
+Rσ (a) =
+α(Rσ (b) + γ) =
+αRσ (b) + Φ0 (δ(p)),
+−1
+(γ,b)∈Text
+(0,a)
+
+p
+
+b−→a
+
+where the union is measure disjoint.
+(ii) Each subtile Rσ (a) is the closure of its interior.
+(iii) The boundary of each subtile Rσ (a) has Haar measure zero.
+Proof. (i) Equation (28) is a direct consequence of Lemma 7.5, but we prefer to give here an
+explicit proof. By (27) and (6) we obtain
+[
+−(k−1)
+−k
+Rσ (a) = limH αk · Text
+(0, a) = α limH
+αk−1 · Text
+(γ, b)
+k→∞
+
+=α
+
+k→∞
+
+[
+
+(Rσ (b) + γ) =
+
+−1
+(γ,b)∈Text
+(0,a)
+
+−1
+(γ,b)∈Text
+(0,a)
+
+[
+
+αRσ (b) + Φ0 (δ(p)).
+
+p
+
+b−→a
+
+Let m = (µ(Rσ (a)))a∈A . Applying the measure µ to equation (28) gives
+X
+X
+X
+(29) µ(Rσ (a)) ≤
+µ(αRσ (b) + Φ0 (δ(p))) = α−1
+µ(Rσ (b)) = α−1
+(Mσ )ab µ(Rσ (b)).
+p
+
+b−→a
+
+p
+
+b−→a
+
+b∈A
+
+So we showed that the vector m satisfies Mσ m ≥ αm, and, as a direct consequence of the PerronFrobenius Theorem, we get Mσ m = αm. Thus the inequality in (29) is actually an equality, and
+thus no overlap with positive measure occurs in the union in (28).
+(ii) Since Kσ is locally compact, we deduce from Baire’s theorem that there exists a ∈ A such
+that int(Rσ (a)) 6= ∅. Therefore (28) and the primitivity of σ yield that int(Rσ (a)) 6= ∅ holds for
+
+20
+
+M. MINERVINO AND J. M. THUSWALDNER
+
+each a ∈ A. Let now a ∈ A and consider η ∈ Rσ (a). Let B an open ball centered at η. It suffices
+to show that B ∩ int(Rσ (a)) 6= ∅. Using the k-fold iteration
+[
+(30)
+Rσ (a) =
+αk (Rσ (b) + γ)
+−k
+(γ,b)∈Text
+(0,a)
+
+−k
+of (28) for k large enough, we obtain that αk (Rσ (b) + γ) ⊆ B holds for some (γ, b) ∈ Text
+(0, a).
+k
+As int(α (Rσ (b) + γ)) 6= ∅ the ball B contains inner points of Rσ (a).
+(iii) Let B ⊂ int(Rσ (a)) be an open ball and fix b ∈ A. By the primitivity of σ we may choose
+−k
+k ∈ N large enough such that U := αk (Rσ (b) + γ) ⊆ B holds for some (γ, b) ∈ Text
+(0, a). The
+boundary ∂U is a subset of the set that is covered at least twice by the union (30). We claim that
+µ(∂U ) = 0. Indeed, if µ(∂U ) > 0 was true, then
+X
+µ(Rσ (a)) ≤
+µ(αk (Rσ (b) + γ)) − µ(∂U ),
+−k
+(γ,b)∈Text
+(0,a)
+
+contradicting the measure disjointness of the union (30). Thus µ(∂U ) = 0 and, hence, µ(∂Rσ (b)) =
+0. Since b ∈ A was arbitrary, we are done.
+
+8.2. Adic transformation and domain exchange. Define the map
+X
+ϕ : Xσ → Ẑσ , w 7→
+δ(pi )αi
+i≥0
+
+where EP (w) = (pi , ai , si )i≥0 ∈ ω P is the prefix-suffix development of w. Then the following holds
+(cf. [13, Proposition 2.3]).
+The adic transformation Ẑσ → Ẑσ , x 7→ x + δ(w0 ) on Ẑσ is conjugate to the shift S on Xσ via
+the conjugacy ϕ.
+We will need the following lemma (see [12, Lemma 4.1, Proposition 5.1, Theorem 5.1]).
+Lemma 8.4. Let w ∈ Xσ and EP (w) = (pi , ai , si )i≥0 its prefix-suffix development. Then
+EP (χ(w)) = (pi , ai , si )i≥1 and EP (σ(w)) = (qi , bi , ti )i≥0 is such that q0 =  and qi+1 = pi , for
+every i ≥ 0. If Sw is a periodic point of σ then EP (Sw) = (, bi , ti )i≥0 and EP (w) = (pi , ai , )i≥0 ,
+with (pi )i≥0 periodic. If Sw is not periodic for σ then EP (Sw) = (qi , bi , ti )i≥0 is such that there
+exists an integer k0 with σ k (pk ) · · · σ 0 (p0 )a0 = σ k (qk ) · · · σ 0 (q0 ), for all k ≥ k0 .
+Sketch of the proof. The first two statements follow from the definition of EP . For the third, a
+successor map ψ defined on XPl and conjugate to the shift on Xσ is introduced, i.e., such that
+ψ(EP (w)) = EP (Sw), for w ∈ Xσ . Given (pi , ai , si )i≥0 ∈ XPl , ψ((pi , ai , si )i≥0 ) = (qi , bi , ti )i≥0
+is defined as follows: let i0 be the first index such that si0 6= ; then, (qi0 , bi0 , ti0 ) is such that
+qi0 bi0 ti0 = pi0 ai0 si0 and |qi0 | = |pi0 | + 1, for i ≥ i0 , (qi , bi , ti ) = (pi , ai , si ), and for 0 ≤ i < i0
+we take (, bi , ti ) such that σ(bi+1 ) = bi ti . This is precisely an adic transformation, and, for its
+particular shape, we can deduce the last claim.
+
+Proposition 8.5. The action of σ on Xσ is conjugate to the multiplication by α on Ẑσ . Furthermore the diagram
+Xσ
+
+ϕ
+
+Φ0
+
++δ(w0 )
+
+S
+
+
+Xσ
+
+/ Ẑσ
+
+ϕ
+
+
+/ Ẑσ
+
+Φ0
+
+/ Rσ
++Φ0 (δ(w0 ))
+
+
+/ Rσ
+
+is commutative, i.e., ϕ(Sw) = ϕ(w) + δ(w0 ), where w = · · · w−1 .w0 w1 · · · ∈ Xσ .
+Proof. The first statement follows from Lemma 8.4 observing that the action of σ on Xσ is conjugate to the right extension of elements of XPl by an element that has an empty prefix.
+The commutativity of the left diagram is also a consequence of Lemma 8.4. Let w ∈ Xσ and
+EP (w) = (pi , ai , si )i≥0 .
+
+THE GEOMETRY OF NON-UNIT PISOT SUBSTITUTIONS
+
+21
+
+If Sw is not a periodic point of σ, EP (Sw) = (qi , bi , ti )i≥0 is such that there exists an integer
+k0 with σ k (pk ) · · · σ(p0 )w0 = σ k (qk ) · · · σ 0 (q0 ), for all k ≥ k0 . Thus
+X
+X
+δ(pi )αi + δ(w0 ) = ϕ(w) + δ(w0 ).
+δ(qi )αi =
+ϕ(Sw) =
+i≥0
+
+i≥0
+
+If Sw is a periodic point of σ then EP (Sw) = (, bi , ti )i≥0 and EP (w) = (pi , ai , )i≥0 , with (pi )i≥0
+periodic with period `. Thus ϕ(Sw) = 0 and σ i+kl (pi+k` ) · · · p0 w0 = σ k` (σ i (pi ) · · · p0 w0 ) for every
+i < ` and every integer k. Therefore
+ϕ(w) = lim
+
+k→∞
+
+k
+X
+i=0
+k`
+
+δ(pi )αi = lim (δ(pk )αk + · · · + δ(p1 )α + δ(p0 w0 )) − δ(w0 )
+k→∞
+
+= lim α (δ(pi )αi + · · · + δ(p1 )α + δ(p0 w0 )) − δ(w0 )
+k→∞
+
+= 0 − δ(w0 ) = ϕ(Sw) − δ(w0 ).
+The commutativity of the right diagram follows simply applying Φ0 extended to elements of Ẑσ . 
+Observe that the adic transformation can be interpreted and computed by Bratteli diagrams
+(see e.g. [15]).
+Siegel [27] shows that, if σ satisfies the strong coincidence condition (see Definition 2.1), the
+following hold:
+(1) (Xσ , S) is isomorphic in measure to (Rσ , E), where E is the domain exchange E(z) =
+z + Φ0 (δ(a)), for z ∈ Rσ (a). One of the main ingredients of the proof is the commutativity
+of the outer rectangle in the diagram in Proposition 8.5.
+(2) The subtiles Rσ (a) are disjoint in measure.
+9. Multiple tilings and tilings; property (F)
+In this section we show that the subtiles Rσ (a) induce a multiple tiling of Kσ with respect to
+the translation set Γ. Moreover, we give a tiling criterion in terms of a finiteness condition of
+(σ, a)-expansions.
+9.1. Multiple tiling property. We call a collection C of compact subsets of Kσ a multiple tiling
+of Kσ if each element of C is the closure of its interior and if there exists a positive integer m such
+that µ-almost every point of Kσ is contained in exactly m elements of C. If m = 1 then C is called
+a tiling of Kσ .
+In this section we will prove that every irreducible Pisot substitution induces a multiple tiling
+of the associated representation space.
+A patch is defined as a finite subset of Γ. We say that Γ is repetitive (or quasi-periodic) if for
+any finite patch P there exists a radius R > 0 such that every ball of radius R in Γ contains a
+translate of P .
+Lemma 9.1. The translation set Γ is repetitive.
+This result is already contained in [29, Proposition 6.72]. Here we present a different and much
+more direct proof in the spirit of [11].
+Proof. Let P = {(γk , ak ), 1 ≤ k ≤ `} be a patch of Γ. We can write each γk as Φ0 (xk ), for
+xk ∈ V · Z[α−1 ] ∩ [0, δ(ak )). Let R1 be such that B(0, R1 ) contains the patch P . There exists
+εk > 0 such that xk ∈ V · Z[α−1 ] ∩ [0, (1 − εk )δ(ak )), for each 1 ≤ k ≤ `. Set ε := 21 mink εk δ(ak ).
+Then Φ0 (x) + P is in Γ, for every x ∈ V · Z[α−1 ] ∩ [0, ε).
+It remains to prove that there exists R > 0 such that any ball of radius R in Kσ contains a point
+Φ0 (x) with x ∈ V · Z[α−1 ] ∩ [0, ε). By the denseness of V · Z[α−1 ] in R there exists x0 ∈ V · Z[α−1 ] ∩
+[0, ε/2). Let ∆ = maxa∈A δ(a). We can divide [0, ∆) in N = d2∆/εe subintervals [jε/2, (j + 1)ε/2)
+of length ε/2. For each j ≤ N , there exists mj ∈ Z such that mj x0 + [jε/2, (j + 1)ε/2) ⊂ [0, ε).
+Fix a point η ∈ Kσ . We know by Lemma 6.5 that there is R2 > 0 such that every ball of radius
+R2 contains at least one element of Γ. In particular, the ball B(η, R2 ) contains a point Φ0 (x) with
+
+22
+
+M. MINERVINO AND J. M. THUSWALDNER
+
+x ∈ V ·Z[α−1 ]∩[0, ∆). Thus there exists j ∈ {0, . . . , N } such that x ∈ V ·Z[α−1 ]∩[jε/2, (j +1)ε/2),
+and, hence, mj ∈ Z such that mj x0 + x ∈ [0, ε). This implies that Φ0 (x + mj x0 ) + P occurs in Γ.
+Therefore, the ball centered in η with radius R := R1 + R2 + maxj kΦ0 (mj x0 )k contains a
+translated copy of the patch P and the lemma is proved.
+
+We are now in a position to state the multiple tiling result.
+Theorem 9.2. Let σ be an irreducible Pisot substitution. The collection Cσ = {Rσ (a) + γ :
+(γ, a) ∈ Γ} is a multiple tiling of Kσ .
+Proof. Assume that the assertion of the theorem is false. Then there exist `1 , `2 ∈ N, `1 < `2 , and
+M1 , M2 ⊂ Kσ with µ(Mi ) > 0 such that each element of Mi is covered exactly `i times by the
+elements of Cσ (i = 1, 2). As the boundaries of the subtiles have zero measure by Theorem 8.3 (iii),
+there exist points ηi ∈ Mi that are not contained in the boundary of any element of Cσ . Thus we
+can find ε > 0 such that B(ηi , ε) is covered exactly `i times by the collection Cσ . This implies
+that there exist a patch P2 ⊂ Γ with `2 elements such that
+\
+Rσ (a) + γ.
+B(η2 , ε) ⊂
+(γ,a)∈P2
+
+Consider the inflated ball α−k B(η1 , ε). By the same arguments presented above, each point of
+α−k B(η1 , ε) is covered by exactly `1 tiles of the collection α−k Cσ . Each of the inflated tiles of α−k Cσ
+can be decomposed in a finite union of tiles in Cσ which are pairwise disjoint in measure. Thus
+almost each point in α−k B(η1 , ε) is contained in exactly `1 tiles of Cσ . By Lemma 9.1 we can pick a
+suitable large k such that α−k B(η1 , ε) contains a translated copy P2 +γ, for some γ ∈ Γ. Therefore
+B(η2 , ε) + γ is contained in α−k B(η1 , ε), for k large enough. The ball B(η2 , ε) is covered exactly `2
+times, consequently B(η2 , ε) + γ is covered at least `2 times, but this yields a contradiction since
+almost every point in α−k B(η1 , ε) is contained in exactly `1 tiles, and `1 < `2 .
+
+We extend to the non-unit setting the well-known Pisot conjecture (see also the recent paper
+by Barge et al. [6] where it is proposed to replace the irreducibility condition by a topological
+condition on the tiling space associated with σ).
+Conjecture. Every irreducible Pisot substitution σ induces a self-replicating tiling of its associated representation space Kσ .
+9.2. Finiteness property. In this section we provide a tiling criterion for Cσ based on the geometric property (F). We take inspiration mainly from [28].
+Consider the set
+[
+U :=
+(0, a) ⊂ Γ.
+a∈A
+−1
+−1
+It is easy to see that U ⊆ Text
+(U): indeed, (0, b) ∈ Text
+(0, a) if σ(b) = as, i.e., if p = . Thus
+−1
+−1 m
+(0, b) ∈ Text (0, a) where a is the first letter of σ(b). Hence the sequence ((Text
+) (U))m≥0 is an
+increasing sequence of subsets of Γ.
+
+Definition 9.3. Let σ be an irreducible Pisot substitution. We say that the substitution σ satisfies
+−1
+the geometric property (F) if the iterations of Text
+on U eventually cover the whole self-replicating
+translation set Γ, i.e., if
+[
+−m
+Γ=
+Text
+(U).
+m≥0
+
+The geometric property (F) is an equivalent formulation of the finiteness property firstly introduced in [17] in the beta-numeration framework and further studied in [1]. Here we shall interpret
+it as a finiteness condition on (σ, b)-expansions. Indeed, given (γ, b) ∈ Γ, γ can be written as
+−1
+Φ0 (x) where
+P x ∈ V · Z[α ] ∩ [0, δ(b)) which has a unique (σ, b)-expansion by Proposition 4.1,
+i.e., x = i≥1 δ(pi )α−i . Then we can say as well that (γ, b) has a formal (σ, b)-expansion in Kσ ,
+P
+namely γ = i≥1 Φ0 (δ(pi )α−i ).
+
+THE GEOMETRY OF NON-UNIT PISOT SUBSTITUTIONS
+
+23
+
+Proposition 9.4. The substitution σ satisfies the geometric property (F) if and only if every point
+(γ, b) ∈ Γ has a unique finite (σ, b)-expansion.
+−m
+Proof. Let (γ, b) ∈ Γ. If property (F) holds, then (γ, b) ∈ Text
+(0, a), for some m ≥ 0 and a ∈ A.
+Thus, using (14) we get
+
+γ = α−m Φ0 (δ(p0 )) + α−m+1 Φ0 (δ(p1 )) + · · · + α−1 Φ0 (δ(pm−1 )),
+
+(31)
+pm−1
+
+p1
+
+p0
+
+where b −→ · · · −→ a1 −→ a0 is a walk in the prefix-suffix automaton ending at a = a0 .
+On the other hand, suppose that (γ, b) ∈ Γ has a unique finite (σ, b)-expansion γ = α−1 Φ0 (δ(p1 ))+
+pm−1
+pm
+p1
+· · · + α−m Φ0 (δ(pm )) with b −→ · · · −→ am−1 −−→ a. This yields that αm γ ∈ Rσ (a) and using the
+iterated set equation in (30) we get
+[
+γ∈
+Rσ (c) + η.
+−1 m
+(η,c)∈(Text
+) (0,a)
+
+−m
+Thus we may conclude that (γ, b) ∈ Text
+(0, a).
+
+
+
+For an irreducible Pisot substitution σ satisfying the geometric property (F), it is immediate
+from Proposition 8.2 and the definition of subtiles that every z ∈ Kσ admits a (σ, a)-expansion in
+Kσ for some a ∈ A (cf. [28, Proposition 3.9]), i.e.,
+∞
+X
+z=
+Φ0 (δ(pi )αi ), m ∈ Z.
+i=m
+
+In the context of beta-numeration, Akiyama [2] proved that property (F) is equivalent to the
+fact that 0 is an exclusive inner point of the central tile. Our next aim is to carry over this
+statement to the substitution context.
+Definition 9.5. A point η ∈ Kσ is an exclusive inner point of a collection of finitely many tiles in
+a multiple tiling if it is contained exclusively in this collection and in no other tile of the multiple
+tiling.
+Definition 9.6. The zero-expansion graph G (0) of σ is the directed graph such that the following
+conditions hold.
+• The nodes (γ, a) ∈ Γ are such that kγk ≤ M , where M is taken as in Equation (10).
+−1
+• There is a directed edge from (γ1 , a1 ) to (γ2 , a2 ) if and only if (γ2 , a2 ) ∈ Text
+(γ1 , a1 ).
+• Every node is the starting point of an infinite walk.
+The zero-expansion graph is used to characterize all the elements (γ, a) ∈ Γ for which the tile
+Rσ (a) + γ contains 0. Suppose 0 ∈ Rσ (a) + γ. This implies that γ ∈ B(0, M ), where M is as in
+(10).
+Proposition 9.7. The zero-expansion graph G (0) of an irreducible Pisot substitution σ is well
+defined and finite. A pair (γ, a) is a node of this graph if and only if 0 ∈ Rσ (a) + γ.
+Proof. The graph is finite since the nodes are elements of the Delone set Γ with bounded norm.
+Consider a node (γ, a) = (γ0 , a0 ) ∈ G (0) and the infinite walk {(γk , ak )}k≥0 starting from it. Then,
+p2
+p1
+by definition of edges, we get a left-infinite walk in the prefix-suffix automaton · · · −→ a2 −→
+p0
+a1 −→ a0 and
+γ = −Φ0 (δ(p0 )) − αΦ0 (δ(p1 )) − · · · − αk Φ0 (δ(pk )) + αk+1 γk+1 .
+Since multiplication by α is a contraction
+and kγk k is uniformly bounded in k, we obtain for k → ∞
+P
+a convergent power series: γ = − k≥0 αk Φ0 (δ(pk )). Thus −γ ∈ Rσ (a) and hence 0 ∈ Rσ (a) + γ.
+P
+Suppose conversely that 0 ∈ Rσ (a) + γ, for (γ, a) ∈ Γ. Then γ = − k≥0 αk Φ0 (δ(pk )), where
+(pk )k≥0 P
+is the labeling of a left-infinite walk in the prefix-suffix automaton ending at state a. Let
+γ` = − k≥0 αk Φ0 (δ(pk+` )). Each γ` ∈ B(0, M ) and αγ`+1 = γ` + Φ0 (δ(p` )), i.e., (γ`+1 , a`+1 ) ∈
+−1
+Text
+(γ` , a` ). By induction (γ` , a` ) ∈ Γ for all ` ∈ N, since this holds for γ = γ0 and Γ is invariant
+−1
+under Text
+. Hence, (γk , ak )k≥0 is an infinite walk in the zero-expansion graph starting from
+(γ, a).
+
+
+24
+
+M. MINERVINO AND J. M. THUSWALDNER
+
+Lemma 9.8. Let σ be an irreducible Pisot substitution that satisfies the strong coincidence condition. Then σ satisfies the geometric property (F) if and only if 0 is an exclusive inner point of
+the central tile Rσ .
+Proof. Suppose that 0 is not an exclusive inner point of Rσ . Then there existsPγ 6= 0, which has a
+∞
+finite expansion by property (F), such that 0 ∈ Rσ (a) + γ, which implies 0 = j=−m αj Φ0 (δ(pj )),
+P
+∞
+j−k 0
+Φ (δ(pj )), that means 0 ∈ Rσ (ak ) +
+for m ∈ N. Multiplying by α−k yields 0 =
+j=−m α
+Pm+k −` 0
+α
+Φ
+(δ(p
+))
+for
+each
+k
+∈
+N,
+where
+each
+of
+these
+sums
+represent a different element since
+k−`
+`=1
+the representation is unique. This gives a contradiction with the local finiteness of the covering.
+Therefore 0 is an exclusive inner point.
+S
+−m
+Assume that (F) does not hold, i.e., there exists (γ0 , a0 ) ∈ Γ \ m≥0 Text
+(U). In particular
+−1
+γ0 6= 0. Since Text (Γ) = Γ, we can define a sequence {(γk , ak )}k≥1 of elements of Γ with
+−1
+(γk , ak ) ∈ Text
+(γk+1 , ak+1 ),
+
+k ≥ 0.
+
+Since multiplication by α is a contraction in Kσ , for some k0 ∈ N large enough, γk ∈ B(0, M ), for
+all k ≥ k0 , where M is as in equation (10). There exist only finitely many (γk , ak ) ∈ Γ such that
+γk ∈ B(0, M ), since Γ is a Delone set. Then
+∃k 0 > k0 , ∃` > 0 such that (γk0 , ak0 ) = (γk0 +` , ak0 +` ),
+S
+−m
+and γk0 6= 0, otherwise γ0 ∈ m≥0 Text
+(U). This is equivalent to the existence of a loop in the
+zero-expansion graph G (0)
+γk0 → γk0 +`−1 → · · · → γk0 +1 → γk0 ,
+and, by the definition of G (0) , this implies that 0 ∈ Rσ (ak0 ) + γk0 . Since γk0 6= 0, we have that 0
+is not an exclusive inner point of Rσ .
+
+Finally we can generalize the tiling condition given in [3] for beta numeration.
+Theorem 9.9. Let σ be an irreducible Pisot substitution. If σ satisfies the geometric property (F)
+and the strong coincidence condition, the self-replicating multiple tiling {Rσ (a) + γ : (γ, a) ∈ Γ}
+is a tiling.
+Proof. By the geometric property (F) 0 is an exclusive inner point. Since the strong coincidence
+condition holds, the subtiles Rσ (a) are disjoint in measure (see the end of Section 8.2) and there
+is a set of positive measure around 0 which is covered only once. Since we know by Theorem 9.2
+that {Rσ (a) + γ : (γ, a) ∈ Γ} is a multiple tiling, this implies that the covering degree is 1.
+
+10. Examples
+In this section we consider two examples of irreducible non-unit Pisot substitutions.
+10.1. A two letters example. Consider the substitution σ(1) = 15 2, σ(2) = 13 . We have
+
+
+5 3
+Mσ =
+,
+det(xI − Mσ ) = x2 − 5x − 3.
+1 0
+√
+
+The dominant eigenvalue is α = 5+2 37 and its conjugate ᾱ satisfies |ᾱ| < 1.
+
+Figure 8. Prefix-suffix automaton of σ.
+
+THE GEOMETRY OF NON-UNIT PISOT SUBSTITUTIONS
+
+25
+
+For every prime divisor p of N (α) = −3 we have a prime p | (p) such that |α|p < 1. Therefore
+we factorize the prime ideal (3) in O and we find
+(3) = (3, α)(3, α + 1) = (α) (5 − α) ,
+|{z} | {z }
+p2
+
+p1
+
+i.e., (3) splits completely in O: ei = fi = 1, for i = 1, 2. Now we look at the normalized absolute
+values |α|p1 = 31 , |α|p2 = 1, and we deduce that we have to consider only the non-Archimedean
+completion Kp1 , which is an extension of degree e1 f1 = 1 of Q3 , equipped with the normalized
+absolute value | · |p1 . Thus the representation space is Kσ = R × Q3 . Notice that α is a uniformiser
+P∞
+for Kp1 and we can represent each element of Q3 as i=m di αi with di ∈ {0, 1, 2}, m ∈ Z. The
+canonical embedding is given explicitly by
+Φ0 : Q(α) −→ R × Q3 ,
+
+∞
+
+
+X
+a0 + a1 α 7−→ a0 + a1 ᾱ,
+di αi .
+i=m
+
+We choose vα = ( α3 , 1) as left eigenvector of Mσ .
+
+With this choice, we get the following set of
+
+digits for the Dumont-Thomas expansions:
+3
+
+4
+
+5
+
+D = {δ(), δ(1), δ(11), δ(1 ), δ(1 ), δ(1 )} =
+
+
+
+
+α 2α
+4α 5α
+0, ,
+, α,
+,
+.
+3 3
+3 3
+
+We obtain the central tile Rσ by taking the closure of the embedding of the σ-integers. Having
+chosen vα as above, we get that Rσ ⊂ R × Z3 (see Proposition 8.1). Furthermore, the subtiles
+satisfy the following set equations:
+Rσ (1) = αRσ (1) + (αRσ (1) + Φ0 (δ(1))) + (αRσ (1) + Φ0 (δ(11)))
++ (αRσ (1) + Φ0 (δ(13 ))) + (αRσ (1) + Φ0 (δ(14 )))
++ αRσ (2) + (αRσ (2) + Φ0 (δ(1))) + (αRσ (2) + Φ0 (δ(11))),
+Rσ (2) = αRσ (1) + Φ0 (δ(15 )).
+Z3
+
+Z3
+
+R
+
+R
+
+Figure 9. The central tile Rσ divided in the red (light gray) subtile Rσ (1) and
+the blue (dark gray) subtile Rσ (2), and the self similar structure arising from the
+set equations.
+
+Z3
+
+R
+Figure 10. First 3-adic level of the tiling of Kσ .
+
+26
+
+M. MINERVINO AND J. M. THUSWALDNER
+
+In Figure 10 it is represented the first 3-adic level of the tiling, i.e., those tiles whose p-adic
+part is contained in Z3 : they are the Rx with
+
+
+2α
+2α
+α
+α
+α
+x∈
+− 3,
+− 2, − 1, 0, 1, 2 − , 3 −
+.
+3
+3
+3
+3
+3
+One can check in fact that all these x are 3-adic integers. Furthermore the tiles Rx , for x =
+α
+α
+2α
+3 − 3, 3 − 1, 0, 3 − 3 , are union of the two subtiles Rσ (1) and Rσ (2), because these x are less
+than 1, i.e., they are both in [0, δ(1)) = [0, α/3) and [0, δ(2)) = [0, 1).
+Q3
+
+R
+Figure 11. Tiling of the representation space Kσ with translation set Γ. The
+black (white) points belong to Φ0 (Frac(σ, 1)) (respectively Φ0 (Frac(σ, 2))).
+Note that for the representation of the tiles we used the following Euclidean model for Q3 :
+∞
+∞
+X
+X
+g : Q3 → R + ,
+di αi 7→
+di 3−i−1 .
+i=m
+
+i=m
+
+This map is onto, continuous, preserves the Haar measure but is not a homomorphism with respect
+to the addition.
+−1
+In Figure 12 and Figure 13 it is represented the action of Text
+on the basic faces (0, 1), (0, 2)
+and on their union U. This is an example of substitution satisfying the geometric property (F).
+Finally we show in Figure 14 the exchange of domains given by the substitution σ.
+
+−1
+(0, 1).
+(a) The face (0, 1) and its image Text
+
+−1
+(b) The face (0, 2) and its image Text
+(0, 2).
+
+Figure 12
+10.2. A three letters example. Let σ be the substitution σ : 1 7→ 1113, 2 7→ 11, 3 7→ 2. The
+incidence matrix of the substitution and its characteristic polynomial are
+
+
+3 2 0
+Mσ = 0 0 1 ,
+det(xI − Mσ ) = x3 − 3x2 − 2.
+1 0 0
+One can check that the characteristic polynomial is irreducible over Q and has one real root
+α ≈ 3.196 and two complex conjugate roots α2 , ᾱ2 ≈ −0.098 ± 0.785i with norm less than 1. We
+want to determine the representation space for the substitution σ. Setting K = Q(α), we know
+
+THE GEOMETRY OF NON-UNIT PISOT SUBSTITUTIONS
+
+27
+
+−3
+Figure 13. Text
+(U) and its projection into Kσ .
+
+Figure 14. Exchange of domains.
+
+Figure 15. Prefix-suffix automaton of σ.
+
+that the Archimedean part of the representation space is C, while for the non-Archimedean part
+we have to compute the prime ideal factorization of 2O:
+(2) = (2, α)2 · (2, α − 1) = (α)2 · (−1 − α2 ) .
+|{z} | {z }
+p21
+
+p2
+
+We have |α|p1 = 12 , |α|p2 = 1, hence the non-Archimedean completion we have to consider is Kp1 ,
+which is an extension of degree e1 f1 = 2 of Q2 .
+There
+exist only 7 non-isomorphic quadratic extensions of Q2 , and one can check that Kp1 ∼
+=
+√
+Q2 ( 7). By the way, α is a uniformiser in Kp1 , thus we can express every element of this completion
+
+28
+
+M. MINERVINO AND J. M. THUSWALDNER
+
+P∞
+
+i
+i=m di α , with di ∈ {0, 1} and some m ∈ Z. Hence the canonical embedding is
+
+
+∞
+X
+√
+0
+2
+2
+i
+Φ : Q(α) → C × Q2 ( 7), a0 + a1 α + a2 α 7→ a0 + a1 α2 + a2 α2 ,
+di α .
+i=m
+√
+√
+P∞
+7)
+with
+the
+Euclidean
+model
+Q
+(
+7) → R+ , i=m di αi 7→
+We
+represent
+each
+element
+of
+Q
+(
+2
+2
+P∞
+−i−1
+. In Figure 16 the tiles associated to the substitution are represented. We choose
+i=m di 2
+vα = (α2 /2, α, 1) as left eigenvector of Mσ . With this choice we have the set of digits D =
+2
+2
+2
+
+as
+
+{0, α /2, α , 3α /2} for the Dumont-Thomas
+√ expansions. Furthermore we have that the p-adic
+part of the central tile is contained in Z2 [ 7].
+√
+Z2 [ 7]
+
+C
+
+Figure 16. Pictures of the central tile Rσ divided in the red (gray) subtile Rσ (1),
+the blue (dark gray) Rσ (2) and the yellow (light gray) Rσ (3).
+Acknowledgements. The authors would like to thank Valérie Berthé, Anne Siegel, Wolfgang
+Steiner and Christiaan van de Woestijne for many valuable comments and discussions.
+References
+[1] S. Akiyama. Cubic Pisot units with finite beta expansions. In Algebraic number theory and Diophantine
+analysis (Graz, 1998), pages 11–26. de Gruyter, Berlin, 2000.
+[2] S. Akiyama. On the boundary of self affine tilings generated by Pisot numbers. J. Math. Soc. Japan, 54(2):283–
+308, 2002.
+[3] S. Akiyama, G. Barat, V. Berthé, and A. Siegel. Boundary of central tiles associated with Pisot beta-numeration
+and purely periodic expansions. Monatsh. Math., 155(3-4):377–419, 2008.
+[4] P. Arnoux and S. Ito. Pisot substitutions and Rauzy fractals. Bull. Belg. Math. Soc. Simon Stevin, 8(2):181–
+207, 2001. Journées Montoises d’Informatique Théorique (Marne-la-Vallée, 2000).
+[5] M. Baake and R. V. Moody. Weighted Dirac combs with pure point diffraction. J. Reine Angew. Math.,
+573:61–94, 2004.
+[6] M. Barge, H. Bruin, L. Jones, and L. Sadun. Homological Pisot substitutions and exact regularity. preprint.
+[7] M. Barge and J. Kwapisz. Geometric theory of unimodular Pisot substitutions. Amer. J. Math., 128(5):1219–
+1282, 2006.
+
+THE GEOMETRY OF NON-UNIT PISOT SUBSTITUTIONS
+
+29
+
+[8] V. Berthé and A. Siegel. Tilings associated with beta-numeration and substitutions. Integers, 5(3):A2, 46,
+2005.
+[9] V. Berthé and A. Siegel. Purely periodic β-expansions in the Pisot non-unit case. J. Number Theory,
+127(2):153–172, 2007.
+[10] V. Berthé, A. Siegel, W. Steiner, P. Surer, and J. M. Thuswaldner. Fractal tiles associated with shift radix
+systems. Adv. Math., 226(1):139–175, 2011.
+[11] V. Berthé, A. Siegel, and J. Thuswaldner. Substitutions, Rauzy fractals and tilings. In Combinatorics, automata and number theory, volume 135 of Encyclopedia Math. Appl., pages 248–323. Cambridge Univ. Press,
+Cambridge, 2010.
+[12] V. Canterini and A. Siegel. Automate des préfixes-suffixes associé à une substitution primitive. J. Théor.
+Nombres Bordeaux, 13(2):353–369, 2001.
+[13] V. Canterini and A. Siegel. Geometric representation of substitutions of Pisot type. Trans. Amer. Math. Soc.,
+353(12):5121–5144, 2001.
+[14] J.-M. Dumont and A. Thomas. Systemes de numeration et fonctions fractales relatifs aux substitutions. Theoret. Comput. Sci., 65(2):153–169, 1989.
+[15] F. Durand. Combinatorics on Bratteli diagrams and dynamical systems. In Combinatorics, automata and
+number theory, volume 135 of Encyclopedia Math. Appl., pages 324–372. Cambridge Univ. Press, Cambridge,
+2010.
+[16] N. P. Fogg. Substitutions in dynamics, arithmetics and combinatorics, volume 1794 of Lecture Notes in Mathematics. Springer-Verlag, Berlin, 2002. Edited by V. Berthé, S. Ferenczi, C. Mauduit and A. Siegel.
+[17] C. Frougny and B. Solomyak. Finite beta-expansions. Ergodic Theory Dynam. Systems, 12(4):713–723, 1992.
+[18] S. Ito and H. Rao. Atomic surfaces, tilings and coincidence. I. Irreducible case. Israel J. Math., 153:129–155,
+2006.
+[19] C. Kalle and W. Steiner. Beta-expansions, natural extensions and multiple tilings associated with Pisot units.
+Trans. Amer. Math. Soc., 364(5):2281–2318, 2012.
+[20] K. Kuratowski. Topology. Vol. I. New edition, revised and augmented. Translated from the French by J.
+Jaworowski. Academic Press, New York, 1966.
+[21] R. D. Mauldin and S. C. Williams. Hausdorff dimension in graph directed constructions. Trans. Amer. Math.
+Soc., 309(2):811–829, 1988.
+[22] R. V. Moody. Meyer sets and their duals. In The mathematics of long-range aperiodic order (Waterloo, ON,
+1995), volume 489 of NATO Adv. Sci. Inst. Ser. C Math. Phys. Sci., pages 403–441. Kluwer Acad. Publ.,
+Dordrecht, 1997.
+[23] J. Neukirch. Algebraic number theory, volume 322 of Grundlehren der Mathematischen Wissenschaften [Fundamental Principles of Mathematical Sciences]. Springer-Verlag, Berlin, 1999. Translated from the 1992 German
+original and with a note by Norbert Schappacher, With a foreword by G. Harder.
+[24] M. Queffélec. Substitution dynamical systems—spectral analysis, volume 1294 of Lecture Notes in Mathematics.
+Springer-Verlag, Berlin, second edition, 2010.
+[25] Y. Sano, P. Arnoux, and S. Ito. Higher dimensional extensions of substitutions and their dual maps. J. Anal.
+Math., 83:183–206, 2001.
+[26] J.-P. Serre. Local fields, volume 67 of Graduate Texts in Mathematics. Springer-Verlag, New York, 1979.
+Translated from the French by Marvin Jay Greenberg.
+[27] A. Siegel. Représentation des systèmes dynamiques substitutifs non unimodulaires. Ergodic Theory Dynam.
+Systems, 23(4):1247–1273, 2003.
+[28] A. Siegel and J. M. Thuswaldner. Topological properties of Rauzy fractals. Mém. Soc. Math. Fr. (N.S.),
+(118):140, 2009.
+[29] B. Sing. Pisot substitutions and beyond. PhD thesis, University of Bielefeld, 2006. http://nbn-resolving.de/
+urn/resolver.pl?urn=urn:nbn:de:hbz:361-11555.
+[30] V. F. Sirvent and B. Solomyak. Pure discrete spectrum for one-dimensional substitution systems of Pisot type.
+Canad. Math. Bull., 45(4):697–710, 2002. Dedicated to Robert V. Moody.
+(M. M.) Chair of Mathematics and Statistics, Department Mathematics and Information Technology,
+University of Leoben, Franz-Josef-Strasse 18, A-8700 Leoben, AUSTRIA
+E-mail address: minervino@math.tugraz.at
+(J. M. T.) Department of Mathematics, 275 TMCB, Brigham Young University, Provo, UT 84602, USA
+E-mail address: joerg.thuswaldner@unileoben.ac.at
+
+

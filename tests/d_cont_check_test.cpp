@@ -11,6 +11,8 @@
 
 #include <cstdio>
 #include <vector>
+#include <set>
+#include <tuple>
 #include <array>
 
 #include "ravel/d_cont_check.hpp"
@@ -135,8 +137,19 @@ int main() {
     };
     Substitution<3> subst(images, 3.6273650847118);
     auto found = search_D_cont<3>(subst, 2);
+    auto legacy_found = search_D_cont<3>(
+        subst, 2, DContSearchMode::legacy_box);
     std::printf("  found %zu entries (paper says 9)\n", found.size());
     CHECK(found.size() == 9, "search_D_cont finds exactly the 9 corrected-paper entries");
+    const auto key = [](const DCandidate<3>& c) {
+        return std::tuple{c.i, c.x, c.j};
+    };
+    std::set<std::tuple<long long, std::array<long long, 3>, long long>>
+        projected_set, legacy_set;
+    for (const auto& c : found) projected_set.insert(key(c));
+    for (const auto& c : legacy_found) legacy_set.insert(key(c));
+    CHECK(projected_set == legacy_set,
+          "projected face enumeration equals legacy box enumeration");
 }
 
 std::printf("\n%d tests run, %d failed.\n", total_tests, failed);

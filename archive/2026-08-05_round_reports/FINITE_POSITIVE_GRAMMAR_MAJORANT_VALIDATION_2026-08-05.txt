@@ -1,0 +1,9 @@
+ROUND 84 VALIDATION
+
+PASS finite_positive_grammar_majorant_test
+PASS norm_weighted_qr_majorant_test
+PASS twist_dominance_extensions_test
+PASS concrete_operator_qr_majorant_test
+
+LEAN NOT RUN: configured ridealong directory ../LEAN/projects/nbonacci_charmpoly is absent.
+The source was emitted at lean/generated/finite_positive_grammar_majorant.lean.

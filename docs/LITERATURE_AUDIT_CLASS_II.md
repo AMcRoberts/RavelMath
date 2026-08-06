@@ -157,3 +157,9 @@ balanced-pair spectral-radius searches, and contact/boundary/Pisot
 queries, followed by the primary sources above. It was not an
 exhaustive bibliographic-database search.
 
+
+## Round 101: third-smallest Pisot beta-substitution
+
+- The target Pisot number is the dominant root of `x^5-x^4-x^3+x^2-1`, with exact finite greedy expansion `d_beta(1)=1001001`.
+- Its canonical beta-substitution has Parry polynomial `x^7-x^6-x^3-1=(x^2+1)(x^5-x^4-x^3+x^2-1)`.
+- General beta-substitution context: M. Barge, *The Pisot conjecture for beta-substitutions*, Ergodic Theory Dynam. Systems 38 (2018), arXiv:1505.04408.

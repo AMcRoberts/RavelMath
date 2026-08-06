@@ -1,0 +1,16 @@
+Ravel norm-weighted Q/R majorant validation
+Date: 2026-08-05
+
+C++ exact certificate test:
+  norm-weighted Q/R majorant PASS
+
+Compatibility regression:
+  twist dominance extensions PASS
+
+Lean emission:
+  lean/generated/norm_weighted_qr_majorant.lean created
+
+Lean kernel check:
+  NOT RUN TO COMPLETION
+  Missing configured Mathlib ridealong/toolchain in uploaded project.
+  This artifact must not yet be described as kernel-checked.

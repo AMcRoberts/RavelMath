@@ -1,0 +1,18 @@
+generalized multinacci symbolic embedding PASS
+
+Symbolic range:
+  D = 2,...,256
+  m = 1,...,256
+
+Implementation cross-check against parent_decompositions:
+  D = 2,...,8
+  m = 1,...,32
+
+Concrete regressions:
+  generalized multinacci primitive intertwiner PASS
+  generalized multinacci admissible subgrammar PASS
+  generalized multinacci boundary word lift PASS
+  generalized multinacci prefix phase PASS
+
+Lean status:
+  emitted, not kernel-run (Lean/Mathlib environment absent)

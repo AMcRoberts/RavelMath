@@ -1,0 +1,10 @@
+generalized multinacci prefix phase PASS
+finite positive grammar majorant PASS
+generalized multinacci family PASS
+
+Exact m=2 prefix result:
+  prefix states: 3
+  ordered channels: 9
+  macro classes: G0=Q, G1=R, G2=RR
+  multiplicities: 3, 4, 2
+  signed defect retained separately as twist coordinate

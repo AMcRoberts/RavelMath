@@ -24,10 +24,17 @@
 #pragma once
 
 #include <array>
+#include <deque>
+#include <functional>
+#include <optional>
+#include <string>
+#include <string_view>
 #include <cstddef>
 #include <map>
 #include <cstdint>
+#include <cstdlib>
 #include <set>
+#include <stdexcept>
 #include <unordered_set>
 #include <vector>
 #include <utility>
@@ -36,6 +43,7 @@
 #include "ravel/core.hpp"
 #include "ravel/ambient_graph.hpp"
 #include "ravel/faces.hpp"
+#include "ravel/nbonacci_margin_invariant.hpp"
 
 namespace ravel {
 
@@ -276,6 +284,466 @@ std::set<SNode<d>> c_corona(const Substitution<d>& subst,
     }
     return out;
 }
+
+
+enum class CoronaConnectorPolicy {
+    fixed_signed_contact,
+    evolving_layer,
+};
+
+enum class CoronaEdgeArithmetic {
+    fast_rounded,
+    exact_rational,
+};
+
+
+// Streaming C-corona projection.  This is the same Def. 3.9 operation as
+// c_corona, but the request predicate is applied before insertion.  It avoids
+// materializing irrelevant candidates and records the rejected boundary for
+// completeness audits.
+template <std::size_t d, class Predicate>
+std::set<SNode<d>> c_corona_projected(
+        const Substitution<d>& subst,
+        const std::set<SNode<d>>& A_prev,
+        const std::set<SNode<d>>& connectors,
+        Predicate accept,
+        std::set<SNode<d>>* rejected_boundary = nullptr) {
+    std::set<SNode<d>> out;
+    std::map<long long, std::vector<std::pair<std::array<long long, d>,
+                                              long long>>> by_start;
+    for (const auto& connector : connectors)
+        by_start[connector.i].push_back({connector.x, connector.j});
+    for (std::size_t k = 0; k < d; ++k) {
+        std::array<long long, d> zero{};
+        by_start[static_cast<long long>(k)].push_back(
+            {zero, static_cast<long long>(k)});
+    }
+    for (const auto& source : A_prev) {
+        if (!same_letter_H<d>(subst, source.x,
+                              static_cast<std::size_t>(source.j)))
+            continue;
+        const auto found = by_start.find(source.j);
+        if (found == by_start.end()) continue;
+        for (const auto& [delta, target_letter] : found->second) {
+            SNode<d> candidate;
+            candidate.i = source.i;
+            candidate.j = target_letter;
+            for (std::size_t k = 0; k < d; ++k)
+                candidate.x[k] = source.x[k] + delta[k];
+            bool trivial = candidate.i == candidate.j;
+            for (const auto x : candidate.x) trivial = trivial && x == 0;
+            if (trivial || !same_letter_H<d>(
+                    subst, candidate.x,
+                    static_cast<std::size_t>(candidate.j)))
+                continue;
+            if (accept(candidate)) out.insert(candidate);
+            else if (rejected_boundary != nullptr)
+                rejected_boundary->insert(candidate);
+        }
+    }
+    return out;
+}
+
+template <std::size_t d>
+struct ProjectedCoronaLayer {
+    int round = 1;
+    std::set<SNode<d>> input_nodes;
+    std::set<SNode<d>> pre_red_nodes;
+    std::set<SNode<d>> nodes;
+    std::set<SNode<d>> rejected_boundary;
+    // Canonical two-atom evidence is attached when candidates are generated
+    // and retained for pre-Red nodes, survivors, rejected nodes, and pruned
+    // ranks.  Absence is meaningful and must be handled explicitly by proof
+    // consumers rather than reconstructed silently after SCC discovery.
+    std::map<SNode<d>, nbonacci_margin::GradeTwoAtomWitness> atom_witnesses;
+    std::vector<std::set<SNode<d>>> red_pruning_ranks;
+    std::vector<std::tuple<SNode<d>, SNode<d>,
+                           std::vector<long long>,
+                           std::vector<long long>>> edges;
+};
+
+template <std::size_t d>
+struct ProjectedCoronaTrace {
+    CoronaConnectorPolicy connector_policy =
+        CoronaConnectorPolicy::fixed_signed_contact;
+    CoronaEdgeArithmetic edge_arithmetic =
+        CoronaEdgeArithmetic::fast_rounded;
+    std::set<SNode<d>> signed_contact;
+    std::vector<ProjectedCoronaLayer<d>> layers;
+    std::set<SNode<d>> final_nodes;
+    std::set<SNode<d>> rejected_boundary;
+    std::map<SNode<d>, nbonacci_margin::GradeTwoAtomWitness> atom_witnesses;
+    bool converged = false;
+    bool node_cap_hit = false;
+    bool predicate_closed = false;
+};
+
+template <std::size_t d>
+std::optional<nbonacci_margin::GradeTwoAtomWitness>
+derive_corona_atom_witness(const SNode<d>& node) {
+    return nbonacci_margin::derive_grade_two_atom_witness(
+        std::vector<long long>(node.x.begin(), node.x.end()));
+}
+
+template <std::size_t d, class Predicate>
+ProjectedCoronaTrace<d> algorithm2_projected_trace(
+        const Substitution<d>& subst,
+        const std::set<SNode<d>>& C,
+        Predicate accept,
+        CoronaConnectorPolicy policy =
+            CoronaConnectorPolicy::fixed_signed_contact,
+        int max_rounds = 50,
+        std::size_t node_cap = 0,
+        CoronaEdgeArithmetic edge_arithmetic =
+            CoronaEdgeArithmetic::fast_rounded) {
+    ProjectedCoronaTrace<d> trace;
+    trace.connector_policy = policy;
+    trace.edge_arithmetic = edge_arithmetic;
+    trace.signed_contact = build_signed_contact_set<d>(C);
+    std::set<SNode<d>> previous;
+    for (const auto& node : trace.signed_contact) {
+        if (const auto witness = derive_corona_atom_witness(node))
+            trace.atom_witnesses.emplace(node, *witness);
+        if (accept(node)) previous.insert(node);
+        else trace.rejected_boundary.insert(node);
+    }
+    ProjectedCoronaLayer<d> initial;
+    initial.round = 1;
+    initial.nodes = previous;
+    trace.layers.push_back(std::move(initial));
+
+    for (int round = 2; round <= max_rounds; ++round) {
+        const auto& connectors =
+            policy == CoronaConnectorPolicy::fixed_signed_contact
+                ? trace.signed_contact : previous;
+        ProjectedCoronaLayer<d> layer;
+        layer.round = round;
+        layer.input_nodes = previous;
+        layer.pre_red_nodes = c_corona_projected<d>(
+            subst, previous, connectors, accept,
+            &layer.rejected_boundary);
+        trace.rejected_boundary.insert(layer.rejected_boundary.begin(),
+                                       layer.rejected_boundary.end());
+        for (const auto& node : layer.pre_red_nodes)
+            if (const auto witness = derive_corona_atom_witness(node)) {
+                layer.atom_witnesses.emplace(node, *witness);
+                trace.atom_witnesses.emplace(node, *witness);
+            }
+        for (const auto& node : layer.rejected_boundary)
+            if (const auto witness = derive_corona_atom_witness(node)) {
+                layer.atom_witnesses.emplace(node, *witness);
+                trace.atom_witnesses.emplace(node, *witness);
+            }
+        if (node_cap != 0 && layer.pre_red_nodes.size() > node_cap) {
+            trace.node_cap_hit = true;
+            trace.final_nodes = previous;
+            trace.layers.push_back(std::move(layer));
+            return trace;
+        }
+        for (const auto& source : layer.pre_red_nodes) {
+            const auto targets =
+                edge_arithmetic == CoronaEdgeArithmetic::exact_rational
+                    ? simple_forward_targets_exact<d>(subst, source)
+                    : simple_forward_targets<d>(subst, source);
+            for (const auto& [target, witness] : targets)
+                if (layer.pre_red_nodes.count(target) != 0)
+                    layer.edges.push_back(
+                        {source, target, witness.first, witness.second});
+        }
+        auto reduced = red_trace<d>(layer.pre_red_nodes, layer.edges);
+        layer.nodes = std::move(reduced.survivors);
+        layer.edges = std::move(reduced.survivor_edges);
+        layer.red_pruning_ranks = std::move(reduced.pruning_ranks);
+        const bool fixed = layer.nodes == previous;
+        previous = layer.nodes;
+        trace.layers.push_back(std::move(layer));
+        if (fixed) {
+            trace.converged = true;
+            trace.final_nodes = previous;
+            // The projection is globally predicate-closed exactly when no
+            // generated corona candidate crossed the predicate boundary.
+            trace.predicate_closed = trace.rejected_boundary.empty();
+            return trace;
+        }
+    }
+    trace.final_nodes = previous;
+    trace.predicate_closed = trace.rejected_boundary.empty();
+    return trace;
+}
+
+// Request-driven corona projection.
+//
+// The legacy Algorithm-2 implementation materializes every intermediate
+// corona layer before a consumer can inspect a small recurrent family.  The
+// surface API below instead treats the corona rules as an exact transition
+// oracle.  A consumer supplies seeds, an admissibility predicate, and the
+// closure operations relevant to its theorem.  The engine explores only that
+// requested image and returns a certificate that the accepted region is
+// closed under every requested operation.  Rejected boundary candidates are
+// retained as evidence; hitting a cap makes the result explicitly incomplete.
+//
+// This is a general corona-layer capability, not a cache or proof-specific
+// adapter.  Legacy materialization remains available for differential tests.
+enum class CoronaExecutionMode {
+    projected_surface,
+    legacy_materialized,
+};
+
+inline CoronaExecutionMode corona_execution_mode_from_string(
+        std::string_view value) {
+    if (value == "legacy" || value == "materialized" || value == "full")
+        return CoronaExecutionMode::legacy_materialized;
+    if (value == "projected" || value == "surface" || value == "lazy" ||
+        value.empty())
+        return CoronaExecutionMode::projected_surface;
+    throw std::invalid_argument("unknown corona execution mode: " +
+                                std::string(value));
+}
+
+inline CoronaExecutionMode default_corona_execution_mode() {
+    const char* value = std::getenv("RAVEL_CORONA_MODE");
+    return corona_execution_mode_from_string(value == nullptr ? "projected" : value);
+}
+
+template <std::size_t d>
+std::vector<SNode<d>> c_corona_targets_from_node(
+        const Substitution<d>& subst,
+        const SNode<d>& source,
+        const std::set<SNode<d>>& connectors) {
+    std::vector<SNode<d>> out;
+    if (!same_letter_H<d>(subst, source.x,
+                          static_cast<std::size_t>(source.j)))
+        return out;
+    for (const auto& connector : connectors) {
+        if (connector.i != source.j) continue;
+        SNode<d> candidate;
+        candidate.i = source.i;
+        candidate.j = connector.j;
+        for (std::size_t k = 0; k < d; ++k)
+            candidate.x[k] = source.x[k] + connector.x[k];
+        bool trivial = candidate.i == candidate.j;
+        for (const auto x : candidate.x) trivial = trivial && x == 0;
+        if (trivial) continue;
+        if (!same_letter_H<d>(subst, candidate.x,
+                              static_cast<std::size_t>(candidate.j)))
+            continue;
+        out.push_back(candidate);
+    }
+    // Identity connectors are part of Def. 3.9 even when absent from ±C.
+    SNode<d> identity = source;
+    bool trivial = identity.i == identity.j;
+    for (const auto x : identity.x) trivial = trivial && x == 0;
+    if (!trivial) out.push_back(identity);
+    std::sort(out.begin(), out.end());
+    out.erase(std::unique(out.begin(), out.end()), out.end());
+    return out;
+}
+
+template <std::size_t d>
+std::vector<SNode<d>> c_corona_sources_to_node(
+        const Substitution<d>& subst,
+        const SNode<d>& target,
+        const std::set<SNode<d>>& connectors) {
+    std::vector<SNode<d>> out;
+    if (!same_letter_H<d>(subst, target.x,
+                          static_cast<std::size_t>(target.j)))
+        return out;
+    for (const auto& connector : connectors) {
+        if (connector.j != target.j) continue;
+        SNode<d> source;
+        source.i = target.i;
+        source.j = connector.i;
+        for (std::size_t k = 0; k < d; ++k)
+            source.x[k] = target.x[k] - connector.x[k];
+        bool trivial = source.i == source.j;
+        for (const auto x : source.x) trivial = trivial && x == 0;
+        if (trivial) continue;
+        if (!same_letter_H<d>(subst, source.x,
+                              static_cast<std::size_t>(source.j)))
+            continue;
+        out.push_back(source);
+    }
+    // Reverse of the identity connector.
+    bool trivial = target.i == target.j;
+    for (const auto x : target.x) trivial = trivial && x == 0;
+    if (!trivial) out.push_back(target);
+    std::sort(out.begin(), out.end());
+    out.erase(std::unique(out.begin(), out.end()), out.end());
+    return out;
+}
+
+enum class CoronaSurfaceOperation : unsigned {
+    simple_forward = 1u << 0,
+    simple_backward = 1u << 1,
+    corona_forward = 1u << 2,
+    corona_backward = 1u << 3,
+};
+
+inline constexpr unsigned operator|(CoronaSurfaceOperation lhs,
+                                    CoronaSurfaceOperation rhs) {
+    return static_cast<unsigned>(lhs) | static_cast<unsigned>(rhs);
+}
+
+inline constexpr bool corona_surface_has(unsigned operations,
+                                         CoronaSurfaceOperation operation) {
+    return (operations & static_cast<unsigned>(operation)) != 0;
+}
+
+template <std::size_t d>
+struct CoronaProjectionRequest {
+    std::vector<SNode<d>> seeds;
+    std::function<bool(const SNode<d>&)> accept =
+        [](const SNode<d>&) { return true; };
+    unsigned operations =
+        static_cast<unsigned>(CoronaSurfaceOperation::simple_forward) |
+        static_cast<unsigned>(CoronaSurfaceOperation::simple_backward);
+    CoronaEdgeArithmetic edge_arithmetic = CoronaEdgeArithmetic::fast_rounded;
+    std::size_t node_cap = 0;       // zero means no artificial cap
+    std::size_t expansion_cap = 0;  // zero means no artificial cap
+};
+
+template <std::size_t d>
+struct CoronaProjectionCertificate {
+    std::size_t expanded_nodes = 0;
+    std::size_t generated_candidates = 0;
+    std::size_t rejected_boundary_candidates = 0;
+    bool closed_under_requested_operations = false;
+    bool node_cap_hit = false;
+    bool expansion_cap_hit = false;
+};
+
+template <std::size_t d>
+struct DerivedCoronaImage {
+    std::set<SNode<d>> nodes;
+    std::vector<std::tuple<SNode<d>, SNode<d>,
+                           std::vector<long long>,
+                           std::vector<long long>>> edges;
+    std::set<SNode<d>> rejected_boundary;
+    std::map<SNode<d>, nbonacci_margin::GradeTwoAtomWitness> atom_witnesses;
+    CoronaProjectionCertificate<d> certificate;
+
+    bool complete() const {
+        return certificate.closed_under_requested_operations &&
+               !certificate.node_cap_hit &&
+               !certificate.expansion_cap_hit;
+    }
+};
+
+template <std::size_t d>
+class CoronaSurface {
+public:
+    CoronaSurface(const Substitution<d>& subst,
+                  const std::set<SNode<d>>& contact)
+        : subst_(&subst), signed_contact_(build_signed_contact_set<d>(contact)) {}
+
+    CoronaSurface(const Substitution<d>& subst,
+                  std::set<SNode<d>> signed_contact,
+                  bool already_signed)
+        : subst_(&subst), signed_contact_(already_signed
+              ? std::move(signed_contact)
+              : build_signed_contact_set<d>(signed_contact)) {}
+
+    const Substitution<d>& substitution() const { return *subst_; }
+    const std::set<SNode<d>>& signed_contact() const { return signed_contact_; }
+
+    DerivedCoronaImage<d> project(const CoronaProjectionRequest<d>& request) const {
+        if (!request.accept)
+            throw std::invalid_argument("CoronaSurface::project: empty predicate");
+        DerivedCoronaImage<d> result;
+        std::deque<SNode<d>> frontier;
+        auto admit = [&](const SNode<d>& node) {
+            if (const auto witness = derive_corona_atom_witness(node))
+                result.atom_witnesses.emplace(node, *witness);
+            if (!request.accept(node)) {
+                result.rejected_boundary.insert(node);
+                return false;
+            }
+            if (result.nodes.insert(node).second) {
+                frontier.push_back(node);
+                if (request.node_cap != 0 &&
+                    result.nodes.size() > request.node_cap) {
+                    result.certificate.node_cap_hit = true;
+                    return false;
+                }
+            }
+            return true;
+        };
+        for (const auto& seed : request.seeds) admit(seed);
+
+        while (!frontier.empty()) {
+            if (result.certificate.node_cap_hit) break;
+            if (request.expansion_cap != 0 &&
+                result.certificate.expanded_nodes >= request.expansion_cap) {
+                result.certificate.expansion_cap_hit = true;
+                break;
+            }
+            const auto source = frontier.front();
+            frontier.pop_front();
+            ++result.certificate.expanded_nodes;
+            const auto consume = [&](const auto& candidates) {
+                result.certificate.generated_candidates += candidates.size();
+                for (const auto& candidate : candidates) admit(candidate);
+            };
+            if (corona_surface_has(request.operations,
+                                   CoronaSurfaceOperation::simple_forward)) {
+                if (request.edge_arithmetic == CoronaEdgeArithmetic::exact_rational) {
+                    std::vector<SNode<d>> candidates;
+                    for (const auto& [node, witness] :
+                         simple_forward_targets_exact<d>(*subst_, source)) {
+                        (void)witness; candidates.push_back(node);
+                    }
+                    consume(candidates);
+                } else {
+                    std::vector<SNode<d>> candidates;
+                    for (const auto& [node, witness] :
+                         simple_forward_targets<d>(*subst_, source)) {
+                        (void)witness; candidates.push_back(node);
+                    }
+                    consume(candidates);
+                }
+            }
+            if (corona_surface_has(request.operations,
+                                   CoronaSurfaceOperation::simple_backward)) {
+                std::vector<SNode<d>> candidates;
+                for (const auto& [node, witness] :
+                     simple_backward_targets<d>(*subst_, source)) {
+                    (void)witness; candidates.push_back(node);
+                }
+                consume(candidates);
+            }
+            if (corona_surface_has(request.operations,
+                                   CoronaSurfaceOperation::corona_forward))
+                consume(c_corona_targets_from_node<d>(
+                    *subst_, source, signed_contact_));
+            if (corona_surface_has(request.operations,
+                                   CoronaSurfaceOperation::corona_backward))
+                consume(c_corona_sources_to_node<d>(
+                    *subst_, source, signed_contact_));
+        }
+
+        result.certificate.rejected_boundary_candidates =
+            result.rejected_boundary.size();
+        result.certificate.closed_under_requested_operations = frontier.empty();
+
+        // Materialize only the exact induced simple-edge relation requested by
+        // the consumer.  Prefix witnesses are preserved for proof replay.
+        for (const auto& source : result.nodes) {
+            const auto targets =
+                request.edge_arithmetic == CoronaEdgeArithmetic::exact_rational
+                    ? simple_forward_targets_exact<d>(*subst_, source)
+                    : simple_forward_targets<d>(*subst_, source);
+            for (const auto& [target, witness] : targets)
+                if (result.nodes.count(target) != 0)
+                    result.edges.push_back(
+                        {source, target, witness.first, witness.second});
+        }
+        return result;
+    }
+
+private:
+    const Substitution<d>* subst_;
+    std::set<SNode<d>> signed_contact_;
+};
 
 // Restrict an ambient-graph node to the simple-graph node space
 // (drop the i < j anti-symmetrization).  Just relabel to SNode.
@@ -569,16 +1037,6 @@ red_anode(const std::set<ANode<d>>& nodes,
 // historical project implementation used the latter.  Keeping both
 // policies available supports differential verification before old
 // computational claims are migrated.
-enum class CoronaConnectorPolicy {
-    fixed_signed_contact,
-    evolving_layer,
-};
-
-enum class CoronaEdgeArithmetic {
-    fast_rounded,
-    exact_rational,
-};
-
 template <std::size_t d>
 struct CoronaLayer {
     int round = 1;

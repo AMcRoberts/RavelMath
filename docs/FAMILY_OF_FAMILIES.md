@@ -5,6 +5,40 @@ research organization. It is a program and vocabulary, not a theorem
 that all unimodular Pisot substitutions lie in one connected moduli
 space.
 
+## Status checkpoint after the universal-n proof (2026-08-03)
+
+The kernel-checked universal n-bonacci determinant theorem closes one vertical
+slice of the family-of-families program: a dimension-indexed matrix family now
+has a uniform, arbitrary-`n` characteristic-polynomial certificate produced by
+the reflective engine.
+
+It does **not** close the family-of-families program itself. That program varies
+more than matrix dimension: incidence strata, word-order fibers, window/contact
+catalogues, arithmetic strata, and presentation/probe choices. Its current
+status is layered:
+
+- kernel-checked universal algebraic transports exist, including Perron-column
+  difference identities and several affine Class-II shell/endpoint theorems;
+- several displayed Class-II matrices and polynomial catalogues have paper
+  proofs or exact arbitrary-parameter formulas under explicit catalogue
+  hypotheses;
+- large parts of the Class-II corona/Red grammar are universal, with named
+  remaining occurrence/exhaustion or dominance bridges recorded in
+  `THEOREM_STATUS.md`;
+- the adjacent-swap count law now has an arbitrary-parameter executable
+  closed form: three sites for Class-II `sigma_{a,b}` when `a,b>=1`, and
+  `n-1` sites for n-bonacci. The generic C++ neighbor generator is checked
+  against these formulas over wide ranges; the standalone Lean site-cardinality
+  file awaits external kernel validation;
+- topology, coincidence, contact dominance, and faithful reconstruction across
+  presentations remain research questions, not consequences of the universal-n
+  determinant theorem.
+
+The first small family theorem selected from that instruction is the adjacent-
+swap count law; see `FAMILY_CLOSED_FORM_ATTACK_2026-08-03.md`. The next hard
+theorem should use an explicit affine contact catalogue and promote both forward
+generation and reverse exhaustion, not merely its cardinality.
+
 ## Two levels that must not be conflated
 
 For a primitive substitution `sigma`, the incidence matrix `M_sigma`

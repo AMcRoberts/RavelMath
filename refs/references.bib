@@ -282,3 +282,388 @@
   journal={Advances in Mathematics}, volume={485},
   pages={110713}, year={2026},
   doi={10.1016/j.aim.2025.110713}}
+
+@misc{MathlibMatrixCharpolyBasic2026,
+  author={{The mathlib Community}},
+  title={Mathlib.LinearAlgebra.Matrix.Charpoly.Basic},
+  year={2026},
+  howpublished={mathlib4 API documentation},
+  note={Accessed 2026-08-03 at
+    \texttt{https://leanprover-community.github.io/mathlib4\_docs/Mathlib/LinearAlgebra/Matrix/Charpoly/Basic.html}.
+    Implementation reference for
+    \texttt{Matrix.charpoly\_fromBlocks\_zero₂₁} and the dual block-triangular
+    characteristic-polynomial theorem.  Used by the graph certificate
+    converter to factor a feeder-plus-recurrent-core adjacency matrix as
+    $X\,\mathrm{charpoly}(C)$.}}
+
+@misc{MathlibMatrixReindex2026,
+  author={{The mathlib Community}},
+  title={Mathlib.LinearAlgebra.Matrix.Reindex},
+  year={2026},
+  howpublished={mathlib4 API documentation},
+  note={Accessed 2026-08-03 at
+    \texttt{https://leanprover-community.github.io/mathlib4\_docs/Mathlib/LinearAlgebra/Matrix/Reindex.html}.
+    Implementation reference for \texttt{Matrix.reindex},
+    \texttt{Matrix.reindexAlgEquiv}, and determinant preservation under a
+    common index equivalence.  Used in designing the certificate-to-canonical-
+    matrix transport operation.}}
+
+@misc{MathlibMatrixPermutation2026,
+  author={{The mathlib Community}},
+  title={Mathlib.LinearAlgebra.Matrix.Permutation},
+  year={2026},
+  howpublished={mathlib4 API documentation},
+  note={Accessed 2026-08-03 at
+    \texttt{https://leanprover-community.github.io/mathlib4\_docs/Mathlib/LinearAlgebra/Matrix/Permutation.html}.
+    Implementation reference for \texttt{Equiv.Perm.permMatrix} and associated
+    determinant/trace results.  Consulted for canonical directed-cycle matrix
+    representations and permutation transport.}}
+
+@misc{MathlibGeomSum2026,
+  author={{The mathlib Community}},
+  title={Mathlib.Algebra.Ring.GeomSum},
+  year={2026},
+  howpublished={mathlib4 API documentation},
+  note={Accessed 2026-08-03 at
+    \texttt{https://leanprover-community.github.io/mathlib4\_docs/Mathlib/Algebra/Ring/GeomSum.html}.
+    Implementation reference for \texttt{geom\_sum\_succ} and related finite
+    geometric-sum shift identities.  Consulted when generalizing the
+    universal-n recurrence closure; the project-specific theorem
+    \texttt{Ravel.Polynomial.one\_add\_X\_mul\_sum\_range\_pow} remains the
+    preferred capability where applicable.}}
+
+@article{Miles1960GeneralizedFibonacci,
+  author={Miles, E. P., Jr.},
+  title={Generalized Fibonacci Numbers and Associated Matrices},
+  journal={The American Mathematical Monthly},
+  volume={67}, number={8}, pages={745--752}, year={1960},
+  doi={10.1080/00029890.1960.11989593},
+  note={Also indexed as JSTOR stable article 2308649.  Consulted on
+    2026-08-03 when assessing novelty of the universal-n determinant identity.
+    Establishes that generalized Fibonacci sequences and associated matrix
+    presentations are classical; the project's plausible novelty lies in its
+    exact structural formalization and reflected proof-generation pipeline,
+    not the characteristic polynomial identity alone.}}
+
+@misc{MathlibAdjoinRoot2026,
+  title        = {Mathlib.RingTheory.AdjoinRoot},
+  author       = {{mathlib Community}},
+  year         = {2026},
+  howpublished = {Mathlib 4 documentation},
+  note         = {Used for AdjoinRoot.powerBasis and minpoly_powerBasis_gen_of_monic in the code-derived cycle characteristic-polynomial campaign}
+}
+
+@misc{MathlibPowerBasis2026,
+  title        = {Mathlib.RingTheory.PowerBasis},
+  author       = {{mathlib Community}},
+  year         = {2026},
+  howpublished = {Mathlib 4 documentation},
+  note         = {Used for PowerBasis.leftMulMatrix, exposing the certified cycle core as a shift-with-wrap matrix}
+}
+
+@misc{MathlibCharpolyMinpoly2026,
+  title        = {Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly},
+  author       = {{mathlib Community}},
+  year         = {2026},
+  howpublished = {Mathlib 4 documentation},
+  note         = {Used for charpoly_leftMulMatrix in the graph-to-spectrum closure backend}
+}
+
+
+@book{BermanPlemmons1994,
+  author = {Berman, Abraham and Plemmons, Robert J.},
+  title = {Nonnegative Matrices in the Mathematical Sciences},
+  edition = {Classics in Applied Mathematics edition},
+  publisher = {Society for Industrial and Applied Mathematics},
+  address = {Philadelphia},
+  year = {1994},
+  doi = {10.1137/1.9781611971262}
+}
+
+
+@book{Seneta2006,
+  author = {Seneta, Eugene},
+  title = {Non-negative Matrices and Markov Chains},
+  edition = {Revised printing},
+  publisher = {Springer},
+  address = {New York},
+  year = {2006},
+  doi = {10.1007/0-387-32792-4}
+}
+
+
+@book{HornJohnson2013,
+  author = {Horn, Roger A. and Johnson, Charles R.},
+  title = {Matrix Analysis},
+  edition = {2},
+  publisher = {Cambridge University Press},
+  year = {2013},
+  doi = {10.1017/CBO9781139020411}
+}
+
+
+@article{RotaStrang1960,
+  author = {Rota, Gian-Carlo and Strang, Gilbert},
+  title = {A Note on the Joint Spectral Radius},
+  journal = {Indagationes Mathematicae},
+  volume = {22},
+  pages = {379--381},
+  year = {1960}
+}
+
+
+@article{BergerWang1992,
+  author = {Berger, Marc A. and Wang, Yang},
+  title = {Bounded Semigroups of Matrices},
+  journal = {Linear Algebra and its Applications},
+  volume = {166},
+  pages = {21--27},
+  year = {1992},
+  doi = {10.1016/0024-3795(92)90267-E}
+}
+
+
+@book{Jungers2009,
+  author = {Jungers, Rapha{"e}l M.},
+  title = {The Joint Spectral Radius: Theory and Applications},
+  publisher = {Springer},
+  series = {Lecture Notes in Control and Information Sciences},
+  volume = {385},
+  year = {2009},
+  doi = {10.1007/978-3-540-95980-9}
+}
+
+
+@article{FrougnySolomyak1992,
+  author = {Frougny, Christiane and Solomyak, Boris},
+  title = {Finite Beta-Expansions},
+  journal = {Ergodic Theory and Dynamical Systems},
+  volume = {12},
+  number = {4},
+  pages = {713--723},
+  year = {1992},
+  doi = {10.1017/S0143385700007057}
+}
+
+
+@article{Frougny1992,
+  author = {Frougny, Christiane},
+  title = {Representations of Numbers and Finite Automata},
+  journal = {Mathematical Systems Theory},
+  volume = {25},
+  pages = {37--60},
+  year = {1992},
+  doi = {10.1007/BF01368783}
+}
+
+
+@article{Frougny2002,
+  author = {Frougny, Christiane},
+  title = {On-Line Digit Set Conversion in Real Base},
+  journal = {Theoretical Informatics and Applications},
+  volume = {36},
+  number = {3},
+  pages = {287--303},
+  year = {2002},
+  doi = {10.1051/ita:2002015}
+}
+
+
+@article{Lind1984,
+  author = {Lind, Douglas A.},
+  title = {The Entropies of Topological Markov Shifts and a Related Class of Algebraic Integers},
+  journal = {Ergodic Theory and Dynamical Systems},
+  volume = {4},
+  number = {2},
+  pages = {283--300},
+  year = {1984},
+  doi = {10.1017/S0143385700002443}
+}
+
+
+@book{LindMarcus1995,
+  author = {Lind, Douglas and Marcus, Brian},
+  title = {An Introduction to Symbolic Dynamics and Coding},
+  publisher = {Cambridge University Press},
+  year = {1995},
+  doi = {10.1017/CBO9780511626302}
+}
+
+
+@article{DalfFiolSiran2018,
+  author = {Dalf{\'o}, Cristina and Fiol, Miquel A. and \v{S}ir{\'a}\v{n}, Jozef},
+  title = {The Spectra of Lifted Digraphs},
+  journal = {Journal of Algebraic Combinatorics},
+  volume = {50},
+  pages = {419--442},
+  year = {2019},
+  doi = {10.1007/s10801-018-0852-y},
+  eprint = {1707.04463},
+  archivePrefix = {arXiv}
+}
+
+
+@article{DalfoEtAl2019,
+  author = {Dalf{\'o}, Cristina and Fiol, Miquel A. and Miller, Mirka and Ryan, Joe and \v{S}ir{\'a}\v{n}, Jozef},
+  title = {An Algebraic Approach to Lifts of Digraphs},
+  journal = {Discrete Applied Mathematics},
+  volume = {269},
+  pages = {68--76},
+  year = {2019},
+  doi = {10.1016/j.dam.2018.10.012}
+}
+
+
+@article{BiluLinial2006,
+  author = {Bilu, Yonatan and Linial, Nathan},
+  title = {Lifts, Discrepancy and Nearly Optimal Spectral Gap},
+  journal = {Combinatorica},
+  volume = {26},
+  number = {5},
+  pages = {495--519},
+  year = {2006},
+  doi = {10.1007/s00493-006-0029-7}
+}
+
+
+@article{MarcusSpielmanSrivastava2015,
+  author = {Marcus, Adam W. and Spielman, Daniel A. and Srivastava, Nikhil},
+  title = {Interlacing Families I: Bipartite Ramanujan Graphs of All Degrees},
+  journal = {Annals of Mathematics},
+  volume = {182},
+  number = {1},
+  pages = {307--325},
+  year = {2015},
+  doi = {10.4007/annals.2015.182.1.7}
+}
+
+
+@article{LagariasWang2014,
+  author = {Lagarias, Jeffrey C. and Wang, Yang},
+  title = {Path Sets in One-Sided Symbolic Dynamics},
+  journal = {Advances in Applied Mathematics},
+  volume = {56},
+  pages = {1--35},
+  year = {2014},
+  doi = {10.1016/j.aam.2013.12.004},
+  eprint = {1207.5004},
+  archivePrefix = {arXiv}
+}
+
+
+@article{GundlachLatushkin2003,
+  author = {Gundlach, Volker M. and Latushkin, Yuri},
+  title = {A Sharp Formula for the Essential Spectral Radius of the Ruelle Transfer Operator on Smooth and H{"o}lder Spaces},
+  journal = {Ergodic Theory and Dynamical Systems},
+  volume = {23},
+  number = {1},
+  pages = {175--191},
+  year = {2003},
+  doi = {10.1017/S0143385702000962}
+}
+
+
+@article{FroylandLloydQuas2008,
+  author = {Froyland, Gary and Lloyd, Simon and Quas, Anthony},
+  title = {Coherent Structures and Isolated Spectrum for Perron--Frobenius Cocycles},
+  journal = {Ergodic Theory and Dynamical Systems},
+  volume = {30},
+  number = {3},
+  pages = {729--756},
+  year = {2010},
+  doi = {10.1017/S0143385709000339},
+  eprint = {0804.1426},
+  archivePrefix = {arXiv}
+}
+
+
+@article{BlumenthalMorris2018,
+  author = {Blumenthal, Alex and Morris, Ian D.},
+  title = {Characterization of Dominated Splittings for Operator Cocycles Acting on Banach Spaces},
+  journal = {Journal of Differential Equations},
+  volume = {267},
+  number = {7},
+  pages = {3977--4013},
+  year = {2019},
+  doi = {10.1016/j.jde.2019.04.008},
+  eprint = {1512.07602},
+  archivePrefix = {arXiv}
+}
+
+
+@inproceedings{EbnerEtAl2017,
+  author = {Ebner, Gabriel and Ullrich, Sebastian and Roesch, Jared and Avigad, Jeremy and de Moura, Leonardo},
+  title = {A Metaprogramming Framework for Formal Verification},
+  booktitle = {Proceedings of the ACM on Programming Languages, ICFP},
+  volume = {1},
+  number = {ICFP},
+  pages = {34:1--34:29},
+  year = {2017},
+  doi = {10.1145/3110278}
+}
+
+
+@inproceedings{deMouraUllrich2021,
+  author = {de Moura, Leonardo and Ullrich, Sebastian},
+  title = {The Lean 4 Theorem Prover and Programming Language},
+  booktitle = {Automated Deduction -- CADE 28},
+  series = {Lecture Notes in Computer Science},
+  volume = {12699},
+  pages = {625--635},
+  publisher = {Springer},
+  year = {2021},
+  doi = {10.1007/978-3-030-79876-5_37}
+}
+
+
+@article{Harrison2006,
+  author = {Harrison, John},
+  title = {Towards Self-Verification of HOL Light},
+  journal = {Automated Reasoning},
+  year = {2006},
+  note = {In: Furbach, U. and Shankar, N. (eds), IJCAR 2006, LNCS 4130},
+  doi = {10.1007/11814771_17}
+}
+
+@article{DombekMasakovaVavra2015,
+  author = {Dombek, Daniel and Mas{\'a}kov{\'a}, Zuzana and V{\'a}vra, Tom{\'a}{\v s}},
+  title = {Confluent {Parry} Numbers, Their Spectra, and Integers in Positive- and Negative-Base Number Systems},
+  journal = {Journal de Th{\'e}orie des Nombres de Bordeaux},
+  volume = {27},
+  number = {3},
+  pages = {745--768},
+  year = {2015},
+  doi = {10.5802/jtnb.922},
+  eprint = {1402.4314},
+  archivePrefix = {arXiv},
+  primaryClass = {math.NT}
+}
+
+@article{BaakeGrimmPlasticDiffraction,
+  author = {Baake, Michael and Grimm, Uwe},
+  title = {Diffraction of a model set with complex windows},
+  journal = {Journal of Physics: Conference Series},
+  volume = {1458},
+  pages = {012006},
+  year = {2020},
+  doi = {10.1088/1742-6596/1458/1/012006}
+}
+
+@article{DurandPetite2023DomainExchanges,
+  author = {Durand, Fabien and Petite, Samuel},
+  title = {Conjugacy of unimodular Pisot substitution subshifts to domain exchanges},
+  journal = {Annales Henri Lebesgue},
+  volume = {6},
+  pages = {1259--1289},
+  year = {2023},
+  doi = {10.5802/ahl.188}
+}
+
+@article{DubickasJankauskas2014PisotLength4,
+  author = {Dubickas, Artūras and Jankauskas, Jonas},
+  title = {On the fractional parts of powers of Pisot numbers of length at most 4},
+  journal = {Journal of Number Theory},
+  volume = {144},
+  pages = {325--339},
+  year = {2014}
+}

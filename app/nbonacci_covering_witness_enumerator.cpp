@@ -282,11 +282,9 @@ std::string to_json(const std::vector<SignInt>& v) {
 
 std::string to_json(const std::set<std::string>& v) {
     std::string s = "[";
-    bool first = true;
     for (const auto& x : v) {
-        if (!first) s += ",";
+        if (!s.empty() && s.back() != '[') s += ",";
         s += "\"" + json_escape(x) + "\"";
-        first = false;
     }
     s += "]";
     return s;

@@ -77,6 +77,20 @@ struct CoreState {
     auto operator<=>(const CoreState&) const = default;
 };
 
+// Persistent evidence that a displacement was admitted by the canonical
+// two-atom request grammar.  The witness is intentionally independent of
+// corona/SCC machinery so it can be attached when a candidate is generated,
+// carried through projection and Red, and replayed by later proof layers.
+struct GradeTwoAtomWitness {
+    bool derived = false;
+    DisplacementDescriptor left;
+    DisplacementDescriptor right;
+    std::size_t overlap_size = 0;
+    std::size_t cancellation_sites = 0;
+
+    auto operator<=>(const GradeTwoAtomWitness&) const = default;
+};
+
 inline std::optional<DisplacementDescriptor> describe_displacement(
     const std::vector<long long>& x) {
     std::vector<std::size_t> support;
@@ -319,6 +333,38 @@ inline std::set<DisplacementDescriptor> displacement_descriptors(
                     result.insert({DisplacementKind::AlternatingTriple,
                                    sign, a, b, c});
     return result;
+}
+
+// Derive a canonical unordered two-atom decomposition by forced complement.
+// Once the left atom is selected, the right atom is exactly target-left and
+// must itself be recognized by the canonical sparse descriptor grammar.
+inline std::optional<GradeTwoAtomWitness> derive_grade_two_atom_witness(
+    const std::vector<long long>& target) {
+    const auto descriptors = displacement_descriptors(target.size());
+    for (const auto& left : descriptors) {
+        const auto lv = displacement_from_descriptor(target.size(), left);
+        std::vector<long long> residual(target.size(), 0);
+        for (std::size_t k = 0; k < target.size(); ++k)
+            residual[k] = target[k] - lv[k];
+        const auto right_opt = describe_displacement(residual);
+        if (!right_opt || *right_opt < left) continue;
+        const auto right = *right_opt;
+        const auto rv = displacement_from_descriptor(target.size(), right);
+        bool exact = true;
+        std::size_t overlap = 0;
+        std::size_t cancellations = 0;
+        for (std::size_t k = 0; k < target.size(); ++k) {
+            exact = exact && lv[k] + rv[k] == target[k];
+            if (lv[k] != 0 && rv[k] != 0) {
+                ++overlap;
+                cancellations += lv[k] == -rv[k];
+            }
+        }
+        if (!exact) continue;
+        return GradeTwoAtomWitness{
+            true, left, right, overlap, cancellations};
+    }
+    return std::nullopt;
 }
 
 // The displacement alphabet seen in every exact dominant core n=3,...,7:

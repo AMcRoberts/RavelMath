@@ -1,0 +1,40 @@
+=== generalized multinacci unit family m=2, indices 0..2 (D=index+2) ===
+sigma(i)=0^m(i+1), sigma(D-1)=0; polynomial x^D-m(x+...+x^(D-1))-1
+
+index=0 D=2 m=2 (beta=2.4142135624): BP-rho_nc=1.000000 lambda(G_B)=0.000000 ratio=0.000000 (mismatch, double-precision)
+  [exact-rational] Perron-root comparison: could not run (certify_perron_bracket_exact: empty matrix)
+  |G_B|=0 recurrent core involution [i,x,j]<->[j,-x,i]: 0/0 (EXACT)
+  diagnostics: converged=yes corona_capped=no closure_stopped_early=no convergence_rounds=2 max_a_size_reached=0 d_cont=3 pre_contact=3 contact=3 signed_contact=6
+  recurrent SCC sizes (all, largest first):  (total recurrent nodes across all SCCs: 0)
+  involution over the UNION of all recurrent SCCs: 0/0 matched (0 same-SCC, 0 cross-SCC)
+  index=0 D=2 m=2: G_B recurrent SCC sizes (largest first):  (0 SCCs)
+  index=0 D=2 m=2: only one recurrent SCC -- extract_recurrent_core's choice is trivially correct, no wrong-SCC risk here.
+  boundary graph is empty; quotient-factor check is vacuous and skipped.
+index=1 D=3 m=2 (beta=2.8311772072): BP-rho_nc=1.937087 lambda(G_B)=1.787715 ratio=0.922888 (mismatch, double-precision)
+  [exact-rational] Perron-root comparison: PROVEN: BP-core > G_B-core
+    BP-core bracket:  [3819151635826525/1971595058487299, 3466299727831645/1789439138306877]  (54 iters)
+    G_B-core bracket: [220251035329333/123205710974953, 189562930795991/106033885621297]  (60 iters)
+  |G_B|=28 recurrent core involution [i,x,j]<->[j,-x,i]: 10/12 (partial)
+  diagnostics: converged=yes corona_capped=no closure_stopped_early=no convergence_rounds=2 max_a_size_reached=0 d_cont=9 pre_contact=15 contact=14 signed_contact=28
+  listing unmatched core nodes (up to first 40):
+    [i=1 x=(0,-1,1) j=0]  flip_exists_in_G_B=yes flip_in_core=no
+    [i=2 x=(1,0,-1) j=0]  flip_exists_in_G_B=NO flip_in_core=no
+  recurrent SCC sizes (all, largest first): 12  (total recurrent nodes across all SCCs: 12)
+  involution over the UNION of all recurrent SCCs: 10/12 matched (10 same-SCC, 0 cross-SCC)
+  index=1 D=3 m=2: G_B recurrent SCC sizes (largest first): 12  (1 SCC)
+  index=1 D=3 m=2: only one recurrent SCC -- extract_recurrent_core's choice is trivially correct, no wrong-SCC risk here.
+index=2 D=4 m=2 (beta=2.9477115868): BP-rho_nc=2.446268 lambda(G_B)=2.415332 ratio=0.987354 (mismatch, double-precision)
+  [exact-rational] Perron-root comparison: PROVEN: BP-core > G_B-core
+    BP-core bracket:  [257150600958766911501569/105119561303430912843853, 100000054842638738510291/40878620275708079209857]  (60 iters)
+    G_B-core bracket: [28865953216842075523803/11957137497413841735412, 37919107279712686209820/15691576264395072431169]  (60 iters)
+  |G_B|=82 recurrent core involution [i,x,j]<->[j,-x,i]: 42/46 (partial)
+  diagnostics: converged=yes corona_capped=no closure_stopped_early=no convergence_rounds=2 max_a_size_reached=0 d_cont=18 pre_contact=41 contact=38 signed_contact=76
+  listing unmatched core nodes (up to first 40):
+    [i=3 x=(0,1,0,-1) j=1]  flip_exists_in_G_B=NO flip_in_core=no
+    [i=2 x=(0,0,-1,1) j=1]  flip_exists_in_G_B=yes flip_in_core=no
+    [i=2 x=(0,0,-1,1) j=0]  flip_exists_in_G_B=yes flip_in_core=no
+    [i=3 x=(1,0,0,-1) j=0]  flip_exists_in_G_B=NO flip_in_core=no
+  recurrent SCC sizes (all, largest first): 46 2  (total recurrent nodes across all SCCs: 48)
+  involution over the UNION of all recurrent SCCs: 44/48 matched (44 same-SCC, 0 cross-SCC)
+  index=2 D=4 m=2: G_B recurrent SCC sizes (largest first): 46 2  (2 SCCs)
+  index=2 D=4 m=2: extract_recurrent_core's largest-by-size SCC (46 nodes) MATCHES extract_dominant_recurrent_core's choice (46 nodes) -- no correction needed

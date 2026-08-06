@@ -788,7 +788,16 @@ PropertyFResult check_property_f(
     long long node_budget = 300000,
     const std::function<bool(const mathlib::QElem&)>& extra_bound = nullptr,
     std::vector<std::vector<long long>>* out_adjacency = nullptr,
-    const std::vector<std::vector<long long>>* incidence_matrix_for_certified_bound = nullptr) {
+    const std::vector<std::vector<long long>>* incidence_matrix_for_certified_bound = nullptr,
+    // Diagnostic only (default nullptr, no behavior change for existing
+    // callers): if supplied, receives the count of zero-translation
+    // nodes discovered BEYOND the initial `d`-sized starting frontier.
+    // Per ravel/proof/property_f_unconditional.hpp's proof, this should
+    // be exactly 0 for every Pisot substitution -- no nonzero-gamma
+    // node can ever have an edge into a zero-gamma node. Exposed here
+    // so that claim can be checked against the real, trusted
+    // computation rather than a re-implemented copy.
+    long long* out_zero_nodes_beyond_frontier = nullptr) {
     const mathlib::QBetaRing& R = automaton.ring;
     mathlib::QElem beta = R.from_int(0);
     beta.coeff(1) = mathlib::Rat(1, 1);
@@ -872,16 +881,19 @@ PropertyFResult check_property_f(
     std::vector<bool> is_zero_node;
     std::vector<bool> enqueued;
 
+    long long zero_nodes_beyond_frontier = 0;
     auto get_or_create = [&](const mathlib::QElem& gamma, long long letter) -> long long {
         std::string key = qelem_key(gamma) + "|" + std::to_string(letter);
         auto it = node_id.find(key);
         if (it != node_id.end()) return it->second;
         long long id = static_cast<long long>(node_gamma.size());
+        bool is_zero_now = (qelem_key(gamma) == zero_key);
+        if (is_zero_now && id >= static_cast<long long>(d)) ++zero_nodes_beyond_frontier;
         node_id[key] = id;
         node_gamma.push_back(gamma);
         node_letter.push_back(letter);
         adj.push_back({});
-        is_zero_node.push_back(qelem_key(gamma) == zero_key);
+        is_zero_node.push_back(is_zero_now);
         enqueued.push_back(false);
         return id;
     };
@@ -973,6 +985,7 @@ PropertyFResult check_property_f(
     }
 
     if (budget_exceeded) {
+        if (out_zero_nodes_beyond_frontier) *out_zero_nodes_beyond_frontier = zero_nodes_beyond_frontier;
         return {false, true, static_cast<long long>(node_gamma.size())};
     }
 
@@ -1045,6 +1058,38 @@ PropertyFResult check_property_f(
     // zero node, which produced a confirmed false FAILS on the
     // classical Fibonacci substitution -- see the header's STATUS
     // section and docs/RESEARCH_STATUS.md for the diagnosis.)
+    //
+    // CORRECTION (2026-08-06): the "BOTH zero AND nonzero" requirement
+    // just above was itself wrong, discovered by reading the primary
+    // source directly (Minervino-Thuswaldner, Lemma 9.8) rather than
+    // this project's own paraphrase of it. The paper's actual failure
+    // condition is a cycle whose nodes are ALL nonzero (never
+    // touching a zero-translation node at all) -- not "mixed". Given
+    // `property_f_unconditional.hpp` separately proves (Lean-checked
+    // core lemma, `lean/generated/property_f_zero_walk.lean`) that a
+    // MIXED cycle can never occur for any Pisot substitution (Perron-
+    // eigenvector positivity forces every edge into a zero node to
+    // come only from another zero node), "not entirely zero" and "all
+    // nonzero" are the SAME condition here -- so the fix is to drop
+    // the `scc_has_zero` requirement below, not to also require it.
+    // The original BUG1 fix corrected a real false positive (the
+    // trivial empty-prefix self-loop) by adding a requirement in the
+    // wrong direction; it should have REMOVED the zero-touching
+    // requirement entirely instead of adding a nonzero-touching one
+    // alongside it. Verified against Fibonacci (must still HOLD, and
+    // does: its 8-node closure is a pure DAG among nonzero nodes, no
+    // cycle at all outside the trivial zero self-loop) and re-run
+    // against every historical ESTABLISHED case in
+    // tests/property_f_correct_verdict_test.cpp before trusting this
+    // change -- an attempted alternative fix (enumerating abstract
+    // cycles in the small letter-level automaton directly, independent
+    // of the BFS closure) was tried FIRST and gave a false FAILS on
+    // Fibonacci, because it over-generates: it counts algebraically
+    // self-consistent cycles that are never actually reached by any
+    // genuine walk from the zero frontier. The BFS-from-U closure
+    // itself was never wrong -- it faithfully implements the paper's
+    // own T_ext^{-1} formula (eq. 13); only the verdict extracted from
+    // it was.
     std::vector<long long> scc_size(static_cast<std::size_t>(scc_count), 0);
     std::vector<bool> scc_has_zero(static_cast<std::size_t>(scc_count), false);
     std::vector<bool> scc_has_nonzero(static_cast<std::size_t>(scc_count), false);
@@ -1063,10 +1108,12 @@ PropertyFResult check_property_f(
     for (long long s = 0; s < scc_count; ++s) {
         bool is_cycle = scc_size[static_cast<std::size_t>(s)] > 1 || scc_has_self_loop[static_cast<std::size_t>(s)];
         if (!is_cycle) continue;
-        if (scc_has_zero[static_cast<std::size_t>(s)] && scc_has_nonzero[static_cast<std::size_t>(s)]) {
-            return {false, false, n};  // genuine violation: a mixed zero/nonzero cycle
+        if (scc_has_nonzero[static_cast<std::size_t>(s)]) {
+            if (out_zero_nodes_beyond_frontier) *out_zero_nodes_beyond_frontier = zero_nodes_beyond_frontier;
+            return {false, false, n};  // genuine violation: a cycle that is not entirely zero-nodes
         }
     }
+    if (out_zero_nodes_beyond_frontier) *out_zero_nodes_beyond_frontier = zero_nodes_beyond_frontier;
     return {true, false, n};
 }
 

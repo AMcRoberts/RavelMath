@@ -33,6 +33,30 @@
  *
  * The output interface keeps mpz_ptr (num/den pairs) for compatibility
  * with the existing test driver.
+ *
+ * Allocation strategy: `poly_t.coeffs` and `iv_t`'s bounds used to be
+ * arrays of individually heap-allocated mpz_ptr/mpq_ptr wrappers
+ * (`malloc(sizeof(__mpq_struct))` per coefficient, freed and
+ * reallocated on every degree change, every Euclidean-division step,
+ * every bisection step). For a single classify call that's dozens of
+ * mallocs/frees; for a systematic search calling the classifier
+ * hundreds of thousands of times it's a very large amount of pure
+ * allocator churn, and it was also the proximate cause of a real
+ * heap-use-after-free (see `poly_is_squarefree`'s history below): a
+ * naive struct copy of a "pointer-owning" poly_t silently aliased
+ * another poly_t's storage. Both `poly_t.coeffs` and `iv_t`'s mpz_t
+ * fields are now embedded value storage (`mpq_t`/`mpz_t` are
+ * themselves `typedef struct {...} foo_t[1]`, i.e. fixed-size, so an
+ * array of them is genuinely pre-allocated inline, no separate
+ * wrapper malloc, and no risk of two owners aliasing the same heap
+ * block). mini-gmp's own internal limb storage for large integers is
+ * unaffected by this change; only the small fixed-size struct
+ * wrapper's own allocation is eliminated. The public `pisot_info_t`
+ * struct (declared in exact_pisot.h, used throughout the test suite)
+ * is deliberately left as `mpz_ptr` fields: it is filled in exactly
+ * once per classify call, not inside any hot loop, and changing it
+ * would ripple into every caller of the public API for no measurable
+ * benefit.
  */
 
 #include <stdlib.h>
@@ -43,13 +67,9 @@
 #include "mini-gmp/mini-mpq.h"
 
 /* =================================================================
- * Heap-allocated mpz/mpq helpers
- * =================================================================
- *
- * mini-gmp uses stack mpz_t[1] / mpq_t[1] by convention; we heap-
- * allocate so polynomials are plain value types that can be passed
- * by pointer and copied.
- */
+ * Heap-allocated mpz/mpq helpers (used only for the low-frequency
+ * public pisot_info_t fields -- see file header).
+ * ================================================================= */
 
 static mpz_ptr mpz_new(void) {
     mpz_ptr p = (mpz_ptr)malloc(sizeof(__mpz_struct));
@@ -70,42 +90,26 @@ static void mpz_drop(mpz_ptr* p) {
     if (*p) { mpz_clear(*p); free(*p); *p = NULL; }
 }
 
-static mpq_ptr mpq_new(void) {
-    mpq_ptr q = (mpq_ptr)malloc(sizeof(__mpq_struct));
-    mpq_init(q);
-    return q;
-}
-static mpq_ptr mpq_new_si(long num, unsigned long den) {
-    mpq_ptr q = (mpq_ptr)malloc(sizeof(__mpq_struct));
-    mpq_init(q);
-    mpq_set_si(q, num, den);
-    mpq_canonicalize(q);
-    return q;
-}
-static void mpq_drop(mpq_ptr* p) {
-    if (*p) { mpq_clear(*p); free(*p); *p = NULL; }
-}
-
 /* =================================================================
  * Polynomial ring over Q
  * ================================================================= */
 
 typedef struct {
-    mpq_ptr coeffs[16];  /* up to degree 15 */
+    mpq_t coeffs[16];  /* up to degree 15; only [0..degree] are mpq_init'd */
     int degree;
 } poly_t;
 
 static void poly_init(poly_t* p) {
-    memset(p, 0, sizeof(*p));
     p->degree = -1;
 }
 static void poly_clear(poly_t* p) {
-    for (int i = 0; i <= p->degree; ++i) mpq_drop(&p->coeffs[i]);
+    for (int i = 0; i <= p->degree; ++i) mpq_clear(p->coeffs[i]);
+    p->degree = -1;
 }
 static void poly_set_coeff(poly_t* p, int i, const mpq_t v) {
     while (p->degree < i) {
         int j = ++p->degree;
-        p->coeffs[j] = mpq_new();
+        mpq_init(p->coeffs[j]);
     }
     mpq_set(p->coeffs[i], v);
     mpq_canonicalize(p->coeffs[i]);
@@ -113,7 +117,7 @@ static void poly_set_coeff(poly_t* p, int i, const mpq_t v) {
 static void poly_set_si(poly_t* p, int i, long num, unsigned long den) {
     while (p->degree < i) {
         int j = ++p->degree;
-        p->coeffs[j] = mpq_new();
+        mpq_init(p->coeffs[j]);
     }
     mpq_set_si(p->coeffs[i], num, den);
     mpq_canonicalize(p->coeffs[i]);
@@ -131,34 +135,40 @@ static int poly_degree(const poly_t* p) {
 }
 static void poly_normalize(poly_t* p) {
     while (p->degree >= 0 && mpq_sgn(p->coeffs[p->degree]) == 0) {
-        mpq_drop(&p->coeffs[p->degree]);
+        mpq_clear(p->coeffs[p->degree]);
         p->degree--;
     }
+}
+/* Deep-copy src into a freshly-initialized dst (dst must not already
+ * own live coefficients -- call poly_init or poly_clear first). Used
+ * everywhere a poly_t needs to be duplicated so that no two poly_t
+ * values ever share ownership of the same mpq_t storage. */
+static void poly_copy(poly_t* dst, const poly_t* src) {
+    poly_init(dst);
+    for (int i = 0; i <= src->degree; ++i) poly_set_coeff(dst, i, src->coeffs[i]);
 }
 
 /* Polynomial division over Q.  Properly divides by b[db] at each
  * step, so it terminates for any non-zero divisor. */
 static void poly_divmod(const poly_t* a, const poly_t* b,
                         poly_t* q, poly_t* r) {
-    poly_init(r);
-    for (int i = 0; i <= a->degree; ++i) poly_set_coeff(r, i, a->coeffs[i]);
+    poly_copy(r, a);
     poly_init(q);
     int db = poly_degree(b);
     if (db < 0) return;
     if (r->degree < db) return;
 
-    mpq_ptr lc_inv = mpq_new();
+    mpq_t lc_inv, t1;
+    mpq_init(lc_inv);
     mpq_inv(lc_inv, b->coeffs[db]);  /* 1 / b[db] */
-    mpq_ptr t1 = mpq_new();
+    mpq_init(t1);
 
     while (!poly_is_zero(r) && r->degree >= db) {
         int dr = poly_degree(r);
         int shift = dr - db;
-        if (q->degree < shift) {
-            while (q->degree < shift) {
-                int j = ++q->degree;
-                q->coeffs[j] = mpq_new();
-            }
+        while (q->degree < shift) {
+            int j = ++q->degree;
+            mpq_init(q->coeffs[j]);
         }
         /* q[shift] += r[dr] / b[db] */
         mpq_mul(t1, r->coeffs[dr], lc_inv);
@@ -172,7 +182,7 @@ static void poly_divmod(const poly_t* a, const poly_t* b,
         }
         poly_normalize(r);
     }
-    mpq_drop(&lc_inv); mpq_drop(&t1);
+    mpq_clear(lc_inv); mpq_clear(t1);
 }
 
 static int poly_is_squarefree(const poly_t* f) {
@@ -182,17 +192,37 @@ static int poly_is_squarefree(const poly_t* f) {
     poly_t fp;
     poly_init(&fp);
     for (int i = 0; i < n; ++i) {
-        mpq_ptr t = mpq_new();
-        mpq_ptr k = mpq_new_si(i + 1, 1);
+        mpq_t t, k;
+        mpq_init(t);
+        mpq_init(k);
+        mpq_set_si(k, i + 1, 1);
         mpq_mul(t, k, f->coeffs[i+1]);
         poly_set_coeff(&fp, i, t);
-        mpq_drop(&t); mpq_drop(&k);
+        mpq_clear(t); mpq_clear(k);
     }
-    /* g = gcd(f, fp); check degree of g */
-    poly_t a = *f, b = fp;
+    /* g = gcd(f, fp); check degree of g.
+     *
+     * `a` and `b` must be independently-owned copies, not aliases of `f`'s
+     * or `fp`'s coefficient storage. History: an earlier version wrote
+     * `poly_t a = *f, b = fp;` -- a shallow struct copy that, back when
+     * `coeffs` was an array of heap pointers, aliased `f`'s/`fp`'s
+     * mpq_ptr values directly. Depending on how many Euclidean-algorithm
+     * steps ran, `a` could end up aliasing `fp`'s pointers at loop exit,
+     * and the `poly_clear(&a); poly_clear(&fp);` below would then free
+     * the same heap blocks twice (confirmed via AddressSanitizer: a
+     * heap-use-after-free hit by a 3x3 systematic Pisot search on a
+     * degree-3 case whose gcd loop happened to take a single step).
+     * `poly_copy` (deep copy) plus explicit `poly_clear` before every
+     * reassignment removes the possibility of aliasing entirely, and is
+     * now also cheap: coefficients are embedded value storage, not
+     * separately-allocated heap blocks. */
+    poly_t a, b;
+    poly_copy(&a, f);
+    poly_copy(&b, &fp);
     while (!poly_is_zero(&b)) {
         poly_t q, r;
         poly_divmod(&a, &b, &q, &r);
+        poly_clear(&a);
         a = b;
         b = r;
         poly_clear(&q);
@@ -206,26 +236,28 @@ static int poly_is_squarefree(const poly_t* f) {
  * Returns result as an mpq_t. */
 static void poly_eval_mpq(mpq_t result, const poly_t* p,
                           const mpz_t x_num, const mpz_t x_den) {
-    mpq_ptr x = mpq_new();
+    mpq_t x, acc;
+    mpq_init(x);
     mpq_set_num(x, x_num);
     mpq_set_den(x, x_den);
     mpq_canonicalize(x);
 
-    mpq_ptr acc = mpq_new();
+    mpq_init(acc);
     mpq_set_ui(acc, 0, 1);
     for (int k = p->degree; k >= 0; --k) {
         mpq_mul(acc, acc, x);
         mpq_add(acc, acc, p->coeffs[k]);
     }
     mpq_set(result, acc);
-    mpq_drop(&x); mpq_drop(&acc);
+    mpq_clear(x); mpq_clear(acc);
 }
 
 static int mpq_sgn_at(const poly_t* p, const mpz_t x_num, const mpz_t x_den) {
-    mpq_ptr v = mpq_new();
+    mpq_t v;
+    mpq_init(v);
     poly_eval_mpq(v, p, x_num, x_den);
     int s = mpq_sgn(v);
-    mpq_drop(&v);
+    mpq_clear(v);
     return s;
 }
 
@@ -238,18 +270,18 @@ static int mpq_sgn_at(const poly_t* p, const mpz_t x_num, const mpz_t x_den) {
  * constant or zero. */
 static int sturm_chain_build(poly_t* seq, const poly_t* f) {
     if (f->degree <= 0) return 0;
-    poly_init(&seq[0]);
-    for (int i = 0; i <= f->degree; ++i)
-        poly_set_coeff(&seq[0], i, f->coeffs[i]);
+    poly_copy(&seq[0], f);
 
     /* Derivative over Q. */
     poly_init(&seq[1]);
     for (int i = 0; i < f->degree; ++i) {
-        mpq_ptr t = mpq_new();
-        mpq_ptr k = mpq_new_si(i + 1, 1);
+        mpq_t t, k;
+        mpq_init(t);
+        mpq_init(k);
+        mpq_set_si(k, i + 1, 1);
         mpq_mul(t, k, f->coeffs[i+1]);
         poly_set_coeff(&seq[1], i, t);
-        mpq_drop(&t); mpq_drop(&k);
+        mpq_clear(t); mpq_clear(k);
     }
     poly_normalize(&seq[1]);
 
@@ -263,9 +295,7 @@ static int sturm_chain_build(poly_t* seq, const poly_t* f) {
         }
         /* Negate r for the Sturm sign convention. */
         for (int i = 0; i <= r.degree; ++i) mpq_neg(r.coeffs[i], r.coeffs[i]);
-        poly_init(&seq[len]);
-        for (int i = 0; i <= r.degree; ++i)
-            poly_set_coeff(&seq[len], i, r.coeffs[i]);
+        poly_copy(&seq[len], &r);
         poly_normalize(&seq[len]);
         len++;
         poly_clear(&q); poly_clear(&r);
@@ -303,17 +333,31 @@ static int sturm_count(poly_t* seq, int len,
  * Isolating intervals and root isolation via bisection
  * ================================================================= */
 
-/* Rational endpoints stored as mpz_t pairs for compatibility
- * with the output struct (which uses mpz_ptr). */
+/* Rational endpoints, embedded value storage (see file header). An
+ * iv_t owns its four mpz_t fields; iv_copy makes an independent copy
+ * so array growth (realloc) and stack push/pop never alias. */
 typedef struct {
-    mpz_ptr lo_num, lo_den, hi_num, hi_den;
+    mpz_t lo_num, lo_den, hi_num, hi_den;
 } iv_t;
+
+static void iv_init_copy(iv_t* dst, const mpz_t lo_n, const mpz_t lo_d,
+                         const mpz_t hi_n, const mpz_t hi_d) {
+    mpz_init_set(dst->lo_num, lo_n);
+    mpz_init_set(dst->lo_den, lo_d);
+    mpz_init_set(dst->hi_num, hi_n);
+    mpz_init_set(dst->hi_den, hi_d);
+}
+static void iv_clear(iv_t* iv) {
+    mpz_clear(iv->lo_num); mpz_clear(iv->lo_den);
+    mpz_clear(iv->hi_num); mpz_clear(iv->hi_den);
+}
 
 static int width_lt_tol(const iv_t* iv, int tol_bits) {
     /* width = (hi_n/hi_d) - (lo_n/lo_d); check width < 2^-tol. */
-    mpz_ptr diff_n = mpz_new();
-    mpz_ptr diff_d = mpz_new();
-    mpz_ptr t = mpz_new();
+    mpz_t diff_n, diff_d, t;
+    mpz_init(diff_n);
+    mpz_init(diff_d);
+    mpz_init(t);
     mpz_mul(diff_n, iv->hi_num, iv->lo_den);
     mpz_mul(t, iv->lo_num, iv->hi_den);
     mpz_sub(diff_n, diff_n, t);
@@ -321,7 +365,7 @@ static int width_lt_tol(const iv_t* iv, int tol_bits) {
     /* width * 2^tol < 1 <=> diff_n * 2^tol < diff_d */
     mpz_mul_2exp(t, diff_n, tol_bits);
     int lt = mpz_cmp(t, diff_d) < 0;
-    mpz_drop(&diff_n); mpz_drop(&diff_d); mpz_drop(&t);
+    mpz_clear(diff_n); mpz_clear(diff_d); mpz_clear(t);
     return lt;
 }
 
@@ -335,17 +379,13 @@ static iv_t* isolate_roots(poly_t* seq, int seq_len,
     /* Stack of intervals. */
     iv_t* stack = (iv_t*)malloc(64 * sizeof(iv_t));
     int scap = 64, stack_len = 0;
-    iv_t init;
-    init.lo_num = mpz_new_copy(lo_num);
-    init.lo_den = mpz_new_copy(lo_den);
-    init.hi_num = mpz_new_copy(hi_num);
-    init.hi_den = mpz_new_copy(hi_den);
-    stack[stack_len++] = init;
+    iv_init_copy(&stack[stack_len++], lo_num, lo_den, hi_num, hi_den);
 
-    mpz_ptr mid_n = mpz_new_si(0);
-    mpz_ptr mid_d = mpz_new_si(1);
-    mpz_ptr t1 = mpz_new_si(0);
-    mpz_ptr t2 = mpz_new_si(0);
+    mpz_t mid_n, mid_d, t1, t2;
+    mpz_init_set_si(mid_n, 0);
+    mpz_init_set_si(mid_d, 1);
+    mpz_init_set_si(t1, 0);
+    mpz_init_set_si(t2, 0);
 
     while (stack_len > 0) {
         iv_t cur = stack[--stack_len];
@@ -353,8 +393,7 @@ static iv_t* isolate_roots(poly_t* seq, int seq_len,
                             cur.lo_num, cur.lo_den,
                             cur.hi_num, cur.hi_den);
         if (n == 0) {
-            mpz_drop(&cur.lo_num); mpz_drop(&cur.lo_den);
-            mpz_drop(&cur.hi_num); mpz_drop(&cur.hi_den);
+            iv_clear(&cur);
             continue;
         }
         if (n == 1) {
@@ -392,36 +431,27 @@ static iv_t* isolate_roots(poly_t* seq, int seq_len,
             mpz_add(mid_n, t1, t2);
             mpz_mul(mid_d, cur.lo_den, cur.hi_den);
             mpz_mul_2exp(mid_d, mid_d, 1);
-            iv_t left, right;
-            left.lo_num = mpz_new_copy(cur.lo_num);
-            left.lo_den = mpz_new_copy(cur.lo_den);
-            left.hi_num = mpz_new_copy(mid_n);
-            left.hi_den = mpz_new_copy(mid_d);
-            right.lo_num = mpz_new_copy(mid_n);
-            right.lo_den = mpz_new_copy(mid_d);
-            right.hi_num = mpz_new_copy(cur.hi_num);
-            right.hi_den = mpz_new_copy(cur.hi_den);
             if (stack_len + 2 >= scap) { scap *= 2; stack = (iv_t*)realloc(stack, scap * sizeof(iv_t)); }
-            stack[stack_len++] = right;
-            stack[stack_len++] = left;
-            mpz_drop(&cur.lo_num); mpz_drop(&cur.lo_den);
-            mpz_drop(&cur.hi_num); mpz_drop(&cur.hi_den);
+            iv_init_copy(&stack[stack_len++], mid_n, mid_d, cur.hi_num, cur.hi_den); /* right */
+            iv_init_copy(&stack[stack_len++], cur.lo_num, cur.lo_den, mid_n, mid_d); /* left */
+            iv_clear(&cur);
         }
     }
     free(stack);
-    mpz_drop(&mid_n); mpz_drop(&mid_d);
-    mpz_drop(&t1); mpz_drop(&t2);
+    mpz_clear(mid_n); mpz_clear(mid_d);
+    mpz_clear(t1); mpz_clear(t2);
     /* Sort by lower endpoint. */
     for (int i = 1; i < len; ++i) {
         iv_t cur = result[i];
         int j = i;
         while (j > 0) {
-            mpz_ptr lhs = mpz_new_si(0);
-            mpz_ptr rhs = mpz_new_si(0);
+            mpz_t lhs, rhs;
+            mpz_init(lhs);
+            mpz_init(rhs);
             mpz_mul(lhs, cur.lo_num, result[j-1].lo_den);
             mpz_mul(rhs, result[j-1].lo_num, cur.lo_den);
             int cmp = mpz_cmp(lhs, rhs);
-            mpz_drop(&lhs); mpz_drop(&rhs);
+            mpz_clear(lhs); mpz_clear(rhs);
             if (cmp >= 0) break;
             result[j] = result[j-1];
             --j;
@@ -619,26 +649,30 @@ static int pisot_classify_poly(const long long *coeffs, int degree,
 
     /* Cauchy bound: |root| < 1 + max_i |coeff_i|.  Char poly is
      * over Z so we use the integer numerators. */
-    mpz_ptr max_abs = mpz_new_si(0);
-    mpz_ptr tmp_abs = mpz_new();
+    mpz_t max_abs, tmp_abs;
+    mpz_init_set_si(max_abs, 0);
+    mpz_init(tmp_abs);
     for (int i = 0; i < p.degree; ++i) {
         mpz_ptr num = mpq_numref(p.coeffs[i]);
         mpz_abs(tmp_abs, num);
         if (mpz_cmp(tmp_abs, max_abs) > 0) mpz_set(max_abs, tmp_abs);
     }
-    mpz_ptr bound = mpz_new();
+    mpz_t bound, negbound;
+    mpz_init(bound);
     mpz_add_ui(bound, max_abs, 1);
-    mpz_ptr negbound = mpz_new();
+    mpz_init(negbound);
     mpz_neg(negbound, bound);
 
     /* Count real roots in (-bound, bound]. */
-    mpz_ptr one = mpz_new_si(1);
+    mpz_t one;
+    mpz_init_set_si(one, 1);
     int total_real = sturm_count(seq, slen, negbound, one, bound, one);
     int n_complex = (p.degree - total_real) / 2;
     out->has_complex_pair = (n_complex > 0);
 
     /* Isolate real roots in (-1, 1). */
-    mpz_ptr neg_one = mpz_new_si(-1);
+    mpz_t neg_one;
+    mpz_init_set_si(neg_one, -1);
     int inside_count = 0;
     iv_t* inside = isolate_roots(seq, slen,
                                   neg_one, one, one, one,
@@ -648,15 +682,17 @@ static int pisot_classify_poly(const long long *coeffs, int degree,
     int ok = 1;
     for (int i = 0; i < inside_count; ++i) {
         /* lo > -1 iff lo_p + lo_q > 0 (since lo_q > 0). */
-        mpz_ptr t1 = mpz_new();
+        mpz_t t1;
+        mpz_init(t1);
         mpz_add(t1, inside[i].lo_num, inside[i].lo_den);
         int gt_neg1 = mpz_sgn(t1) > 0;
-        mpz_drop(&t1);
+        mpz_clear(t1);
         /* hi < 1 iff hi_p - hi_q < 0. */
-        mpz_ptr t2 = mpz_new();
+        mpz_t t2;
+        mpz_init(t2);
         mpz_sub(t2, inside[i].hi_num, inside[i].hi_den);
         int lt_pos1 = mpz_sgn(t2) < 0;
-        mpz_drop(&t2);
+        mpz_clear(t2);
         if (!gt_neg1 || !lt_pos1) { ok = 0; break; }
     }
     out->n_real_inside = inside_count;
@@ -671,64 +707,116 @@ static int pisot_classify_poly(const long long *coeffs, int degree,
         if (outside_count != 1) ok = 0;
     }
 
+    /* inside_count (roots in (-1,1)) and outside_count (roots in (1,bound])
+     * must together account for EVERY real root. Any real root <= -1 (or
+     * missed for any other reason) has modulus >= 1 and must reject the
+     * polynomial as non-Pisot -- but nothing above ever looked for such a
+     * root. Confirmed as a real false-positive, not a hypothetical: e.g.
+     * x^3+4x^2-3x-3 (real roots near -4.6, -0.6, 1.1) previously passed
+     * this classifier with is_pisot=1, entirely missing the root near -4.6. */
+    if (ok && inside_count + outside_count != total_real) ok = 0;
+
     if (ok) {
         mpz_set(out->beta_lo_num, outside[0].lo_num);
         mpz_set(out->beta_lo_den, outside[0].lo_den);
         mpz_set(out->beta_hi_num, outside[0].hi_num);
         mpz_set(out->beta_hi_den, outside[0].hi_den);
-        out->is_pisot = 1;
+        /* `is_pisot` must NOT be set here unconditionally: when there is a
+         * complex secondary pair, Pisot-ness additionally requires its
+         * modulus to be < 1, which is only known after the block below
+         * computes `is_complex_modulus_lt_1`. This used to be set to 1
+         * unconditionally right here, before that check even ran, so it
+         * was never actually gated on the outcome -- a real, confirmed
+         * false positive: x^3+3x^2+x-6 (real root ~1.0945, complex pair
+         * modulus ~2.34, nowhere near Pisot) previously reported
+         * is_pisot=1. Set it only after the complex-pair check, and only
+         * when there is no complex pair or its modulus is confirmed < 1. */
 
         if (n_complex > 0) {
-            /* For Pisot, |complex|² < 1.  Check this by verifying
-             * |det M| < β_lo · ∏|real sec|_max (loose bound).
-             * Equivalent: denom_lo = β_lo · product_real > |det M|
-             * implies |complex|² < 1. */
-            mpz_ptr denom_lo = mpz_new();
-            mpz_mul(denom_lo, out->beta_lo_num, out->beta_lo_den);
+            /* For Pisot, |complex|^2 < 1. |det| = beta * prod(|real secondary
+             * roots|) * |complex|^2, so it suffices to exhibit a RIGOROUS
+             * LOWER bound L on beta * prod(|real secondary roots|) with
+             * L > |det|: then |complex|^2 = |det| / (beta * prod|real|) <=
+             * |det| / L < 1.
+             *
+             * L is tracked as an exact fraction running_num/running_den
+             * (never collapsed via a premature, possibly-inexact division):
+             * start at beta_lo (itself already a valid lower bound on
+             * beta), and for each real secondary root's isolating interval
+             * multiply in min(|lo|, |hi|) -- the LOWER bound on that root's
+             * magnitude, not the upper bound.
+             *
+             * This block previously had two independent bugs, both
+             * confirmed via a false-positive Pisot classification
+             * (x^3+3x^2+x-6: real root ~1.09, complex-pair modulus ~2.34):
+             *   1. the running product was seeded with beta_lo_num *
+             *      beta_lo_den (numerator times denominator -- not the
+             *      value beta_lo=num/den at all, and for a rational with a
+             *      large bisection-refined denominator this is enormous,
+             *      making the final ">" comparison against det_abs
+             *      succeed almost regardless of the real situation);
+             *   2. it took the UPPER bound of each secondary root's
+             *      magnitude, which produces an upper bound on the
+             *      product, not a lower bound, and is therefore useless as
+             *      a ">" witness; it also collapsed the running fraction
+             *      via mpz_divexact, which is only defined for EXACT
+             *      division and silently misbehaves otherwise. */
+            mpz_t running_num, running_den;
+            mpz_init_set(running_num, out->beta_lo_num);
+            mpz_init_set(running_den, out->beta_lo_den);
             for (int i = 0; i < inside_count; ++i) {
-                mpz_ptr abs_lo = mpz_new();
+                mpz_t abs_lo, abs_hi, lo_val_cross, hi_val_cross;
+                mpz_init(abs_lo);
                 mpz_abs(abs_lo, inside[i].lo_num);
-                mpz_ptr abs_hi = mpz_new();
+                mpz_init(abs_hi);
                 mpz_abs(abs_hi, inside[i].hi_num);
-                mpz_ptr num_max = mpz_new();
-                mpz_ptr den_max = mpz_new();
-                mpz_mul(num_max, abs_lo, inside[i].hi_den);
-                mpz_ptr t = mpz_new();
-                mpz_mul(t, abs_hi, inside[i].lo_den);
-                if (mpz_cmp(num_max, t) > 0) {
-                    mpz_set(den_max, inside[i].hi_den);
+                /* Compare |lo_num|/lo_den vs |hi_num|/hi_den by cross
+                 * multiplication to find which is the smaller magnitude. */
+                mpz_init(lo_val_cross);
+                mpz_mul(lo_val_cross, abs_lo, inside[i].hi_den);
+                mpz_init(hi_val_cross);
+                mpz_mul(hi_val_cross, abs_hi, inside[i].lo_den);
+                mpz_t min_num, min_den;
+                mpz_init(min_num);
+                mpz_init(min_den);
+                if (mpz_cmp(lo_val_cross, hi_val_cross) <= 0) {
+                    mpz_set(min_num, abs_lo);
+                    mpz_set(min_den, inside[i].lo_den);
                 } else {
-                    mpz_set(num_max, t);
-                    mpz_set(den_max, inside[i].lo_den);
+                    mpz_set(min_num, abs_hi);
+                    mpz_set(min_den, inside[i].hi_den);
                 }
-                mpz_mul(denom_lo, denom_lo, num_max);
-                mpz_divexact(denom_lo, denom_lo, den_max);
-                mpz_drop(&abs_lo); mpz_drop(&abs_hi);
-                mpz_drop(&num_max); mpz_drop(&den_max); mpz_drop(&t);
+                mpz_mul(running_num, running_num, min_num);
+                mpz_mul(running_den, running_den, min_den);
+                mpz_clear(abs_lo); mpz_clear(abs_hi);
+                mpz_clear(lo_val_cross); mpz_clear(hi_val_cross);
+                mpz_clear(min_num); mpz_clear(min_den);
             }
-            out->is_complex_modulus_lt_1 = (mpz_cmp(denom_lo, out->det_abs) > 0);
-            mpz_drop(&denom_lo);
+            /* running_num/running_den > det_abs  <=>  running_num >
+             * det_abs * running_den (running_den > 0 always: products of
+             * positive denominators). */
+            mpz_t det_times_den;
+            mpz_init(det_times_den);
+            mpz_mul(det_times_den, out->det_abs, running_den);
+            out->is_complex_modulus_lt_1 = (mpz_cmp(running_num, det_times_den) > 0);
+            mpz_clear(det_times_den);
+            mpz_clear(running_num); mpz_clear(running_den);
         }
+        out->is_pisot = (n_complex == 0) || out->is_complex_modulus_lt_1;
     }
 
     /* Cleanup. */
-    for (int i = 0; i < inside_count; ++i) {
-        mpz_drop(&inside[i].lo_num); mpz_drop(&inside[i].lo_den);
-        mpz_drop(&inside[i].hi_num); mpz_drop(&inside[i].hi_den);
-    }
+    for (int i = 0; i < inside_count; ++i) iv_clear(&inside[i]);
     free(inside);
     if (outside) {
-        for (int i = 0; i < outside_count; ++i) {
-            mpz_drop(&outside[i].lo_num); mpz_drop(&outside[i].lo_den);
-            mpz_drop(&outside[i].hi_num); mpz_drop(&outside[i].hi_den);
-        }
+        for (int i = 0; i < outside_count; ++i) iv_clear(&outside[i]);
         free(outside);
     }
     for (int i = 0; i < slen; ++i) poly_clear(&seq[i]);
     poly_clear(&p);
-    mpz_drop(&max_abs); mpz_drop(&tmp_abs);
-    mpz_drop(&bound); mpz_drop(&negbound);
-    mpz_drop(&one); mpz_drop(&neg_one);
+    mpz_clear(max_abs); mpz_clear(tmp_abs);
+    mpz_clear(bound); mpz_clear(negbound);
+    mpz_clear(one); mpz_clear(neg_one);
     return ok;
 }
 
@@ -780,12 +868,13 @@ int isolate_real_root_generic_mpz(mpz_srcptr* coeffs, int degree,
     poly_t p;
     poly_init(&p);
     for (int i = 0; i <= degree; ++i) {
-        mpq_ptr v = mpq_new();
+        mpq_t v;
+        mpq_init(v);
         mpq_set_num(v, coeffs[i]);
         mpz_set_ui(mpq_denref(v), 1);
         mpq_canonicalize(v);
         poly_set_coeff(&p, i, v);
-        mpq_drop(&v);
+        mpq_clear(v);
     }
     poly_normalize(&p);
     if (poly_degree(&p) < 1) { poly_clear(&p); return 0; }
@@ -798,8 +887,9 @@ int isolate_real_root_generic_mpz(mpz_srcptr* coeffs, int degree,
         return 0;
     }
 
-    mpz_ptr a_n = mpz_new_si(lo_num), a_d = mpz_new_si(lo_den);
-    mpz_ptr b_n = mpz_new_si(hi_num), b_d = mpz_new_si(hi_den);
+    mpz_t a_n, a_d, b_n, b_d;
+    mpz_init_set_si(a_n, lo_num); mpz_init_set_si(a_d, lo_den);
+    mpz_init_set_si(b_n, hi_num); mpz_init_set_si(b_d, hi_den);
     int n = sturm_count(seq, slen, a_n, a_d, b_n, b_d);
 
     int ok = 0;
@@ -814,14 +904,11 @@ int isolate_real_root_generic_mpz(mpz_srcptr* coeffs, int degree,
             *hi_out_den = mpz_new_copy(result[0].hi_den);
             ok = 1;
         }
-        for (int i = 0; i < count; ++i) {
-            mpz_drop(&result[i].lo_num); mpz_drop(&result[i].lo_den);
-            mpz_drop(&result[i].hi_num); mpz_drop(&result[i].hi_den);
-        }
+        for (int i = 0; i < count; ++i) iv_clear(&result[i]);
         free(result);
     }
 
-    mpz_drop(&a_n); mpz_drop(&a_d); mpz_drop(&b_n); mpz_drop(&b_d);
+    mpz_clear(a_n); mpz_clear(a_d); mpz_clear(b_n); mpz_clear(b_d);
     for (int i = 0; i < slen; ++i) poly_clear(&seq[i]);
     poly_clear(&p);
     return ok;

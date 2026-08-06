@@ -1,0 +1,7 @@
+delayed self-branch three-generator continuation PASS through D=127
+quartic fourth-generator audit PASS states=445 edges=556 raw=286,158,67,45
+quartic next Pisot three-generator PASS
+quartic next Pisot intertwiner PASS
+finite positive grammar majorant PASS
+
+Environment note: Make emits the pre-existing missing lua5.4 pkg-config warning. These C++ proof tests do not depend on Lua and completed successfully.

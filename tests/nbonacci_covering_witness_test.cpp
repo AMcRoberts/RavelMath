@@ -45,6 +45,8 @@
 #include <string>
 #include <vector>
 
+#include "ravel/nbonacci_covering_witness.hpp"
+
 namespace {
 
 // Reduced-fraction rational: num / denom, denom > 0, gcd(|num|, denom) = 1.
@@ -295,13 +297,28 @@ int main(int argc, char** argv) {
             }
         }
     }
+    // Independently exercise the reusable C++ implementation.  A returned
+    // witness must always satisfy both public validators; "not found" is not
+    // treated as a proof of nonexistence.
+    for (int n = 2; n <= 8; ++n) {
+        auto w = ravel::compute_simplest_covering_witness(
+            static_cast<std::size_t>(n), static_cast<std::size_t>(n + 1));
+        if (w) {
+            require(ravel::check_box(*w).empty(),
+                    "reusable core returned an out-of-box witness");
+            require(ravel::check_cover(*w).empty(),
+                    "reusable core returned a non-covering witness");
+            ++total_checks;
+        }
+    }
+
     std::printf("\nnbonacci_covering_witness_test: %d candidates across %d "
                 "n-values, %zu checks, 0 failures\n",
                 total_candidates, total_files_loaded, total_checks);
-    if (total_files_loaded == 0) {
-        std::printf("(no .txt sidecars found in %s/; run\n"
-                    "  make nbonacci_covering_witness_enumerate\n"
-                    "first to populate them)\n", base.c_str());
-    }
+    require(total_files_loaded == 7,
+            "missing covering-witness evidence: run make "
+            "nbonacci_covering_witness_enumerate before this test");
+    require(total_candidates > 0,
+            "covering-witness evidence files contained no candidates");
     return 0;
 }

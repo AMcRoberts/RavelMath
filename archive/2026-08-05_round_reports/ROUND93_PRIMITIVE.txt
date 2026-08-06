@@ -1,0 +1,22 @@
+D=2 m=1 boundary=6 universal=4 macros=9 phase=0
+D=3 m=1 boundary=29 universal=9 macros=25 phase=0
+D=4 m=1 boundary=113 universal=16 macros=49 phase=0
+D=2 m=2 boundary=0 universal=8 macros=16 phase=0
+D=3 m=2 boundary=40 universal=21 macros=49 phase=12
+D=4 m=2 boundary=128 universal=40 macros=100 phase=46
+D=2 m=3 boundary=0 universal=18 macros=25 phase=0
+D=3 m=3 boundary=64 universal=53 macros=81 phase=36
+D=4 m=3 boundary=489 universal=106 macros=169 phase=317
+D=2 m=4 boundary=0 universal=36 macros=36 phase=0
+D=3 m=4 boundary=202 universal=113 macros=121 phase=154
+D=4 m=4 boundary=1164 universal=232 macros=256 phase=927
+D=2 m=5 boundary=0 universal=64 macros=49 phase=0
+D=3 m=5 boundary=327 universal=209 macros=169 phase=277
+D=4 m=5 boundary=2842 universal=436 macros=361 phase=2458
+D=2 m=6 boundary=0 universal=104 macros=64 phase=0
+D=3 m=6 boundary=620 universal=349 macros=225 phase=552
+D=4 m=6 boundary=5690 universal=736 macros=484 phase=5136
+D=5 m=1 boundary=382 universal=25 macros=81 phase=0
+D=5 m=2 boundary=753 universal=65 macros=169 phase=279
+D=5 m=3 boundary=3467 universal=177 macros=289 phase=2288
+generalized multinacci primitive intertwiner PASS
