@@ -561,3 +561,26 @@ always exist for g=1 across genuine multi-junction Pisot substitutions
 -- not yet tested on an actual Pisot example (every multi-junction
 example built so far was for combinatorial testing and turned out
 non-Pisot). That's the natural next step if this thread continues.
+
+### 2026-08-06 (PC session, "light this place up") — Finding 36: real Pisot, real coincidence, immediate and permanent
+
+Took the redirection from Finding 35 seriously and found the right
+example: sigma_{1,1}, already certified Pisot in this project's much
+earlier history, re-verified fresh (beta~2.14789904, primitive,
+genuinely multi-junction -- letters 0 AND 1 both branch, unlike every
+prior gcd-obstruction test case). g=1 confirmed, matching Finding 35's
+theorem exactly. Ran all three pairwise coincidence checks and got a
+clean, immediate, and total answer: every pair shows a witness from
+K=1 onward, permanently, checked exhaustively through K=14. See
+Finding 36, tests/sigma11_genuine_pisot_coincidence_test.cpp.
+
+This closes the loop AM opened by asking whether the gcd-obstruction
+construction could ever be Pisot (Finding 35: no, provably) and then
+asking for the next step: go find where it actually applies, and it
+turned out to apply cleanly and immediately. A good stopping point for
+this particular thread -- the "companion theorem" chase (Findings
+25-27, 34) turned out to be genuinely interesting combinatorics about
+a class of substitutions adjacent to, but distinct from, real Pisot
+substitutions, and the real-substitution case (the one that actually
+matters for strong coincidence) resolves easily once you're looking
+at the right object.
