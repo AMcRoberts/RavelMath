@@ -289,10 +289,26 @@ struct PeriodRotationCertificate {
     std::string description;              // human-readable, for the trace report
 };
 
+// Records that a substitution's images all share the same first
+// letter `constant_letter` -- the premise of the general, hand-proven,
+// kernel-checked Lean theorem
+// `RavelGenerated.constant_first_letter_forces_prefix_coincidence`
+// (lean/constant_first_letter_forces_prefix_coincidence.lean, Finding
+// 17): for ANY pair of images both starting with `constant_letter`,
+// strong coincidence resolves at depth 1, unconditionally. `images`
+// carries every image (not just a flag) so the renderer can emit one
+// concrete per-pair corollary for every pair of letters.
+struct ConstantFirstLetterCertificate {
+    long long d = 0;
+    long long constant_letter = 0;
+    std::vector<std::vector<long long>> images;  // d images, images[i][0] == constant_letter
+    std::string description;
+};
+
 using Payload = std::variant<MatrixFamily, MatrixInstance, EraseIndexMap,
                              SparseSupportCertificate, TriangularityCertificate,
                              DeterminantIdentity, LemmaApplication, IntegerEigenvectorNoWitness,
-                             PeriodRotationCertificate,
+                             PeriodRotationCertificate, ConstantFirstLetterCertificate,
                              ProofObligation, TextObservation>;
 
 struct Node {
@@ -564,6 +580,7 @@ inline std::string payload_name(const Payload& payload) {
         else if constexpr (std::is_same_v<T, LemmaApplication>) return "lean.lemma_application";
         else if constexpr (std::is_same_v<T, IntegerEigenvectorNoWitness>) return "lean.integer_eigenvector_no_witness";
         else if constexpr (std::is_same_v<T, PeriodRotationCertificate>) return "lean.period_rotation_certificate";
+        else if constexpr (std::is_same_v<T, ConstantFirstLetterCertificate>) return "lean.constant_first_letter_certificate";
         else if constexpr (std::is_same_v<T, ProofObligation>) return "proof.obligation";
         else return value.operation;
     }, payload);
@@ -603,6 +620,9 @@ inline std::string payload_detail(const Payload& payload) {
         } else if constexpr (std::is_same_v<T, PeriodRotationCertificate>) {
             out << "n=" << value.n << " p=" << value.p << " " << value.description
                 << " -- instantiates period_coloring_rotates_eigenvalue";
+        } else if constexpr (std::is_same_v<T, ConstantFirstLetterCertificate>) {
+            out << "d=" << value.d << " c=" << value.constant_letter << " " << value.description
+                << " -- instantiates constant_first_letter_forces_prefix_coincidence";
         } else if constexpr (std::is_same_v<T, ProofObligation>) {
             out << value.obligation_id << ": " << value.proposition;
             if (!value.blocked_by.empty()) out << " [blocked by " << value.blocked_by << ']';

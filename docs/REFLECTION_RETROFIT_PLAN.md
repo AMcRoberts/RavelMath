@@ -60,17 +60,28 @@ quartic factorization search. Re-ran the unchanged pipeline on all 10
 of Finding 37's real substitutions (degree 4 and 5): all 10 certify
 and kernel-check cleanly. See Finding 37's 2026-08-07 addendum.
 
-**Immediate next-in-queue, in priority order** (for whoever picks this
-back up, session or not): (1) Finding 30 -- Sturm-based Pisot
-classification, a genuinely different, harder shape (no short
-algebraic/graph identity to lean on); (2) the coincidence-depth family
-(Findings 17, 38, 39, 41), which needs modeling `pair_has_coincidence`'s
-own abelianized-prefix-set semantics as a Lean predicate before any
-lemma can be stated honestly -- the real blocker there is that
-modeling step, not the underlying combinatorial facts (which are
-individually simple); (3) property (F) / the zero-expansion graph
-(Findings 18-21), the hardest category, deliberately last per the
-original phased plan.
+**2026-08-07 update, item from Phase 2 started -- Finding 17 done.**
+Modeled the PREFIX half of `pair_has_coincidence`'s own loop directly
+in Lean (`runningSeq`/`prefixPairs`/`hasCoincidencePrefix`) -- the
+"real blocker" flagged below turned out to be a bounded, one-shot
+modeling task (kernel-checked first try), not an open-ended one. New
+payload (`ConstantFirstLetterCertificate`), new renderer emitting one
+corollary PER PAIR of a substitution's images. 6 real instances
+(Finding 5's AR-partial family) kernel-check clean. See Finding 17's
+2026-08-07 addendum.
+
+**Immediate next-in-queue, in priority order**: (1) Finding 38 -- the
+SUFFIX-half dual of Finding 17, structurally symmetric to the work
+just done (model `suffix_set1`/the suffix accumulator the same way);
+(2) Findings 39/41 (the zero-run depth bound) -- a genuinely harder
+Lean target, since the claim is an exact DEPTH FORMULA (not just "some
+match exists"), likely needs an induction over the zero-run structure
+itself, not just the prefix/suffix matching machinery Finding 17/38
+share; (3) Finding 30 -- Sturm-based Pisot classification, a
+genuinely different, harder shape (no short algebraic/graph identity
+to lean on); (4) property (F) / the zero-expansion graph (Findings
+18-21), the hardest category, deliberately last per the original
+phased plan.
 
 ## What "done" actually requires, per finding
 

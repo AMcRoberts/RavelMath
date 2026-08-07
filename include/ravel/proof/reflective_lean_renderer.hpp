@@ -298,6 +298,87 @@ inline std::string render_colored_walk_congruence_instances(const mathlib::refle
     return out.str();
 }
 
+// A FOURTH general lemma, a structurally different shape again
+// (combinatorics on lists, not linear algebra) -- Finding 17,
+// hand-derived and kernel-checked once
+// (lean/constant_first_letter_forces_prefix_coincidence.lean), models
+// the PREFIX half of `adelic::pair_has_coincidence`'s own loop
+// directly (the `running` accumulator, the recorded (letter,vector)
+// pairs) rather than re-deriving an abstract restatement.
+inline const char* constant_first_letter_general_lemma_lean() {
+    return
+        "def runningSeq {d : ℕ} : List (Fin d) → List (Fin d → ℤ)\n"
+        "  | [] => []\n"
+        "  | (a :: rest) =>\n"
+        "      (fun _ => (0 : ℤ)) :: (runningSeq rest).map (fun v => fun j => v j + if j = a then 1 else 0)\n\n"
+        "def prefixPairs {d : ℕ} (w : List (Fin d)) : List (Fin d × (Fin d → ℤ)) :=\n"
+        "  w.zip (runningSeq w)\n\n"
+        "/-- The PREFIX half of `pair_has_coincidence` (see\n"
+        "    `lean/constant_first_letter_forces_prefix_coincidence.lean` for the full\n"
+        "    correspondence to the C++ loop). -/\n"
+        "def hasCoincidencePrefix {d : ℕ} (w1 w2 : List (Fin d)) : Prop :=\n"
+        "  ∃ p, p ∈ prefixPairs w1 ∧ p ∈ prefixPairs w2\n\n"
+        "/-- Finding 17: if `w1` and `w2` both start with the same letter `c`, the pair\n"
+        "    `(c, zeroVector)` is recorded in BOTH lists' `prefixPairs`, so the prefix\n"
+        "    coincidence fires immediately, unconditionally. Reproduced from the\n"
+        "    independently kernel-checked\n"
+        "    `lean/constant_first_letter_forces_prefix_coincidence.lean` (not re-derived\n"
+        "    here). -/\n"
+        "theorem constant_first_letter_forces_prefix_coincidence\n"
+        "    {d : ℕ} (c : Fin d) (w1' w2' : List (Fin d)) :\n"
+        "    hasCoincidencePrefix (c :: w1') (c :: w2') := by\n"
+        "  refine ⟨(c, fun _ => (0 : ℤ)), ?_, ?_⟩ <;>\n"
+        "    simp [prefixPairs, runningSeq]\n\n";
+}
+
+// Renders a substitution image (a list of letters, as `long long`
+// alphabet indices) as a Lean `List (Fin d)` literal.
+inline std::string render_lean_fin_list(const std::vector<long long>& letters) {
+    std::ostringstream out;
+    out << "[";
+    for (std::size_t i = 0; i < letters.size(); ++i) {
+        if (i > 0) out << ", ";
+        out << letters[i];
+    }
+    out << "]";
+    return out.str();
+}
+
+// Mechanically emits one Lean corollary of `constant_first_letter_
+// forces_prefix_coincidence` PER PAIR of images in each
+// `ConstantFirstLetterCertificate` node -- every image starts with
+// the same recorded `constant_letter` by construction, so every pair
+// is a genuine instance; the renderer walks all C(d,2) pairs per
+// node, using each image's OWN concrete data (not a generic pattern).
+inline std::string render_constant_first_letter_instances(const mathlib::reflection::Trace& trace) {
+    std::ostringstream out;
+    long long counter = 0;
+    auto nodes = trace.find<mathlib::reflection::ConstantFirstLetterCertificate>();
+    if (nodes.empty()) return {};
+    out << constant_first_letter_general_lemma_lean();
+    for (const auto& [id, node] : nodes) {
+        (void)id;
+        for (std::size_t i = 0; i < node->images.size(); ++i) {
+            for (std::size_t j = i + 1; j < node->images.size(); ++j) {
+                std::string name = "constant_first_letter_instance_" + std::to_string(counter++);
+                std::string w1 = render_lean_fin_list(node->images[i]);
+                std::string w2 = render_lean_fin_list(node->images[j]);
+                std::vector<long long> tail1(node->images[i].begin() + 1, node->images[i].end());
+                std::vector<long long> tail2(node->images[j].begin() + 1, node->images[j].end());
+                out << "/-- Mechanically emitted: instantiates the general lemma above for\n";
+                out << "    this substitution's own images " << i << " and " << j
+                    << " (" << node->description << "). -/\n";
+                out << "theorem " << name << " :\n";
+                out << "    @hasCoincidencePrefix " << node->d << " " << w1 << " " << w2 << " :=\n";
+                out << "  constant_first_letter_forces_prefix_coincidence "
+                    << "(" << node->constant_letter << " : Fin " << node->d << ") "
+                    << render_lean_fin_list(tail1) << " " << render_lean_fin_list(tail2) << "\n\n";
+            }
+        }
+    }
+    return out.str();
+}
+
 inline std::string render_reflective_lean_module(const mathlib::reflection::Trace& trace) {
     if (trace.empty()) throw std::runtime_error("cannot render proof module without provenance");
     std::ostringstream out;
@@ -336,6 +417,7 @@ inline std::string render_reflective_lean_module(const mathlib::reflection::Trac
     out << render_barge_diamond_instances(trace);
     out << render_period_rotation_instances(trace);
     out << render_colored_walk_congruence_instances(trace);
+    out << render_constant_first_letter_instances(trace);
 
     out << "/- Semantic proof graph for: " << trace.theorem_id() << "\n";
     for (std::size_t i = 0; i < trace.nodes().size(); ++i) {
