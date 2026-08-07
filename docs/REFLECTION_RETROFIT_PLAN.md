@@ -148,17 +148,37 @@ interval root isolation in Lean first -- genuinely a separate,
 multi-week undertaking, not a next increment. Not attempted; recorded
 here so a future session doesn't have to re-derive this assessment.
 
-**Immediate next-in-queue, in priority order**: (1) property (F) / the
-zero-expansion graph (Findings 18-21) -- worth a direct, honest
-assessment the same way Finding 30 just got one, rather than leaving
-"hardest category" unexamined; (2) Finding 30, only if a
-narrower-scoped sub-question can be found (e.g., certifying a SPECIFIC
-polynomial's classification via an explicit numeric witness, rather
-than the general Sturm-based decision procedure); (3) closing Finding
-39/41's remaining honest gaps (orbit-collision existence, exact depth
-formula as a derived identity) if there's appetite -- lower marginal
-value than (1) since the mechanism is already demonstrated correct on
-real cases.
+**2026-08-07 update, item (1) assessed AND given a real (if partial)
+connection.** The full property-(F) machinery is confirmed out of
+reach (needs p-adic number theory formalized in Lean first, bigger
+than Finding 30's gap). But found a genuinely different, valuable kind
+of retrofit available: `property_f_unconditional.hpp` already had a
+fully general, hand-proven, kernel-checked lemma
+(`zeroWalk_eq_zero_iff`) that the corrected verdict logic silently
+relies on -- authored before the reflection pipeline existed, so the
+executing code never actually cited it. Wired `check_property_f` to
+record that citation via a plain `LemmaApplication` node (no new
+payload type needed -- this one predates even Finding 42), and the
+renderer now includes the already-verified lemma text whenever a trace
+shows it was used. Verified on Fibonacci, regression-checked against
+all historical cases. This is a DIFFERENT retrofit shape than every
+other finding this session: not "derive a new general lemma and
+instantiate it per example," but "make already-correct executing code
+cite the already-correct proof that justifies it" -- likely applicable
+to other places in this codebase where a comment cites a Lean file
+that the code itself never actually touches. Worth scanning for more
+instances of this pattern before assuming everything needs brand-new
+math.
+
+**Immediate next-in-queue, in priority order**: (1) scan the codebase
+for other "comment cites a Lean file, code doesn't touch it" cases
+(the same low-risk pattern just closed for property F) -- likely the
+best remaining ROI; (2) Finding 30, only if a narrower-scoped
+sub-question can be found (e.g., certifying a SPECIFIC polynomial's
+classification via an explicit numeric witness, rather than the
+general Sturm-based decision procedure); (3) closing Finding 39/41's
+remaining honest gaps (orbit-collision existence, exact depth formula
+as a derived identity) if there's appetite.
 
 ## What "done" actually requires, per finding
 
