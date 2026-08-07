@@ -24,9 +24,13 @@ data. The citation shortcut broke that: a name match can silently
 drift out of sync with what the C++ actually computed; a
 `decide`-checked corollary over the C++'s own concrete output cannot.
 Fixed for the Class-II thread and Finding 32 (see their own addenda in
-`FINDINGS_FOR_CITATION.md`) -- property F's `zeroWalk` connection is
-NOT yet fixed and should be treated as still using the wrong pattern
-until it is.
+`FINDINGS_FOR_CITATION.md`). Property F's `zeroWalk` connection was
+REMOVED rather than fixed in place -- a genuine per-instance version
+needs concrete Q(β)-valued `delta` data and a reconstructed walk path
+from a specific automaton run, real additional engineering beyond a
+quick rewire; better to have no connection than a wrong one. Recorded
+as real remaining scope (see Finding 18-21's own addendum), not left
+as a silently-broken citation.
 
 ## Current state (measured, not estimated)
 

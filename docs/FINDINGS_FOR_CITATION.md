@@ -1938,35 +1938,33 @@ would need Sturm-adjacent root isolation PLUS actual p-adic number
 theory formalized first, a substantially larger undertaking than
 Finding 30's already-flagged gap, not attempted.
 
-What WAS real and tractable: `property_f_unconditional.hpp` already
-contained a fully general, hand-proven, Lean-kernel-checked lemma
-(`zeroWalk_eq_zero_iff`, `lean/generated/property_f_zero_walk.lean`)
-justifying the corrected verdict logic's own simplification (checking
-`scc_has_nonzero` alone correctly implements "not entirely zero,"
-because a mixed zero/nonzero SCC provably never occurs) -- but it was
-authored BEFORE the mechanical reflection pipeline existed, so the
-EXECUTING `check_property_f` never actually cited it; the connection
-between "this Lean fact is true" and "this running code relies on it"
-existed only in a comment, not in any checkable artifact. Closed that
-gap: `check_property_f` now records a `LemmaApplication` citing
-`zeroWalk_eq_zero_iff` every time it runs (`coincidence_and_property_f.hpp`),
-and the renderer recognizes this citation
-(`has_zero_walk_citation`/`zero_walk_lemma_lean`) and includes the
-already-verified lemma text in any generated module that used it --
-no new per-instance corollary needed, since the lemma is already fully
-general (any `beta > 1`, any nonnegative `delta`); "retrofitting" this
-finding meant making the code CITE a verified fact, not re-deriving
-one. Verified on the classical Fibonacci case (`holds=true`, 8 nodes,
-matching Rauzy's result and this project's own historical figure
-unchanged): the trace correctly carries the citation, and the
-rendered module -- reproducing text that was already independently
-kernel-checked -- kernel-checks again with zero errors, zero `sorry`
-(`lean/generated/property_f_zero_walk_citation.lean`,
-`tests/property_f_zero_walk_citation_test.cpp`). Regression-checked
-against all of `property_f_correct_verdict_test.cpp`'s historical
-cases (Fibonacci, rnd13 at 33185 nodes, and others) -- identical
-verdicts and node counts, confirming the reflection hook changed
-nothing about the actual computation.
+`property_f_unconditional.hpp` already contained a fully general,
+hand-proven, Lean-kernel-checked lemma (`zeroWalk_eq_zero_iff`,
+`lean/generated/property_f_zero_walk.lean`) justifying the corrected
+verdict logic's own simplification (checking `scc_has_nonzero` alone
+correctly implements "not entirely zero," because a mixed zero/nonzero
+SCC provably never occurs). A first attempt at connecting it recorded
+a static `LemmaApplication` citing the theorem by name and had the
+renderer paste fixed Lean text whenever that name appeared -- a
+shortcut corrected directly per explicit feedback ("EVERY pattern
+needs to use the ORIGINAL pattern, not the citation pattern"): a name
+match can silently drift out of sync with what the code actually
+computed; the project's real pattern threads concrete per-instance
+data into a typed payload and checks it, the way Findings
+35/26/17/38/39/41/27 and the corrected Class-II/Finding-32 work do.
+
+**Honest status**: the static citation was REMOVED
+(`coincidence_and_property_f.hpp`, 2026-08-07) rather than left in
+place. A genuine per-instance connection here needs concrete Q(β)-valued
+`delta` data and a reconstructed walk path threaded from a SPECIFIC
+automaton run -- e.g. the actual sequence of prefix-emptiness booleans
+along one discovered zero node's path, tied to that node's real
+distance from the frontier -- not yet built. `check_property_f`'s
+verdict logic is unaffected (verified: `property_f_correct_verdict_
+test.cpp`'s full historical suite -- Fibonacci at 8 nodes, rnd13 at
+33185 nodes, others -- reproduces identically after the removal); only
+the reflection connection is gone, and it is honestly absent rather
+than present-but-wrong.
 
 ## Finding 22 — the Diophantine reduction: strong coincidence past the boundary case is exact landmark-vector cancellation under repeated matrix application
 
