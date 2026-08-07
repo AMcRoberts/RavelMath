@@ -2884,6 +2884,33 @@ not surfaced by this session's searches remains a real, open
 possibility that should be checked more thoroughly before any formal
 claim of priority.
 
+**2026-08-07 addendum — all 10 instances now ALSO carry a
+mechanically-checked Barge-Diamond-Theorem-1 certificate, unlocked by
+a correction (not new engineering) to `barge_diamond_certificate.hpp`.**
+That certificate previously restricted itself to degree 2-3 charpolys,
+reasoning (correctly, but about the wrong question) that the
+rational-root theorem only characterizes IRREDUCIBILITY exactly at
+that degree. The certificate's actual conclusion only needs beta (the
+substitution's own Perron root, a genuine root of its monic
+characteristic polynomial) to be irrational -- and the rational-root
+theorem's necessity direction proves that at ANY degree, unconditional
+on the rest of the polynomial's factorization. Corrected the header
+comment and removed the restriction; re-ran the SAME unmodified
+`certify_barge_diamond`/`render_barge_diamond_instances` pipeline on
+all 10 of this finding's own substitutions (degree 4 and 5, using the
+exact data from `app/probe_barge_class_nonunit_instances.cpp`, not
+reconstructed from memory) -- all 10 certify beta irrational exactly,
+kernel-check with zero errors and zero `sorry`
+(`lean/generated/barge_diamond_finding37_batch.lean`,
+`tests/barge_diamond_finding37_test.cpp`). For these `d>2`
+substitutions this instantiates Theorem 1's general conclusion ("some
+pair is eventually coincident"), not the immediate full Strong
+Coincidence Conjecture that only follows automatically at `d=2` --
+strong coincidence for these 10 was already separately established by
+direct search (Finding 38 below), so this is an independent,
+differently-derived confirmation of one necessary ingredient, not a
+new result about these substitutions.
+
 ## Finding 38 — constant last letter forces depth-1 strong coincidence, unconditionally: the exact dual of Finding 17, closing the coincidence half of Finding 37
 
 **Status: PROVED (definitional, from `pair_has_coincidence`'s own
