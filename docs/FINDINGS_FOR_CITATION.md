@@ -2690,12 +2690,14 @@ for a reader who doesn't want to trust this C++, not the source of the
 claim's truth). The renderer emits ONE corollary per staged instance,
 concrete `c,d,lo,hi` substituted into the general iff lemma -- the
 same per-instance pattern as Findings 35/26/17/38/39/41/27, not a
-static citation. Run on TWO structurally different depressed cubics
-(`x^3-x-2`, sigma_{0,2}'s own polynomial, AND an independently chosen
-`x^3-2x-3`) to demonstrate genuine generality, plus a negative control
-(`x^3-1`, whose complex pair has modulus exactly `1`, not `>1` --
-correctly declines to stage): 2 instances kernel-check with zero
-errors, zero `sorry`
+static citation. Run on `x^3-x-2` (sigma_{0,2}'s own polynomial), a
+negative control (`x^3-1`, whose complex pair has modulus exactly `1`,
+not `>1` -- correctly declines to stage), and a systematic sweep of 19
+further depressed cubics (`c` in `[-3,0]`, `d` in `[-6,-1]`, each with
+its own exact integer bracket found by direct search) -- the same
+"widen an already-correct pipeline" move used earlier for Barge-Diamond
+(Finding 42): 20 real, independently kernel-checked instances, zero
+errors, zero `sorry`, in about 5 seconds
 (`lean/generated/depressed_cubic_not_pisot_batch.lean`,
 `tests/depressed_cubic_not_pisot_reflection_test.cpp`). Not a general
 Pisot classifier (Finding 30's own, much larger gap) -- but genuinely
