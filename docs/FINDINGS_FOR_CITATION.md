@@ -2692,6 +2692,46 @@ substitution and re-running Finding 34's permanence check on it is the
 natural, correctly-motivated next step, not extending the g>1 work
 further.
 
+**2026-08-06 addendum — retrofitted through the reflection pipeline
+(REFLECTION_RETROFIT_PLAN.md Phase 1, the first finding after Finding
+42 to go through it).** Step 5's Perron-Frobenius period fact was
+reduced to a genuinely NEW, hand-proven, kernel-checked general Lean
+lemma, `period_coloring_rotates_eigenvalue`
+(`lean/period_rotation_forces_equal_modulus.lean`): given an integer
+"level" coloring of `M`'s support graph that steps by exactly `1`
+modulo `p` along every edge, ANY eigenvector of `M` rotates to a
+SECOND eigenvector under multiplication by any `p`-th root of unity,
+with an eigenvalue of the same modulus -- the exact mechanism behind
+step 5, proved directly from the matrix equation rather than cited
+from Perron-Frobenius theory as a black box. A companion lemma,
+`rotated_eigenvalue_has_same_modulus`, packages the consequence (`p>=2`
+and `zeta != 1` give a genuinely distinct, equal-modulus eigenvalue).
+
+The coloring itself is constructed exactly, in C++
+(`include/ravel/proof/period_rotation_certificate.hpp`,
+`certify_period_rotation`): BFS distances from a root letter over the
+FULL alphabet's single-step digraph, verified (not assumed) to satisfy
+the coloring equation at every edge, with an EXPLICIT integer witness
+`k` for each edge's slack term (avoiding an existential in the Lean
+statement entirely -- the per-instance corollary discharges the
+coloring hypothesis with a single `decide`, not a fragile tactic
+search). Recorded as a new reflection payload,
+`PeriodRotationCertificate` (`math/proof_reflection.hpp`), and
+mechanically rendered by `render_period_rotation_instances`
+(`reflective_lean_renderer.hpp`) -- one corollary per node, matrix and
+coloring concrete, `v`/`lam`/`zeta` left universally quantified.
+
+Run on the `g=1` control (correctly recorded nothing), a small
+synthetic `g=2` example, and this finding's own `g=2` (8-letter) and
+`g=4` (7-letter) examples -- all three `g>=2` instances kernel-check
+with zero errors and zero `sorry`
+(`lean/generated/period_rotation_batch.lean`,
+`tests/period_rotation_certificate_test.cpp`). Honest scope: this
+mechanizes step 5 (the period-forces-rotated-eigenvalue mechanism);
+steps 1-4 (the graph-theoretic period argument itself) and step 6
+(Pisot's definition) are not yet formalized in Lean, only in prose --
+the reflection trace records exactly what was verified, not more.
+
 ## Finding 36 — the coincidence machinery run on an actual, certified, genuinely multi-junction Pisot substitution: strong coincidence holds, immediately and permanently, on every pair
 
 **Status: the first real-world confirmation of this thread's whole

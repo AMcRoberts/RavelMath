@@ -95,16 +95,25 @@ answer, not a placeholder:
 
 ## Phased plan
 
-**Phase 0 (done, tonight):** one working instance of the full pattern
+**Phase 0 (done):** one working instance of the full pattern
 (Finding 42). Proof of concept, not proof of generality.
 
-**Phase 1 (next, smallest real step):** retrofit the 2-3 findings
-structurally CLOSEST to Finding 42's shape -- likely Finding 30
-(arbitrary-degree Pisot classification: another "this integer
-matrix/polynomial has property X" fact) and Finding 35 (g>1 implies
-imprimitive implies not Pisot: a short algebraic chain, plausibly
-one or two new general lemmas). Goal: prove the vocabulary extends to
-a SECOND shape without a redesign, not just repeat the first one.
+**Phase 1 (in progress):** retrofit the 2-3 findings structurally
+CLOSEST to Finding 42's shape.
+
+- Finding 35 (g>1 implies imprimitive implies not Pisot) is **done**:
+  a genuinely new general lemma
+  (`period_coloring_rotates_eigenvalue`,
+  `lean/period_rotation_forces_equal_modulus.lean`), a new reflection
+  payload (`PeriodRotationCertificate`), a new C++ certificate
+  (`period_rotation_certificate.hpp`), and a new renderer walk --
+  proving the vocabulary DOES extend to a second, structurally
+  different shape (a coloring/rotation argument, not an
+  irrationality-forces-no-integer-eigenvector argument) without a
+  redesign of the trace/render architecture itself. Three real
+  substitutions kernel-checked, zero `sorry`. See Finding 35's
+  2026-08-06 addendum in `FINDINGS_FOR_CITATION.md`.
+- Finding 30 (arbitrary-degree Pisot classification) is next.
 
 **Phase 2:** the coincidence-depth family (Findings 17, 38, 39, 41) --
 structurally related to each other, so one well-designed payload type
