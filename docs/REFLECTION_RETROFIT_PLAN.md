@@ -308,14 +308,29 @@ characterization plus a monotonicity/limit argument in Lean, comparable
 in scope to Finding 30's gap, not to Finding 27's. Not attempted;
 recorded here rather than left silently unexamined.
 
-**Immediate next-in-queue, in priority order**: (1) Finding 30, only
-if a narrower-scoped sub-question can be found (e.g., certifying a
-SPECIFIC polynomial's classification via an explicit numeric witness);
-(2) Finding 29, if there's appetite for real-analysis formalization
-(root monotonicity/limits) rather than the combinatorial-identity
-pattern that has worked all session; (3) closing Finding 39/41's
-remaining honest gaps if there's appetite. Findings 22, 23, 32 remain
-genuinely unexamined for Lean-retrofit shape specifically.
+**2026-08-07 update -- Finding 32 done, reassessed and closed
+directly, cheaper than expected.** Reconsidered the earlier "needs
+general Vieta/root-theory Mathlib machinery" read and found a cleaner
+path avoiding it entirely: the depressed-cubic factorization
+`x^3+cx+d=(x-beta)(x^2+beta*x+(beta^2+c))` is checkable by direct
+expansion (no polynomial-root API), and the complex pair's modulus^2
+follows from one explicit `Complex.mk` computation. The whole chain
+closes with `nlinarith`/`ring`/`field_simp` -- no IVT or Sturm
+formalization needed (the C++ certificate checks the sign-change
+bracket exactly; the Lean theorem takes root existence as a
+hypothesis, not something it constructs). `lean/depressed_cubic_
+complex_pair_modulus.lean`, `sigma_0_2_not_pisot_certificate.hpp`,
+kernel-checks clean. Real lesson: "needs general machinery" was the
+wrong read here -- it needed a more elementary reformulation instead.
+Worth re-checking Findings 22/23 with the same skepticism before
+assuming they need heavy new infrastructure.
+
+**Immediate next-in-queue, in priority order**: (1) re-assess Findings
+22/23 with fresh eyes, given Finding 32 turned out easier than first
+assessed; (2) Finding 30 -- Sturm-based Pisot classification, still
+the genuinely hard one, no elementary reformulation found yet; (3)
+Finding 29, if there's appetite for real-analysis formalization; (4)
+closing Finding 39/41's remaining honest gaps if there's appetite.
 
 ## What "done" actually requires, per finding
 

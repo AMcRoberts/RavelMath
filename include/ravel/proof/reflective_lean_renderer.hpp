@@ -1485,6 +1485,60 @@ inline const char* x0_bound_lemma_lean() {
         "    hx1lo hx1hi hx2lo hx2hi hright hwindow\n\n";
 }
 
+// True iff the trace cites `sigma_0_2_charpoly_not_pisot`
+// (Finding 32, lean/depressed_cubic_complex_pair_modulus.lean).
+inline bool has_sigma_0_2_citation(const mathlib::reflection::Trace& trace) {
+    for (const auto& [id, lemma] : trace.find<mathlib::reflection::LemmaApplication>()) {
+        (void)id;
+        if (lemma->theorem_name == "sigma_0_2_charpoly_not_pisot") return true;
+    }
+    return false;
+}
+
+// The already-verified text of depressed_cubic_complex_pair_modulus.lean,
+// reproduced here -- this general lemma family needs no per-instance
+// data (the certificate only needs to confirm the polynomial IS
+// x^3-x-2, already checked exactly in C++ before this citation fires).
+inline const char* sigma_0_2_lemma_lean() {
+    return
+        "/-- The depressed-cubic division identity: if `beta` is a root of\n"
+        "    `x^3 + c*x + d`, the cubic factors exactly as `(x - beta) * (x^2 +\n"
+        "    beta*x + (beta^2 + c))`, for every `x`. -/\n"
+        "theorem depressed_cubic_factors {c d beta : ℝ} (hroot : beta^3 + c * beta + d = 0) :\n"
+        "    ∀ x : ℝ, x^3 + c * x + d = (x - beta) * (x^2 + beta * x + (beta^2 + c)) := by\n"
+        "  intro x\n"
+        "  have hd : d = -beta^3 - c * beta := by linarith\n"
+        "  rw [hd]\n"
+        "  ring\n\n"
+        "/-- If the quadratic factor `x^2 + p*x + q` has negative discriminant, its two\n"
+        "    complex roots have modulus^2 exactly `q`. -/\n"
+        "theorem quadratic_complex_pair_modulus_sq {p q : ℝ} (hdisc : p^2 < 4 * q) :\n"
+        "    ∃ z : ℂ, z^2 + (p:ℂ) * z + (q:ℂ) = 0 ∧ Complex.normSq z = q := by\n"
+        "  have hs : (Real.sqrt (4 * q - p^2) : ℝ) ^ 2 = 4 * q - p^2 :=\n"
+        "    Real.sq_sqrt (by linarith)\n"
+        "  set s : ℝ := Real.sqrt (4 * q - p^2) with hsdef\n"
+        "  refine ⟨Complex.mk (-p / 2) (s / 2), ?_, ?_⟩\n"
+        "  · apply Complex.ext\n"
+        "    · simp [Complex.mul_re, Complex.add_re, pow_two]\n"
+        "      nlinarith [hs]\n"
+        "    · simp [Complex.mul_im, Complex.add_im, pow_two]\n"
+        "      ring\n"
+        "  · rw [Complex.normSq_mk]\n"
+        "    nlinarith [hs]\n\n"
+        "/-- Finding 32's headline instance: `sigma_{0,2}`'s incidence characteristic\n"
+        "    polynomial `x^3 - x - 2` has a positive real root `beta` with `0 < beta < 2`\n"
+        "    and `beta^2 > 2`, proved algebraically (no numeric approximation) --\n"
+        "    forcing the complex-conjugate pair's modulus^2 to be `beta^2 - 1 > 1`,\n"
+        "    strictly outside the unit disk. Reproduced from the independently\n"
+        "    kernel-checked `lean/depressed_cubic_complex_pair_modulus.lean` (not\n"
+        "    re-derived here). -/\n"
+        "theorem sigma_0_2_charpoly_not_pisot {beta : ℝ} (hpos : 0 < beta) (hlt2 : beta < 2)\n"
+        "    (hroot : beta^3 - beta - 2 = 0) :\n"
+        "    beta^2 - 1 > 1 ∧ (beta : ℝ)^2 < 4 * (beta^2 - 1) := by\n"
+        "  have hbeta2 : beta^2 > 2 := by nlinarith [hroot, hpos, hlt2, sq_nonneg (beta - 2)]\n"
+        "  exact ⟨by linarith, by nlinarith⟩\n\n";
+}
+
 inline std::string render_reflective_lean_module(const mathlib::reflection::Trace& trace) {
     if (trace.empty()) throw std::runtime_error("cannot render proof module without provenance");
     std::ostringstream out;
@@ -1501,6 +1555,7 @@ inline std::string render_reflective_lean_module(const mathlib::reflection::Trac
     if (has_d_cont_citation(trace) || has_pre_contact_citation(trace)) out << pre_contact_lemma_lean();
     if (has_face_candidate_citation(trace)) out << face_candidate_lemma_lean();
     if (has_x0_bound_citation(trace)) out << x0_bound_lemma_lean();
+    if (has_sigma_0_2_citation(trace)) out << sigma_0_2_lemma_lean();
 
     if (has_r_matrix_proof(trace)) {
         out << "/-- Symbolic family reflected by `mathlib::nbonacci_r_matrix`. -/\n";
