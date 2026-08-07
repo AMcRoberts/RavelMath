@@ -584,3 +584,33 @@ a class of substitutions adjacent to, but distinct from, real Pisot
 substitutions, and the real-substitution case (the one that actually
 matters for strong coincidence) resolves easily once you're looking
 at the right object.
+
+### 2026-08-06 (PC session, "text adventure" continues) — Finding 37: real non-unit Pisot conjecture instances established
+
+AM pushed for an actual conjecture target, not another verified
+instance of something already covered. Literature check surfaced the
+right opening: Barge (2016) proved the classical Pisot conjecture for
+"injective-first, constant-last-letter" substitutions, but only in the
+unimodular-framed setting -- the non-unit extension (Minervino-
+Thuswaldner) is newer and less picked-over. Searched for genuine
+non-unit Pisot substitutions in Barge's class: an initial narrow
+exhaustive check at alphabet 3 found none (raised, then refuted, a
+"maybe this class is always unimodular" hypothesis -- alphabet 4-5
+randomized search found real hits at a normal rate). Ran 10
+structurally diverse examples through the full corrected pipeline
+(strong coincidence + property F), catching and fixing a real
+methodological risk along the way (the M/M-transpose-guessing pattern
+in the existing nonunit_family_sweep.cpp driver can silently pick a
+mathematically WRONG eigenvector -- switched to the dedicated,
+independently-verified left_eigenvector_via_qbeta instead). Result:
+10/10 ESTABLISHED. See Finding 37,
+app/probe_barge_class_nonunit_instances.cpp.
+
+Explicitly NOT claimed as a completed theorem or literature priority --
+flagged honestly as strong, fresh evidence needing (a) a real
+structural proof (not case-by-case) and (b) independent
+literature/peer review before any public claim. AM's immediate next
+ask: study property (F) itself more deeply, since it's the piece
+without a general structural theorem yet (unlike strong coincidence,
+which has Finding 17's clean constant-factor proof) and is named as
+the actual key to cracking anything bigger. That's the next thread.
