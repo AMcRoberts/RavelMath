@@ -226,6 +226,21 @@ inline std::set<ANode<3>> class_ii_contact_red_exclusions() {
 // Exact construction currently agrees on the enrolled finite sweep;
 // a universal backward-closure/Red proof remains separate.
 inline std::set<SNode<3>> class_ii_contact_set() {
+    // This is exactly the fourteen-state table `contactNode : ContactKind
+    // -> ClassIINode` in the already kernel-checked
+    // `lean/class_ii_affine_shells.lean`, which proves
+    // `class_ii_contactNode_valid`: EVERY one of these fourteen states
+    // lies in the restricted stepped hyperplane, for ANY `a>=2` and the
+    // actual Class-II Perron root `beta` (satisfying the Class-II cubic
+    // `beta^3 = a*beta^2 + (a+1)*beta + 1`) -- not a per-`a` check.
+    // Record that citation whenever this set is constructed.
+    mathlib::reflection::LemmaApplication contact_citation;
+    contact_citation.theorem_name = "class_ii_contactNode_valid";
+    contact_citation.conclusion = "every state in the fourteen-state contact catalogue lies in "
+        "the restricted stepped hyperplane, for any a>=2 and its actual Class-II Perron root "
+        "-- not a per-a numeric check";
+    mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, contact_citation);
+
     return {
         {0, {-1,  1,  1}, 1},
         {0, { 0,  0,  0}, 1},

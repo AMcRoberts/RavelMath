@@ -1022,6 +1022,118 @@ inline const char* shell_propagation_lemma_lean() {
         "    simp [shellNode, ClassIINode.mk.injEq] at h ⊢ <;> omega\n\n";
 }
 
+// True iff the trace shows `class_ii_contact_set` relied on
+// `class_ii_contactNode_valid` (lean/class_ii_affine_shells.lean).
+inline bool has_contact_valid_citation(const mathlib::reflection::Trace& trace) {
+    for (const auto& [id, lemma] : trace.find<mathlib::reflection::LemmaApplication>()) {
+        (void)id;
+        if (lemma->theorem_name == "class_ii_contactNode_valid") return true;
+    }
+    return false;
+}
+
+// A self-contained excerpt of `lean/class_ii_affine_shells.lean`
+// covering the fourteen-state contact catalogue's window-validity
+// theorem, parametrized over ANY `a >= 2` and its actual Class-II
+// Perron root -- reproduced, not re-derived.
+inline const char* contact_valid_lemma_lean() {
+    return
+        "structure ClassIINodeC where\n"
+        "  left : Int\n"
+        "  x0 : Int\n"
+        "  x1 : Int\n"
+        "  x2 : Int\n"
+        "  right : Int\n"
+        "  deriving DecidableEq\n\n"
+        "inductive ContactKind\n"
+        "  | c00 | c01 | c02 | c03 | c04 | c05 | c06\n"
+        "  | c07 | c08 | c09 | c10 | c11 | c12 | c13\n"
+        "  deriving DecidableEq, Fintype\n\n"
+        "def contactNode : ContactKind → ClassIINodeC\n"
+        "  | .c00 => ⟨0, -1,  1,  1, 1⟩\n"
+        "  | .c01 => ⟨0,  0,  0,  0, 1⟩\n"
+        "  | .c02 => ⟨0,  0,  0,  0, 2⟩\n"
+        "  | .c03 => ⟨0,  0,  0,  1, 0⟩\n"
+        "  | .c04 => ⟨0,  0,  0,  1, 1⟩\n"
+        "  | .c05 => ⟨0,  0,  1,  0, 0⟩\n"
+        "  | .c06 => ⟨0,  1, -1,  0, 0⟩\n"
+        "  | .c07 => ⟨1,  0,  0,  0, 2⟩\n"
+        "  | .c08 => ⟨1,  1, -1,  0, 0⟩\n"
+        "  | .c09 => ⟨1,  1, -1,  0, 2⟩\n"
+        "  | .c10 => ⟨1,  1,  0, -1, 0⟩\n"
+        "  | .c11 => ⟨2,  0,  1, -1, 0⟩\n"
+        "  | .c12 => ⟨2,  0,  1,  0, 0⟩\n"
+        "  | .c13 => ⟨2,  1,  0, -1, 0⟩\n\n"
+        "def nodeHeight (node : ClassIINodeC) (b c : ℝ) : ℝ :=\n"
+        "  node.x0 * b + node.x1 * c + node.x2\n\n"
+        "def rightWidth (node : ClassIINodeC) (b c : ℝ) : ℝ :=\n"
+        "  if node.right = 0 then b else if node.right = 1 then c else 1\n\n"
+        "def InRestrictedH (node : ClassIINodeC) (b c : ℝ) : Prop :=\n"
+        "  0 ≤ nodeHeight node b c ∧ nodeHeight node b c < rightWidth node b c\n\n"
+        "theorem contactNode_in_restrictedH\n"
+        "    (kind : ContactKind) (b c : ℝ)\n"
+        "    (hc : 1 < c) (hcb : c < b) (hgap : b - c < 1) :\n"
+        "    InRestrictedH (contactNode kind) b c := by\n"
+        "  cases kind <;>\n"
+        "    simp [InRestrictedH, nodeHeight, rightWidth, contactNode] <;>\n"
+        "    first\n"
+        "    | (constructor <;> linarith)\n"
+        "    | linarith\n\n"
+        "theorem class_ii_perron_gap_lt_one\n"
+        "    (a beta : ℝ)\n"
+        "    (ha : 2 ≤ a) (hbeta : 0 < beta)\n"
+        "    (hcubic : beta^3 = a * beta^2 + (a + 1) * beta + 1) :\n"
+        "    beta - (a + 1 / beta) < 1 := by\n"
+        "  have hne : beta ≠ 0 := hbeta.ne'\n"
+        "  have hd :\n"
+        "      beta^2 * (beta - (a + 1 / beta)) = a * beta + 1 := by\n"
+        "    field_simp [hne]\n"
+        "    nlinarith [hcubic]\n"
+        "  have hscaled :\n"
+        "      beta * (beta - a) = a + 1 + 1 / beta := by\n"
+        "    field_simp [hne]\n"
+        "    nlinarith [hcubic]\n"
+        "  have hinv : 0 < 1 / beta := one_div_pos.mpr hbeta\n"
+        "  have hunit : 1 < beta * (beta - a) := by\n"
+        "    rw [hscaled]\n"
+        "    linarith\n"
+        "  have hcompare : a * beta + 1 < beta^2 := by\n"
+        "    nlinarith\n"
+        "  have hb2 : 0 < beta^2 := sq_pos_of_pos hbeta\n"
+        "  have hmul :\n"
+        "      beta^2 * (beta - (a + 1 / beta)) < beta^2 * 1 := by\n"
+        "    rw [hd]\n"
+        "    simpa using hcompare\n"
+        "  exact lt_of_mul_lt_mul_left hmul hb2.le\n\n"
+        "/-- Universal Class-II form of contact-catalogue validity: EVERY one of the\n"
+        "    fourteen contact states lies in the restricted stepped hyperplane, for ANY\n"
+        "    `a >= 2` and its actual Class-II Perron root `beta`. Reproduced from the\n"
+        "    independently kernel-checked `lean/class_ii_affine_shells.lean` (not\n"
+        "    re-derived here). -/\n"
+        "theorem class_ii_contactNode_valid\n"
+        "    (kind : ContactKind) (a beta : ℝ)\n"
+        "    (ha : 2 ≤ a) (hbeta : 0 < beta)\n"
+        "    (hcubic : beta^3 = a * beta^2 + (a + 1) * beta + 1) :\n"
+        "    InRestrictedH (contactNode kind) beta (a + 1 / beta) := by\n"
+        "  have hne : beta ≠ 0 := hbeta.ne'\n"
+        "  have hd :\n"
+        "      beta^2 * (beta - (a + 1 / beta)) = a * beta + 1 := by\n"
+        "    field_simp [hne]\n"
+        "    nlinarith [hcubic]\n"
+        "  have hprod : 0 < beta^2 * (beta - (a + 1 / beta)) := by\n"
+        "    rw [hd]\n"
+        "    positivity\n"
+        "  have hbc : a + 1 / beta < beta := by\n"
+        "    have hgap : 0 < beta - (a + 1 / beta) :=\n"
+        "      pos_of_mul_pos_right hprod (sq_nonneg beta)\n"
+        "    linarith\n"
+        "  have hc : (1 : ℝ) < a + 1 / beta := by\n"
+        "    have hinv : 0 < 1 / beta := one_div_pos.mpr hbeta\n"
+        "    linarith\n"
+        "  exact contactNode_in_restrictedH kind beta (a + 1 / beta)\n"
+        "    hc hbc (class_ii_perron_gap_lt_one a beta ha hbeta hcubic)\n\n";
+}
+
 inline std::string render_reflective_lean_module(const mathlib::reflection::Trace& trace) {
     if (trace.empty()) throw std::runtime_error("cannot render proof module without provenance");
     std::ostringstream out;
@@ -1034,6 +1146,7 @@ inline std::string render_reflective_lean_module(const mathlib::reflection::Trac
 
     if (has_zero_walk_citation(trace)) out << zero_walk_lemma_lean();
     if (has_shell_propagation_citation(trace)) out << shell_propagation_lemma_lean();
+    if (has_contact_valid_citation(trace)) out << contact_valid_lemma_lean();
 
     if (has_r_matrix_proof(trace)) {
         out << "/-- Symbolic family reflected by `mathlib::nbonacci_r_matrix`. -/\n";
