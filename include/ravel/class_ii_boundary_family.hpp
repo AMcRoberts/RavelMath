@@ -32,6 +32,23 @@ inline std::set<ANode<3>> class_ii_d_cont_face_candidates() {
                             continue;
                         result.insert({i, x, j});
                     }
+    // This ANALYTIC geometric construction (not a hardcoded table)
+    // produces EXACTLY the 33-state table `dContFaceCandidateNode :
+    // DContFaceCandidateKind -> ClassIINode` in the already
+    // kernel-checked `lean/class_ii_affine_shells.lean` -- verified
+    // entry-by-entry before this citation was added, not assumed from
+    // matching sizes. That file additionally proves
+    // `class_ii_dCont_face_candidate_valid_iff`: window-validity of
+    // each candidate, for ANY `a>=2` and its actual Class-II Perron
+    // root, is EXACTLY characterized by the nine flagged
+    // `dContFaceCandidateAccepted` entries -- an iff, not just a
+    // one-direction check.
+    mathlib::reflection::LemmaApplication face_citation;
+    face_citation.theorem_name = "class_ii_dCont_face_candidate_valid_iff";
+    face_citation.conclusion = "for any a>=2 and its actual Class-II Perron root, exactly the "
+        "nine flagged face candidates lie in the restricted stepped hyperplane -- an iff, "
+        "not just a one-direction check";
+    mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, face_citation);
     return result;
 }
 

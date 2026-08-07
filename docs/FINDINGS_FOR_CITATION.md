@@ -1003,6 +1003,20 @@ with zero errors and zero `sorry`
 1-16's foundational tables (contact, pre-contact, D_cont, interior
 shell) now cite their already-proven Lean facts.
 
+**A fifth, stronger citation, same session**:
+`class_ii_d_cont_face_candidates()` is an ANALYTIC geometric
+construction (integer intersection-dimension check over a bounded box)
+-- not a hardcoded table like the previous four -- verified
+entry-by-entry (all 33 candidates, not just the count) to produce
+exactly `dContFaceCandidateNode`'s table. Cites
+`class_ii_dCont_face_candidate_valid_iff`: for ANY `a>=2` and its
+actual Perron root, a candidate lies in the restricted stepped
+hyperplane IFF it is one of the nine flagged candidates -- an iff, the
+strongest fact cited in this thread so far. Kernel-checks with zero
+errors, zero `sorry`
+(`lean/generated/class_ii_face_candidate_citation.lean`,
+`tests/class_ii_face_candidate_citation_test.cpp`).
+
 ## Finding 10 — Item A's AR-partial: A1's nilpotent-cofactor divisibility is symbolically IMPOSSIBLE for every a>=2, not just numerically absent
 
 **Status: SYMBOLIC PROOF, conditional on Finding 9/Theorem 6's own
