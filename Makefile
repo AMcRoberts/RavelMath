@@ -153,10 +153,8 @@ lean-check: nbonacci_charmpoly_proof_probe
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/property_f_zero_walk_citation.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/periodic_point_repetition.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/leftmost_loop_batch.lean)
-	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/class_ii_shell_citation.lean)
-	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/class_ii_contact_citation.lean)
-	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/class_ii_precontact_dcont_citation.lean)
-	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/class_ii_face_candidate_citation.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/class_ii_shell_round_batch.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/class_ii_fixed_tables_batch.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/depressed_cubic_complex_pair_modulus.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/depressed_cubic_not_pisot_batch.lean)
 	@if rg -n '^[[:space:]]*sorry([[:space:]]|$$)' \
@@ -197,10 +195,8 @@ lean-check: nbonacci_charmpoly_proof_probe
 		lean/generated/property_f_zero_walk_citation.lean \
 		lean/periodic_point_repetition.lean \
 		lean/generated/leftmost_loop_batch.lean \
-		lean/generated/class_ii_shell_citation.lean \
-		lean/generated/class_ii_contact_citation.lean \
-		lean/generated/class_ii_precontact_dcont_citation.lean \
-		lean/generated/class_ii_face_candidate_citation.lean \
+		lean/generated/class_ii_shell_round_batch.lean \
+		lean/generated/class_ii_fixed_tables_batch.lean \
 		lean/depressed_cubic_complex_pair_modulus.lean \
 		lean/generated/depressed_cubic_not_pisot_batch.lean \
 		lean/generated/period_rotation_batch.lean; then \

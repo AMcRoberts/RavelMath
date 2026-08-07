@@ -33,52 +33,28 @@ inline std::set<ANode<3>> class_ii_d_cont_face_candidates() {
                         result.insert({i, x, j});
                     }
     // This ANALYTIC geometric construction (not a hardcoded table)
-    // produces EXACTLY the 33-state table `dContFaceCandidateNode :
-    // DContFaceCandidateKind -> ClassIINode` in the already
-    // kernel-checked `lean/class_ii_affine_shells.lean` -- verified
-    // entry-by-entry before this citation was added, not assumed from
-    // matching sizes. That file additionally proves
-    // `class_ii_dCont_face_candidate_valid_iff`: window-validity of
-    // each candidate, for ANY `a>=2` and its actual Class-II Perron
-    // root, is EXACTLY characterized by the nine flagged
-    // `dContFaceCandidateAccepted` entries -- an iff, not just a
-    // one-direction check.
-    mathlib::reflection::LemmaApplication face_citation;
-    face_citation.theorem_name = "class_ii_dCont_face_candidate_valid_iff";
-    face_citation.conclusion = "for any a>=2 and its actual Class-II Perron root, exactly the "
-        "nine flagged face candidates lie in the restricted stepped hyperplane -- an iff, "
-        "not just a one-direction check";
-    mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, face_citation);
-
-    // The search range `x0 in [-2,2]` above (line 25) is not a
-    // heuristic guess -- it is EXACTLY the bound
-    // `class_ii_rawContact_x0_bounded` proves is necessary and
-    // sufficient: once the Perron gap exceeds 1/2 (always true here,
-    // per `class_ii_perron_gap_gt_half`), restricted-window membership
-    // with `x1,x2` already bounded forces `x0` into `[-2,2]`, for ANY
-    // `a>=2`. Record that citation too.
-    mathlib::reflection::LemmaApplication x0_bound_citation;
-    x0_bound_citation.theorem_name = "class_ii_rawContact_x0_bounded";
-    x0_bound_citation.conclusion = "the search range x0 in [-2,2] used above is exactly the "
-        "bound the restricted-window Perron-gap argument forces, for any a>=2 -- not a "
-        "heuristic search-space choice";
-    mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, x0_bound_citation);
+    // produces the 33-state set already verified, entry-by-entry, to
+    // equal `dContFaceCandidateNode`'s range in
+    // `lean/class_ii_affine_shells.lean`. Thread the ACTUAL concrete
+    // nodes so the renderer decides membership of THESE nodes, not a
+    // citation keyed by name. The window-validity iff
+    // (`class_ii_dCont_face_candidate_valid_iff`) and the x0-bound
+    // theorem (`class_ii_rawContact_x0_bounded`) both additionally
+    // need a CONCRETE `a` and an exact Perron-root bracket to
+    // instantiate honestly (same pattern as Finding 32) -- this
+    // parameter-free function has no `a` to supply, so those two
+    // citations are correctly NOT wired here, not silently assumed.
+    if (mathlib::reflection::enabled()) {
+        mathlib::reflection::ClassIIFixedTableCertificate node;
+        node.table = "d_cont_face_candidates";
+        for (const auto& n : result) node.nodes.push_back({n.i, n.x[0], n.x[1], n.x[2], n.j});
+        mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, node);
+    }
     return result;
 }
 
 inline std::set<ANode<3>> class_ii_d_cont_set() {
-    // This is exactly the nine-state table `dContNode : DContKind ->
-    // ClassIINode` in the already kernel-checked
-    // `lean/class_ii_affine_shells.lean`, which proves
-    // `dContNode_in_preContact`: every one of these nine states is a
-    // genuine member of the sixteen-state pre-contact catalogue.
-    mathlib::reflection::LemmaApplication d_cont_citation;
-    d_cont_citation.theorem_name = "dContNode_in_preContact";
-    d_cont_citation.conclusion = "every one of the nine D_cont states is a genuine member of "
-        "the sixteen-state pre-contact catalogue";
-    mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, d_cont_citation);
-
-    return {
+    std::set<ANode<3>> result = {
         {0, {0,  0,  1}, 0},
         {0, {0,  1,  0}, 0},
         {0, {0,  0,  0}, 1},
@@ -89,6 +65,18 @@ inline std::set<ANode<3>> class_ii_d_cont_set() {
         {2, {1,  0, -1}, 0},
         {2, {0,  1, -1}, 1},
     };
+    // Thread the ACTUAL concrete nodes just constructed above -- not a
+    // name -- so the renderer can decide membership of THESE nodes in
+    // `dContNodeD`'s range: a divergence between this table and
+    // `lean/class_ii_affine_shells.lean`'s `dContNode` would make the
+    // kernel check legitimately fail, not silently miss it.
+    if (mathlib::reflection::enabled()) {
+        mathlib::reflection::ClassIIFixedTableCertificate node;
+        node.table = "d_cont";
+        for (const auto& n : result) node.nodes.push_back({n.i, n.x[0], n.x[1], n.x[2], n.j});
+        mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, node);
+    }
+    return result;
 }
 
 inline std::set<ANode<3>>
@@ -237,20 +225,7 @@ class_ii_pre_contact_backward_category_ranges() {
 // The two states absent from class_ii_contact_set are precisely the
 // rank-one Red exclusions.
 inline std::set<ANode<3>> class_ii_pre_contact_set() {
-    // This is exactly the sixteen-state table `preContactNode :
-    // PreContactKind -> ClassIINode` in the already kernel-checked
-    // `lean/class_ii_affine_shells.lean`, which proves
-    // `preContactNode_partition`: every one of these sixteen states is
-    // EITHER one of the fourteen contact states OR one of the two Red
-    // exclusions -- exactly this function's own comment above, now a
-    // checkable citation, not just a comment.
-    mathlib::reflection::LemmaApplication pre_contact_citation;
-    pre_contact_citation.theorem_name = "preContactNode_partition";
-    pre_contact_citation.conclusion = "every one of the sixteen pre-contact states is either "
-        "one of the fourteen contact states or one of the two Red exclusions";
-    mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, pre_contact_citation);
-
-    return {
+    std::set<ANode<3>> result = {
         {0, {-1,  1,  1}, 1},
         {0, { 0,  0,  0}, 1},
         {0, { 0,  0,  0}, 2},
@@ -268,6 +243,15 @@ inline std::set<ANode<3>> class_ii_pre_contact_set() {
         {2, { 0,  1,  0}, 0},
         {2, { 1,  0, -1}, 0},
     };
+    // Thread the ACTUAL concrete nodes -- the renderer decides
+    // membership of THESE nodes in `preContactNodeD`'s range.
+    if (mathlib::reflection::enabled()) {
+        mathlib::reflection::ClassIIFixedTableCertificate node;
+        node.table = "pre_contact";
+        for (const auto& n : result) node.nodes.push_back({n.i, n.x[0], n.x[1], n.x[2], n.j});
+        mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, node);
+    }
+    return result;
 }
 
 inline std::set<ANode<3>> class_ii_contact_red_exclusions() {
@@ -281,22 +265,7 @@ inline std::set<ANode<3>> class_ii_contact_red_exclusions() {
 // Exact construction currently agrees on the enrolled finite sweep;
 // a universal backward-closure/Red proof remains separate.
 inline std::set<SNode<3>> class_ii_contact_set() {
-    // This is exactly the fourteen-state table `contactNode : ContactKind
-    // -> ClassIINode` in the already kernel-checked
-    // `lean/class_ii_affine_shells.lean`, which proves
-    // `class_ii_contactNode_valid`: EVERY one of these fourteen states
-    // lies in the restricted stepped hyperplane, for ANY `a>=2` and the
-    // actual Class-II Perron root `beta` (satisfying the Class-II cubic
-    // `beta^3 = a*beta^2 + (a+1)*beta + 1`) -- not a per-`a` check.
-    // Record that citation whenever this set is constructed.
-    mathlib::reflection::LemmaApplication contact_citation;
-    contact_citation.theorem_name = "class_ii_contactNode_valid";
-    contact_citation.conclusion = "every state in the fourteen-state contact catalogue lies in "
-        "the restricted stepped hyperplane, for any a>=2 and its actual Class-II Perron root "
-        "-- not a per-a numeric check";
-    mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, contact_citation);
-
-    return {
+    std::set<SNode<3>> result = {
         {0, {-1,  1,  1}, 1},
         {0, { 0,  0,  0}, 1},
         {0, { 0,  0,  0}, 2},
@@ -312,6 +281,23 @@ inline std::set<SNode<3>> class_ii_contact_set() {
         {2, { 0,  1,  0}, 0},
         {2, { 1,  0, -1}, 0},
     };
+    // Thread the ACTUAL concrete nodes -- the renderer decides
+    // membership of THESE nodes in `contactNodeD`'s range. The
+    // window-validity fact `class_ii_contactNode_valid` additionally
+    // needs a CONCRETE `a` and an exact bracket for the Class-II
+    // Perron root to instantiate honestly (matching Finding 32's
+    // pattern) -- this parameter-free function has no `a` to supply,
+    // so that citation is correctly NOT wired here; a genuine
+    // per-instance version needs a concrete `a` and an exact bracket
+    // for the Perron root (same pattern as Finding 32's depressed-cubic
+    // certificate) -- not yet built, not silently assumed.
+    if (mathlib::reflection::enabled()) {
+        mathlib::reflection::ClassIIFixedTableCertificate node;
+        node.table = "contact";
+        for (const auto& n : result) node.nodes.push_back({n.i, n.x[0], n.x[1], n.x[2], n.j});
+        mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, node);
+    }
+    return result;
 }
 
 // Parameter-independent third fixed-contact layer.  Together with the
@@ -428,20 +414,18 @@ inline std::set<SNode<3>> class_ii_interior_shell(std::size_t r) {
 
     // This is exactly the 20-state table `shellNode : ShellKind -> Int
     // -> ClassIINode` in the already kernel-checked
-    // `lean/class_ii_affine_shells.lean` -- which proves, generally
-    // (any q, no per-instance argument), that these 20 states are
-    // pairwise distinct within a round (`shellNode_injective_at_round`)
-    // and propagate from the previous round by a FIXED hop
-    // (`shellNode_propagates`). Record that citation whenever this
-    // shell is actually constructed -- a no-op when no trace is
-    // active.
-    mathlib::reflection::LemmaApplication shell_citation;
-    shell_citation.theorem_name = "shellNode_propagates";
-    shell_citation.conclusion = "the interior-shell 20-state table at round " + std::to_string(q)
-        + " is exactly RavelGenerated.shellNode, pairwise distinct within the round "
-          "(shellNode_injective_at_round) and equal to the previous round's state plus a fixed "
-          "contact hop (shellNode_propagates), for any round -- not a per-round coincidence";
-    mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, shell_citation);
+    // `lean/class_ii_affine_shells.lean`. Record the CONCRETE round
+    // `q` this call actually built -- the renderer instantiates
+    // `shellNode_propagates`/`shellNode_injective_at_round` AT this
+    // exact `q` via `decide` (a genuine, mechanically-checked
+    // per-instance corollary, not a citation of the abstract
+    // ∀-quantified fact).
+    if (mathlib::reflection::enabled()) {
+        mathlib::reflection::ClassIIShellRoundCertificate node;
+        node.q = q;
+        node.description = "interior-shell round q=" + std::to_string(q);
+        mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, node);
+    }
 
     return shell;
 }

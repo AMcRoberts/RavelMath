@@ -915,21 +915,6 @@ inline std::string render_leftmost_loop_instances(const mathlib::reflection::Tra
     return out.str();
 }
 
-// True iff the trace shows `class_ii_interior_shell` relied on
-// `shellNode_propagates`/`shellNode_injective_at_round`
-// (lean/class_ii_affine_shells.lean, part of the OLDER Class-II
-// contact-boundary thread, Findings 1-16, hand-derived and
-// kernel-checked well before the mechanical reflection pipeline
-// existed for the coincidence/Pisot thread). Same "cite an
-// already-verified fact" pattern as `has_zero_walk_citation`.
-inline bool has_shell_propagation_citation(const mathlib::reflection::Trace& trace) {
-    for (const auto& [id, lemma] : trace.find<mathlib::reflection::LemmaApplication>()) {
-        (void)id;
-        if (lemma->theorem_name == "shellNode_propagates") return true;
-    }
-    return false;
-}
-
 // A self-contained excerpt of `lean/class_ii_affine_shells.lean`
 // (ClassIINode, ShellKind, shellNode, shellSourceKind, shellHop,
 // composeHop, and the three theorems `class_ii_interior_shell` relies
@@ -1022,467 +1007,155 @@ inline const char* shell_propagation_lemma_lean() {
         "    simp [shellNode, ClassIINode.mk.injEq] at h ⊢ <;> omega\n\n";
 }
 
-// True iff the trace shows `class_ii_contact_set` relied on
-// `class_ii_contactNode_valid` (lean/class_ii_affine_shells.lean).
-inline bool has_contact_valid_citation(const mathlib::reflection::Trace& trace) {
-    for (const auto& [id, lemma] : trace.find<mathlib::reflection::LemmaApplication>()) {
+// Mechanically emits, PER `ClassIIShellRoundCertificate` node, two
+// corollaries at that node's CONCRETE round `q`: `shellNode_propagates`
+// instantiated for ALL twenty kinds at once (`∀ kind, ...`, decidable
+// since `ShellKind` is a `Fintype` and `q` is concrete -- discharged
+// by `decide`, not cited abstractly) and, when `q >= 4`, `shellNode_
+// injective_at_round` at that same `q`.
+inline std::string render_class_ii_shell_round_instances(const mathlib::reflection::Trace& trace) {
+    std::ostringstream out;
+    long long counter = 0;
+    auto nodes = trace.find<mathlib::reflection::ClassIIShellRoundCertificate>();
+    if (nodes.empty()) return {};
+    out << shell_propagation_lemma_lean();
+    for (const auto& [id, node] : nodes) {
         (void)id;
-        if (lemma->theorem_name == "class_ii_contactNode_valid") return true;
+        long long q = node->q;
+        std::string name = "class_ii_shell_round_instance_" + std::to_string(counter++);
+        out << "/-- Mechanically emitted: instantiates the general lemma above at the\n";
+        out << "    concrete round " << node->description << ". -/\n";
+        out << "theorem " << name << " :\n";
+        out << "    ∀ kind : ShellKind, composeHop (shellNode (shellSourceKind kind) ("
+            << (q - 1) << " : Int)) (shellHop kind) = shellNode kind (" << q << " : Int) := by\n";
+        out << "  decide\n\n";
+        if (q >= 4) {
+            std::string iname = "class_ii_shell_round_injective_instance_" + std::to_string(counter++);
+            out << "/-- Mechanically emitted: injectivity at the same concrete round. -/\n";
+            out << "theorem " << iname << " :\n";
+            out << "    Function.Injective (fun kind : ShellKind => shellNode kind (" << q << " : Int)) := by\n";
+            out << "  decide\n\n";
+        }
     }
-    return false;
+    return out.str();
 }
 
 // A self-contained excerpt of `lean/class_ii_affine_shells.lean`
-// covering the fourteen-state contact catalogue's window-validity
-// theorem, parametrized over ANY `a >= 2` and its actual Class-II
-// Perron root -- reproduced, not re-derived.
-inline const char* contact_valid_lemma_lean() {
+// covering EVERY finite Kind/Node pair `render_class_ii_fixed_table_
+// instances` below can check membership against: ContactKind/
+// contactNode (14), PreContactKind/preContactNode (16),
+// ContactRedExcludedKind/contactRedExcludedNode (2), DContKind/
+// dContNode (9), DContFaceCandidateKind/dContFaceCandidateNode (33).
+// Reproduced, not re-derived; the full file additionally proves
+// window-validity bounds this excerpt doesn't need.
+inline const char* class_ii_fixed_tables_lemma_lean() {
     return
-        "structure ClassIINodeC where\n"
-        "  left : Int\n"
-        "  x0 : Int\n"
-        "  x1 : Int\n"
-        "  x2 : Int\n"
-        "  right : Int\n"
+        "structure ClassIINodeG where\n"
+        "  left : Int\n  x0 : Int\n  x1 : Int\n  x2 : Int\n  right : Int\n"
         "  deriving DecidableEq\n\n"
-        "inductive ContactKind\n"
+        "inductive ContactKindG\n"
         "  | c00 | c01 | c02 | c03 | c04 | c05 | c06\n"
         "  | c07 | c08 | c09 | c10 | c11 | c12 | c13\n"
         "  deriving DecidableEq, Fintype\n\n"
-        "def contactNode : ContactKind → ClassIINodeC\n"
-        "  | .c00 => ⟨0, -1,  1,  1, 1⟩\n"
-        "  | .c01 => ⟨0,  0,  0,  0, 1⟩\n"
-        "  | .c02 => ⟨0,  0,  0,  0, 2⟩\n"
-        "  | .c03 => ⟨0,  0,  0,  1, 0⟩\n"
-        "  | .c04 => ⟨0,  0,  0,  1, 1⟩\n"
-        "  | .c05 => ⟨0,  0,  1,  0, 0⟩\n"
-        "  | .c06 => ⟨0,  1, -1,  0, 0⟩\n"
-        "  | .c07 => ⟨1,  0,  0,  0, 2⟩\n"
-        "  | .c08 => ⟨1,  1, -1,  0, 0⟩\n"
-        "  | .c09 => ⟨1,  1, -1,  0, 2⟩\n"
-        "  | .c10 => ⟨1,  1,  0, -1, 0⟩\n"
-        "  | .c11 => ⟨2,  0,  1, -1, 0⟩\n"
-        "  | .c12 => ⟨2,  0,  1,  0, 0⟩\n"
-        "  | .c13 => ⟨2,  1,  0, -1, 0⟩\n\n"
-        "def nodeHeight (node : ClassIINodeC) (b c : ℝ) : ℝ :=\n"
-        "  node.x0 * b + node.x1 * c + node.x2\n\n"
-        "def rightWidth (node : ClassIINodeC) (b c : ℝ) : ℝ :=\n"
-        "  if node.right = 0 then b else if node.right = 1 then c else 1\n\n"
-        "def InRestrictedH (node : ClassIINodeC) (b c : ℝ) : Prop :=\n"
-        "  0 ≤ nodeHeight node b c ∧ nodeHeight node b c < rightWidth node b c\n\n"
-        "theorem contactNode_in_restrictedH\n"
-        "    (kind : ContactKind) (b c : ℝ)\n"
-        "    (hc : 1 < c) (hcb : c < b) (hgap : b - c < 1) :\n"
-        "    InRestrictedH (contactNode kind) b c := by\n"
-        "  cases kind <;>\n"
-        "    simp [InRestrictedH, nodeHeight, rightWidth, contactNode] <;>\n"
-        "    first\n"
-        "    | (constructor <;> linarith)\n"
-        "    | linarith\n\n"
-        "theorem class_ii_perron_gap_lt_one\n"
-        "    (a beta : ℝ)\n"
-        "    (ha : 2 ≤ a) (hbeta : 0 < beta)\n"
-        "    (hcubic : beta^3 = a * beta^2 + (a + 1) * beta + 1) :\n"
-        "    beta - (a + 1 / beta) < 1 := by\n"
-        "  have hne : beta ≠ 0 := hbeta.ne'\n"
-        "  have hd :\n"
-        "      beta^2 * (beta - (a + 1 / beta)) = a * beta + 1 := by\n"
-        "    field_simp [hne]\n"
-        "    nlinarith [hcubic]\n"
-        "  have hscaled :\n"
-        "      beta * (beta - a) = a + 1 + 1 / beta := by\n"
-        "    field_simp [hne]\n"
-        "    nlinarith [hcubic]\n"
-        "  have hinv : 0 < 1 / beta := one_div_pos.mpr hbeta\n"
-        "  have hunit : 1 < beta * (beta - a) := by\n"
-        "    rw [hscaled]\n"
-        "    linarith\n"
-        "  have hcompare : a * beta + 1 < beta^2 := by\n"
-        "    nlinarith\n"
-        "  have hb2 : 0 < beta^2 := sq_pos_of_pos hbeta\n"
-        "  have hmul :\n"
-        "      beta^2 * (beta - (a + 1 / beta)) < beta^2 * 1 := by\n"
-        "    rw [hd]\n"
-        "    simpa using hcompare\n"
-        "  exact lt_of_mul_lt_mul_left hmul hb2.le\n\n"
-        "/-- Universal Class-II form of contact-catalogue validity: EVERY one of the\n"
-        "    fourteen contact states lies in the restricted stepped hyperplane, for ANY\n"
-        "    `a >= 2` and its actual Class-II Perron root `beta`. Reproduced from the\n"
-        "    independently kernel-checked `lean/class_ii_affine_shells.lean` (not\n"
-        "    re-derived here). -/\n"
-        "theorem class_ii_contactNode_valid\n"
-        "    (kind : ContactKind) (a beta : ℝ)\n"
-        "    (ha : 2 ≤ a) (hbeta : 0 < beta)\n"
-        "    (hcubic : beta^3 = a * beta^2 + (a + 1) * beta + 1) :\n"
-        "    InRestrictedH (contactNode kind) beta (a + 1 / beta) := by\n"
-        "  have hne : beta ≠ 0 := hbeta.ne'\n"
-        "  have hd :\n"
-        "      beta^2 * (beta - (a + 1 / beta)) = a * beta + 1 := by\n"
-        "    field_simp [hne]\n"
-        "    nlinarith [hcubic]\n"
-        "  have hprod : 0 < beta^2 * (beta - (a + 1 / beta)) := by\n"
-        "    rw [hd]\n"
-        "    positivity\n"
-        "  have hbc : a + 1 / beta < beta := by\n"
-        "    have hgap : 0 < beta - (a + 1 / beta) :=\n"
-        "      pos_of_mul_pos_right hprod (sq_nonneg beta)\n"
-        "    linarith\n"
-        "  have hc : (1 : ℝ) < a + 1 / beta := by\n"
-        "    have hinv : 0 < 1 / beta := one_div_pos.mpr hbeta\n"
-        "    linarith\n"
-        "  exact contactNode_in_restrictedH kind beta (a + 1 / beta)\n"
-        "    hc hbc (class_ii_perron_gap_lt_one a beta ha hbeta hcubic)\n\n";
-}
-
-// True iff the trace cites `dContNode_in_preContact` or
-// `preContactNode_partition` (lean/class_ii_affine_shells.lean).
-inline bool has_d_cont_citation(const mathlib::reflection::Trace& trace) {
-    for (const auto& [id, lemma] : trace.find<mathlib::reflection::LemmaApplication>()) {
-        (void)id;
-        if (lemma->theorem_name == "dContNode_in_preContact") return true;
-    }
-    return false;
-}
-inline bool has_pre_contact_citation(const mathlib::reflection::Trace& trace) {
-    for (const auto& [id, lemma] : trace.find<mathlib::reflection::LemmaApplication>()) {
-        (void)id;
-        if (lemma->theorem_name == "preContactNode_partition") return true;
-    }
-    return false;
-}
-
-// A self-contained excerpt of `lean/class_ii_affine_shells.lean`
-// covering `DContKind`/`dContNode`, `PreContactKind`/`preContactNode`,
-// `ContactKind`/`contactNode`, `ContactRedExcludedKind`/
-// `contactRedExcludedNode`, and the two partition theorems --
-// reproduced, not re-derived.
-inline const char* pre_contact_lemma_lean() {
-    return
-        "structure ClassIINodeD where\n"
-        "  left : Int\n"
-        "  x0 : Int\n"
-        "  x1 : Int\n"
-        "  x2 : Int\n"
-        "  right : Int\n"
-        "  deriving DecidableEq\n\n"
-        "inductive DContKindD\n"
-        "  | d00 | d01 | d02 | d03 | d04 | d05 | d06 | d07 | d08\n"
-        "  deriving DecidableEq, Fintype\n\n"
-        "def dContNodeD : DContKindD → ClassIINodeD\n"
-        "  | .d00 => ⟨0, 0,  0,  1, 0⟩\n"
-        "  | .d01 => ⟨0, 0,  1,  0, 0⟩\n"
-        "  | .d02 => ⟨0, 0,  0,  0, 1⟩\n"
-        "  | .d03 => ⟨0, 0,  0,  0, 2⟩\n"
-        "  | .d04 => ⟨1, 1, -1,  0, 0⟩\n"
-        "  | .d05 => ⟨1, 0,  0,  1, 1⟩\n"
-        "  | .d06 => ⟨1, 0,  0,  0, 2⟩\n"
-        "  | .d07 => ⟨2, 1,  0, -1, 0⟩\n"
-        "  | .d08 => ⟨2, 0,  1, -1, 1⟩\n\n"
-        "inductive PreContactKindD\n"
+        "def contactNodeG : ContactKindG → ClassIINodeG\n"
+        "  | .c00 => ⟨0, -1,  1,  1, 1⟩ | .c01 => ⟨0,  0,  0,  0, 1⟩\n"
+        "  | .c02 => ⟨0,  0,  0,  0, 2⟩ | .c03 => ⟨0,  0,  0,  1, 0⟩\n"
+        "  | .c04 => ⟨0,  0,  0,  1, 1⟩ | .c05 => ⟨0,  0,  1,  0, 0⟩\n"
+        "  | .c06 => ⟨0,  1, -1,  0, 0⟩ | .c07 => ⟨1,  0,  0,  0, 2⟩\n"
+        "  | .c08 => ⟨1,  1, -1,  0, 0⟩ | .c09 => ⟨1,  1, -1,  0, 2⟩\n"
+        "  | .c10 => ⟨1,  1,  0, -1, 0⟩ | .c11 => ⟨2,  0,  1, -1, 0⟩\n"
+        "  | .c12 => ⟨2,  0,  1,  0, 0⟩ | .c13 => ⟨2,  1,  0, -1, 0⟩\n\n"
+        "inductive PreContactKindG\n"
         "  | p00 | p01 | p02 | p03 | p04 | p05 | p06 | p07\n"
         "  | p08 | p09 | p10 | p11 | p12 | p13 | p14 | p15\n"
         "  deriving DecidableEq, Fintype\n\n"
-        "def preContactNodeD : PreContactKindD → ClassIINodeD\n"
-        "  | .p00 => ⟨0, -1,  1,  1, 1⟩\n"
-        "  | .p01 => ⟨0,  0,  0,  0, 1⟩\n"
-        "  | .p02 => ⟨0,  0,  0,  0, 2⟩\n"
-        "  | .p03 => ⟨0,  0,  0,  1, 0⟩\n"
-        "  | .p04 => ⟨0,  0,  0,  1, 1⟩\n"
-        "  | .p05 => ⟨0,  0,  1,  0, 0⟩\n"
-        "  | .p06 => ⟨0,  1, -1,  0, 0⟩\n"
-        "  | .p07 => ⟨1,  0,  0,  0, 2⟩\n"
-        "  | .p08 => ⟨1,  0,  0,  1, 1⟩\n"
-        "  | .p09 => ⟨1,  1, -1,  0, 0⟩\n"
-        "  | .p10 => ⟨1,  1, -1,  0, 2⟩\n"
-        "  | .p11 => ⟨1,  1,  0, -1, 0⟩\n"
-        "  | .p12 => ⟨2,  0,  1, -1, 0⟩\n"
-        "  | .p13 => ⟨2,  0,  1, -1, 1⟩\n"
-        "  | .p14 => ⟨2,  0,  1,  0, 0⟩\n"
-        "  | .p15 => ⟨2,  1,  0, -1, 0⟩\n\n"
-        "theorem dContNode_in_preContact (kind : DContKindD) :\n"
-        "    ∃ pre : PreContactKindD, dContNodeD kind = preContactNodeD pre := by\n"
-        "  cases kind <;> native_decide\n\n"
-        "inductive ContactKindD\n"
-        "  | c00 | c01 | c02 | c03 | c04 | c05 | c06\n"
-        "  | c07 | c08 | c09 | c10 | c11 | c12 | c13\n"
+        "def preContactNodeG : PreContactKindG → ClassIINodeG\n"
+        "  | .p00 => ⟨0, -1,  1,  1, 1⟩ | .p01 => ⟨0,  0,  0,  0, 1⟩\n"
+        "  | .p02 => ⟨0,  0,  0,  0, 2⟩ | .p03 => ⟨0,  0,  0,  1, 0⟩\n"
+        "  | .p04 => ⟨0,  0,  0,  1, 1⟩ | .p05 => ⟨0,  0,  1,  0, 0⟩\n"
+        "  | .p06 => ⟨0,  1, -1,  0, 0⟩ | .p07 => ⟨1,  0,  0,  0, 2⟩\n"
+        "  | .p08 => ⟨1,  0,  0,  1, 1⟩ | .p09 => ⟨1,  1, -1,  0, 0⟩\n"
+        "  | .p10 => ⟨1,  1, -1,  0, 2⟩ | .p11 => ⟨1,  1,  0, -1, 0⟩\n"
+        "  | .p12 => ⟨2,  0,  1, -1, 0⟩ | .p13 => ⟨2,  0,  1, -1, 1⟩\n"
+        "  | .p14 => ⟨2,  0,  1,  0, 0⟩ | .p15 => ⟨2,  1,  0, -1, 0⟩\n\n"
+        "inductive DContKindG\n"
+        "  | d00 | d01 | d02 | d03 | d04 | d05 | d06 | d07 | d08\n"
         "  deriving DecidableEq, Fintype\n\n"
-        "def contactNodeD : ContactKindD → ClassIINodeD\n"
-        "  | .c00 => ⟨0, -1,  1,  1, 1⟩\n"
-        "  | .c01 => ⟨0,  0,  0,  0, 1⟩\n"
-        "  | .c02 => ⟨0,  0,  0,  0, 2⟩\n"
-        "  | .c03 => ⟨0,  0,  0,  1, 0⟩\n"
-        "  | .c04 => ⟨0,  0,  0,  1, 1⟩\n"
-        "  | .c05 => ⟨0,  0,  1,  0, 0⟩\n"
-        "  | .c06 => ⟨0,  1, -1,  0, 0⟩\n"
-        "  | .c07 => ⟨1,  0,  0,  0, 2⟩\n"
-        "  | .c08 => ⟨1,  1, -1,  0, 0⟩\n"
-        "  | .c09 => ⟨1,  1, -1,  0, 2⟩\n"
-        "  | .c10 => ⟨1,  1,  0, -1, 0⟩\n"
-        "  | .c11 => ⟨2,  0,  1, -1, 0⟩\n"
-        "  | .c12 => ⟨2,  0,  1,  0, 0⟩\n"
-        "  | .c13 => ⟨2,  1,  0, -1, 0⟩\n\n"
-        "inductive ContactRedExcludedKindD\n"
-        "  | e00 | e01\n"
-        "  deriving DecidableEq, Fintype\n\n"
-        "def contactRedExcludedNodeD : ContactRedExcludedKindD → ClassIINodeD\n"
-        "  | .e00 => ⟨1, 0, 0,  1, 1⟩\n"
-        "  | .e01 => ⟨2, 0, 1, -1, 1⟩\n\n"
-        "/-- The pre-contact catalogue is exactly the disjoint union of the fourteen\n"
-        "    contact states and the two displayed Red exclusions. Reproduced from the\n"
-        "    independently kernel-checked `lean/class_ii_affine_shells.lean` (not\n"
-        "    re-derived here). -/\n"
-        "theorem preContactNode_partition (kind : PreContactKindD) :\n"
-        "    (∃ contact : ContactKindD, preContactNodeD kind = contactNodeD contact) ∨\n"
-        "    (∃ excluded : ContactRedExcludedKindD,\n"
-        "      preContactNodeD kind = contactRedExcludedNodeD excluded) := by\n"
-        "  cases kind <;> native_decide\n\n";
-}
-
-// True iff the trace cites `class_ii_dCont_face_candidate_valid_iff`.
-inline bool has_face_candidate_citation(const mathlib::reflection::Trace& trace) {
-    for (const auto& [id, lemma] : trace.find<mathlib::reflection::LemmaApplication>()) {
-        (void)id;
-        if (lemma->theorem_name == "class_ii_dCont_face_candidate_valid_iff") return true;
-    }
-    return false;
-}
-
-// A self-contained excerpt of `lean/class_ii_affine_shells.lean`
-// covering the 33-state face-candidate window-validity iff,
-// parametrized over ANY `a >= 2` and its actual Class-II Perron root.
-inline const char* face_candidate_lemma_lean() {
-    return
-        "structure ClassIINodeE where\n"
-        "  left : Int\n"
-        "  x0 : Int\n"
-        "  x1 : Int\n"
-        "  x2 : Int\n"
-        "  right : Int\n"
-        "  deriving DecidableEq\n\n"
-        "inductive DContFaceCandidateKindE\n"
+        "def dContNodeG : DContKindG → ClassIINodeG\n"
+        "  | .d00 => ⟨0, 0,  0,  1, 0⟩ | .d01 => ⟨0, 0,  1,  0, 0⟩\n"
+        "  | .d02 => ⟨0, 0,  0,  0, 1⟩ | .d03 => ⟨0, 0,  0,  0, 2⟩\n"
+        "  | .d04 => ⟨1, 1, -1,  0, 0⟩ | .d05 => ⟨1, 0,  0,  1, 1⟩\n"
+        "  | .d06 => ⟨1, 0,  0,  0, 2⟩ | .d07 => ⟨2, 1,  0, -1, 0⟩\n"
+        "  | .d08 => ⟨2, 0,  1, -1, 1⟩\n\n"
+        "inductive DContFaceCandidateKindG\n"
         "  | f00 | f01 | f02 | f03 | f04 | f05 | f06 | f07 | f08 | f09\n"
         "  | f10 | f11 | f12 | f13 | f14 | f15 | f16 | f17 | f18 | f19\n"
         "  | f20 | f21 | f22 | f23 | f24 | f25 | f26 | f27 | f28 | f29\n"
         "  | f30 | f31 | f32\n"
         "  deriving DecidableEq, Fintype\n\n"
-        "def dContFaceCandidateNodeE : DContFaceCandidateKindE → ClassIINodeE\n"
-        "  | .f00 => ⟨0,  0, -1,  0, 0⟩\n"
-        "  | .f01 => ⟨0,  0,  0, -1, 0⟩\n"
-        "  | .f02 => ⟨0,  0,  0,  1, 0⟩\n"
-        "  | .f03 => ⟨0,  0,  1,  0, 0⟩\n"
-        "  | .f04 => ⟨0, -1,  0,  0, 1⟩\n"
-        "  | .f05 => ⟨0, -1,  1,  0, 1⟩\n"
-        "  | .f06 => ⟨0,  0,  0,  0, 1⟩\n"
-        "  | .f07 => ⟨0,  0,  1,  0, 1⟩\n"
-        "  | .f08 => ⟨0, -1,  0,  0, 2⟩\n"
-        "  | .f09 => ⟨0, -1,  0,  1, 2⟩\n"
-        "  | .f10 => ⟨0,  0,  0,  0, 2⟩\n"
-        "  | .f11 => ⟨0,  0,  0,  1, 2⟩\n"
-        "  | .f12 => ⟨1,  0, -1,  0, 0⟩\n"
-        "  | .f13 => ⟨1,  1, -1,  0, 0⟩\n"
-        "  | .f14 => ⟨1,  1,  0,  0, 0⟩\n"
-        "  | .f15 => ⟨1, -1,  0,  0, 1⟩\n"
-        "  | .f16 => ⟨1,  0,  0, -1, 1⟩\n"
-        "  | .f17 => ⟨1,  0,  0,  1, 1⟩\n"
-        "  | .f18 => ⟨1,  1,  0,  0, 1⟩\n"
-        "  | .f19 => ⟨1,  0, -1,  0, 2⟩\n"
-        "  | .f20 => ⟨1,  0, -1,  1, 2⟩\n"
-        "  | .f21 => ⟨1,  0,  0,  0, 2⟩\n"
-        "  | .f22 => ⟨1,  0,  0,  1, 2⟩\n"
-        "  | .f23 => ⟨2,  0,  0, -1, 0⟩\n"
-        "  | .f24 => ⟨2,  1,  0, -1, 0⟩\n"
-        "  | .f25 => ⟨2,  1,  0,  0, 0⟩\n"
-        "  | .f26 => ⟨2,  0,  0, -1, 1⟩\n"
-        "  | .f27 => ⟨2,  0,  1, -1, 1⟩\n"
-        "  | .f28 => ⟨2,  0,  1,  0, 1⟩\n"
-        "  | .f29 => ⟨2, -1,  0,  0, 2⟩\n"
-        "  | .f30 => ⟨2,  0, -1,  0, 2⟩\n"
-        "  | .f31 => ⟨2,  0,  1,  0, 2⟩\n"
-        "  | .f32 => ⟨2,  1,  0,  0, 2⟩\n\n"
-        "def dContFaceCandidateAcceptedE : DContFaceCandidateKindE → Bool\n"
-        "  | .f02 | .f03 | .f06 | .f10 | .f13\n"
-        "  | .f17 | .f21 | .f24 | .f27 => true\n"
-        "  | _ => false\n\n"
-        "def nodeHeightE (node : ClassIINodeE) (b c : ℝ) : ℝ :=\n"
-        "  node.x0 * b + node.x1 * c + node.x2\n\n"
-        "def rightWidthE (node : ClassIINodeE) (b c : ℝ) : ℝ :=\n"
-        "  if node.right = 0 then b else if node.right = 1 then c else 1\n\n"
-        "def InRestrictedHE (node : ClassIINodeE) (b c : ℝ) : Prop :=\n"
-        "  0 ≤ nodeHeightE node b c ∧ nodeHeightE node b c < rightWidthE node b c\n\n"
-        "theorem dContFaceCandidate_window_iffE\n"
-        "    (kind : DContFaceCandidateKindE) (b c : ℝ)\n"
-        "    (hc : 1 < c) (hcb : c < b) :\n"
-        "    InRestrictedHE (dContFaceCandidateNodeE kind) b c ↔\n"
-        "      dContFaceCandidateAcceptedE kind = true := by\n"
-        "  cases kind <;>\n"
-        "    simp [InRestrictedHE, rightWidthE, nodeHeightE,\n"
-        "      dContFaceCandidateNodeE, dContFaceCandidateAcceptedE] <;>\n"
-        "    first\n"
-        "    | linarith\n"
-        "    | (constructor <;> linarith)\n"
-        "    | (intro h; linarith)\n\n"
-        "/-- Universal Perron-window classification of the fixed `D_cont`\n"
-        "    face-candidate table: for ANY `a >= 2` and its actual Class-II Perron root\n"
-        "    `beta`, a candidate lies in the restricted stepped hyperplane IFF it is one\n"
-        "    of the nine flagged candidates. Reproduced from the independently\n"
-        "    kernel-checked `lean/class_ii_affine_shells.lean` (not re-derived here). -/\n"
-        "theorem class_ii_dCont_face_candidate_valid_iff\n"
-        "    (kind : DContFaceCandidateKindE) (a beta : ℝ)\n"
-        "    (ha : 2 ≤ a) (hbeta : 0 < beta)\n"
-        "    (hcubic : beta^3 = a * beta^2 + (a + 1) * beta + 1) :\n"
-        "    InRestrictedHE (dContFaceCandidateNodeE kind) beta (a + 1 / beta) ↔\n"
-        "      dContFaceCandidateAcceptedE kind = true := by\n"
-        "  have hne : beta ≠ 0 := hbeta.ne'\n"
-        "  have hd :\n"
-        "      beta^2 * (beta - (a + 1 / beta)) = a * beta + 1 := by\n"
-        "    field_simp [hne]\n"
-        "    nlinarith [hcubic]\n"
-        "  have hprod : 0 < beta^2 * (beta - (a + 1 / beta)) := by\n"
-        "    rw [hd]\n"
-        "    positivity\n"
-        "  have hbc : a + 1 / beta < beta := by\n"
-        "    have hgap : 0 < beta - (a + 1 / beta) :=\n"
-        "      pos_of_mul_pos_right hprod (sq_nonneg beta)\n"
-        "    linarith\n"
-        "  have hc : (1 : ℝ) < a + 1 / beta := by\n"
-        "    have hinv : 0 < 1 / beta := one_div_pos.mpr hbeta\n"
-        "    linarith\n"
-        "  exact dContFaceCandidate_window_iffE kind beta (a + 1 / beta) hc hbc\n\n";
+        "def dContFaceCandidateNodeG : DContFaceCandidateKindG → ClassIINodeG\n"
+        "  | .f00 => ⟨0,  0, -1,  0, 0⟩ | .f01 => ⟨0,  0,  0, -1, 0⟩\n"
+        "  | .f02 => ⟨0,  0,  0,  1, 0⟩ | .f03 => ⟨0,  0,  1,  0, 0⟩\n"
+        "  | .f04 => ⟨0, -1,  0,  0, 1⟩ | .f05 => ⟨0, -1,  1,  0, 1⟩\n"
+        "  | .f06 => ⟨0,  0,  0,  0, 1⟩ | .f07 => ⟨0,  0,  1,  0, 1⟩\n"
+        "  | .f08 => ⟨0, -1,  0,  0, 2⟩ | .f09 => ⟨0, -1,  0,  1, 2⟩\n"
+        "  | .f10 => ⟨0,  0,  0,  0, 2⟩ | .f11 => ⟨0,  0,  0,  1, 2⟩\n"
+        "  | .f12 => ⟨1,  0, -1,  0, 0⟩ | .f13 => ⟨1,  1, -1,  0, 0⟩\n"
+        "  | .f14 => ⟨1,  1,  0,  0, 0⟩ | .f15 => ⟨1, -1,  0,  0, 1⟩\n"
+        "  | .f16 => ⟨1,  0,  0, -1, 1⟩ | .f17 => ⟨1,  0,  0,  1, 1⟩\n"
+        "  | .f18 => ⟨1,  1,  0,  0, 1⟩ | .f19 => ⟨1,  0, -1,  0, 2⟩\n"
+        "  | .f20 => ⟨1,  0, -1,  1, 2⟩ | .f21 => ⟨1,  0,  0,  0, 2⟩\n"
+        "  | .f22 => ⟨1,  0,  0,  1, 2⟩ | .f23 => ⟨2,  0,  0, -1, 0⟩\n"
+        "  | .f24 => ⟨2,  1,  0, -1, 0⟩ | .f25 => ⟨2,  1,  0,  0, 0⟩\n"
+        "  | .f26 => ⟨2,  0,  0, -1, 1⟩ | .f27 => ⟨2,  0,  1, -1, 1⟩\n"
+        "  | .f28 => ⟨2,  0,  1,  0, 1⟩ | .f29 => ⟨2, -1,  0,  0, 2⟩\n"
+        "  | .f30 => ⟨2,  0, -1,  0, 2⟩ | .f31 => ⟨2,  0,  1,  0, 2⟩\n"
+        "  | .f32 => ⟨2,  1,  0,  0, 2⟩\n\n";
 }
 
-// True iff the trace cites `class_ii_rawContact_x0_bounded`.
-inline bool has_x0_bound_citation(const mathlib::reflection::Trace& trace) {
-    for (const auto& [id, lemma] : trace.find<mathlib::reflection::LemmaApplication>()) {
-        (void)id;
-        if (lemma->theorem_name == "class_ii_rawContact_x0_bounded") return true;
+// Renders `[(left,x0,x1,x2,right), ...]` for a concrete node list.
+inline std::string render_class_ii_node_list(
+    const std::vector<mathlib::reflection::ClassIINodeData>& nodes) {
+    std::ostringstream out;
+    out << "[";
+    for (std::size_t i = 0; i < nodes.size(); ++i) {
+        if (i > 0) out << ", ";
+        const auto& n = nodes[i];
+        out << "(⟨" << n.left << "," << n.x0 << "," << n.x1 << "," << n.x2 << "," << n.right << "⟩ : ClassIINodeG)";
     }
-    return false;
+    out << "]";
+    return out.str();
 }
 
-// A self-contained excerpt of `lean/class_ii_affine_shells.lean`
-// covering the raw-contact-envelope x0-bound theorem, parametrized
-// over ANY `a >= 2` and its actual Class-II Perron root.
-inline const char* x0_bound_lemma_lean() {
-    return
-        "structure ClassIINodeF where\n"
-        "  left : Int\n"
-        "  x0 : Int\n"
-        "  x1 : Int\n"
-        "  x2 : Int\n"
-        "  right : Int\n"
-        "  deriving DecidableEq\n\n"
-        "def nodeHeightF (node : ClassIINodeF) (b c : ℝ) : ℝ :=\n"
-        "  node.x0 * b + node.x1 * c + node.x2\n\n"
-        "def rightWidthF (node : ClassIINodeF) (b c : ℝ) : ℝ :=\n"
-        "  if node.right = 0 then b else if node.right = 1 then c else 1\n\n"
-        "def InRestrictedHF (node : ClassIINodeF) (b c : ℝ) : Prop :=\n"
-        "  0 ≤ nodeHeightF node b c ∧ nodeHeightF node b c < rightWidthF node b c\n\n"
-        "/-- A raw contact-envelope category has `x1 ∈ [-2,2]` and `x2 ∈ [-1,1]`. Once\n"
-        "    the Perron gap exceeds one half, restricted window membership forces its\n"
-        "    remaining integer coordinate into the five slices `x0 ∈ [-2,2]`. -/\n"
-        "theorem restrictedHF_forces_bounded_x0\n"
-        "    (node : ClassIINodeF) (b c : ℝ)\n"
-        "    (hc : 1 < c) (hcb : c < b) (hgap : 1 / 2 < b - c)\n"
-        "    (hx1lo : -2 ≤ node.x1) (hx1hi : node.x1 ≤ 2)\n"
-        "    (hx2lo : -1 ≤ node.x2) (hx2hi : node.x2 ≤ 1)\n"
-        "    (hright : node.right = 0 ∨ node.right = 1 ∨ node.right = 2)\n"
-        "    (hwindow : InRestrictedHF node b c) :\n"
-        "    -2 ≤ node.x0 ∧ node.x0 ≤ 2 := by\n"
-        "  have hb : 0 < b := by linarith\n"
-        "  constructor\n"
-        "  · by_contra hnot\n"
-        "    have hx0 : node.x0 ≤ -3 := by omega\n"
-        "    have hx0r : (node.x0 : ℝ) ≤ -3 := by exact_mod_cast hx0\n"
-        "    have hx1r : (node.x1 : ℝ) ≤ 2 := by exact_mod_cast hx1hi\n"
-        "    have hx2r : (node.x2 : ℝ) ≤ 1 := by exact_mod_cast hx2hi\n"
-        "    have h0 : (node.x0 : ℝ) * b ≤ -3 * b :=\n"
-        "      mul_le_mul_of_nonneg_right hx0r hb.le\n"
-        "    have h1 : (node.x1 : ℝ) * c ≤ 2 * c :=\n"
-        "      mul_le_mul_of_nonneg_right hx1r (by linarith)\n"
-        "    have hheight : nodeHeightF node b c < 0 := by\n"
-        "      simp [nodeHeightF]\n"
-        "      linarith\n"
-        "    linarith [hwindow.1]\n"
-        "  · by_contra hnot\n"
-        "    have hx0 : 3 ≤ node.x0 := by omega\n"
-        "    have hx0r : (3 : ℝ) ≤ node.x0 := by exact_mod_cast hx0\n"
-        "    have hx1r : (-2 : ℝ) ≤ node.x1 := by exact_mod_cast hx1lo\n"
-        "    have hx2r : (-1 : ℝ) ≤ node.x2 := by exact_mod_cast hx2lo\n"
-        "    have h0 : 3 * b ≤ (node.x0 : ℝ) * b :=\n"
-        "      mul_le_mul_of_nonneg_right hx0r hb.le\n"
-        "    have h1 : -2 * c ≤ (node.x1 : ℝ) * c :=\n"
-        "      mul_le_mul_of_nonneg_right hx1r (by linarith)\n"
-        "    have hheight : b < nodeHeightF node b c := by\n"
-        "      simp [nodeHeightF]\n"
-        "      linarith\n"
-        "    rcases hright with hr | hr | hr <;>\n"
-        "      simp [InRestrictedHF, rightWidthF, hr] at hwindow <;>\n"
-        "      linarith\n\n"
-        "theorem class_ii_perron_gap_gt_halfF\n"
-        "    (a beta : ℝ)\n"
-        "    (ha : 2 ≤ a) (hbeta : 0 < beta)\n"
-        "    (hcubic : beta^3 = a * beta^2 + (a + 1) * beta + 1) :\n"
-        "    1 / 2 < beta - (a + 1 / beta) := by\n"
-        "  have hne : beta ≠ 0 := hbeta.ne'\n"
-        "  have hd : beta^2 * (beta - (a + 1 / beta)) = a * beta + 1 := by\n"
-        "    field_simp [hne]\n"
-        "    nlinarith [hcubic]\n"
-        "  by_contra hnot\n"
-        "  have hgap_le : beta - (a + 1 / beta) ≤ 1 / 2 := le_of_not_gt hnot\n"
-        "  have hscaled : 2 * (a * beta + 1) ≤ beta^2 := by\n"
-        "    have hmul := mul_le_mul_of_nonneg_left hgap_le (sq_nonneg beta)\n"
-        "    rw [hd] at hmul\n"
-        "    nlinarith\n"
-        "  have hbeta_two_a : 2 * a < beta := by\n"
-        "    by_contra hle\n"
-        "    have hbeta_le : beta ≤ 2 * a := le_of_not_gt hle\n"
-        "    have hproduct : 0 ≤ beta * (2 * a - beta) :=\n"
-        "      mul_nonneg hbeta.le (by linarith)\n"
-        "    nlinarith\n"
-        "  have heq : beta^2 * (beta - a) = (a + 1) * beta + 1 := by nlinarith [hcubic]\n"
-        "  have hleft : a * beta^2 < beta^2 * (beta - a) := by\n"
-        "    have hdelta : a < beta - a := by linarith\n"
-        "    simpa [mul_comm] using mul_lt_mul_of_pos_left hdelta (sq_pos_of_pos hbeta)\n"
-        "  have hfactor : 1 < a * beta - a - 1 := by\n"
-        "    nlinarith [mul_nonneg (show 0 ≤ a by linarith) (show 0 ≤ beta - 2 * a by linarith)]\n"
-        "  have hright : (a + 1) * beta + 1 < a * beta^2 := by\n"
-        "    have hproduct : beta < beta * (a * beta - a - 1) := by\n"
-        "      simpa using mul_lt_mul_of_pos_left hfactor hbeta\n"
-        "    nlinarith\n"
-        "  nlinarith\n\n"
-        "/-- Universal Class-II specialization: for ANY `a >= 2` and its actual\n"
-        "    Perron root `beta`, a raw-contact-envelope node's `x0` coordinate is\n"
-        "    forced into `[-2,2]` -- exactly the search range this project's\n"
-        "    `class_ii_d_cont_face_candidates` uses. Reproduced from the\n"
-        "    independently kernel-checked `lean/class_ii_affine_shells.lean` (not\n"
-        "    re-derived here). -/\n"
-        "theorem class_ii_rawContact_x0_bounded\n"
-        "    (node : ClassIINodeF) (a beta : ℝ)\n"
-        "    (ha : 2 ≤ a) (hbeta : 0 < beta)\n"
-        "    (hcubic : beta^3 = a * beta^2 + (a + 1) * beta + 1)\n"
-        "    (hx1lo : -2 ≤ node.x1) (hx1hi : node.x1 ≤ 2)\n"
-        "    (hx2lo : -1 ≤ node.x2) (hx2hi : node.x2 ≤ 1)\n"
-        "    (hright : node.right = 0 ∨ node.right = 1 ∨ node.right = 2)\n"
-        "    (hwindow : InRestrictedHF node beta (a + 1 / beta)) :\n"
-        "    -2 ≤ node.x0 ∧ node.x0 ≤ 2 := by\n"
-        "  have hne : beta ≠ 0 := hbeta.ne'\n"
-        "  have hd : beta^2 * (beta - (a + 1 / beta)) = a * beta + 1 := by\n"
-        "    field_simp [hne]\n"
-        "    nlinarith [hcubic]\n"
-        "  have hprod : 0 < beta^2 * (beta - (a + 1 / beta)) := by\n"
-        "    rw [hd]\n"
-        "    positivity\n"
-        "  have hbc : a + 1 / beta < beta := by\n"
-        "    have hgap : 0 < beta - (a + 1 / beta) :=\n"
-        "      pos_of_mul_pos_right hprod (sq_nonneg beta)\n"
-        "    linarith\n"
-        "  have hc : (1 : ℝ) < a + 1 / beta := by\n"
-        "    have hinv : 0 < 1 / beta := one_div_pos.mpr hbeta\n"
-        "    linarith\n"
-        "  exact restrictedHF_forces_bounded_x0\n"
-        "    node beta (a + 1 / beta) hc hbc\n"
-        "    (class_ii_perron_gap_gt_halfF a beta ha hbeta hcubic)\n"
-        "    hx1lo hx1hi hx2lo hx2hi hright hwindow\n\n";
+// Mechanically emits, PER `ClassIIFixedTableCertificate` node, a
+// `decide`-checked membership proof: EVERY one of the CONCRETE nodes
+// C++ actually constructed is in the corresponding Lean table's
+// range. If the C++ table and the Lean table ever diverged, this
+// kernel check would legitimately fail -- it is not a citation keyed
+// by a name that could silently drift out of sync.
+inline std::string render_class_ii_fixed_table_instances(const mathlib::reflection::Trace& trace) {
+    std::ostringstream out;
+    long long counter = 0;
+    auto nodes = trace.find<mathlib::reflection::ClassIIFixedTableCertificate>();
+    if (nodes.empty()) return {};
+    out << class_ii_fixed_tables_lemma_lean();
+    for (const auto& [id, node] : nodes) {
+        (void)id;
+        std::string kindType, nodeFn;
+        if (node->table == "contact") { kindType = "ContactKindG"; nodeFn = "contactNodeG"; }
+        else if (node->table == "pre_contact") { kindType = "PreContactKindG"; nodeFn = "preContactNodeG"; }
+        else if (node->table == "d_cont") { kindType = "DContKindG"; nodeFn = "dContNodeG"; }
+        else if (node->table == "d_cont_face_candidates") { kindType = "DContFaceCandidateKindG"; nodeFn = "dContFaceCandidateNodeG"; }
+        else continue;  // unknown table name -- render nothing rather than guess
+        std::string name = "class_ii_fixed_table_instance_" + std::to_string(counter++);
+        out << "/-- Mechanically emitted: every node C++ actually built for the \""
+            << node->table << "\" table is in " << nodeFn << "'s range. -/\n";
+        out << "theorem " << name << " :\n";
+        out << "    ∀ node ∈ " << render_class_ii_node_list(node->nodes) << ", "
+            << "∃ k : " << kindType << ", " << nodeFn << " k = node := by\n";
+        out << "  decide\n\n";
+    }
+    return out.str();
 }
 
 // Finding 32's general lemma, hand-derived and kernel-checked once
@@ -1568,11 +1241,8 @@ inline std::string render_reflective_lean_module(const mathlib::reflection::Trac
     out << "open Matrix\n\n";
 
     if (has_zero_walk_citation(trace)) out << zero_walk_lemma_lean();
-    if (has_shell_propagation_citation(trace)) out << shell_propagation_lemma_lean();
-    if (has_contact_valid_citation(trace)) out << contact_valid_lemma_lean();
-    if (has_d_cont_citation(trace) || has_pre_contact_citation(trace)) out << pre_contact_lemma_lean();
-    if (has_face_candidate_citation(trace)) out << face_candidate_lemma_lean();
-    if (has_x0_bound_citation(trace)) out << x0_bound_lemma_lean();
+    out << render_class_ii_shell_round_instances(trace);
+    out << render_class_ii_fixed_table_instances(trace);
 
     if (has_r_matrix_proof(trace)) {
         out << "/-- Symbolic family reflected by `mathlib::nbonacci_r_matrix`. -/\n";
