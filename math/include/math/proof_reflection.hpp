@@ -376,13 +376,28 @@ struct LeftmostLoopCertificate {
     std::string description;
 };
 
+// Finding 32, generalized (NOT specific to sigma_{0,2}): a depressed
+// cubic x^3+c*x+d with a verified sign-change bracket (lo,hi) around
+// its real root -- carries the CONCRETE (c,d) so the renderer
+// instantiates the general lemma
+// `RavelGenerated.depressed_cubic_q_gt_one_iff_beta_lt_neg_d`
+// (lean/depressed_cubic_complex_pair_modulus.lean) per polynomial,
+// not a single hardcoded citation.
+struct DepressedCubicNotPisotCertificate {
+    long long c = 0;
+    long long d = 0;
+    long long lo = 0;   // exact integer bracket: cubic(lo) < 0 < cubic(hi)
+    long long hi = 0;
+    std::string description;
+};
+
 using Payload = std::variant<MatrixFamily, MatrixInstance, EraseIndexMap,
                              SparseSupportCertificate, TriangularityCertificate,
                              DeterminantIdentity, LemmaApplication, IntegerEigenvectorNoWitness,
                              PeriodRotationCertificate, ConstantFirstLetterCertificate,
                              ConstantLastLetterCertificate, ZeroRunSameChainCertificate,
                              FirstLetterOrbitCertificate, LastLetterOrbitCertificate,
-                             LeftmostLoopCertificate,
+                             LeftmostLoopCertificate, DepressedCubicNotPisotCertificate,
                              ProofObligation, TextObservation>;
 
 struct Node {
@@ -660,6 +675,7 @@ inline std::string payload_name(const Payload& payload) {
         else if constexpr (std::is_same_v<T, FirstLetterOrbitCertificate>) return "lean.first_letter_orbit_certificate";
         else if constexpr (std::is_same_v<T, LastLetterOrbitCertificate>) return "lean.last_letter_orbit_certificate";
         else if constexpr (std::is_same_v<T, LeftmostLoopCertificate>) return "lean.leftmost_loop_certificate";
+        else if constexpr (std::is_same_v<T, DepressedCubicNotPisotCertificate>) return "lean.depressed_cubic_not_pisot_certificate";
         else if constexpr (std::is_same_v<T, ProofObligation>) return "proof.obligation";
         else return value.operation;
     }, payload);
@@ -717,6 +733,9 @@ inline std::string payload_detail(const Payload& payload) {
         } else if constexpr (std::is_same_v<T, LeftmostLoopCertificate>) {
             out << "start=" << value.start << " L=" << value.loop_length << " max_m=" << value.max_m
                 << " " << value.description << " -- instantiates periodic_point_iterate_mul";
+        } else if constexpr (std::is_same_v<T, DepressedCubicNotPisotCertificate>) {
+            out << "c=" << value.c << " d=" << value.d << " bracket=(" << value.lo << "," << value.hi
+                << ") " << value.description << " -- instantiates depressed_cubic_q_gt_one_iff_beta_lt_neg_d";
         } else if constexpr (std::is_same_v<T, ProofObligation>) {
             out << value.obligation_id << ": " << value.proposition;
             if (!value.blocked_by.empty()) out << " [blocked by " << value.blocked_by << ']';

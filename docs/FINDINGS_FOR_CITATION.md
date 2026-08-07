@@ -2680,35 +2680,50 @@ without ever being re-verified against the project's own certified
 tool, which would have taken under a second.
 
 **2026-08-07 addendum — retrofitted through the reflection pipeline,
-exactly (no floating point).** Formalized the core mechanism directly
-rather than citing general Vieta/polynomial-root Mathlib machinery:
-`depressed_cubic_factors` (a depressed cubic `x^3+cx+d` with real root
-`beta` factors exactly as `(x-beta)(x^2+beta*x+(beta^2+c))`, checked
-by direct expansion) and `quadratic_complex_pair_modulus_sq` (a
-quadratic factor with negative discriminant has complex roots of
-modulus^2 exactly its constant term). Composed into
-`sigma_0_2_charpoly_not_pisot`: given `0 < beta < 2` with
-`beta^3-beta-2=0` (x^3-x-2's own defining equation), `beta^2 > 2` is
-proved ALGEBRAICALLY (from `beta^3=beta+2` and the bracket, via
-`nlinarith` -- no decimal approximation anywhere), forcing the complex
-pair's modulus^2 = `beta^2-1 > 1`. See
+exactly (no floating point), and GENERALIZED past sigma_{0,2}'s own
+polynomial rather than hardcoded to it.** Formalized the core
+mechanism directly rather than citing general Vieta/polynomial-root
+Mathlib machinery: `depressed_cubic_factors` (a depressed cubic
+`x^3+cx+d` with real root `beta` factors exactly as
+`(x-beta)(x^2+beta*x+(beta^2+c))`, checked by direct expansion) and
+`quadratic_complex_pair_modulus_sq` (a quadratic factor with negative
+discriminant has complex roots of modulus^2 exactly its constant
+term). Composed into the fully general
+`depressed_cubic_q_gt_one_iff_beta_lt_neg_d`: for ANY depressed cubic
+`x^3+cx+d` with positive real root `beta`, the complex pair's
+modulus^2 (`beta^2+c`) exceeds `1` IFF `beta < -d` -- an identity
+found by multiplying the target inequality through by `beta>0` and
+substituting the root equation, collapsing to a comparison against
+`-d` alone, independent of `c`. See
 `lean/depressed_cubic_complex_pair_modulus.lean` (kernel-checked, zero
 `sorry`, after backing off an initial `let`-based complex-arithmetic
 approach that hit tactic friction and switching to explicit
 `Complex.mk`/`Complex.ext` -- same discipline as the earlier
 `List.reverseRecOn` recovery for Finding 38's suffix orbit).
 
-New C++ certificate (`sigma_0_2_not_pisot_certificate.hpp`): verifies
-EXACTLY (integer arithmetic) that the polynomial is `x^3-x-2` and that
-the sign-change bracket `(0,2)` holds (`cubic(0)=-2<0`,
-`cubic(2)=4>0`), then records a citation -- a different polynomial
-correctly records nothing (checked). Kernel-checks with zero errors,
-zero `sorry`
-(`lean/generated/sigma_0_2_not_pisot_citation.lean`,
-`tests/sigma_0_2_not_pisot_reflection_test.cpp`). Honest scope: this
-is specific to `sigma_{0,2}`'s own polynomial, matching Finding 32's
-own claim exactly -- not a general classifier (that remains Finding
-30's open, much larger gap).
+New reflection payload (`DepressedCubicNotPisotCertificate`, carrying
+concrete `c`, `d`, and an exact integer bracket `(lo,hi)`) and a new
+staging function (`depressed_cubic_not_pisot_certificate.hpp`, NOT
+called a "certify" boolean-returning function -- it stages exact data
+into the trace and records nothing if the exact integer checks
+(`cubic(lo)<0<cubic(hi)`, `hi<=-d`) don't hold; the mathematical fact
+is already established by those checks alone, before any Lean text is
+emitted -- the kernel check that follows is independent confirmation
+for a reader who doesn't want to trust this C++, not the source of the
+claim's truth). The renderer emits ONE corollary per staged instance,
+concrete `c,d,lo,hi` substituted into the general iff lemma -- the
+same per-instance pattern as Findings 35/26/17/38/39/41/27, not a
+static citation. Run on TWO structurally different depressed cubics
+(`x^3-x-2`, sigma_{0,2}'s own polynomial, AND an independently chosen
+`x^3-2x-3`) to demonstrate genuine generality, plus a negative control
+(`x^3-1`, whose complex pair has modulus exactly `1`, not `>1` --
+correctly declines to stage): 2 instances kernel-check with zero
+errors, zero `sorry`
+(`lean/generated/depressed_cubic_not_pisot_batch.lean`,
+`tests/depressed_cubic_not_pisot_reflection_test.cpp`). Not a general
+Pisot classifier (Finding 30's own, much larger gap) -- but genuinely
+general across the whole depressed-cubic family this mechanism covers,
+not one hardcoded polynomial.
 
 ## Finding 33 — a certified map of the Pisot numbers, grounding AM's "poles/harmonics" question in classical theory
 
