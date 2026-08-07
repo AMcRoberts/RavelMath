@@ -117,7 +117,15 @@ CANDIDATES = {
     "sigma_{5,1} (II)":     sigma_ab_matrix(5, 1),
     "sigma_1 (II, 3L)":     [[2, 1, 1], [1, 0, 0], [0, 1, 0]],
     "sigma_2 (II, 3L)":     [[2, 2, 1], [1, 0, 0], [0, 1, 0]],
-    "sigma_{0,2} (III)":    sigma_ab_matrix(0, 2),
+    # CORRECTION (Finding 32, docs/FINDINGS_FOR_CITATION.md): this
+    # matrix is NOT actually Pisot -- pisot_classify_3x3 certifies
+    # its complex-conjugate pair at modulus ~1.1466 > 1. Schmidt's
+    # eventual-periodicity theorem does not apply, and none of the
+    # "unresolved" results below for this entry mean anything more
+    # than that. Kept in the candidate list (not deleted) as a record
+    # of the mistake, per this project's practice of not erasing
+    # wrong turns -- but do not trust its classification label.
+    "sigma_{0,2} (III, NOT ACTUALLY PISOT -- see Finding 32)": sigma_ab_matrix(0, 2),
 }
 
 

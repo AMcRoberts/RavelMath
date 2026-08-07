@@ -444,3 +444,36 @@ robust_sign that refines until the endpoints actually agree). As of
 this entry the search has run past 60,000 exact steps with zero
 repeated states and no termination -- genuinely still open, running in
 the background, not a precision artifact this time.
+
+### 2026-08-06 (PC session, thread 4 closed) — sigma_{0,2} was never Pisot; Finding 32
+
+AM asked whether closure/non-closure of sigma_{0,2}'s beta-expansion
+could be predicted number-theoretically rather than by more search.
+Checked the premise that should have been checked before any of this
+started: is sigma_ab_matrix(0,2) actually Pisot? It is not --
+pisot_classify_3x3 (this project's own certified tool) confirms its
+complex-conjugate pair has modulus ~1.1466 > 1. Schmidt's
+eventual-periodicity theorem requires Pisot-ness and simply doesn't
+apply. Verified the mechanism quantitatively too: the greedy
+recurrence's integer coefficient vector should grow like
+1.1466^n (the expanding conjugate direction, the opposite of the
+contraction Schmidt's proof relies on) instead of staying bounded --
+confirmed directly, magnitude ~9.5e17 at step 300 against a predicted
+~8e17. This retroactively explains Finding 31's 123,500-steps-zero-
+repeats result completely: there was never a mechanism forcing a
+repeat to exist. Traced the error to a probable typo in Finding 5's
+original candidate table (sigma_{0,2} where sigma_{1,2}, the actual
+tested candidate, was likely meant) that then got built into a real
+matrix and used verbatim by Finding 6.5 without a fresh certified
+check. Corrected the record in place (not deleted) in
+python/beta_expansion_thread_a4.py, added a regression test
+(tests/sigma02_not_pisot_test.cpp). Task 4 closed: the blocking case
+is resolved, though the broader "why do some genuine Pisot numbers
+terminate vs. not" question is still open if anyone wants it later.
+
+Lesson for next time: this project's own discipline (verify premises
+directly, don't trust inherited labels) is strong but didn't get
+applied here -- a Pisot classification was trusted across three
+findings and a 30-minute compute budget without ever being re-run
+through the certified classifier, which would have taken under a
+second.
