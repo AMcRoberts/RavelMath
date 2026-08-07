@@ -614,3 +614,34 @@ ask: study property (F) itself more deeply, since it's the piece
 without a general structural theorem yet (unlike strong coincidence,
 which has Finding 17's clean constant-factor proof) and is named as
 the actual key to cracking anything bigger. That's the next thread.
+
+### 2026-08-06 (PC session, roadmap Stage 1) — Finding 39: zero-run bound generalizes Finding 17 to the whole terminating family
+
+AM's reminder to draw on the project's existing generator/twist
+machinery (built for extending single-example results across
+dimensions in the n-bonacci contact-boundary work) pointed at the
+right existing tool for a different problem: terminating_generator_
+theorem.hpp's already-proven, unconditional characterization of
+transport generators for the WHOLE canonical terminating-expansion
+family (any N, any digit sequence). Used that family (not the
+n-bonacci twist-dominance machinery itself, which turned out to be
+about a separate, unrelated "Condition F" concept, confirmed earlier
+this session to have zero dependency on property (F)) as the basis
+for widening Finding 17's proven coincidence result past its trivial
+"no zero digit" special case.
+
+Swept the family systematically instead of checking one-off examples:
+found a clean pattern (coincidence depth = longest run of consecutive
+zero digits, plus one) holding exactly across 22 structurally diverse
+test cases, then proved it via the substitution's own pass-through
+mechanism (a zero digit means a single-letter, non-branching image --
+a chain of k such letters delays reaching a genuine leading-zero image
+by exactly k steps). See Finding 39,
+include/ravel/proof/zero_run_forces_bounded_coincidence.hpp.
+
+This is the roadmap's first real Stage-1 win: a proven (not observed)
+coincidence result covering an entire infinite family with an exact
+depth formula, not just the trivial depth-1 case. Next: either widen
+further (past the terminating-expansion family, e.g. eventually-
+periodic expansions) or move to Stage 2 (attempt property F's
+distinctness conjecture for this now-solidly-proven family).

@@ -2838,3 +2838,64 @@ gives for the dual (constant-first-letter) class. Combined, Findings
 of these two large, easily-recognized classes -- any future
 counterexample search for the open Strong Coincidence Conjecture can
 skip both.
+
+## Finding 39 — the zero-run bound: Finding 17 generalized to the ENTIRE canonical terminating-expansion family, not just the constant-factor special case
+
+**Status: PROVED (mechanistic argument from the substitution's own
+"pass-through" structure), verified against a direct, from-scratch
+coincidence search on 22 structurally diverse digit sequences spanning
+N=1..10 and zero-run lengths 0..5. Roadmap Stage 1's first real
+result: widening the PROVEN strong-coincidence base past the trivial
+constant-factor case, using terminating_generator_theorem.hpp's
+already-proven family characterization as the starting point rather
+than one-off examples.**
+
+Finding 17 proved depth-1 coincidence for substitutions where every
+image begins with the same letter. For the canonical terminating
+family (`sigma(s) = 0^{t_s}(s+1)`), that condition holds exactly when
+every digit `t_s > 0` for `s<N-1`. What happens when some digit is
+`0` -- breaking the constant-factor condition -- was untested. Swept
+the family systematically (varying `N` and digit patterns, the same
+"extend across the whole family, not one example" discipline used
+throughout the twist/dominance/generator threads) rather than checking
+isolated cases.
+
+**Theorem.** Let `R` = the length of the longest run of consecutive
+zero digits among `t_0,...,t_{N-2}` (`R=0` if none, Finding 17's own
+case). Every pair of letters resolves strong coincidence at depth
+`<= R+1`, exact (achieved) whenever a run of length `R` occurs.
+
+**Proof.** `t_s=0` means `sigma(s)=[s+1]` exactly -- a single-letter
+pass-through with no leading 0 and no branching. A maximal run of `R`
+consecutive zero digits at positions `s,...,s+R-1` means every letter
+in the run chains, letter-for-letter with no branching, to `[s+R]`
+within at most `R` applications (slowest case: letter `s` itself,
+needing exactly `R` steps). One more application gives
+`sigma(s+R) = 0^{t_{s+R}}(s+R+1)`, genuinely beginning with `0`
+(maximality of the run guarantees `t_{s+R}>0`) -- triggering Finding
+17's own depth-1 mechanism at that point. Total depth from the run's
+start: `R+1`. Pairs entirely outside any run already resolve at depth
+1 (Finding 17 directly, `R=0` locally); a pair straddling two
+different-length runs is bounded by the larger, since the slower side
+determines when both first produce a shared leading letter. Taking
+the maximum over the whole digit sequence gives the stated bound.
+
+**Verified, not just derived**: `derive_zero_run_coincidence_bound()`
+in `include/ravel/proof/zero_run_forces_bounded_coincidence.hpp`,
+cross-checked against a genuine from-scratch coincidence search
+(`tests/zero_run_forces_bounded_coincidence_test.cpp`) on 22 digit
+sequences -- single runs of length 1-5, multiple separate runs of
+different lengths in the same sequence, runs at the start vs. middle
+of the sequence, N ranging 1 to 10. Exact match on every case (not
+merely "within the bound" -- the predicted depth was ACHIEVED exactly
+in every case with `R>0`).
+
+**Consequence for the roadmap**: strong coincidence is now PROVED
+(not merely observed) for the entire canonical terminating-expansion
+family -- every Pisot number with a finite greedy expansion, any
+digit pattern, any alphabet size -- with an EXPLICIT, exact depth
+bound in terms of the digits themselves. This is the first Stage-1
+result that isn't just the trivial depth-1 case: it required
+understanding the family's own generator/pass-through structure
+(directly building on `terminating_generator_theorem.hpp`) to extend
+across dimensions, exactly the intended roadmap methodology.
