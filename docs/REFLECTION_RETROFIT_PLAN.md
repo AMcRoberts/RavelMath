@@ -52,6 +52,29 @@ investigation pass before any retrofit-vs-triage assessment can be
 made honestly -- not attempted here, recorded as the real remaining
 scope rather than left implicit in the "17-42 done" framing above.
 
+**Important correction to that scope, found by checking further**:
+Findings 1-16's thread is NOT untracked. `lean/class_ii_affine_shells.lean`
+(900+ lines, already kernel-checked, part of the pre-session 38-file
+library tier) contains a large body of ALREADY GENERAL theorems
+(parametrized over `a`, `beta`, `q` -- no per-instance data) covering
+exactly this thread's Class-II corona/shell/contact machinery. More
+significantly: `include/ravel/proof/theorem_capability_machine.hpp`
+(`ravel::proof::truth` namespace) is a SEPARATE, PRE-EXISTING
+capability/trust-tracking system with its own `TrustLevel::
+KernelCheckedExport` concept -- i.e., this older thread appears to
+already have its OWN version of "computer-generated and
+assertion-checked" tracking (`generalized_campaign.hpp`,
+`proof_campaign_engine.hpp`, `legacy_campaign_bridge.hpp` are the
+adjacent pieces), separate from and likely predating `mathlib::
+reflection` entirely. This means Findings 1-16 may already substantially
+satisfy the retrofit's actual GOAL via a different, parallel mechanism
+-- not that they need identical new work to what Findings 17-42 got.
+Determining the true status requires investigating THAT system on its
+own terms (what does it actually track, is it wired to real kernel
+checks, does it cover Finding 4's actual `rho_nc=lambda(G_B)` claim
+specifically) -- a real, separate investigation task, not assumed
+equivalent to mathlib::reflection retrofit work and not attempted here.
+
 **2026-08-07 update (measured again, not estimated):** 5 call sites
 now (`barge_diamond_certificate.hpp`, `period_rotation_certificate.hpp`,
 plus the original 3), covering 2 fully-retrofitted findings (35, 26 --
