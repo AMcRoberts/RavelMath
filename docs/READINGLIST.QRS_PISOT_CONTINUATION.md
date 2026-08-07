@@ -645,3 +645,35 @@ depth formula, not just the trivial depth-1 case. Next: either widen
 further (past the terminating-expansion family, e.g. eventually-
 periodic expansions) or move to Stage 2 (attempt property F's
 distinctness conjecture for this now-solidly-proven family).
+
+### 2026-08-06 (PC session) — literature check: Durand & Petite (arXiv:1408.2110), and crediting Findings 17/38 correctly
+
+AM flagged a new paper: Durand & Petite, "Conjugacy of unimodular
+Pisot substitution subshifts to domain exchanges" (2014, rev. 2023).
+Read the actual PDF text, not a summary. Major result: every
+unimodular Pisot substitution subshift is measurably conjugate to a
+domain exchange, UNCONDITIONALLY -- no strong coincidence hypothesis
+needed, unlike every prior construction (Rauzy, Arnoux-Ito,
+Canterini-Siegel). Does NOT prove the full Pisot conjecture -- they're
+explicit that the second step (domain exchange to actual toral
+rotation) remains open, and sharpen it beautifully: the whole
+remaining gap reduces to finding a single point in the torus with a
+unique preimage under their factor map.
+
+Checked whether they reproduce Findings 17/38 (constant-first/last-
+letter forcing depth-1 coincidence): no. Their key technical device,
+"proper substitution" (starts AND ends with the same letter), is
+exactly our two conditions combined -- but "proper" is pre-existing,
+decades-old terminology (Dekking 1978, Queffelec's textbook), not
+theirs or ours, and they only remark in one unproved, uncited sentence
+that properness gives "a form of coincidence" -- an aside supporting a
+different argument, not a developed or exactly-stated result. Updated
+Findings 17 and 38 with an honest addendum: general folklore belongs
+to the field, the exact depth-1 statement and its proof from
+pair_has_coincidence's own code were independently derived here,
+before this literature check.
+
+Open thread if this comes back: is this project's property-(F)
+gamma-distinctness conjecture the same question, in different
+language, as Durand-Petite's "unique preimage point" reduction? Not
+yet checked.

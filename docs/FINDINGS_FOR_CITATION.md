@@ -1549,6 +1549,32 @@ factor substitutions have ANY structural guarantee for coincidence at
 all, or whether depth-13-and-similar resolutions are themselves
 case-specific.
 
+**Literature connection, added after the fact (2026-08-06, checking
+arXiv:1408.2110, Durand & Petite, "Conjugacy of unimodular Pisot
+substitution subshifts to domain exchanges")**: a substitution whose
+every image begins AND ends with the same letter is classical,
+established terminology in this field -- a "proper" substitution
+(traceable through Dekking 1978, Queffelec's standard textbook, and
+Host's unpublished manuscript; Durand-Petite cite Queffelec for the
+definition, not claiming it themselves). Durand-Petite use properness
+as a technical device for a DIFFERENT purpose (bypassing the
+classical coincidence condition entirely via return-word/Bratteli-
+Vershik machinery to prove their own domain-exchange theorem) and
+remark, in one unproved, uncited sentence, that a proper substitution
+"hence satisfy[ies] a form of coincidence" -- an informal aside, not a
+developed lemma, not attributed to a specific prior proof. This
+project's OWN derivation here (the exact claim that depth is
+PRECISELY 1, proved directly from `pair_has_coincidence`'s own code
+and machine-verified) was derived independently, before this
+literature check, from reading this project's own implementation for
+an unrelated immediate purpose (building a foundation for property-
+(F) work) -- not sourced from, or dependent on, Durand-Petite or any
+prior explicit proof of this exact statement. The GENERAL folklore
+intuition that "proper implies some coincidence" clearly belongs to
+the field and predates this project by decades; the SPECIFIC,
+formally proved, depth-exact statement here does not appear to be
+written down explicitly anywhere consulted.
+
 ## Finding 18 — property (F) closed off from the constant-factor lens, with a proven (not just unsuccessful) reason
 
 **Status: PROVED negative result. `include/ravel/proof/constant_factor_gives_nothing_for_property_f.hpp`, cross-checked against the real computed prefix automaton for the whole a=0..5 family.**
@@ -2838,6 +2864,16 @@ gives for the dual (constant-first-letter) class. Combined, Findings
 of these two large, easily-recognized classes -- any future
 counterexample search for the open Strong Coincidence Conjecture can
 skip both.
+
+**Literature connection (see Finding 17's own addendum for the full
+account)**: "constant first letter AND constant last letter together"
+is the classical, decades-old "proper substitution" (Dekking 1978,
+Queffelec's textbook). Durand & Petite (arXiv:1408.2110) use
+properness as a technical device for an unrelated purpose and remark,
+in one unproved, uncited sentence, that it gives "a form of
+coincidence" -- an aside, not this theorem. Finding 38's exact,
+depth-1, machine-verified statement was derived independently, from
+this project's own code, before this literature check.
 
 ## Finding 39 — the zero-run bound: Finding 17 generalized to the ENTIRE canonical terminating-expansion family, not just the constant-factor special case
 
