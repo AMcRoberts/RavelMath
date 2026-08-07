@@ -667,3 +667,41 @@
   pages = {325--339},
   year = {2014}
 }
+
+@article{EberlSturmSequences2014,
+  author={Eberl, Manuel},
+  title={A Formalisation of {S}turm's Theorem},
+  journal={Archive of Formal Proofs},
+  month={January}, year={2014},
+  note={ISSN 2150-914x; \url{https://isa-afp.org/entries/Sturm_Sequences.html}.
+    Reference formalization used as the template for
+    \texttt{lean/sturm\_sequence\_root\_counting.lean}'s definitions and proof
+    structure (sign-change counting via \texttt{List.destutter}, the
+    quasi-Sturm-sequence/Sturm-sequence locale hierarchy, the canonical
+    polynomial-remainder-sequence construction, and the
+    \texttt{count\_roots\_between} theorem). Local preservation: proof outline
+    PDF/TXT and full document PDF/TXT recorded in
+    \texttt{refs/FULLTEXT\_MANIFEST.tsv}; full text kept in the Git-excluded
+    \texttt{refs/FullText/} archive as
+    \texttt{2014\_Eberl\_Sturm-sequences-formalisation-outline.\{pdf,txt\}} and
+    \texttt{2014\_Eberl\_Sturm-sequences-formalisation-document.\{pdf,txt\}}.}
+}
+
+@inproceedings{LiPaulson2018BudanFourier,
+  author={Li, Wenda and Paulson, Lawrence C.},
+  title={Counting Polynomial Roots in {I}sabelle/{HOL}: A Formal Proof of the
+    {B}udan-{F}ourier Theorem},
+  booktitle={Proceedings of the 7th ACM SIGPLAN International Conference on
+    Certified Programs and Proofs (CPP 2018)},
+  year={2018}, eprint={1811.11093}, archivePrefix={arXiv},
+  primaryClass={cs.LO},
+  note={Consulted as a secondary/companion reference alongside
+    EberlSturmSequences2014: extends Sturm's theorem to count roots WITH
+    multiplicity (relevant if the project's root-isolation use case is later
+    extended beyond the currently squarefree-only \texttt{exact\_pisot.c}
+    classifier) and documents the Budan-Fourier alternative, not used for
+    the initial (squarefree, distinct-root) port. Local preservation: PDF/TXT
+    recorded in \texttt{refs/FULLTEXT\_MANIFEST.tsv}, full text kept in
+    \texttt{refs/FullText/2018\_LiPaulson\_Counting-polynomial-roots-Budan-
+    Fourier.\{pdf,txt\}}.}
+}
