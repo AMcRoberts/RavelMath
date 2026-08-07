@@ -677,3 +677,35 @@ Open thread if this comes back: is this project's property-(F)
 gamma-distinctness conjecture the same question, in different
 language, as Durand-Petite's "unique preimage point" reduction? Not
 yet checked.
+
+### 2026-08-06 (PC session) — Finding 40: return-word induction, sigma_{0,1}'s depth 13 collapses to 2
+
+AM's ask: keep working on coincidence, implement something useful from
+Durand & Petite (arXiv:1408.2110) along the way. Their key device is
+Durand's older "return substitution" construction. Nearly duplicated
+it from scratch -- caught mid-way that this project ALREADY has an
+implementation (include/ravel/return_substitution.hpp, predating this
+session), discarded my new one after using it to independently find
+and fix a real bug (wrong position array -- token's own length vs.
+cumulative sigma-image length), then validated the EXISTING tool
+against the same two literature checks (Tribonacci self-reproduction;
+the paper's own worked example via matching dominant eigenvalues,
+Proposition 8). Both pass.
+
+Applied the validated tool to sigma_{0,1}, this project's own longest-
+standing hard coincidence case (worst-case depth 13). No letter
+generates its own fixed point directly, so used sigma^3 instead. The
+resulting 5-letter return-word-induced substitution resolves every
+pair within depth 2 -- a real, verified, dramatic reduction. Checked
+this isn't a universal artifact: applied to a Finding-39 zero-run case
+where the construction is trivial (already has a valid marker), the
+induced substitution comes back IDENTICAL to the original, no
+reduction at all. See Finding 40,
+tests/return_word_coincidence_reduction_test.cpp.
+
+Honestly scoped: no theorem yet connecting "induced substitution
+resolves fast" to the original's own strong coincidence property --
+a real, useful analytical tool and result, not a closed proof. Natural
+next step if this comes back: try to formalize that connection, or
+test the reduction pattern on more "power-needed" hard cases to see
+how general it is.
