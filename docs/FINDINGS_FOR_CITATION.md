@@ -3278,6 +3278,30 @@ finding) -- i.e., for every canonical Pisot beta-substitution this
 project can currently generate from a Pisot number's digit expansion,
 regardless of whether that expansion terminates or cycles.
 
+**2026-08-07 addendum -- the general reflection retrofit
+(`first_letter_orbit_collision_forces_coincidence`, Finding 39's
+2026-08-07 addendum) extends to this family for free, verified
+directly rather than assumed.** The certificate
+(`first_letter_orbit_certificate.hpp`) never used the terminating
+structure -- it works on any substitution with nonempty images. Ran it
+on one of THIS finding's own wraparound stress-test cases
+(`preperiod={1}, period={0,1,0}`, the case specifically constructed to
+catch a naive flat-only computation giving a wrong answer): a mixed
+pair (letter 0, a `firstLetterMap` fixed point, vs letter 3, three
+steps into the periodic wraparound) certifies collision at depth 3,
+and a same-chain-flavored pair (1,3) also at depth 3 -- both
+kernel-check with zero errors, zero `sorry`
+(`lean/generated/first_letter_orbit_finding41_batch.lean`,
+`tests/first_letter_orbit_finding41_test.cpp`). Cross-validated
+against the actual `check_strong_coincidence` search on this exact
+substitution: holds at depth 3, exactly matching both certified
+collision depths. The wraparound correction this finding's own history
+required (Finding 39's naive flat-run computation was WRONG here) does
+not need a separate argument in the reflection retrofit -- the
+first-letter-orbit mechanism only ever looks at the substitution's
+actual images, so it is automatically correct on periodic wraparound
+cases without any special-casing.
+
 ## Finding 42 — Barge-Diamond's Theorem 1, reimplemented end-to-end: exact C++ certificate, reflection trace, mechanically-rendered Lean, kernel-checked
 
 **Status: COMPLETE, working pipeline, verified end-to-end. Not a
