@@ -38,6 +38,7 @@
 #include "ravel/class_ii_neighbor_family.hpp"
 #include "ravel/contact_boundary.hpp"
 #include "ravel/d_cont_check.hpp"
+#include "ravel/proof/class_ii_round1_red_pruning_data.hpp"
 #include "ravel/spectral.hpp"
 #include "ravel/substitution.hpp"
 #include "ravel/substitution_neighborhood.hpp"
@@ -71,18 +72,11 @@ Matrix incidence(const FiniteSubstitution& substitution) {
 }
 
 // The 27-state raw pre-Red target (same list as
-// class_ii_neighbor2_round1_window_certificate.cpp).
+// class_ii_neighbor2_round1_window_certificate.cpp), now shared via
+// ravel::class_ii_round1_raw27_targets() (also the source Lean's
+// round1Raw27 cites) rather than duplicated inline here.
 std::vector<std::array<long long, 5>> target_states() {
-    return {
-        {0,-1, 1, 1,0}, {0,-1, 1, 1,2}, {0, 1,-1, 0,2}, {0, 1,-1, 1,0},
-        {0, 1, 0,-1,0}, {1, 0, 1, 0,0}, {1, 1,-1, 0,1}, {1, 2,-1,-1,0},
-        {2,-1, 2, 0,1}, {2, 1,-1, 0,0}, {2, 1,-1, 0,2},
-        {0,-1, 1, 1,1}, {0, 0, 0, 0,1}, {0, 0, 0, 0,2}, {0, 0, 0, 1,0},
-        {0, 0, 0, 1,1}, {0, 0, 1, 0,0}, {0, 1,-1, 0,0}, {1, 0, 0, 0,2},
-        {1, 1,-1, 0,0}, {1, 1,-1, 0,2}, {1, 1, 0,-1,0}, {2, 0, 1,-1,0},
-        {2, 0, 1, 0,0}, {2, 1, 0,-1,0},
-        {1, 0, 0, 1,1}, {2, 0, 1,-1,1},
-    };
+    return ravel::class_ii_round1_raw27_targets();
 }
 
 }  // namespace

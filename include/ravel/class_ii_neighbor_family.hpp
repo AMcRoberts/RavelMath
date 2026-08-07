@@ -1088,7 +1088,7 @@ inline std::set<SNode<3>> class_ii_neighbor_special_shell_states(
 }
 
 inline std::set<SNode<3>> class_ii_neighbor2_fixed_extension_states() {
-    return {
+    std::set<SNode<3>> result = {
         {0, {-2, 2, 1}, 1},
         {0, {-1, 0, 1}, 0},
         {0, {-1, 1, 1}, 0},
@@ -1114,6 +1114,18 @@ inline std::set<SNode<3>> class_ii_neighbor2_fixed_extension_states() {
         {2, {1, -1, 0}, 2},
         {2, {2, -1, -1}, 0},
     };
+    // Threads the ACTUAL 24 constructed nodes, matching
+    // lean/class_ii_neighbor2_extensions.lean's neighbor2FixedNode
+    // (verified entry-by-entry identical, same order, before wiring;
+    // see tests/lean_class_ii_catalogue_cross_check_test.cpp's
+    // pre-existing independent cross-check of the same two tables).
+    if (mathlib::reflection::enabled()) {
+        mathlib::reflection::ClassIIFixedTableCertificate node;
+        node.table = "neighbor2_fixed";
+        for (const auto& n : result) node.nodes.push_back({n.i, n.x[0], n.x[1], n.x[2], n.j});
+        mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, node);
+    }
+    return result;
 }
 
 inline std::set<SNode<3>> class_ii_neighbor2_initial_extension_states() {
@@ -1400,6 +1412,24 @@ class_ii_neighbor2_terminal_red_bridges(long long a) {
     return result;
 }
 
+// The single moving interior-tip node, extracted into its own
+// function (previously inlined) so it can be threaded into the
+// reflection trace -- matches lean/class_ii_neighbor2_extensions.
+// lean's neighbor2InteriorTip (a function of r, GENERAL, already
+// proven injective/infinite-range there; verified identical before
+// wiring; see tests/lean_class_ii_catalogue_cross_check_test.cpp's
+// pre-existing independent cross-check of the same table).
+inline SNode<3> class_ii_neighbor2_interior_tip(long long r) {
+    SNode<3> node{2, {-r, r, -1}, 0};
+    if (mathlib::reflection::enabled()) {
+        mathlib::reflection::ClassIIInteriorTipCertificate cert;
+        cert.r = r;
+        cert.node = {node.i, node.x[0], node.x[1], node.x[2], node.j};
+        mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, cert);
+    }
+    return node;
+}
+
 inline std::set<SNode<3>>
 class_ii_neighbor2_interior_extension_states(std::size_t round) {
     if (round < 2)
@@ -1407,7 +1437,7 @@ class_ii_neighbor2_interior_extension_states(std::size_t round) {
             "Class-II neighbor-2 interior extension round");
     auto result = class_ii_neighbor2_fixed_extension_states();
     const long long r = static_cast<long long>(round);
-    result.insert({2, {-r, r, -1}, 0});
+    result.insert(class_ii_neighbor2_interior_tip(r));
     return result;
 }
 
@@ -1419,14 +1449,37 @@ class_ii_neighbor2_second_extension_states() {
     return result;
 }
 
+// The 2-node penultimate pair, extracted into its own function
+// (previously inlined at both of its two call sites) so it can be
+// shared AND threaded into the reflection trace as its own concrete
+// instance -- matches lean/class_ii_neighbor2_extensions.lean's
+// neighbor2PenultimatePair (a function of a, GENERAL, not a fixed
+// table; verified entry-by-entry identical before wiring; see
+// tests/lean_class_ii_catalogue_cross_check_test.cpp's pre-existing
+// independent cross-check of the same table).
+inline std::set<SNode<3>> class_ii_neighbor2_penultimate_pair(long long a) {
+    std::set<SNode<3>> result = {
+        {2, {-(a - 1), a - 1, -1}, 0},
+        {2, {-(a - 2), a - 2, -2}, 0},
+    };
+    if (mathlib::reflection::enabled()) {
+        mathlib::reflection::ClassIIPenultimatePairCertificate node;
+        node.a = a;
+        std::size_t idx = 0;
+        for (const auto& n : result) node.nodes[idx++] = {n.i, n.x[0], n.x[1], n.x[2], n.j};
+        mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, node);
+    }
+    return result;
+}
+
 inline std::set<SNode<3>>
 class_ii_neighbor2_penultimate_extension_states(long long a) {
     if (a < 4)
         throw std::domain_error(
             "Class-II neighbor-2 penultimate extension requires a >= 4");
     auto result = class_ii_neighbor2_fixed_extension_states();
-    result.insert({2, {-(a - 1), a - 1, -1}, 0});
-    result.insert({2, {-(a - 2), a - 2, -2}, 0});
+    const auto pair = class_ii_neighbor2_penultimate_pair(a);
+    result.insert(pair.begin(), pair.end());
     return result;
 }
 
@@ -1436,7 +1489,7 @@ class_ii_neighbor2_terminal_affine_states(long long a) {
         throw std::domain_error(
             "Class-II neighbor-2 terminal affine states require a >= 3");
     const long long q = a - 2;
-    return {
+    std::vector<SNode<3>> result = {
         {0, {q, -(q + 1), 2}, 2},
         {0, {q, -q, 2}, 1},
         {1, {-q, q, -2}, 0},
@@ -1444,6 +1497,21 @@ class_ii_neighbor2_terminal_affine_states(long long a) {
         {2, {-q, q + 1, -2}, 0},
         {2, {q, -q, 1}, 1},
     };
+    // Threads the ACTUAL 6 constructed nodes (same order), matching
+    // lean/class_ii_neighbor2_extensions.lean's neighbor2TerminalSextet
+    // (a function of a, verified entry-by-entry identical before
+    // wiring; see tests/lean_class_ii_catalogue_cross_check_test.cpp's
+    // pre-existing independent cross-check of the same table).
+    if (mathlib::reflection::enabled()) {
+        mathlib::reflection::ClassIITerminalSextetCertificate node;
+        node.a = a;
+        for (std::size_t idx = 0; idx < 6; ++idx) {
+            const auto& n = result[idx];
+            node.nodes[idx] = {n.i, n.x[0], n.x[1], n.x[2], n.j};
+        }
+        mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, node);
+    }
+    return result;
 }
 
 // The third adjacent-swap neighbor contains the complete center boundary
@@ -2432,6 +2500,24 @@ class_ii_neighbor_d_boundary_target_indices(std::size_t neighbor) {
         if (edge.slope != 0) result.insert(edge.target);
     }
     return result;
+}
+
+// Computes the boundary-layer source/target index sets (same
+// computation as class_ii_neighbor_d_boundary_source_indices/
+// _target_indices above) and, if a reflection trace is active,
+// threads the CONCRETE sets into it. A divergence between what this
+// function actually computes and lean/class_ii_neighbor_d_support.
+// lean's own re-derivation from its (independently maintained) edge
+// catalog would make the kernel check legitimately fail.
+inline void class_ii_neighbor_d_support_reflect(std::size_t neighbor) {
+    const auto sources = class_ii_neighbor_d_boundary_source_indices(neighbor);
+    const auto targets = class_ii_neighbor_d_boundary_target_indices(neighbor);
+    if (!mathlib::reflection::enabled()) return;
+    mathlib::reflection::ClassIINeighborDSupportCertificate node;
+    node.neighbor = static_cast<long long>(neighbor);
+    for (auto s : sources) node.sources.push_back(static_cast<long long>(s));
+    for (auto t : targets) node.targets.push_back(static_cast<long long>(t));
+    mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, node);
 }
 
 // The set of underlying SNode<3> states that participate in any

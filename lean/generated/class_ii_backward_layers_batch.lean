@@ -113,42 +113,21 @@ def firstBackwardNodeG : FirstBackwardKindG → ClassIINodeG
 
 def secondBackwardNodeG : ClassIINodeG := ⟨1, 1, 0, -1, 0⟩
 
-/-- Mechanically emitted: every node C++ actually built for the "contact" table is in contactNodeG's range. -/
+/-- Mechanically emitted: every node C++ actually built for the "first_backward" table is in firstBackwardNodeG's range. -/
 theorem class_ii_fixed_table_instance_0 :
-    ∀ node ∈ [(⟨0,-1,1,1,1⟩ : ClassIINodeG), (⟨0,0,0,0,1⟩ : ClassIINodeG), (⟨0,0,0,0,2⟩ : ClassIINodeG), (⟨0,0,0,1,0⟩ : ClassIINodeG), (⟨0,0,0,1,1⟩ : ClassIINodeG), (⟨0,0,1,0,0⟩ : ClassIINodeG), (⟨0,1,-1,0,0⟩ : ClassIINodeG), (⟨1,0,0,0,2⟩ : ClassIINodeG), (⟨1,1,-1,0,0⟩ : ClassIINodeG), (⟨1,1,-1,0,2⟩ : ClassIINodeG), (⟨1,1,0,-1,0⟩ : ClassIINodeG), (⟨2,0,1,-1,0⟩ : ClassIINodeG), (⟨2,0,1,0,0⟩ : ClassIINodeG), (⟨2,1,0,-1,0⟩ : ClassIINodeG)], ∃ k : ContactKindG, contactNodeG k = node := by
+    ∀ node ∈ [(⟨0,-1,1,1,1⟩ : ClassIINodeG), (⟨0,0,0,1,1⟩ : ClassIINodeG), (⟨0,1,-1,0,0⟩ : ClassIINodeG), (⟨1,1,-1,0,2⟩ : ClassIINodeG), (⟨2,0,1,-1,0⟩ : ClassIINodeG), (⟨2,0,1,0,0⟩ : ClassIINodeG)], ∃ k : FirstBackwardKindG, firstBackwardNodeG k = node := by
   decide
 
-/-- Mechanically emitted: every node C++ actually built for the "pre_contact" table is in preContactNodeG's range. -/
+/-- Mechanically emitted: every node C++ actually built for the "second_backward" table equals secondBackwardNodeG. -/
 theorem class_ii_fixed_table_instance_1 :
-    ∀ node ∈ [(⟨0,-1,1,1,1⟩ : ClassIINodeG), (⟨0,0,0,0,1⟩ : ClassIINodeG), (⟨0,0,0,0,2⟩ : ClassIINodeG), (⟨0,0,0,1,0⟩ : ClassIINodeG), (⟨0,0,0,1,1⟩ : ClassIINodeG), (⟨0,0,1,0,0⟩ : ClassIINodeG), (⟨0,1,-1,0,0⟩ : ClassIINodeG), (⟨1,0,0,0,2⟩ : ClassIINodeG), (⟨1,0,0,1,1⟩ : ClassIINodeG), (⟨1,1,-1,0,0⟩ : ClassIINodeG), (⟨1,1,-1,0,2⟩ : ClassIINodeG), (⟨1,1,0,-1,0⟩ : ClassIINodeG), (⟨2,0,1,-1,0⟩ : ClassIINodeG), (⟨2,0,1,-1,1⟩ : ClassIINodeG), (⟨2,0,1,0,0⟩ : ClassIINodeG), (⟨2,1,0,-1,0⟩ : ClassIINodeG)], ∃ k : PreContactKindG, preContactNodeG k = node := by
+    ∀ node ∈ [(⟨1,1,0,-1,0⟩ : ClassIINodeG)], node = secondBackwardNodeG := by
   decide
 
-/-- Mechanically emitted: every node C++ actually built for the "d_cont" table is in dContNodeG's range. -/
-theorem class_ii_fixed_table_instance_2 :
-    ∀ node ∈ [(⟨0,0,0,0,1⟩ : ClassIINodeG), (⟨0,0,0,0,2⟩ : ClassIINodeG), (⟨0,0,0,1,0⟩ : ClassIINodeG), (⟨0,0,1,0,0⟩ : ClassIINodeG), (⟨1,0,0,0,2⟩ : ClassIINodeG), (⟨1,0,0,1,1⟩ : ClassIINodeG), (⟨1,1,-1,0,0⟩ : ClassIINodeG), (⟨2,0,1,-1,1⟩ : ClassIINodeG), (⟨2,1,0,-1,0⟩ : ClassIINodeG)], ∃ k : DContKindG, dContNodeG k = node := by
-  decide
-
-/-- Mechanically emitted: every node C++ actually built for the "d_cont_face_candidates" table is in dContFaceCandidateNodeG's range. -/
-theorem class_ii_fixed_table_instance_3 :
-    ∀ node ∈ [(⟨0,-1,0,0,1⟩ : ClassIINodeG), (⟨0,-1,0,0,2⟩ : ClassIINodeG), (⟨0,-1,0,1,2⟩ : ClassIINodeG), (⟨0,-1,1,0,1⟩ : ClassIINodeG), (⟨0,0,-1,0,0⟩ : ClassIINodeG), (⟨0,0,0,-1,0⟩ : ClassIINodeG), (⟨0,0,0,0,1⟩ : ClassIINodeG), (⟨0,0,0,0,2⟩ : ClassIINodeG), (⟨0,0,0,1,0⟩ : ClassIINodeG), (⟨0,0,0,1,2⟩ : ClassIINodeG), (⟨0,0,1,0,0⟩ : ClassIINodeG), (⟨0,0,1,0,1⟩ : ClassIINodeG), (⟨1,-1,0,0,1⟩ : ClassIINodeG), (⟨1,0,-1,0,0⟩ : ClassIINodeG), (⟨1,0,-1,0,2⟩ : ClassIINodeG), (⟨1,0,-1,1,2⟩ : ClassIINodeG), (⟨1,0,0,-1,1⟩ : ClassIINodeG), (⟨1,0,0,0,2⟩ : ClassIINodeG), (⟨1,0,0,1,1⟩ : ClassIINodeG), (⟨1,0,0,1,2⟩ : ClassIINodeG), (⟨1,1,-1,0,0⟩ : ClassIINodeG), (⟨1,1,0,0,0⟩ : ClassIINodeG), (⟨1,1,0,0,1⟩ : ClassIINodeG), (⟨2,-1,0,0,2⟩ : ClassIINodeG), (⟨2,0,-1,0,2⟩ : ClassIINodeG), (⟨2,0,0,-1,0⟩ : ClassIINodeG), (⟨2,0,0,-1,1⟩ : ClassIINodeG), (⟨2,0,1,-1,1⟩ : ClassIINodeG), (⟨2,0,1,0,1⟩ : ClassIINodeG), (⟨2,0,1,0,2⟩ : ClassIINodeG), (⟨2,1,0,-1,0⟩ : ClassIINodeG), (⟨2,1,0,0,0⟩ : ClassIINodeG), (⟨2,1,0,0,2⟩ : ClassIINodeG)], ∃ k : DContFaceCandidateKindG, dContFaceCandidateNodeG k = node := by
-  decide
-
-/-- Mechanically emitted (reusing the "d_cont" fixed-table data
-    above, no new C++ certificate): every one of THESE CONCRETE
-    d_cont nodes is also a pre-contact node -- the same containment
-    `dContNode_in_preContact` proves for ALL DContKind, checked here
-    directly against the concrete data. -/
-theorem class_ii_d_cont_in_pre_contact_instance_0 :
-    ∀ node ∈ [(⟨0,0,0,0,1⟩ : ClassIINodeG), (⟨0,0,0,0,2⟩ : ClassIINodeG), (⟨0,0,0,1,0⟩ : ClassIINodeG), (⟨0,0,1,0,0⟩ : ClassIINodeG), (⟨1,0,0,0,2⟩ : ClassIINodeG), (⟨1,0,0,1,1⟩ : ClassIINodeG), (⟨1,1,-1,0,0⟩ : ClassIINodeG), (⟨2,0,1,-1,1⟩ : ClassIINodeG), (⟨2,1,0,-1,0⟩ : ClassIINodeG)], ∃ pre : PreContactKindG, node = preContactNodeG pre := by
-  decide
-
-/- Semantic proof graph for: class_ii_fixed_tables_batch
-  [0] lean.class_ii_fixed_table_certificate :: contact table, 14 concrete nodes
-  [1] lean.class_ii_fixed_table_certificate :: pre_contact table, 16 concrete nodes
-  [2] lean.class_ii_fixed_table_certificate :: d_cont table, 9 concrete nodes
-  [3] lean.class_ii_fixed_table_certificate :: d_cont_face_candidates table, 33 concrete nodes
+/- Semantic proof graph for: class_ii_backward_layers_batch
+  [0] lean.class_ii_fixed_table_certificate :: first_backward table, 6 concrete nodes
+  [1] lean.class_ii_fixed_table_certificate :: second_backward table, 1 concrete nodes
 -/
 
-def reflectedNodeCount : Nat := 4
+def reflectedNodeCount : Nat := 2
 
 end RavelGenerated

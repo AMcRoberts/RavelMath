@@ -155,6 +155,20 @@ lean-check: nbonacci_charmpoly_proof_probe
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/class_ii_shell_round_batch.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/class_ii_fixed_tables_batch.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/class_ii_terminal_shell_batch.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/class_ii_round1_raw27_batch.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/class_ii_neighbor2_fixed_batch.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/class_ii_neighbor_d_support_batch.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/cayley_hamilton_cubic_batch.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/pisot_root_ordering_batch.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/class_ii_six_vertex_graduation_batch.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/class_ii_backward_layers_batch.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/class_ii_terminal_sextet_batch.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/class_ii_penultimate_pair_batch.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/class_ii_interior_tip_batch.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/class_ii_global_round_phase_batch.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/class_ii_both_fixed_affine_batch.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/class_ii_d_cont_in_pre_contact_batch.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/sturm_sequence_root_counting.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/depressed_cubic_complex_pair_modulus.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/depressed_cubic_not_pisot_batch.lean)
 	@if rg -n '^[[:space:]]*sorry([[:space:]]|$$)' \
@@ -197,6 +211,20 @@ lean-check: nbonacci_charmpoly_proof_probe
 		lean/generated/class_ii_shell_round_batch.lean \
 		lean/generated/class_ii_fixed_tables_batch.lean \
 		lean/generated/class_ii_terminal_shell_batch.lean \
+		lean/generated/class_ii_round1_raw27_batch.lean \
+		lean/generated/class_ii_neighbor2_fixed_batch.lean \
+		lean/generated/class_ii_neighbor_d_support_batch.lean \
+		lean/generated/cayley_hamilton_cubic_batch.lean \
+		lean/generated/pisot_root_ordering_batch.lean \
+		lean/generated/class_ii_six_vertex_graduation_batch.lean \
+		lean/generated/class_ii_backward_layers_batch.lean \
+		lean/generated/class_ii_terminal_sextet_batch.lean \
+		lean/generated/class_ii_penultimate_pair_batch.lean \
+		lean/generated/class_ii_interior_tip_batch.lean \
+		lean/generated/class_ii_global_round_phase_batch.lean \
+		lean/generated/class_ii_both_fixed_affine_batch.lean \
+		lean/generated/class_ii_d_cont_in_pre_contact_batch.lean \
+		lean/sturm_sequence_root_counting.lean \
 		lean/depressed_cubic_complex_pair_modulus.lean \
 		lean/generated/depressed_cubic_not_pisot_batch.lean \
 		lean/generated/period_rotation_batch.lean; then \

@@ -1015,9 +1015,192 @@ correspondence). Records the concrete `a`; the renderer instantiates
 `sorry` (`lean/generated/class_ii_terminal_shell_batch.lean`,
 `tests/class_ii_terminal_shell_reflection_test.cpp`).
 
-Six of Findings 1-16's foundational tables (interior shell, contact,
-pre-contact, D_cont, face candidates, terminal shell) are now
-genuinely connected; the other 13 in that range remain unassessed for
+**A seventh connection, same session**: the 27-state raw pre-Red
+target for Round 1's neighbor `tau_a` (`app/class_ii_neighbor2_
+round1_red_forward_check.cpp`'s `target_states()`) was previously
+duplicated inline in that single-use app file; extracted into a
+shared, reusable `ravel::class_ii_round1_raw27_targets()`
+(`include/ravel/proof/class_ii_round1_red_pruning_data.hpp`), which
+the app file now calls instead of redefining the list. The function
+threads the CONCRETE 27 nodes it returns into a `ClassIIFixedTableCertificate{table="round1_raw27"}`
+node; the renderer emits a `decide`-checked EQUALITY (not just
+membership -- content AND order) between that exact concrete list and
+`lean/class_ii_round1_red_pruning.lean`'s own `round1Raw27`
+(reproduced verbatim as `round1Raw27G`, together with its
+`round1Raw27G_length`/`round1Raw27G_x2_bound` facts). Kernel-checks
+with zero errors, zero `sorry` in under 5 seconds
+(`lean/generated/class_ii_round1_raw27_batch.lean`,
+`tests/class_ii_round1_raw27_reflection_test.cpp`). The extraction
+was regression-checked: the app file's own dense+sparse closed-form
+check (`a=3..200` plus `500,1000,5000,20000`) still reports
+`CLOSED_FORM_CHECK tested=202 mismatches=0` after the refactor,
+identical to before.
+
+**An eighth connection, same session**: `class_ii_neighbor2_fixed_
+extension_states()` (`include/ravel/class_ii_neighbor_family.hpp`,
+already called from ~10 sites across the neighbor-2 machinery) now
+threads its 24 CONCRETE constructed nodes into a
+`ClassIIFixedTableCertificate{table="neighbor2_fixed"}`. The renderer
+embeds `lean/class_ii_neighbor2_extensions.lean`'s `neighbor2FixedNode`
+verbatim (as `Neighbor2FixedKindG`/`neighbor2FixedNodeG`) and emits a
+`decide`-checked membership corollary against those exact 24 nodes.
+This table was ALREADY independently cross-checked at runtime by the
+pre-existing `tests/lean_class_ii_catalogue_cross_check_test.cpp`
+(entry `[5]`, "fixed-24 states ... agree") -- the reflection connection
+adds a Lean-kernel-checked form of a fact this project already trusted
+computationally, without re-deriving it, and re-running that full
+cross-check test after the change confirms all 8 of its independent
+comparisons (six-vertex graduation, D-support, terminal/interior
+shells, neighbor2 fixed/sextet/pair/tip, affine shells, backward
+layers, global round partition) still agree. Kernel-checks with zero
+errors, zero `sorry`
+(`lean/generated/class_ii_neighbor2_fixed_batch.lean`,
+`tests/class_ii_neighbor2_fixed_reflection_test.cpp`).
+
+**A ninth connection, same session**: `class_ii_neighbor_d_boundary_
+source_indices`/`_target_indices` (`include/ravel/class_ii_neighbor_
+family.hpp`) compute, for each of the three Class-II adjacent-swap
+neighbors, the boundary-layer source/target index sets of the slope
+matrix `D` (from the C++'s own affine-edge catalog). A new
+`class_ii_neighbor_d_support_reflect(neighbor)` threads the CONCRETE
+sets into `ClassIINeighborDSupportCertificate`. The renderer embeds
+`lean/class_ii_neighbor_d_support.lean`'s three edge catalogs (41 / 34
+/ 91 entries) verbatim, together with its `neighborXBoundarySourceG_
+eq`/`TargetG_eq` facts (each independently re-deriving, via
+`native_decide` over the embedded catalog, that the boundary layer
+equals the literal index set), then emits a `decide`-checked EQUALITY
+between the CONCRETE C++ sets and those Lean definitions -- not a
+citation of the theorem names, an actual chain: C++'s own edge
+extraction -> literal set <- Lean's own edge extraction, both sides
+computed independently and forced to agree by the kernel. This table
+was ALSO already independently cross-checked at runtime (entries
+`[2]`/`[3]` of `tests/lean_class_ii_catalogue_cross_check_test.cpp`,
+re-run clean after this change). Kernel-checks with zero errors, zero
+`sorry` (`lean/generated/class_ii_neighbor_d_support_batch.lean`,
+`tests/class_ii_neighbor_d_support_reflection_test.cpp`).
+
+**A tenth connection, same session**: `class_ii_neighbor2_penultimate_
+promoted_states(a)`/`_survivor_transfer(a)` (`include/ravel/class_ii_
+neighbor2_pruning.hpp`) match `lean/class_ii_six_vertex_graduation.
+lean`'s `promotedNodes`/`transferredNode` -- GENERAL functions of
+`q = a-1`, not a fixed table. A new `class_ii_six_vertex_graduation_
+reflect(a)` threads the concrete 6 promoted + 1 transferred nodes at
+that `a`. The renderer decides them equal (order-independent, via
+`.toFinset`, for the six-element set) to the Lean functions evaluated
+at that exact `q`, then instantiates the ALREADY-PROVEN general
+`promotedNodesG_nodup`/`promoted_disjoint_transferredG` lemmas (true
+for every `q>=4`) at that `q` and concludes they hold for the concrete
+C++ data. This table was ALSO already independently cross-checked at
+runtime (`tests/lean_class_ii_catalogue_cross_check_test.cpp`, entry
+`[1]`, re-run clean after this change). Run at `a=5` and `a=11`:
+kernel-checks with zero errors, zero `sorry`
+(`lean/generated/class_ii_six_vertex_graduation_batch.lean`,
+`tests/class_ii_six_vertex_graduation_reflection_test.cpp`).
+
+**An eleventh/twelfth connection, same session**: `class_ii_pre_
+contact_first_backward_layer()`/`_second_backward_layer()` (`include/
+ravel/class_ii_boundary_family.hpp`, previously uninstrumented) now
+thread their 6-node and 1-node concrete tables into
+`ClassIIFixedTableCertificate{table="first_backward"/"second_backward"}`.
+The renderer embeds `lean/class_ii_affine_shells.lean`'s
+`firstBackwardNode`/`secondBackwardNode` verbatim and decides
+membership (six-case existential) / direct equality (the single fixed
+node) against the concrete C++ output. Also already independently
+cross-checked at runtime (`tests/lean_class_ii_catalogue_cross_check_
+test.cpp`, entry `[7]`, re-run clean after this change). Kernel-checks
+with zero errors, zero `sorry`
+(`lean/generated/class_ii_backward_layers_batch.lean`,
+`tests/class_ii_backward_layers_reflection_test.cpp`).
+
+**A thirteenth connection, same session**: `class_ii_neighbor2_
+terminal_affine_states(a)` (`include/ravel/class_ii_neighbor_
+family.hpp`) matches `lean/class_ii_neighbor2_extensions.lean`'s
+`neighbor2TerminalSextet` -- GENERAL in `a`, not a fixed table. Now
+threads the concrete 6-node list at that `a` into
+`ClassIITerminalSextetCertificate`; the renderer decides LIST equality
+(same order both sides, the strongest form) against the Lean function
+evaluated at that exact `a`, using a locally-scoped `ClassIINodeTSG`
+struct to stay self-contained regardless of which other excerpts
+co-occur in the same generated module. Also already independently
+cross-checked at runtime (entry `[5]`'s "terminal sextet" line of
+`tests/lean_class_ii_catalogue_cross_check_test.cpp`, re-run clean
+after this change). Run at `a=3` and `a=15`: kernel-checks with zero
+errors, zero `sorry`
+(`lean/generated/class_ii_terminal_sextet_batch.lean`,
+`tests/class_ii_terminal_sextet_reflection_test.cpp`).
+
+**A fourteenth connection, same session**: `class_ii_neighbor2_
+penultimate_extension_states(a)`'s inline 2-node construction was
+extracted into its own `class_ii_neighbor2_penultimate_pair(a)`
+(matching AM's "convert shared uses of a piece of code to produce a
+lemma" instruction), which now threads the concrete pair into
+`ClassIIPenultimatePairCertificate`. The renderer decides SET equality
+against `lean/class_ii_neighbor2_extensions.lean`'s
+`neighbor2PenultimatePair` (GENERAL in `a`) evaluated at that exact
+`a`. Also already independently cross-checked at runtime (entry `[5]`'s
+"penultimate pair" line of `tests/lean_class_ii_catalogue_cross_
+check_test.cpp`, re-run clean after the extraction, along with
+`tests/substitution_neighborhood_test.cpp`'s broader neighbor-2
+regression). Run at `a=4` and `a=20`: kernel-checks with zero errors,
+zero `sorry` (`lean/generated/class_ii_penultimate_pair_batch.lean`,
+`tests/class_ii_penultimate_pair_reflection_test.cpp`).
+
+**A fifteenth connection, same session**: `class_ii_neighbor2_
+interior_extension_states(round)`'s inline single-node construction
+was extracted into its own `class_ii_neighbor2_interior_tip(r)`
+(completing the extraction of all three `class_ii_neighbor2_
+extensions.lean` parametric families -- terminal sextet, penultimate
+pair, interior tip -- started this session), threading the concrete
+node into `ClassIIInteriorTipCertificate`. The renderer decides
+equality against `neighbor2InteriorTip` (already proven injective and
+infinite-range there) evaluated at that exact `r`. Regression-checked
+against the cross-check test, `substitution_neighborhood_test.cpp`,
+and `class_ii_boundary_family_test.cpp`. Run at `r=2` and `r=20`:
+kernel-checks with zero errors, zero `sorry`
+(`lean/generated/class_ii_interior_tip_batch.lean`,
+`tests/class_ii_interior_tip_reflection_test.cpp`).
+
+**A sixteenth connection, same session**: `class_ii_neighbor2_global_
+round_phase(a, round)` (`include/ravel/class_ii_neighbor2_pruning.
+hpp`) matches `lean/class_ii_global_round_partition.lean`'s GENERAL
+`classIIGlobalRoundPhase` (a, r)-decision procedure exactly. A new
+dedicated `class_ii_global_round_phase_reflect(a, round)` (deliberately
+NOT instrumenting the underlying selector itself, which runs inside
+loops at several other call sites -- tracing there would flood any
+active trace with unrelated entries) threads the concrete phase; the
+renderer decides equality against the Lean function at that exact
+(a, round). Covers one representative round per phase (base, stable,
+penultimate, terminal, repeated) at `a=10`. Also already independently
+cross-checked at runtime (entry `[8]`, re-run clean). Kernel-checks
+with zero errors, zero `sorry`
+(`lean/generated/class_ii_global_round_phase_batch.lean`,
+`tests/class_ii_global_round_phase_reflection_test.cpp`).
+
+**A seventeenth connection, same session, zero new C++ cost (same
+reuse pattern Finding 26 established)**: `lean/class_ii_affine_
+shells.lean` also proves `dContNode_in_preContact` (every D_cont seed
+is itself a pre-contact node, for all nine `DContKind` cases) -- a
+SECOND consequence of data the `ClassIIFixedTableCertificate{table=
+"d_cont"}` payload already threads (no new C++ certificate, no new
+payload type, just a new renderer function,
+`render_class_ii_d_cont_in_pre_contact_instances`). Emits, per "d_cont"
+node, a `decide`-checked containment check directly against the
+concrete C++-built nodes. Regression-checked: the pre-existing
+`tests/class_ii_fixed_tables_reflection_test.cpp`'s combined
+four-table trace still renders and kernel-checks clean with the new
+corollary composed alongside the other three tables' corollaries in
+the same generated module. Kernel-checks with zero errors, zero
+`sorry` (`lean/generated/class_ii_d_cont_in_pre_contact_batch.lean`,
+`lean/generated/class_ii_fixed_tables_batch.lean` refreshed,
+`tests/class_ii_d_cont_in_pre_contact_reflection_test.cpp`).
+
+Seventeen of Findings 1-16's foundational tables/lists/decision-
+procedures/consequences (interior shell, contact, pre-contact, D_cont,
+face candidates, terminal shell, Round-1 raw-27 target, neighbor-2
+fixed 24-state table, neighbor D-support index sets, six-vertex
+graduation, first/second backward layers, terminal sextet, penultimate
+pair, interior tip, global round phase, D_cont-in-pre-contact) are now
+genuinely connected; the remainder in that range remain unassessed for
 this pipeline (see `docs/REFLECTION_RETROFIT_PLAN.md`).
 
 ## Finding 10 — Item A's AR-partial: A1's nilpotent-cofactor divisibility is symbolically IMPOSSIBLE for every a>=2, not just numerically absent
@@ -1179,6 +1362,33 @@ flagged as a possibly-stale load-bearing artifact (2026-08-02), not
 yet corrected pending a careful check of whether that function's
 specific technical sense of "reverse inclusion" matches the literature
 argument that closed Round 1.
+
+**2026-08-07 addendum -- first `mathlib::reflection` connection for
+this finding (Round 4's closed-form arithmetic core).**
+`app/class_ii_both_fixed_full_proof.cpp`'s inline `main()` computation
+(the 410-combination sweep behind Round 4's closure) was previously
+not callable from a test. Extracted, unchanged, into `ravel::proof::
+class_ii_both_fixed_affine_instances()` (`include/ravel/proof/
+class_ii_both_fixed_affine.hpp`); the app now calls the shared
+function instead of duplicating it (verified byte-identical output:
+`total_instances_with_integer_solution=323 would_need_a>=7=0`, same as
+before the refactor, both via direct execution and via `make class_
+ii_both_fixed_full_proof`). A new `stage_class_ii_both_fixed_affine_
+sample(20)` threads a representative STRIDE sample of 20 (out of 323
+total, all satisfying `a_required < 7`) into the trace as concrete
+`(CONST, slope, target, a_required)` tuples. The renderer instantiates
+`lean/class_ii_round234_shape_closure.lean`'s already-proven general
+`affine_no_solution_at_or_above_threshold` (threshold=7) at each
+concrete tuple, discharged by `norm_num`. Kernel-checks with zero
+errors, zero `sorry`
+(`lean/generated/class_ii_both_fixed_affine_batch.lean`,
+`tests/class_ii_both_fixed_affine_reflection_test.cpp`). Honest scope:
+this connects the ARITHMETIC core (the general lemma, instantiated at
+real data), not the combinatorial claim that these 410/323 are
+EXACTLY the relevant (node, shape, target) triples -- that rests on
+`parent_decompositions` applied to `tau_a`'s fixed images, established
+in C++ and not re-derived in Lean, matching this file's own stated
+scope convention.
 
 ## Finding 13 — recurrent-SCC exhaustion (items 1-5) verified together for neighbor 2 at `a` in `{7,...,20,30}`
 
@@ -2083,6 +2293,26 @@ junction letter, where jumps from different junctions interleave and
 the single composition-sequence picture no longer applies on its own
 — the next concrete target.
 
+**2026-08-07 addendum -- first `mathlib::reflection` connection for
+this finding.** The Cayley-Hamilton-style relation this finding's
+argument leans on (`M^3 = M + I` for sigma_{0,1}'s incidence matrix,
+from its minimal polynomial `x^3-x-1` having coefficients in
+`{-1,0,1}`) was previously only checked by hand/prose -- no executable
+artifact backed it. `ravel::proof::stage_cayley_hamilton_cubic`
+(`include/ravel/proof/cayley_hamilton_cubic_certificate.hpp`) now
+computes `M` from the ACTUAL substitution images (not hardcoded;
+cross-checked equal to the matrix `tests/coincidence_as_landmark_
+vector_cancellation_test.cpp` independently hardcodes), verifies
+`M^3 = M+I` by exact integer arithmetic, and records the concrete
+matrix only if the check passes (a negative control -- the identity
+matrix, which does NOT satisfy the relation -- correctly records
+nothing). The renderer has Lean independently re-derive `M^3` via
+Mathlib's own `Matrix` power (from the same nine concrete entries, not
+by restating the C++'s arithmetic) and `decide` the identity. Kernel-
+checks with zero errors, zero `sorry`
+(`lean/generated/cayley_hamilton_cubic_batch.lean`,
+`tests/cayley_hamilton_cubic_reflection_test.cpp`).
+
 ## Finding 24 — reverse-engineering a substitution's minimal polynomial directly from "which walks finish" counting data
 
 **Status: A general, validated methodological tool, proposed directly
@@ -2500,6 +2730,31 @@ fixed-range search doesn't make sense) and replaces it with a better
 question that is now partially answered -- accumulation is real and
 constructive at integers; whether a comparably clean structure exists
 between them is open.
+
+**2026-08-07 addendum -- first `mathlib::reflection` connection for
+this finding.** The n=3 < n=4 < a+1 ordering was previously checked
+only via floating-point midpoints
+(`app/probe_pisot_accumulation_structure.cpp`). `ravel::proof::stage_
+pisot_root_ordering(a)` (`include/ravel/proof/pisot_root_ordering_
+certificate.hpp`) now threads the EXACT rational brackets
+`pisot_classify_3x3`/`_4x4` already certify (the same certified
+Sturm-chain isolation the app itself uses, no floating point), checks
+the two gap inequalities by exact cross-multiplication (128-bit
+arithmetic to rule out overflow at the ~2^41-denominator brackets
+tol_bits=40 produces), and records only on success. A general ordering
+lemma (`pisot_root_strictly_between`: given real-number bracket
+hypotheses and a gap/bound, conclude the strict ordering -- trivial
+from `linarith`, proven once) is instantiated per `a=1..5` with the
+CONCRETE rational bounds (denominators up to `2^41`, e.g.
+`4044634348345/2199023255552 < ...`), discharged by `norm_num`;
+cross-checked to agree with the app's own floating-point midpoints to
+6 decimal places for all 5 cases. This formalizes the exact instance-
+level ordering, NOT Finding 29's open general monotonicity-for-all-n
+claim (which remains a genuine real-analysis fact, still unformalized
+-- see `docs/REFLECTION_RETROFIT_PLAN.md`). Kernel-checks with zero
+errors, zero `sorry`
+(`lean/generated/pisot_root_ordering_batch.lean`,
+`tests/pisot_root_ordering_reflection_test.cpp`).
 
 ## Finding 30 — the exact Pisot classifier generalized to arbitrary degree (honestly capped at one complex-conjugate pair)
 

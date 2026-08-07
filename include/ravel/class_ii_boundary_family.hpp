@@ -81,7 +81,7 @@ inline std::set<ANode<3>> class_ii_d_cont_set() {
 
 inline std::set<ANode<3>>
 class_ii_pre_contact_first_backward_layer() {
-    return {
+    std::set<ANode<3>> result = {
         {1, { 1, -1,  0}, 2},
         {2, { 0,  1,  0}, 0},
         {0, { 0,  0,  1}, 1},
@@ -89,13 +89,34 @@ class_ii_pre_contact_first_backward_layer() {
         {0, { 1, -1,  0}, 0},
         {0, {-1,  1,  1}, 1},
     };
+    // Threads the ACTUAL 6 constructed nodes, matching
+    // lean/class_ii_affine_shells.lean's firstBackwardNode (verified
+    // entry-by-entry identical before wiring; see tests/lean_class_ii_
+    // catalogue_cross_check_test.cpp's pre-existing independent
+    // cross-check of the same two tables).
+    if (mathlib::reflection::enabled()) {
+        mathlib::reflection::ClassIIFixedTableCertificate node;
+        node.table = "first_backward";
+        for (const auto& n : result) node.nodes.push_back({n.i, n.x[0], n.x[1], n.x[2], n.j});
+        mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, node);
+    }
+    return result;
 }
 
 inline std::set<ANode<3>>
 class_ii_pre_contact_second_backward_layer() {
-    return {
+    std::set<ANode<3>> result = {
         {1, {1, 0, -1}, 0},
     };
+    // Threads the single constructed node, matching
+    // lean/class_ii_affine_shells.lean's secondBackwardNode.
+    if (mathlib::reflection::enabled()) {
+        mathlib::reflection::ClassIIFixedTableCertificate node;
+        node.table = "second_backward";
+        for (const auto& n : result) node.nodes.push_back({n.i, n.x[0], n.x[1], n.x[2], n.j});
+        mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, node);
+    }
+    return result;
 }
 
 struct ClassIIPreContactBackwardWitness {

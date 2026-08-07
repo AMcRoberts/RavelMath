@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <cstddef>
 #include <optional>
 #include <sstream>
@@ -427,6 +428,115 @@ struct ClassIITerminalShellCertificate {
     long long a = 0;
 };
 
+// The boundary-layer source/target index sets `class_ii_neighbor_
+// d_boundary_source_indices(neighbor)`/`_target_indices(neighbor)`
+// ACTUALLY computed (from the C++ affine-edge catalog's slope-nonzero
+// entries) -- carries the CONCRETE sets, so the renderer decides them
+// equal to `lean/class_ii_neighbor_d_support.lean`'s own
+// `neighborXBoundarySource`/`neighborXBoundaryTarget` (re-derived
+// there, independently, from the Lean-side edge catalog), not merely
+// citing that file's theorem names.
+struct ClassIINeighborDSupportCertificate {
+    long long neighbor = 0;
+    std::vector<long long> sources;
+    std::vector<long long> targets;
+};
+
+// A concrete 3x3 integer matrix M (row-major, 9 entries) for which
+// the C++ side has already verified, by exact integer arithmetic,
+// that M^3 = M + I -- only recorded when that check passes. The
+// renderer re-derives M^3 independently inside Lean (via Mathlib's
+// own `Matrix` power, not by re-stating the C++'s numbers) and
+// `decide`s the identity against these EXACT entries -- e.g. the
+// sigma_{0,1} incidence matrix's Cayley-Hamilton-style relation used
+// (but never previously backed by an executable/checkable artifact)
+// in Finding 23's argument.
+struct CayleyHamiltonCubicCertificate {
+    std::array<long long, 9> matrix{};
+    std::string description;
+};
+
+// Finding 29: the a-bonacci family's dominant root at n=3 is strictly
+// less than at n=4, which is strictly less than a+1 -- carries the
+// EXACT rational brackets `pisot_classify_3x3`/`_4x4` (Sturm-chain
+// isolation, no floating point) actually certified, so the renderer
+// instantiates the general ordering lemma with these concrete numbers
+// rather than a floating-point midpoint.
+struct PisotRootOrderingCertificate {
+    long long a = 0;
+    long long hi3_num = 0, hi3_den = 1;
+    long long lo4_num = 0, lo4_den = 1;
+    long long hi4_num = 0, hi4_den = 1;
+};
+
+// `class_ii_neighbor2_penultimate_promoted_states(a)`/`_survivor_
+// transfer(a)` at a CONCRETE `a` -- carries the CONCRETE 6 promoted
+// nodes and the 1 transferred node, so the renderer decides them
+// equal to `lean/class_ii_six_vertex_graduation.lean`'s own
+// `promotedNodes`/`transferredNode` (functions of q = a-1, GENERAL in
+// q, not a fixed table) evaluated at that exact q.
+struct ClassIISixVertexGraduationCertificate {
+    long long a = 0;
+    std::array<ClassIINodeData, 6> promoted{};
+    ClassIINodeData transferred{};
+};
+
+// `class_ii_neighbor2_terminal_affine_states(a)` at a CONCRETE `a` --
+// carries the CONCRETE 6-node affine sextet, so the renderer decides
+// it equal to `lean/class_ii_neighbor2_extensions.lean`'s own
+// `neighbor2TerminalSextet` (a function of `a`, GENERAL, not a fixed
+// table) evaluated at that exact `a`.
+struct ClassIITerminalSextetCertificate {
+    long long a = 0;
+    std::array<ClassIINodeData, 6> nodes{};
+};
+
+// `class_ii_neighbor2_penultimate_pair(a)` at a CONCRETE `a` --
+// carries the CONCRETE 2-node pair, so the renderer decides it equal
+// to `lean/class_ii_neighbor2_extensions.lean`'s own
+// `neighbor2PenultimatePair` (a function of `a`, GENERAL, not a fixed
+// table) evaluated at that exact `a`.
+struct ClassIIPenultimatePairCertificate {
+    long long a = 0;
+    std::array<ClassIINodeData, 2> nodes{};
+};
+
+// `class_ii_neighbor2_interior_tip(r)` at a CONCRETE `r` -- carries
+// the CONCRETE node, so the renderer decides it equal to `lean/
+// class_ii_neighbor2_extensions.lean`'s own `neighbor2InteriorTip`
+// (a function of `r`, already proven injective/infinite-range there)
+// evaluated at that exact `r`.
+struct ClassIIInteriorTipCertificate {
+    long long r = 0;
+    ClassIINodeData node{};
+};
+
+// `class_ii_neighbor2_global_round_phase(a, round)` at CONCRETE
+// (a, round) -- carries the CONCRETE phase index (0=base, 1=stable,
+// 2=penultimate, 3=terminal, 4=repeated) the C++ selector actually
+// returned, so the renderer decides it equal to `lean/class_ii_
+// global_round_partition.lean`'s own `classIIGlobalRoundPhase`
+// (a total, GENERAL-in-(a,r) decision procedure) evaluated at that
+// exact (a, round).
+struct ClassIIGlobalRoundPhaseCertificate {
+    long long a = 0;
+    long long round = 0;
+    int phase = 0;
+};
+
+// One (CONST, slope, target, a_required) instance from `class_ii_
+// both_fixed_affine_instances()` with `a_required < 7` -- carries the
+// CONCRETE integers, so the renderer instantiates `lean/class_ii_
+// round234_shape_closure.lean`'s already-proven general
+// `affine_no_solution_at_or_above_threshold` (threshold=7) at exactly
+// this data.
+struct BothFixedAffineCertificate {
+    long long const_ = 0;
+    long long slope = 0;
+    long long target = 0;
+    long long a_required = 0;
+};
+
 using Payload = std::variant<MatrixFamily, MatrixInstance, EraseIndexMap,
                              SparseSupportCertificate, TriangularityCertificate,
                              DeterminantIdentity, LemmaApplication, IntegerEigenvectorNoWitness,
@@ -435,7 +545,11 @@ using Payload = std::variant<MatrixFamily, MatrixInstance, EraseIndexMap,
                              FirstLetterOrbitCertificate, LastLetterOrbitCertificate,
                              LeftmostLoopCertificate, DepressedCubicNotPisotCertificate,
                              ClassIIShellRoundCertificate, ClassIIFixedTableCertificate,
-                             ClassIITerminalShellCertificate,
+                             ClassIITerminalShellCertificate, ClassIINeighborDSupportCertificate,
+                             CayleyHamiltonCubicCertificate, PisotRootOrderingCertificate,
+                             ClassIISixVertexGraduationCertificate, ClassIITerminalSextetCertificate,
+                             ClassIIPenultimatePairCertificate, ClassIIInteriorTipCertificate,
+                             ClassIIGlobalRoundPhaseCertificate, BothFixedAffineCertificate,
                              ProofObligation, TextObservation>;
 
 struct Node {
@@ -717,6 +831,15 @@ inline std::string payload_name(const Payload& payload) {
         else if constexpr (std::is_same_v<T, ClassIIShellRoundCertificate>) return "lean.class_ii_shell_round_certificate";
         else if constexpr (std::is_same_v<T, ClassIIFixedTableCertificate>) return "lean.class_ii_fixed_table_certificate";
         else if constexpr (std::is_same_v<T, ClassIITerminalShellCertificate>) return "lean.class_ii_terminal_shell_certificate";
+        else if constexpr (std::is_same_v<T, ClassIINeighborDSupportCertificate>) return "lean.class_ii_neighbor_d_support_certificate";
+        else if constexpr (std::is_same_v<T, CayleyHamiltonCubicCertificate>) return "lean.cayley_hamilton_cubic_certificate";
+        else if constexpr (std::is_same_v<T, PisotRootOrderingCertificate>) return "lean.pisot_root_ordering_certificate";
+        else if constexpr (std::is_same_v<T, ClassIISixVertexGraduationCertificate>) return "lean.class_ii_six_vertex_graduation_certificate";
+        else if constexpr (std::is_same_v<T, ClassIITerminalSextetCertificate>) return "lean.class_ii_terminal_sextet_certificate";
+        else if constexpr (std::is_same_v<T, ClassIIPenultimatePairCertificate>) return "lean.class_ii_penultimate_pair_certificate";
+        else if constexpr (std::is_same_v<T, ClassIIInteriorTipCertificate>) return "lean.class_ii_interior_tip_certificate";
+        else if constexpr (std::is_same_v<T, ClassIIGlobalRoundPhaseCertificate>) return "lean.class_ii_global_round_phase_certificate";
+        else if constexpr (std::is_same_v<T, BothFixedAffineCertificate>) return "lean.both_fixed_affine_certificate";
         else if constexpr (std::is_same_v<T, ProofObligation>) return "proof.obligation";
         else return value.operation;
     }, payload);
@@ -784,6 +907,29 @@ inline std::string payload_detail(const Payload& payload) {
             out << value.table << " table, " << value.nodes.size() << " concrete nodes";
         } else if constexpr (std::is_same_v<T, ClassIITerminalShellCertificate>) {
             out << "a=" << value.a << " -- instantiates terminalCrossColours_not_eq_interior_extremes";
+        } else if constexpr (std::is_same_v<T, ClassIINeighborDSupportCertificate>) {
+            out << "neighbor=" << value.neighbor << " sources=" << value.sources.size()
+                << " targets=" << value.targets.size()
+                << " -- instantiates neighborXBoundarySource/TargetG";
+        } else if constexpr (std::is_same_v<T, CayleyHamiltonCubicCertificate>) {
+            out << value.description << " -- M^3 = M + I, verified by exact integer arithmetic";
+        } else if constexpr (std::is_same_v<T, PisotRootOrderingCertificate>) {
+            out << "a=" << value.a << " -- instantiates pisot_root_strictly_between";
+        } else if constexpr (std::is_same_v<T, ClassIISixVertexGraduationCertificate>) {
+            out << "a=" << value.a << " -- instantiates promotedNodes/transferredNode at q=" << (value.a - 1);
+        } else if constexpr (std::is_same_v<T, ClassIITerminalSextetCertificate>) {
+            out << "a=" << value.a << " -- instantiates neighbor2TerminalSextet";
+        } else if constexpr (std::is_same_v<T, ClassIIPenultimatePairCertificate>) {
+            out << "a=" << value.a << " -- instantiates neighbor2PenultimatePair";
+        } else if constexpr (std::is_same_v<T, ClassIIInteriorTipCertificate>) {
+            out << "r=" << value.r << " -- instantiates neighbor2InteriorTip";
+        } else if constexpr (std::is_same_v<T, ClassIIGlobalRoundPhaseCertificate>) {
+            out << "a=" << value.a << " round=" << value.round << " phase=" << value.phase
+                << " -- instantiates classIIGlobalRoundPhase";
+        } else if constexpr (std::is_same_v<T, BothFixedAffineCertificate>) {
+            out << "const=" << value.const_ << " slope=" << value.slope
+                << " target=" << value.target << " a_required=" << value.a_required
+                << " -- instantiates affine_no_solution_at_or_above_threshold";
         } else if constexpr (std::is_same_v<T, ProofObligation>) {
             out << value.obligation_id << ": " << value.proposition;
             if (!value.blocked_by.empty()) out << " [blocked by " << value.blocked_by << ']';
