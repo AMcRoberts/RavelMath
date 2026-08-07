@@ -1017,6 +1017,15 @@ errors, zero `sorry`
 (`lean/generated/class_ii_face_candidate_citation.lean`,
 `tests/class_ii_face_candidate_citation_test.cpp`).
 
+**A sixth citation, same function, same session**: the SAME
+`class_ii_d_cont_face_candidates()` search loop's range (`x0` swept
+over exactly `[-2,2]`) is not a heuristic choice -- it is exactly the
+bound `class_ii_rawContact_x0_bounded` proves necessary and sufficient
+(once the Perron gap exceeds 1/2, restricted-window membership with
+`x1,x2` already bounded forces `x0` into `[-2,2]`, for ANY `a>=2`).
+Both citations now fire from the same function call. Kernel-checks
+with zero errors, zero `sorry` (same generated file, updated test).
+
 ## Finding 10 — Item A's AR-partial: A1's nilpotent-cofactor divisibility is symbolically IMPOSSIBLE for every a>=2, not just numerically absent
 
 **Status: SYMBOLIC PROOF, conditional on Finding 9/Theorem 6's own

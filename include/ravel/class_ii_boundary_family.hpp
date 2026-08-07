@@ -49,6 +49,20 @@ inline std::set<ANode<3>> class_ii_d_cont_face_candidates() {
         "nine flagged face candidates lie in the restricted stepped hyperplane -- an iff, "
         "not just a one-direction check";
     mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, face_citation);
+
+    // The search range `x0 in [-2,2]` above (line 25) is not a
+    // heuristic guess -- it is EXACTLY the bound
+    // `class_ii_rawContact_x0_bounded` proves is necessary and
+    // sufficient: once the Perron gap exceeds 1/2 (always true here,
+    // per `class_ii_perron_gap_gt_half`), restricted-window membership
+    // with `x1,x2` already bounded forces `x0` into `[-2,2]`, for ANY
+    // `a>=2`. Record that citation too.
+    mathlib::reflection::LemmaApplication x0_bound_citation;
+    x0_bound_citation.theorem_name = "class_ii_rawContact_x0_bounded";
+    x0_bound_citation.conclusion = "the search range x0 in [-2,2] used above is exactly the "
+        "bound the restricted-window Perron-gap argument forces, for any a>=2 -- not a "
+        "heuristic search-space choice";
+    mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, x0_bound_citation);
     return result;
 }
 

@@ -119,12 +119,25 @@ matches are visible without further searching:
 `dContNode_in_preContact`) -- **done, same session**, confirming these
 really were mechanical repeats: both kernel-check clean on first try.
 Four of Findings 1-16's foundational tables now cite their Lean facts
-(contact, pre-contact, D_cont, interior shell). Remaining unexplored
-territory in this file: `class_ii_stable_base`, `class_ii_recurrent_
-shell_component`, the window-validity chain past `class_ii_
-contactNode_valid` (`class_ii_dCont_face_candidate_valid_iff`,
-`class_ii_shell_endpoint_valid`, `class_ii_rawContact_x0_bounded`),
-and whether any C++ function corresponds to `shellNode_round_eq`/
+(contact, pre-contact, D_cont, interior shell).
+
+**2026-08-07 update -- two more citations found and closed, one ruled
+out honestly.** `class_ii_dCont_face_candidate_valid_iff` (an analytic
+construction, not a table -- `class_ii_d_cont_face_candidates()`'s
+geometric search, verified entry-by-entry against all 33 candidates
+before citing) and `class_ii_rawContact_x0_bounded` (the SAME
+function's search range `x0 in [-2,2]` is exactly this theorem's
+bound, not a heuristic choice) both now cite from that one function,
+both kernel-check clean. Searched for a C++ counterpart to
+`class_ii_shell_endpoint_valid` (shell-node window validity) and found
+none honestly citable -- the existing code builds shell tables but
+never numerically verifies window membership anywhere, so this
+theorem currently has no site to cite it from without adding new
+verification logic (not just a citation). Six citation points now live
+across five distinct C++ functions in this thread (contact,
+pre-contact, D_cont, interior shell, face candidates x2). Remaining
+unexplored: `class_ii_stable_base`, `class_ii_recurrent_shell_
+component`, and whether any C++ corresponds to `shellNode_round_eq`/
 `class_ii_affine_shell_range_infinite`.
 
 **2026-08-07 update (measured again, not estimated):** 5 call sites
