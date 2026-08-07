@@ -2679,6 +2679,37 @@ substantial compute budget (an exact search that ran 30 minutes)
 without ever being re-verified against the project's own certified
 tool, which would have taken under a second.
 
+**2026-08-07 addendum — retrofitted through the reflection pipeline,
+exactly (no floating point).** Formalized the core mechanism directly
+rather than citing general Vieta/polynomial-root Mathlib machinery:
+`depressed_cubic_factors` (a depressed cubic `x^3+cx+d` with real root
+`beta` factors exactly as `(x-beta)(x^2+beta*x+(beta^2+c))`, checked
+by direct expansion) and `quadratic_complex_pair_modulus_sq` (a
+quadratic factor with negative discriminant has complex roots of
+modulus^2 exactly its constant term). Composed into
+`sigma_0_2_charpoly_not_pisot`: given `0 < beta < 2` with
+`beta^3-beta-2=0` (x^3-x-2's own defining equation), `beta^2 > 2` is
+proved ALGEBRAICALLY (from `beta^3=beta+2` and the bracket, via
+`nlinarith` -- no decimal approximation anywhere), forcing the complex
+pair's modulus^2 = `beta^2-1 > 1`. See
+`lean/depressed_cubic_complex_pair_modulus.lean` (kernel-checked, zero
+`sorry`, after backing off an initial `let`-based complex-arithmetic
+approach that hit tactic friction and switching to explicit
+`Complex.mk`/`Complex.ext` -- same discipline as the earlier
+`List.reverseRecOn` recovery for Finding 38's suffix orbit).
+
+New C++ certificate (`sigma_0_2_not_pisot_certificate.hpp`): verifies
+EXACTLY (integer arithmetic) that the polynomial is `x^3-x-2` and that
+the sign-change bracket `(0,2)` holds (`cubic(0)=-2<0`,
+`cubic(2)=4>0`), then records a citation -- a different polynomial
+correctly records nothing (checked). Kernel-checks with zero errors,
+zero `sorry`
+(`lean/generated/sigma_0_2_not_pisot_citation.lean`,
+`tests/sigma_0_2_not_pisot_reflection_test.cpp`). Honest scope: this
+is specific to `sigma_{0,2}`'s own polynomial, matching Finding 32's
+own claim exactly -- not a general classifier (that remains Finding
+30's open, much larger gap).
+
 ## Finding 33 — a certified map of the Pisot numbers, grounding AM's "poles/harmonics" question in classical theory
 
 **Status: combines established literature (Salem, Siegel, Dufresnoy-
