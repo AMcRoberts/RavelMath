@@ -45,17 +45,30 @@ theorem quadratic_complex_pair_modulus_sq {p q : ℝ} (hdisc : p^2 < 4 * q) :
   · rw [Complex.normSq_mk]
     nlinarith [hs]
 
-/-- Finding 32's headline instance: `sigma_{0,2}`'s incidence
-characteristic polynomial `x^3 - x - 2` has a positive real root
-`beta` with `beta < 2` (hence `beta^2 < 4` -- not needed below, kept
-for context) and `beta^2 > 2` (proved algebraically from the defining
-cubic equation and `0 < beta < 2`, no numeric approximation). The
-complex-conjugate pair therefore has modulus^2 exactly `beta^2 - 1 >
-1`, strictly outside the unit disk -- NOT Pisot. -/
-theorem sigma_0_2_charpoly_not_pisot {beta : ℝ} (hpos : 0 < beta) (hlt2 : beta < 2)
-    (hroot : beta^3 - beta - 2 = 0) :
-    beta^2 - 1 > 1 ∧ (beta : ℝ)^2 < 4 * (beta^2 - 1) := by
-  have hbeta2 : beta^2 > 2 := by nlinarith [hroot, hpos, hlt2, sq_nonneg (beta - 2)]
-  exact ⟨by linarith, by nlinarith⟩
+/-- THE GENERAL FACT (not specific to any one polynomial): for a
+depressed cubic `x^3+c*x+d` with a positive real root `beta`, the
+"other" quadratic factor's constant term `q = beta^2+c` (its complex
+pair's modulus^2, by `quadratic_complex_pair_modulus_sq`) exceeds `1`
+IFF `beta < -d` -- found by multiplying `beta^2+c>1` through by
+`beta>0` and substituting `beta^3=-c*beta-d` from the root equation,
+which collapses the condition to a comparison against `-d` alone,
+independent of `c`. This is the general lemma
+`DepressedCubicNotPisotCertificate`'s per-instance corollaries
+instantiate; NOT sigma_{0,2}-specific. -/
+theorem depressed_cubic_q_gt_one_iff_beta_lt_neg_d {c d beta : ℝ}
+    (hpos : 0 < beta) (hroot : beta^3 + c * beta + d = 0) :
+    beta^2 + c > 1 ↔ beta < -d := by
+  constructor
+  · intro hq
+    nlinarith [hroot, hpos, hq]
+  · intro hb
+    nlinarith [hroot, hpos, hb]
+
+/-- The discriminant condition (genuine, non-real complex pair) for
+the same quadratic factor `x^2+beta*x+(beta^2+c)`: negative
+discriminant `beta^2 < 4*(beta^2+c)` reduces to `0 < 3*beta^2+4*c`. -/
+theorem depressed_cubic_discriminant_neg_iff {c beta : ℝ} :
+    beta^2 < 4 * (beta^2 + c) ↔ 0 < 3 * beta^2 + 4 * c := by
+  constructor <;> intro h <;> linarith
 
 end RavelGenerated
