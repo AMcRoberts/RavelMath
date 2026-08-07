@@ -503,3 +503,36 @@ Open thread if this comes back: the exact minima of S'', S''', etc.
 (only the bracket is reproduced here, not Boyd's specific computed
 values, which are paywalled) and whether this project's own tools
 could independently re-derive them rather than cite Boyd.
+
+### 2026-08-06 (PC session, converse revisited) — Finding 34: permanence phenomenon, still not a full proof
+
+AM asked to work the converse of the gcd-obstruction theorem
+specifically. Went past Finding 27's leftmost-loop corollary (which
+only covers gaps that are multiples of a junction's own leftmost-cycle
+length) by checking a sharper question: as a function of D, does
+reachable(0,D) ever PERMANENTLY start intersecting reachable(0,D+g)?
+Yes -- exhaustively empty for D<10, nonempty for every D in [10,40] on
+the Finding-26 multi-junction gcd=2 example. Sharper still: the exact
+same state recurs as the witness at D=10,12,14,16,18,20, a literal
+fixed point under +g extension, not six separate coincidences.
+
+Tried to close this into a full proof via an inductive "insertable
+return-to-self loop of length g" argument -- found the obvious
+candidate (the direct length-2 self-loop at junction 0) carries a
+NONZERO landmark, so it doesn't trivially explain the fixed point the
+way Finding 27's landmark-free loop did. The mechanism behind the
+recurring fixed point is real but not yet understood structurally.
+
+Named the most promising route to an actual proof: a Schmidt-style
+pigeonhole argument using the SAME Pisot-contraction property of the
+substitution's incidence matrix that makes Schmidt's own beta-
+expansion periodicity theorem work (cited since Finding 6.5) -- not
+attempted this session. See Finding 34,
+tests/coincidence_converse_permanence_test.cpp.
+
+Honest state of the thread: real, substantial new evidence, a named
+and plausible proof strategy, still not a completed general theorem.
+Next real step if this comes back: either execute the Schmidt-style
+pigeonhole argument, or test the permanence phenomenon on a second,
+structurally different multi-junction example before trusting it as
+universal.
