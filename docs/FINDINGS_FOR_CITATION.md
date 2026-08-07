@@ -2935,3 +2935,76 @@ result that isn't just the trivial depth-1 case: it required
 understanding the family's own generator/pass-through structure
 (directly building on `terminating_generator_theorem.hpp`) to extend
 across dimensions, exactly the intended roadmap methodology.
+
+## Finding 40 — return-word induction dramatically reduces coincidence-resolution depth: sigma_{0,1}'s worst-case depth 13 collapses to 2
+
+**Status: real, verified, useful application of Durand & Petite's
+return-substitution machinery (already present in this project as
+`include/ravel/return_substitution.hpp`, predating this session --
+newly cross-validated against the literature here) to this project's
+own hardest documented coincidence case. Empirical and suggestive,
+NOT a formal theorem connecting the induced substitution's
+coincidence to the original's -- stated honestly below.**
+
+Following up on AM's request to implement something useful from
+arXiv:1408.2110 (Durand & Petite) while continuing the coincidence
+roadmap: that paper's key technical device is Durand's earlier
+"return substitution" construction (their Proposition 7/8) -- given a
+substitution and a marker letter, build a new substitution on the
+alphabet of "return words" to that marker. This project already had
+an implementation (`ravel/return_substitution.hpp`, pre-dating this
+session, with its own `SubstitutionRule`/`ReturnPhaseSystem` API) but
+had never been cross-checked against this specific literature.
+
+**Validated the existing tool against two independent literature
+checks** before trusting it further:
+1. Tribonacci's return substitution to marker=0 reproduces Tribonacci
+   exactly, matching the paper's own explicit claim.
+2. The paper's own worked example (`sigma: 1->1123, 2->211, 3->21`)
+   -- checked via Proposition 8 (dominant eigenvalue of the original
+   and induced incidence matrices must match exactly): confirmed,
+   `3.3829757679` both sides.
+
+(A first, independent implementation attempt at this same construction,
+written before discovering the pre-existing tool, caught a real bug of
+its own on the way -- using a token's own original-length position
+instead of the CUMULATIVE SIGMA-IMAGE-LENGTH position to locate where
+its image sits, giving a dominant eigenvalue of `3.2695` instead of
+the correct `3.3830`. Fixed, verified, then discarded in favor of the
+project's existing, now-validated implementation to avoid needless
+duplication.)
+
+**Applied to sigma_{0,1}** (this project's own longstanding hardest
+coincidence example, worst-case depth 13, "non-AR" per Finding 5's
+classification). No single letter of `sigma_{0,1}` generates its own
+fixed point directly (`sigma(0)=[1,2]`, `sigma(1)=[2]`, `sigma(2)=[0]`
+-- none starts with its own index), so applied the construction to
+`sigma^3` instead (`sigma^3(0)=[0,1,2]` does start with 0). The
+resulting 5-letter return-word-induced substitution resolves EVERY
+pair within depth 2 -- collapsing the original worst-case depth of 13
+to 2. Verified exactly (not approximately) against a from-scratch
+coincidence search on both substitutions
+(`tests/return_word_coincidence_reduction_test.cpp`).
+
+**Contrast, ruling out "always trivial"**: applied the same
+construction to a Finding-39 zero-run example (digits `{1,0,0,0,1}`,
+worst-case depth 4) where letter 0 already generates its own fixed
+point directly (`sigma(0)` already starts with 0). There, the induced
+substitution is IDENTICAL to the original (same images, letter for
+letter) -- no reduction at all, because there was nothing to
+simplify. The dramatic reduction is specific to substitutions that
+need a higher power to find a valid marker, not a universal
+side-effect of the construction.
+
+**SCOPE, stated honestly**: this shows the return-word-induced object
+is a genuinely more tractable structure to STUDY for at least one hard
+case -- a real, useful analytical handle, and a legitimate implemented
+tool from the literature. It does NOT establish (here) any formal
+theorem connecting the induced substitution's coincidence property to
+the ORIGINAL substitution's strong coincidence condition -- Durand-
+Petite's own use of return words is for a different purpose entirely
+(their Proposition 9 builds a further, more involved "proper
+substitution" construction on top of this one, not used here). Whether
+"induced substitution resolves coincidence quickly" can be turned into
+a real theorem about the original substitution is the natural next
+question if this thread is picked up again.
