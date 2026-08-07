@@ -709,3 +709,29 @@ a real, useful analytical tool and result, not a closed proof. Natural
 next step if this comes back: try to formalize that connection, or
 test the reduction pattern on more "power-needed" hard cases to see
 how general it is.
+
+### 2026-08-06 (PC session, roadmap Stage 1 continued) — Finding 41: eventually-periodic zero-run bound, wraparound correction
+
+AM's call: return-word thread paused ("wait for the paper's importance
+to assert itself"), pivoted back to direct coincidence work. Natural
+next Stage-1 step: extend Finding 39 (zero-run bound) from the
+terminating canonical family to the eventually-periodic one. A first
+attempt (reusing Finding 39's flat-sequence zero-run computation
+directly) gave real, confirmed wrong predictions whenever a zero-run
+spans the period's own wraparound boundary (period=(0,1,0): flat scan
+predicts depth<=2, actual=3; period=(0,0,1,0,0): predicts<=3,
+actual=5) -- caught by deliberately constructing stress cases with
+zero digits at both ends of the period, not by accident. Fixed: R must
+be the max of the flat-sequence run and the run within period++period
+(catches wraparound-adjacent zeros becoming a genuine single
+pass-through chain once the period repeats). Verified against 12
+cases including the two stress tests. See Finding 41,
+include/ravel/proof/zero_run_forces_bounded_coincidence_periodic.hpp.
+
+Strong coincidence is now proved, with an exact depth formula, for
+every canonical Pisot substitution this project can currently generate
+(terminating or eventually-periodic) -- both families this project's
+own digit-expansion tooling produces are now fully covered. Next
+Stage-1 candidates if this continues: reprove Barge-Diamond's binary
+case independently, or move to Stage 2 (property F's distinctness
+conjecture) now that the coincidence foundation is much more solid.
