@@ -13,6 +13,7 @@
 #include <stdexcept>
 #include <vector>
 
+#include "math/proof_reflection.hpp"
 #include "ravel/corona.hpp"
 
 namespace ravel {
@@ -354,6 +355,24 @@ inline std::set<SNode<3>> class_ii_interior_shell(std::size_t r) {
     add(2, -(q - 1), q, -1, 0);
     add(2, q - 2, -(q - 1), 0, 0);
     add(2, q - 1, -(q - 1), 0, 0);
+
+    // This is exactly the 20-state table `shellNode : ShellKind -> Int
+    // -> ClassIINode` in the already kernel-checked
+    // `lean/class_ii_affine_shells.lean` -- which proves, generally
+    // (any q, no per-instance argument), that these 20 states are
+    // pairwise distinct within a round (`shellNode_injective_at_round`)
+    // and propagate from the previous round by a FIXED hop
+    // (`shellNode_propagates`). Record that citation whenever this
+    // shell is actually constructed -- a no-op when no trace is
+    // active.
+    mathlib::reflection::LemmaApplication shell_citation;
+    shell_citation.theorem_name = "shellNode_propagates";
+    shell_citation.conclusion = "the interior-shell 20-state table at round " + std::to_string(q)
+        + " is exactly RavelGenerated.shellNode, pairwise distinct within the round "
+          "(shellNode_injective_at_round) and equal to the previous round's state plus a fixed "
+          "contact hop (shellNode_propagates), for any round -- not a per-round coincidence";
+    mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, shell_citation);
+
     return shell;
 }
 

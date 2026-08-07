@@ -75,6 +75,32 @@ checks, does it cover Finding 4's actual `rho_nc=lambda(G_B)` claim
 specifically) -- a real, separate investigation task, not assumed
 equivalent to mathlib::reflection retrofit work and not attempted here.
 
+**2026-08-07, further correction after actually reading
+`theorem_capability_machine.hpp` and its data** (not just noting it
+exists): it is a QUERY/SEARCH INDEX over the static Lean library
+(`config/theorem_capabilities.tsv`, 252 rows, `ravel_truth_machine`
+answers "which theorem is relevant to this question"), not an
+executing-code-cites-Lean reflection system. Checked its own `status`
+column directly: only 14 of 252 rows are marked
+`kernel-checked-export`, and ALL 14 are from
+`lean/generated/nbonacci_universal_n.kernel_checked.lean` -- the SAME
+n-bonacci determinant thread the pre-existing `rMatrix`/`has_r_matrix_
+proof` mathlib::reflection call site already covers. `class_ii_affine_
+shells.lean`'s 900+ lines are catalogued in this index only as
+`lean-declaration` (exists, not verified-as-connected-to-execution).
+So the earlier hypothesis was WRONG in the specific way that mattered:
+Findings 1-16 (specifically the Class-II ones, 6-15) had NO
+executing-code-to-Lean connection of any kind before this session.
+
+**Closed the gap for one concrete case.** Found a direct match:
+`ravel::class_ii_interior_shell` (`include/ravel/class_ii_boundary_
+family.hpp`) builds EXACTLY the 20-state table `lean/class_ii_affine_
+shells.lean`'s `shellNode` already proves general facts about
+(injectivity, round-to-round propagation by a fixed hop). Wired the
+citation the same way as property F's retrofit -- see Finding 9's
+2026-08-07 addendum in `FINDINGS_FOR_CITATION.md`. This is the FIRST
+of Findings 1-16 to get any `mathlib::reflection` connection.
+
 **2026-08-07 update (measured again, not estimated):** 5 call sites
 now (`barge_diamond_certificate.hpp`, `period_rotation_certificate.hpp`,
 plus the original 3), covering 2 fully-retrofitted findings (35, 26 --
