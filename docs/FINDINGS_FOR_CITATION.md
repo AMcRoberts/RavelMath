@@ -2598,3 +2598,70 @@ literal fixed point) has been found, and a concrete, technically
 sound-looking proof strategy has been named -- but the general
 theorem for arbitrary multi-junction Pisot substitutions is still
 open.
+
+## Finding 35 — no substitution with a nontrivial gcd-obstruction can be Pisot: the whole g>1 thread was studying a necessarily non-Pisot phenomenon
+
+**Status: PROVEN, general theorem. Redirects the entire Findings
+25-27/34 gcd-obstruction thread: not wrong, but scoped to substitutions
+that can never actually be Pisot in the first place.**
+
+AM asked directly, after Finding 34's proof-strategy check surfaced
+that the multi-junction test example wasn't Pisot: "does this define
+a specific thing that can't be pisot in the first place... can any
+such construction be pisot?" Checked rigorously, not just for the one
+example -- the answer is a hard **no**, provable in general.
+
+**Theorem.** If a substitution's junction graph has
+`g = gcd(all jump sizes) > 1`, its incidence matrix cannot be Pisot.
+
+**Proof.** (1) Every cycle in the full letter-level digraph passes
+through at least one junction -- non-junction letters have a unique
+forced path that provably terminates at a junction
+(`build_junction_graph`'s own irreducibility assertion), so no cycle
+can avoid every junction. (2) Hence every cycle decomposes into a
+closed walk in the junction graph, with length equal to a sum of
+individual jump sizes. (3) Since `g` divides every individual jump
+size by definition, `g` divides every such sum -- so `g` divides the
+length of EVERY cycle in the whole digraph. (4) The Perron-Frobenius
+PERIOD of an irreducible nonnegative matrix is exactly the gcd of all
+its digraph's cycle lengths (Seneta 2006) -- since `g` divides every
+cycle length, the period is a multiple of `g`, so `g>1` forces
+period `>1`: the matrix is imprimitive, not merely possibly so.
+(5) An irreducible matrix with period `h>=2` has EXACTLY `h`
+eigenvalues tied at the maximum modulus (the Perron root times each
+`h`-th root of unity) -- standard Perron-Frobenius theory. (6) Pisot's
+definition requires a UNIQUE dominant eigenvalue with every other
+eigenvalue strictly inside the unit circle; step 5 gives `h>=2`
+eigenvalues AT modulus `>1`, directly contradicting this. QED.
+
+**Verified computationally, exactly (not floating point), via this
+project's own certified `is_primitive`
+(`math/include/math/perron_frobenius.hpp`, Wielandt-bound boolean
+matrix powers)**: the `g=2` matrix used throughout Findings 25-27/34
+is irreducible but NOT primitive; a second, independently-constructed
+`g=4` example is also irreducible but not primitive; the `g=1`
+single-junction control example used since Finding 26 IS both
+irreducible and primitive.
+
+**What this means for the thread, stated plainly.** Findings 25-27
+and 34's mathematics is entirely correct -- the gcd-obstruction
+theorem (Finding 26) is a true, general combinatorial fact for ANY
+substitution meeting the structural assumptions, Pisot or not. But its
+NONTRIVIAL content (`g>1`, a genuine obstruction existing at all) can
+only ever be triggered by a substitution that is provably not Pisot.
+For every genuine, real Pisot substitution -- the actual object of
+interest for strong-coincidence and property-(F) work -- `g` is
+ALWAYS exactly 1. The gcd-obstruction is therefore always vacuous in
+the case that matters; chasing its converse for `g>1` was chasing a
+combinatorially interesting but practically moot question.
+
+**The real open question, correctly scoped**: does a coincidence
+witness always exist (in finite depth) for `g=1`, across ANY genuine
+Pisot substitution -- single-junction (already seen: permanent from
+`D=0`, Finding 34's control run) or multi-junction (not yet tested on
+an actual Pisot example; every multi-junction example examined so far,
+`g=2` and `g=4`, was constructed for combinatorial testing purposes
+and turned out non-Pisot). Finding a genuine multi-junction Pisot
+substitution and re-running Finding 34's permanence check on it is the
+natural, correctly-motivated next step, not extending the g>1 work
+further.
