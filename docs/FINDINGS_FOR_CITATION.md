@@ -3008,3 +3008,55 @@ substitution" construction on top of this one, not used here). Whether
 "induced substitution resolves coincidence quickly" can be turned into
 a real theorem about the original substitution is the natural next
 question if this thread is picked up again.
+
+## Finding 41 — the zero-run bound extended to the eventually-periodic family, with a real wraparound correction caught along the way
+
+**Status: PROVED (same mechanism as Finding 39, generalized), verified
+against a from-scratch coincidence search on 12 structurally diverse
+(preperiod, period) pairs, including two specifically constructed to
+catch a real error in the naive generalization before trusting it.
+Roadmap Stage 1, continuing past the terminating family.**
+
+Extended Finding 39's zero-run bound from `canonical_beta_
+substitution_from_digits` (terminating) to `canonical_beta_
+substitution_eventually_periodic` (preperiod + repeating period).
+
+**A real correction, not a mechanical restatement**: a first attempt
+reused Finding 39's flat-sequence longest-zero-run computation
+directly and produced genuinely WRONG (too-small) predictions
+whenever a zero-run spans the period's own wraparound boundary.
+Concretely: `period=(0,1,0)` has a trailing `0` and a leading `0`
+that become ADJACENT once the period repeats
+(`...,0,1,0,0,1,0,0,1,0,...`) -- a genuine run of 2 zeros that a flat
+scan of the single period `(0,1,0)` alone only sees as two separate
+runs of length 1 (predicting depth `<=2`; actual `=3`).
+`period=(0,0,1,0,0)` is worse: flat scan gives run 2 (predicting
+`<=3`), but the true cyclic run is 4 (actual `=5`). Both failures
+caught BEFORE writing up the finding, by deliberately constructing
+stress cases with zero digits at both ends of the period, not found
+by accident.
+
+**Theorem (corrected).** Let `R = max(longest zero-run in the flat
+sequence preperiod++period, longest zero-run in period++period)`.
+Every pair resolves strong coincidence at depth `<= R+1`. The second
+term is necessary specifically because the substitution's last state
+wraps to the period's start (not to a terminator), making a
+wraparound-adjacent zero-run a genuine single pass-through chain in
+the substitution's actual graph -- exactly as if the digits were
+literally adjacent. Two copies of the period suffice to detect any
+such run, since a maximal run spans at most one full wrap.
+
+**Verified** (`tests/zero_run_forces_bounded_coincidence_periodic_test.cpp`)
+against a from-scratch coincidence search on 12 cases, including the
+two wraparound stress tests where the cyclic term is load-bearing (not
+decorative) -- exact match (not just within-bound) on every case where
+a genuine maximal run occurs.
+
+See `include/ravel/proof/zero_run_forces_bounded_coincidence_periodic.hpp`.
+
+**Consequence**: strong coincidence is now proved, with an explicit
+depth formula, for BOTH canonical families this project's tooling
+constructs (terminating: Finding 39; eventually-periodic: this
+finding) -- i.e., for every canonical Pisot beta-substitution this
+project can currently generate from a Pisot number's digit expansion,
+regardless of whether that expansion terminates or cycles.
