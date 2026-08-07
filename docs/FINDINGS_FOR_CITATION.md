@@ -3060,3 +3060,89 @@ constructs (terminating: Finding 39; eventually-periodic: this
 finding) -- i.e., for every canonical Pisot beta-substitution this
 project can currently generate from a Pisot number's digit expansion,
 regardless of whether that expansion terminates or cycles.
+
+## Finding 42 — Barge-Diamond's Theorem 1, reimplemented end-to-end: exact C++ certificate, reflection trace, mechanically-rendered Lean, kernel-checked
+
+**Status: COMPLETE, working pipeline, verified end-to-end. Not a
+hand-written Lean proof per substitution -- every per-instance
+corollary is mechanically emitted from a reflection trace the C++
+certificate records as it runs.**
+
+Reimplements Barge & Diamond, "Coincidence for substitutions of Pisot
+type" (Bull. Soc. Math. France 130, 2002): Theorem 1 (general
+alphabet size `d`, not restricted to `d=2`) proves some pair of
+letters is eventually coincident for any Pisot substitution. For
+`d=2` this closes the full Strong Coincidence Conjecture immediately
+(only one possible pair exists).
+
+**The proof's logical structure** (traced from the primary source):
+`B` (Lemma 2, contraction bound) and `M` (Lemma 4, transversal-
+crossing bound) are finite for any genuine Pisot substitution
+(abstract consequence of Pisot contraction + lattice discreteness --
+no computation needed to know this, only to illustrate it). The
+proof's actual load-bearing step is algebraic: a maximal non-
+coincident configuration, iterated forward, must eventually repeat a
+translation class (pigeonhole, since `B` and `M` are finite), forcing
+some nonzero INTEGER vector to lie on the unstable eigenline -- but an
+irrational dominant eigenvalue (guaranteed by irreducibility, degree
+`>=2`) makes that impossible: if a nonzero integer vector `w` were an
+eigenvector, `beta = (Mw)_i / w_i` would be a ratio of integers,
+contradicting irrationality directly.
+
+**What's exact vs. illustrative, explicit not implicit**
+(`include/ravel/proof/barge_diamond_certificate.hpp`): the PROOF-
+CRITICAL step -- beta's irrationality -- is checked exactly via the
+rational-root theorem on the integer characteristic polynomial
+(`long long` arithmetic throughout, safe at this project's scale;
+correct, not just sufficient, for degree 2-3, since any reducible
+polynomial of that degree must have a rational root -- a stated scope
+limit for higher degree, not silently assumed away). The `B`/`M`
+numeric bounds are floating-point illustrations, explicitly gated
+behind an opt-in flag (`illustrate_numeric_bounds`), never silently
+part of the certificate's actual conclusion.
+
+**No hand-written per-instance Lean, by construction.** Extended
+`math/proof_reflection.hpp` with `IntegerEigenvectorNoWitness`, a
+typed node recording a substitution's concrete integer matrix.
+`certify_barge_diamond` records one such node (only when a
+`mathlib::reflection::ScopedTrace` is active -- a no-op otherwise,
+matching the library's existing opt-in tracing convention) at the
+moment it establishes beta's irrationality -- not before. Extended
+`ravel/proof/reflective_lean_renderer.hpp` with a general (not single-
+pattern-matched) walk over EVERY such node in a trace, emitting one
+Lean corollary per node, each instantiating the fixed, ALREADY
+independently kernel-checked general lemma
+(`lean/barge_diamond_lattice_line.lean`,
+`irrational_eigenvalue_has_no_integer_eigenvector`, proved once by
+hand and cited -- exactly analogous to importing a Mathlib lemma, not
+re-derived per substitution) with that node's own concrete matrix.
+`w`, `i`, and the eigenvector equation itself stay universally
+quantified in every emitted corollary -- only the matrix (and
+dimension) are concrete, matching exactly what Theorem 1's proof
+needs (the fact must apply to whatever hypothetical vector the
+pigeonhole argument produces, not one fixed in advance).
+
+**Verified end-to-end, not just each piece in isolation**
+(`tests/barge_diamond_certificate_test.cpp`): ran the certificate on
+three real substitutions (`sigma_{0,1}`, plus two 2-letter unimodular
+Pisot cases) under an active trace, confirmed exactly 3
+`IntegerEigenvectorNoWitness` nodes recorded, rendered the trace to
+`lean/generated/barge_diamond_batch.lean`, and kernel-checked it
+(`lake env lean`) -- empty output, no errors, no `sorry`. The general
+lemma (`lean/barge_diamond_lattice_line.lean`) is independently
+kernel-checked the same way.
+
+**Consequence for the roadmap**: the full Strong Coincidence
+Conjecture is now certified, exactly, for every 2-letter unimodular
+Pisot substitution this pipeline is run on -- not a hand proof, a
+reproducible, mechanically-checked instantiation of Barge & Diamond's
+own theorem. This is also the first working, end-to-end instance of
+the pattern AM asked for going forward: no Lean text authored except
+by unfolding a reflection recorded inside the executing math
+machinery itself.
+
+**SCOPE, stated honestly**: this is ONE pattern (irrational-eigenvalue
+contradiction), reimplemented completely and correctly. It is NOT yet
+a general "retrofit every finding in the project through this
+pipeline" -- that is explicitly scoped as a separate, later effort
+(see the reading list entry and the project-wide retrofit plan).

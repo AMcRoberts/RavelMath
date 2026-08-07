@@ -131,6 +131,8 @@ lean-check: nbonacci_charmpoly_proof_probe
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/perron_column_difference.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/nbonacci_margin_catalogue.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/Ravel/Matrix/EraseIndex.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/barge_diamond_lattice_line.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/barge_diamond_batch.lean)
 	@if rg -n '^[[:space:]]*sorry([[:space:]]|$$)' \
 		lean/free_involution_perron_core.lean \
 		lean/return_contact_lift.lean \
@@ -147,7 +149,9 @@ lean-check: nbonacci_charmpoly_proof_probe
 		lean/class_ii_round234_shape_closure.lean \
 		lean/perron_column_difference.lean \
 		lean/nbonacci_margin_catalogue.lean \
-		lean/Ravel/Matrix/EraseIndex.lean; then \
+		lean/Ravel/Matrix/EraseIndex.lean \
+		lean/barge_diamond_lattice_line.lean \
+		lean/generated/barge_diamond_batch.lean; then \
 		echo "ERROR: enrolled Lean file contains sorry"; exit 1; \
 	else \
 		echo "Enrolled Lean files are sorry-free."; \
