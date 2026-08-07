@@ -150,7 +150,6 @@ lean-check: nbonacci_charmpoly_proof_probe
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/last_letter_orbit_coincidence.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/last_letter_orbit_batch.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/property_f_zero_walk.lean)
-	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/property_f_zero_walk_citation.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/periodic_point_repetition.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/leftmost_loop_batch.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/class_ii_shell_round_batch.lean)
@@ -192,7 +191,6 @@ lean-check: nbonacci_charmpoly_proof_probe
 		lean/last_letter_orbit_coincidence.lean \
 		lean/generated/last_letter_orbit_batch.lean \
 		lean/generated/property_f_zero_walk.lean \
-		lean/generated/property_f_zero_walk_citation.lean \
 		lean/periodic_point_repetition.lean \
 		lean/generated/leftmost_loop_batch.lean \
 		lean/generated/class_ii_shell_round_batch.lean \

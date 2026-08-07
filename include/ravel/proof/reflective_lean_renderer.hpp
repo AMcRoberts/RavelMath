@@ -18,79 +18,6 @@ inline bool has_r_matrix_proof(const mathlib::reflection::Trace& trace) {
     return false;
 }
 
-// True iff the trace shows `check_property_f` (Findings 18-21) relied
-// on `zeroWalk_eq_zero_iff` (property_f_unconditional.hpp,
-// lean/generated/property_f_zero_walk.lean) to justify its verdict
-// logic -- a plain `LemmaApplication` citation, not an instance to
-// instantiate: the lemma is already fully general (any `beta > 1`, any
-// nonnegative `delta`), so "retrofitting" it means making the
-// EXECUTING code cite it via the trace, not re-deriving it per run.
-inline bool has_zero_walk_citation(const mathlib::reflection::Trace& trace) {
-    for (const auto& [id, lemma] : trace.find<mathlib::reflection::LemmaApplication>()) {
-        (void)id;
-        if (lemma->theorem_name == "zeroWalk_eq_zero_iff") return true;
-    }
-    return false;
-}
-
-// The already-verified text of `zeroWalk`/`zeroWalk_nonneg`/
-// `zeroWalk_eq_zero_iff` (lean/generated/property_f_zero_walk.lean,
-// hand-derived and kernel-checked BEFORE the mechanical reflection
-// pipeline existed) -- reproduced here so a module whose trace cites
-// it is self-contained, matching every other general lemma this
-// renderer embeds. Nothing here is per-instance: the lemma needs no
-// concrete substitution data to state or use.
-inline const char* zero_walk_lemma_lean() {
-    return
-        "/-- The walk underlying the property-(F) zero-expansion automaton:\n"
-        "    `γ_0 = 0`, `γ_{k+1} = (γ_k + δ_k) / β`. -/\n"
-        "noncomputable def zeroWalk (β : ℝ) (δ : ℕ → ℝ) : ℕ → ℝ\n"
-        "  | 0 => 0\n"
-        "  | (k + 1) => (zeroWalk β δ k + δ k) / β\n\n"
-        "theorem zeroWalk_nonneg (β : ℝ) (hβ : 1 < β) (δ : ℕ → ℝ) (hδ : ∀ k, 0 ≤ δ k) :\n"
-        "    ∀ n, 0 ≤ zeroWalk β δ n := by\n"
-        "  intro n\n"
-        "  induction n with\n"
-        "  | zero => simp [zeroWalk]\n"
-        "  | succ k ih =>\n"
-        "      have hβ0 : (0 : ℝ) < β := lt_trans one_pos hβ\n"
-        "      have hsum : 0 ≤ zeroWalk β δ k + δ k := add_nonneg ih (hδ k)\n"
-        "      simpa [zeroWalk] using div_nonneg hsum hβ0.le\n\n"
-        "/-- THE CORE LEMMA behind property (F) (Findings 18-21): the walk returns to\n"
-        "    exactly `0` at step `n` iff EVERY increment before step `n` was itself\n"
-        "    exactly `0` -- so no nonzero-`γ` node can ever have an edge into a\n"
-        "    zero-`γ` node, i.e. a mixed zero/nonzero SCC can never occur. Reproduced\n"
-        "    from the independently kernel-checked\n"
-        "    `lean/generated/property_f_zero_walk.lean` (not re-derived here). -/\n"
-        "theorem zeroWalk_eq_zero_iff (β : ℝ) (hβ : 1 < β) (δ : ℕ → ℝ) (hδ : ∀ k, 0 ≤ δ k) :\n"
-        "    ∀ n, zeroWalk β δ n = 0 ↔ ∀ k < n, δ k = 0 := by\n"
-        "  intro n\n"
-        "  induction n with\n"
-        "  | zero => simp [zeroWalk]\n"
-        "  | succ k ih =>\n"
-        "      have hβ0 : (0 : ℝ) < β := lt_trans one_pos hβ\n"
-        "      have hnonneg := zeroWalk_nonneg β hβ δ hδ k\n"
-        "      constructor\n"
-        "      · intro hz\n"
-        "        have hsum : zeroWalk β δ k + δ k = 0 := by\n"
-        "          have hz' : (zeroWalk β δ k + δ k) / β = 0 := by\n"
-        "            simpa [zeroWalk] using hz\n"
-        "          have := (div_eq_zero_iff).mp hz'\n"
-        "          rcases this with h | h\n"
-        "          · exact h\n"
-        "          · exact absurd h (ne_of_gt hβ0)\n"
-        "        have h1 : zeroWalk β δ k = 0 := by linarith [hδ k]\n"
-        "        have h2 : δ k = 0 := by linarith\n"
-        "        intro j hj\n"
-        "        rcases lt_or_eq_of_le (Nat.lt_succ_iff.mp hj) with hjk | hjk\n"
-        "        · exact (ih.mp h1) j hjk\n"
-        "        · rw [hjk]; exact h2\n"
-        "      · intro hall\n"
-        "        have h1 : ∀ j < k, δ j = 0 := fun j hj => hall j (Nat.lt_succ_of_lt hj)\n"
-        "        have hzk : zeroWalk β δ k = 0 := ih.mpr h1\n"
-        "        have hdk : δ k = 0 := hall k (Nat.lt_succ_self k)\n"
-        "        simp [zeroWalk, hzk, hdk]\n\n";
-}
 
 // Renders an n x n integer matrix in Lean's `!![a, b; c, d]` notation.
 inline std::string render_lean_int_matrix(const std::vector<long long>& flat, long long n) {
@@ -1240,7 +1167,6 @@ inline std::string render_reflective_lean_module(const mathlib::reflection::Trac
     out << "namespace RavelGenerated\n\n";
     out << "open Matrix\n\n";
 
-    if (has_zero_walk_citation(trace)) out << zero_walk_lemma_lean();
     out << render_class_ii_shell_round_instances(trace);
     out << render_class_ii_fixed_table_instances(trace);
 

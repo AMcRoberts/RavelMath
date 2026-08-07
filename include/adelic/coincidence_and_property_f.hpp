@@ -1106,19 +1106,19 @@ PropertyFResult check_property_f(
             if (w == v) scc_has_self_loop[static_cast<std::size_t>(scc_of[static_cast<std::size_t>(v)])] = true;
         }
     }
-    // Record that this verdict relies on the Lean-kernel-checked fact
-    // (property_f_unconditional.hpp, lean/generated/property_f_zero_walk.lean's
-    // `zeroWalk_eq_zero_iff`) that a mixed zero/nonzero SCC can never
-    // occur -- which is exactly why checking `scc_has_nonzero` alone
-    // (dropping the `scc_has_zero` requirement) correctly implements
-    // the paper's own "not entirely zero" condition. A no-op when no
-    // trace is active.
-    mathlib::reflection::LemmaApplication zero_walk_citation;
-    zero_walk_citation.theorem_name = "zeroWalk_eq_zero_iff";
-    zero_walk_citation.conclusion = "a mixed zero/nonzero SCC can never occur in the property-(F) "
-        "zero-expansion automaton, so checking scc_has_nonzero alone correctly implements the "
-        "paper's 'not entirely zero' violation condition";
-    mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, zero_walk_citation);
+    // NOTE (2026-08-07): this verdict logic relies on the
+    // Lean-kernel-checked fact (property_f_unconditional.hpp,
+    // lean/generated/property_f_zero_walk.lean's `zeroWalk_eq_zero_iff`)
+    // that a mixed zero/nonzero SCC can never occur. An earlier version
+    // of this file recorded a static `LemmaApplication` citation here
+    // and had the renderer paste fixed Lean text keyed by that name --
+    // the same flawed "citation" pattern corrected elsewhere this
+    // session (see docs/REFLECTION_RETROFIT_PLAN.md's 2026-08-07
+    // correction note). Removed rather than left in place: a genuine
+    // per-instance connection needs concrete Q(beta)-valued delta data
+    // and a reconstructed walk path threaded from THIS automaton's own
+    // run, not a name match -- not yet built. Do not re-add a citation
+    // here without that real data.
 
     for (long long s = 0; s < scc_count; ++s) {
         bool is_cycle = scc_size[static_cast<std::size_t>(s)] > 1 || scc_has_self_loop[static_cast<std::size_t>(s)];
