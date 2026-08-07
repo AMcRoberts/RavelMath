@@ -188,11 +188,24 @@ family, similar shape to what worked today) and 23 (walk-realizability
 -- exact but combinatorially heavier, needs assessment before
 estimating cost).
 
-**Immediate next-in-queue, in priority order**: (1) assess Finding 29
-directly (accumulation points at every integer >=2 -- described as
-"exact and provable", unexamined for Lean shape); (2) Finding 30, only
-if a narrower-scoped sub-question can be found; (3) closing Finding
-39/41's remaining honest gaps if there's appetite.
+**2026-08-07 update -- Finding 29 assessed, NOT a quick win.** Its core
+claim (the a-bonacci family's dominant root is monotonically
+increasing in `n`, converging to `a+1` from below) is a genuine
+real-analysis fact -- root monotonicity in a parameter, a limit
+argument -- not a short algebraic/combinatorial identity like today's
+other wins. Formalizing it properly needs IVT-based root
+characterization plus a monotonicity/limit argument in Lean, comparable
+in scope to Finding 30's gap, not to Finding 27's. Not attempted;
+recorded here rather than left silently unexamined.
+
+**Immediate next-in-queue, in priority order**: (1) Finding 30, only
+if a narrower-scoped sub-question can be found (e.g., certifying a
+SPECIFIC polynomial's classification via an explicit numeric witness);
+(2) Finding 29, if there's appetite for real-analysis formalization
+(root monotonicity/limits) rather than the combinatorial-identity
+pattern that has worked all session; (3) closing Finding 39/41's
+remaining honest gaps if there's appetite. Findings 22, 23, 32 remain
+genuinely unexamined for Lean-retrofit shape specifically.
 
 ## What "done" actually requires, per finding
 
