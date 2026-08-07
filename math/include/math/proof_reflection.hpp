@@ -316,11 +316,29 @@ struct ConstantLastLetterCertificate {
     std::string description;
 };
 
+// Records a zero-run of length R (Finding 39/41): two chain-offset
+// positions `s1_offset`, `s2_offset` inside the run reach the run's
+// terminal position R after `k1`, `k2` steps respectively (both equal
+// R - offset). Instantiates
+// `RavelGenerated.same_chain_forces_coincidence`
+// (lean/zero_run_same_chain_coincidence.lean) on the run's own local
+// chain model (`Fin (R+1)`, `next := offset -> offset+1` truncated
+// with a self-loop at R) -- an honest, self-contained model of the
+// run's dynamics, not the full substitution's alphabet (see that
+// file's header comment for why the full-alphabet hypothesis can't be
+// satisfied by a genuine substitution's own sigma beyond the chain).
+struct ZeroRunSameChainCertificate {
+    long long run_length = 0;      // R
+    long long s1_offset = 0;
+    long long s2_offset = 0;
+    std::string description;
+};
+
 using Payload = std::variant<MatrixFamily, MatrixInstance, EraseIndexMap,
                              SparseSupportCertificate, TriangularityCertificate,
                              DeterminantIdentity, LemmaApplication, IntegerEigenvectorNoWitness,
                              PeriodRotationCertificate, ConstantFirstLetterCertificate,
-                             ConstantLastLetterCertificate,
+                             ConstantLastLetterCertificate, ZeroRunSameChainCertificate,
                              ProofObligation, TextObservation>;
 
 struct Node {
@@ -594,6 +612,7 @@ inline std::string payload_name(const Payload& payload) {
         else if constexpr (std::is_same_v<T, PeriodRotationCertificate>) return "lean.period_rotation_certificate";
         else if constexpr (std::is_same_v<T, ConstantFirstLetterCertificate>) return "lean.constant_first_letter_certificate";
         else if constexpr (std::is_same_v<T, ConstantLastLetterCertificate>) return "lean.constant_last_letter_certificate";
+        else if constexpr (std::is_same_v<T, ZeroRunSameChainCertificate>) return "lean.zero_run_same_chain_certificate";
         else if constexpr (std::is_same_v<T, ProofObligation>) return "proof.obligation";
         else return value.operation;
     }, payload);
@@ -639,6 +658,9 @@ inline std::string payload_detail(const Payload& payload) {
         } else if constexpr (std::is_same_v<T, ConstantLastLetterCertificate>) {
             out << "d=" << value.d << " c=" << value.constant_letter << " " << value.description
                 << " -- instantiates constant_last_letter_forces_suffix_coincidence";
+        } else if constexpr (std::is_same_v<T, ZeroRunSameChainCertificate>) {
+            out << "R=" << value.run_length << " offsets(" << value.s1_offset << "," << value.s2_offset
+                << ") " << value.description << " -- instantiates same_chain_forces_coincidence";
         } else if constexpr (std::is_same_v<T, ProofObligation>) {
             out << value.obligation_id << ": " << value.proposition;
             if (!value.blocked_by.empty()) out << " [blocked by " << value.blocked_by << ']';

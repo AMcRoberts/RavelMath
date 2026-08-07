@@ -62,6 +62,8 @@
 #include <string>
 #include <vector>
 
+#include "math/proof_reflection.hpp"
+
 namespace ravel::proof {
 
 struct ZeroRunCoincidenceBoundCertificate {
@@ -83,10 +85,15 @@ inline ZeroRunCoincidenceBoundCertificate derive_zero_run_coincidence_bound(
         out.note = "empty or non-terminating digit sequence; premise does not apply";
         return out;
     }
-    long long run = 0, best = 0;
+    long long run = 0, best = 0, run_start = 0, best_start = -1;
     for (std::size_t s = 0; s + 1 < digits.size(); ++s) {  // exclude t_{N-1}
-        if (digits[s] == 0) { ++run; best = std::max(best, run); }
-        else { run = 0; }
+        if (digits[s] == 0) {
+            if (run == 0) run_start = static_cast<long long>(s);
+            ++run;
+            if (run > best) { best = run; best_start = run_start; }
+        } else {
+            run = 0;
+        }
     }
     out.longest_zero_run = best;
     out.predicted_max_depth = best + 1;
@@ -95,6 +102,19 @@ inline ZeroRunCoincidenceBoundCertificate derive_zero_run_coincidence_bound(
         : "longest zero-run has length " + std::to_string(best)
           + " -- every pair resolves by depth " + std::to_string(best + 1)
           + ", achieved exactly for pairs straddling that run";
+
+    // Record the "same-chain" special case (Finding 39/41's tightness
+    // witness): the run's two extreme letters (offset 0 and offset
+    // best-1) both synchronize onto the run's terminal letter.
+    if (best >= 2) {
+        mathlib::reflection::ZeroRunSameChainCertificate node;
+        node.run_length = best;
+        node.s1_offset = 0;
+        node.s2_offset = best - 1;
+        node.description = "zero-run starting at digit index " + std::to_string(best_start)
+            + ", length " + std::to_string(best);
+        mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, node);
+    }
     return out;
 }
 

@@ -3077,6 +3077,38 @@ understanding the family's own generator/pass-through structure
 (directly building on `terminating_generator_theorem.hpp`) to extend
 across dimensions, exactly the intended roadmap methodology.
 
+**2026-08-07 addendum — retrofitted through the reflection pipeline,
+partially and honestly.** The FULL exact-depth-formula claim needs
+modeling `check_strong_coincidence`'s own ITERATED substitution
+application (not just the single-step prefix/suffix matching Findings
+17/38 needed) -- assessed and built as reusable infrastructure first
+(`lean/substitution_iteration_infrastructure.lean`: `applyOnce`,
+`applyN`, and `applyN_singleton_chain`, the mechanism this finding's
+own informal proof names explicitly -- a chain of pass-through letters
+propagates a singleton word forward exactly `k` steps under `k`
+iterations). Composed that with the prefix-coincidence machinery to
+close a real, honestly-scoped SPECIAL CASE -- the "achieved exactly"
+tightness witness this finding's own proof names: two letters INSIDE
+the same zero-run, at different distances from the run's end, become
+IDENTICAL words (not just share a first letter) once both reach the
+run's terminal letter (`same_chain_forces_coincidence`,
+`lean/zero_run_same_chain_coincidence.lean`, kernel-checked first
+try). New reflection payload (`ZeroRunSameChainCertificate`), the run
+modeled on its own local chain (`Fin (R+1)`, `next := offset ->
+offset+1` truncated with a self-loop at the terminal) rather than the
+substitution's full alphabet, since a genuine substitution's `sigma`
+is NOT a singleton at the non-chain terminal letter, so the general
+lemma's `∀ s, sigma s = [next s]` hypothesis cannot be satisfied by
+the real, unmodified `sigma` beyond the chain -- stated explicitly in
+the Lean file's own header, not glossed over. Run on a real
+zero-run-3 digit sequence: kernel-checks with zero errors, zero
+`sorry` (`lean/generated/zero_run_same_chain_batch.lean`,
+`tests/zero_run_same_chain_reflection_test.cpp`). NOT yet covered:
+pairs where only one letter is inside a run, or letters in different
+runs -- the harder cases still needing composition with
+`constant_first_letter_forces_prefix_coincidence` at the moment a
+nonzero digit is finally reached.
+
 ## Finding 40 — return-word induction dramatically reduces coincidence-resolution depth: sigma_{0,1}'s worst-case depth 13 collapses to 2
 
 **Status: real, verified, useful application of Durand & Petite's
