@@ -142,6 +142,8 @@ lean-check: nbonacci_charmpoly_proof_probe
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/constant_last_letter_forces_suffix_coincidence.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/constant_last_letter_batch.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/substitution_iteration_infrastructure.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/zero_run_same_chain_coincidence.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/zero_run_same_chain_batch.lean)
 	@if rg -n '^[[:space:]]*sorry([[:space:]]|$$)' \
 		lean/free_involution_perron_core.lean \
 		lean/return_contact_lift.lean \
@@ -169,6 +171,8 @@ lean-check: nbonacci_charmpoly_proof_probe
 		lean/constant_last_letter_forces_suffix_coincidence.lean \
 		lean/generated/constant_last_letter_batch.lean \
 		lean/substitution_iteration_infrastructure.lean \
+		lean/zero_run_same_chain_coincidence.lean \
+		lean/generated/zero_run_same_chain_batch.lean \
 		lean/generated/period_rotation_batch.lean; then \
 		echo "ERROR: enrolled Lean file contains sorry"; exit 1; \
 	else \

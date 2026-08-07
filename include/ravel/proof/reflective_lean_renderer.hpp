@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -445,6 +446,113 @@ inline std::string render_constant_last_letter_instances(const mathlib::reflecti
     return out.str();
 }
 
+// A FIFTH general lemma, foundation infrastructure plus the actual
+// coincidence consequence for Finding 39/41's "same-chain" special
+// case -- hand-derived and kernel-checked once
+// (lean/substitution_iteration_infrastructure.lean,
+// lean/zero_run_same_chain_coincidence.lean), reproduced here.
+inline const char* zero_run_same_chain_general_lemma_lean() {
+    return
+        "def applyOnce {d : ℕ} (sigma : Fin d → List (Fin d)) (w : List (Fin d)) : List (Fin d) :=\n"
+        "  w.flatMap sigma\n\n"
+        "def applyN {d : ℕ} (sigma : Fin d → List (Fin d)) (k : ℕ) (w : List (Fin d)) : List (Fin d) :=\n"
+        "  (applyOnce sigma)^[k] w\n\n"
+        "theorem applyN_succ {d : ℕ} (sigma : Fin d → List (Fin d)) (k : ℕ) (w : List (Fin d)) :\n"
+        "    applyN sigma (k + 1) w = applyOnce sigma (applyN sigma k w) := by\n"
+        "  simp [applyN, Function.iterate_succ_apply']\n\n"
+        "theorem applyOnce_singleton_of_passthrough {d : ℕ} (sigma : Fin d → List (Fin d))\n"
+        "    (s s' : Fin d) (h : sigma s = [s']) :\n"
+        "    applyOnce sigma [s] = [s'] := by\n"
+        "  simp [applyOnce, h]\n\n"
+        "theorem applyN_singleton_chain {d : ℕ} (sigma : Fin d → List (Fin d)) (next : Fin d → Fin d)\n"
+        "    (hchain : ∀ s, sigma s = [next s]) (s0 : Fin d) (k : ℕ) :\n"
+        "    applyN sigma k [s0] = [next^[k] s0] := by\n"
+        "  induction k with\n"
+        "  | zero => rfl\n"
+        "  | succ k ih =>\n"
+        "      have hs : sigma (next^[k] s0) = [next^[k + 1] s0] := by\n"
+        "        rw [hchain (next^[k] s0)]\n"
+        "        congr 1\n"
+        "        exact (Function.iterate_succ_apply' next k s0).symm\n"
+        "      rw [applyN_succ, ih, applyOnce_singleton_of_passthrough sigma (next^[k] s0) (next^[k + 1] s0) hs]\n\n"
+        "def runningSeq {d : ℕ} : List (Fin d) → List (Fin d → ℤ)\n"
+        "  | [] => []\n"
+        "  | (a :: rest) =>\n"
+        "      (fun _ => (0 : ℤ)) :: (runningSeq rest).map (fun v => fun j => v j + if j = a then 1 else 0)\n\n"
+        "def prefixPairs {d : ℕ} (w : List (Fin d)) : List (Fin d × (Fin d → ℤ)) :=\n"
+        "  w.zip (runningSeq w)\n\n"
+        "def hasCoincidencePrefix {d : ℕ} (w1 w2 : List (Fin d)) : Prop :=\n"
+        "  ∃ p, p ∈ prefixPairs w1 ∧ p ∈ prefixPairs w2\n\n"
+        "theorem constant_first_letter_forces_prefix_coincidence\n"
+        "    {d : ℕ} (c : Fin d) (w1' w2' : List (Fin d)) :\n"
+        "    hasCoincidencePrefix (c :: w1') (c :: w2') := by\n"
+        "  refine ⟨(c, fun _ => (0 : ℤ)), ?_, ?_⟩ <;>\n"
+        "    simp [prefixPairs, runningSeq]\n\n"
+        "theorem pass_through_chain_synchronizes {d : ℕ} (sigma : Fin d → List (Fin d)) (next : Fin d → Fin d)\n"
+        "    (hchain : ∀ s, sigma s = [next s]) (s1 s2 : Fin d) (k1 k2 : ℕ)\n"
+        "    (hmeet : next^[k1] s1 = next^[k2] s2) :\n"
+        "    applyN sigma k1 [s1] = applyN sigma k2 [s2] := by\n"
+        "  rw [applyN_singleton_chain sigma next hchain s1 k1,\n"
+        "      applyN_singleton_chain sigma next hchain s2 k2, hmeet]\n\n"
+        "theorem identical_words_have_prefix_coincidence {d : ℕ} (c : Fin d) (w' : List (Fin d)) :\n"
+        "    hasCoincidencePrefix (c :: w') (c :: w') :=\n"
+        "  constant_first_letter_forces_prefix_coincidence c w' w'\n\n"
+        "/-- Finding 39/41's \"same-chain\" special case: two letters inside the same\n"
+        "    pass-through zero-run, converging onto the same terminal letter at possibly\n"
+        "    different depths, exhibit prefix coincidence. Reproduced from the\n"
+        "    independently kernel-checked `lean/zero_run_same_chain_coincidence.lean`\n"
+        "    (not re-derived here). -/\n"
+        "theorem same_chain_forces_coincidence {d : ℕ} (sigma : Fin d → List (Fin d)) (next : Fin d → Fin d)\n"
+        "    (hchain : ∀ s, sigma s = [next s]) (s1 s2 : Fin d) (k1 k2 : ℕ)\n"
+        "    (hmeet : next^[k1] s1 = next^[k2] s2) :\n"
+        "    hasCoincidencePrefix (applyN sigma k1 [s1]) (applyN sigma k2 [s2]) := by\n"
+        "  rw [pass_through_chain_synchronizes sigma next hchain s1 s2 k1 k2 hmeet,\n"
+        "      applyN_singleton_chain sigma next hchain s2 k2]\n"
+        "  exact identical_words_have_prefix_coincidence (next^[k2] s2) []\n\n";
+}
+
+// Mechanically emits one Lean corollary of `same_chain_forces_
+// coincidence` PER `ZeroRunSameChainCertificate` node -- the local
+// chain model (`Fin (R+1)`, `next := offset -> offset+1` truncated
+// with a self-loop at R) is built entirely from the node's own `R`;
+// `hchain` is trivial (`fun _ => rfl`, since `sigma` is defined AS
+// `fun s => [next s]`); `hmeet` is decidable (finite, concrete).
+inline std::string render_zero_run_same_chain_instances(const mathlib::reflection::Trace& trace) {
+    std::ostringstream out;
+    long long counter = 0;
+    auto nodes = trace.find<mathlib::reflection::ZeroRunSameChainCertificate>();
+    if (nodes.empty()) return {};
+    out << zero_run_same_chain_general_lemma_lean();
+    for (const auto& [id, node] : nodes) {
+        (void)id;
+        std::string name = "zero_run_same_chain_instance_" + std::to_string(counter++);
+        long long R = node->run_length;
+        std::ostringstream nextvec;
+        nextvec << "(![";
+        for (long long i = 0; i <= R; ++i) {
+            if (i > 0) nextvec << ", ";
+            nextvec << std::min(i + 1, R);
+        }
+        nextvec << "] : Fin " << (R + 1) << " → Fin " << (R + 1) << ")";
+        std::string next_typed = nextvec.str();
+        long long k1 = R - node->s1_offset;
+        long long k2 = R - node->s2_offset;
+        out << "/-- Mechanically emitted: instantiates the general lemma above for\n";
+        out << "    " << node->description << ". -/\n";
+        out << "theorem " << name << " :\n";
+        out << "    hasCoincidencePrefix\n";
+        out << "      (applyN (fun s => [" << next_typed << " s]) " << k1 << " [(" << node->s1_offset
+            << " : Fin " << (R + 1) << ")])\n";
+        out << "      (applyN (fun s => [" << next_typed << " s]) " << k2 << " [(" << node->s2_offset
+            << " : Fin " << (R + 1) << ")]) :=\n";
+        out << "  same_chain_forces_coincidence (fun s => [" << next_typed << " s]) " << next_typed
+            << " (fun _ => rfl)\n";
+        out << "    (" << node->s1_offset << " : Fin " << (R + 1) << ") (" << node->s2_offset
+            << " : Fin " << (R + 1) << ") " << k1 << " " << k2 << " (by decide)\n\n";
+    }
+    return out.str();
+}
+
 inline std::string render_reflective_lean_module(const mathlib::reflection::Trace& trace) {
     if (trace.empty()) throw std::runtime_error("cannot render proof module without provenance");
     std::ostringstream out;
@@ -485,6 +593,7 @@ inline std::string render_reflective_lean_module(const mathlib::reflection::Trac
     out << render_colored_walk_congruence_instances(trace);
     out << render_constant_first_letter_instances(trace);
     out << render_constant_last_letter_instances(trace);
+    out << render_zero_run_same_chain_instances(trace);
 
     out << "/- Semantic proof graph for: " << trace.theorem_id() << "\n";
     for (std::size_t i = 0; i < trace.nodes().size(); ++i) {

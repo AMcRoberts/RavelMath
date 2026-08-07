@@ -96,13 +96,26 @@ composing this with the constant-first-letter machinery at the
 specific depth a zero-run ends is the remaining work, deliberately not
 rushed to avoid a shaky or incomplete claim.
 
+**2026-08-07 update, item (1) partially done.** Composed the
+infrastructure into a real, mechanically-emitted result: the
+"same-chain" special case (two letters inside the same zero-run
+converge to an IDENTICAL word, not just a shared first letter) is now
+retrofitted end-to-end (`lean/zero_run_same_chain_coincidence.lean`,
+`ZeroRunSameChainCertificate`, `render_zero_run_same_chain_instances`),
+kernel-checked on a real example. This is Finding 39/41's OWN
+tightness witness ("achieved exactly for pairs straddling that run"),
+not a side case -- but it is still only ONE of the theorem's cases.
+Not yet covered: a letter inside a run paired with one outside it
+(needs composing the chain lemma with `constant_first_letter_forces_
+prefix_coincidence` at the depth the run ends, not just chain-to-chain
+synchronization), or letters in different runs entirely.
+
 **Immediate next-in-queue, in priority order**: (1) finish Findings
-39/41 by composing `applyN_singleton_chain` with `constant_first_letter_
-forces_prefix_coincidence` at the run-end depth; (2) Finding 30 --
-Sturm-based Pisot classification, a genuinely different, harder shape
-(no short algebraic/graph identity to lean on); (3) property (F) / the
-zero-expansion graph (Findings 18-21), the hardest category,
-deliberately last per the original phased plan.
+39/41's remaining cases (in-run vs out-of-run, cross-run pairs); (2)
+Finding 30 -- Sturm-based Pisot classification, a genuinely different,
+harder shape (no short algebraic/graph identity to lean on); (3)
+property (F) / the zero-expansion graph (Findings 18-21), the hardest
+category, deliberately last per the original phased plan.
 
 ## What "done" actually requires, per finding
 
