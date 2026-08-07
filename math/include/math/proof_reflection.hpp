@@ -305,10 +305,22 @@ struct ConstantFirstLetterCertificate {
     std::string description;
 };
 
+// The exact dual of `ConstantFirstLetterCertificate`, for Finding 38
+// and the SUFFIX half of `pair_has_coincidence`: instantiates
+// `RavelGenerated.constant_last_letter_forces_suffix_coincidence`
+// (lean/constant_last_letter_forces_suffix_coincidence.lean).
+struct ConstantLastLetterCertificate {
+    long long d = 0;
+    long long constant_letter = 0;
+    std::vector<std::vector<long long>> images;  // d images, images[i].back() == constant_letter
+    std::string description;
+};
+
 using Payload = std::variant<MatrixFamily, MatrixInstance, EraseIndexMap,
                              SparseSupportCertificate, TriangularityCertificate,
                              DeterminantIdentity, LemmaApplication, IntegerEigenvectorNoWitness,
                              PeriodRotationCertificate, ConstantFirstLetterCertificate,
+                             ConstantLastLetterCertificate,
                              ProofObligation, TextObservation>;
 
 struct Node {
@@ -581,6 +593,7 @@ inline std::string payload_name(const Payload& payload) {
         else if constexpr (std::is_same_v<T, IntegerEigenvectorNoWitness>) return "lean.integer_eigenvector_no_witness";
         else if constexpr (std::is_same_v<T, PeriodRotationCertificate>) return "lean.period_rotation_certificate";
         else if constexpr (std::is_same_v<T, ConstantFirstLetterCertificate>) return "lean.constant_first_letter_certificate";
+        else if constexpr (std::is_same_v<T, ConstantLastLetterCertificate>) return "lean.constant_last_letter_certificate";
         else if constexpr (std::is_same_v<T, ProofObligation>) return "proof.obligation";
         else return value.operation;
     }, payload);
@@ -623,6 +636,9 @@ inline std::string payload_detail(const Payload& payload) {
         } else if constexpr (std::is_same_v<T, ConstantFirstLetterCertificate>) {
             out << "d=" << value.d << " c=" << value.constant_letter << " " << value.description
                 << " -- instantiates constant_first_letter_forces_prefix_coincidence";
+        } else if constexpr (std::is_same_v<T, ConstantLastLetterCertificate>) {
+            out << "d=" << value.d << " c=" << value.constant_letter << " " << value.description
+                << " -- instantiates constant_last_letter_forces_suffix_coincidence";
         } else if constexpr (std::is_same_v<T, ProofObligation>) {
             out << value.obligation_id << ": " << value.proposition;
             if (!value.blocked_by.empty()) out << " [blocked by " << value.blocked_by << ']';

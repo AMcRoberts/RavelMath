@@ -2996,6 +2996,26 @@ coincidence" -- an aside, not this theorem. Finding 38's exact,
 depth-1, machine-verified statement was derived independently, from
 this project's own code, before this literature check.
 
+**2026-08-07 addendum — retrofitted through the reflection pipeline as
+the exact structural dual of Finding 17's own retrofit.** Modeled the
+SUFFIX half of `pair_has_coincidence`'s loop directly in Lean
+(`abelianize`, `sufSeq`, `suffixPairs`, `hasCoincidenceSuffix`), then
+proved: for `w1 = w1' ++ [c]`, `w2 = w2' ++ [c]`, the pair
+`(c, zeroVector)` sits at the LAST position of both lists'
+`suffixPairs` (proved by induction on the head, via a helper lemma
+`mem_suffixPairs_append_singleton`). See `lean/constant_last_letter_
+forces_suffix_coincidence.lean` (hand-derived, kernel-checked once,
+first try). New reflection payload (`ConstantLastLetterCertificate`),
+extended `check_constant_last_letter_forces_depth1` to record it, new
+renderer (`render_constant_last_letter_instances`) emitting one
+corollary per pair. Run on two of Finding 37's own real substitutions
+(`ex1`, `ex3`, both alphabet-4, genuinely satisfying Barge's
+constant-last-letter hypothesis): 12 instances (`C(4,2)=6` pairs each)
+kernel-check with zero errors and zero `sorry`
+(`lean/generated/constant_last_letter_batch.lean`,
+`tests/constant_last_letter_reflection_test.cpp`); a synthetic
+no-shared-last-letter control correctly records nothing.
+
 ## Finding 39 — the zero-run bound: Finding 17 generalized to the ENTIRE canonical terminating-expansion family, not just the constant-factor special case
 
 **Status: PROVED (mechanistic argument from the substitution's own
