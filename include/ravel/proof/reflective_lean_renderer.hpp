@@ -1037,7 +1037,33 @@ inline const char* class_ii_fixed_tables_lemma_lean() {
         "  | .f26 => ⟨2,  0,  0, -1, 1⟩ | .f27 => ⟨2,  0,  1, -1, 1⟩\n"
         "  | .f28 => ⟨2,  0,  1,  0, 1⟩ | .f29 => ⟨2, -1,  0,  0, 2⟩\n"
         "  | .f30 => ⟨2,  0, -1,  0, 2⟩ | .f31 => ⟨2,  0,  1,  0, 2⟩\n"
-        "  | .f32 => ⟨2,  1,  0,  0, 2⟩\n\n";
+        "  | .f32 => ⟨2,  1,  0,  0, 2⟩\n\n"
+        "inductive Neighbor2FixedKindG\n"
+        "  | n00 | n01 | n02 | n03 | n04 | n05 | n06 | n07\n"
+        "  | n08 | n09 | n10 | n11 | n12 | n13 | n14 | n15\n"
+        "  | n16 | n17 | n18 | n19 | n20 | n21 | n22 | n23\n"
+        "  deriving DecidableEq, Fintype\n\n"
+        "def neighbor2FixedNodeG : Neighbor2FixedKindG → ClassIINodeG\n"
+        "  | .n00 => ⟨0, -2,  2,  1, 1⟩ | .n01 => ⟨0, -1,  0,  1, 0⟩\n"
+        "  | .n02 => ⟨0, -1,  1,  1, 0⟩ | .n03 => ⟨0, -1,  1,  1, 2⟩\n"
+        "  | .n04 => ⟨0, -1,  2,  1, 0⟩ | .n05 => ⟨0,  1, -2, -1, 0⟩\n"
+        "  | .n06 => ⟨0,  1, -1, -1, 0⟩ | .n07 => ⟨0,  1, -1,  0, 2⟩\n"
+        "  | .n08 => ⟨0,  1,  0, -1, 0⟩ | .n09 => ⟨1, -1,  1,  0, 1⟩\n"
+        "  | .n10 => ⟨1,  0,  1,  0, 0⟩ | .n11 => ⟨1,  1, -2, -1, 0⟩\n"
+        "  | .n12 => ⟨1,  1, -1,  0, 1⟩ | .n13 => ⟨1,  2, -2, -1, 0⟩\n"
+        "  | .n14 => ⟨1,  2, -1, -1, 0⟩ | .n15 => ⟨2, -2,  2,  0, 1⟩\n"
+        "  | .n16 => ⟨2, -1,  1,  0, 0⟩ | .n17 => ⟨2, -1,  1,  0, 2⟩\n"
+        "  | .n18 => ⟨2, -1,  2,  0, 0⟩ | .n19 => ⟨2, -1,  2,  0, 1⟩\n"
+        "  | .n20 => ⟨2,  1, -2, -1, 0⟩ | .n21 => ⟨2,  1, -1, -1, 0⟩\n"
+        "  | .n22 => ⟨2,  1, -1,  0, 2⟩ | .n23 => ⟨2,  2, -1, -1, 0⟩\n\n"
+        "inductive FirstBackwardKindG\n"
+        "  | b00 | b01 | b02 | b03 | b04 | b05\n"
+        "  deriving DecidableEq, Fintype\n\n"
+        "def firstBackwardNodeG : FirstBackwardKindG → ClassIINodeG\n"
+        "  | .b00 => ⟨1,  1, -1,  0, 2⟩ | .b01 => ⟨2,  0,  1,  0, 0⟩\n"
+        "  | .b02 => ⟨0,  0,  0,  1, 1⟩ | .b03 => ⟨2,  0,  1, -1, 0⟩\n"
+        "  | .b04 => ⟨0,  1, -1,  0, 0⟩ | .b05 => ⟨0, -1,  1,  1, 1⟩\n\n"
+        "def secondBackwardNodeG : ClassIINodeG := ⟨1, 1, 0, -1, 0⟩\n\n";
 }
 
 // Renders `[(left,x0,x1,x2,right), ...]` for a concrete node list.
@@ -1073,13 +1099,133 @@ inline std::string render_class_ii_fixed_table_instances(const mathlib::reflecti
         else if (node->table == "pre_contact") { kindType = "PreContactKindG"; nodeFn = "preContactNodeG"; }
         else if (node->table == "d_cont") { kindType = "DContKindG"; nodeFn = "dContNodeG"; }
         else if (node->table == "d_cont_face_candidates") { kindType = "DContFaceCandidateKindG"; nodeFn = "dContFaceCandidateNodeG"; }
-        else continue;  // unknown table name -- render nothing rather than guess
+        else if (node->table == "neighbor2_fixed") { kindType = "Neighbor2FixedKindG"; nodeFn = "neighbor2FixedNodeG"; }
+        else if (node->table == "first_backward") { kindType = "FirstBackwardKindG"; nodeFn = "firstBackwardNodeG"; }
+        else if (node->table == "second_backward") {
+            // A single fixed node, not Kind-indexed: check direct
+            // equality against secondBackwardNodeG instead of an
+            // existential membership.
+            std::string name = "class_ii_fixed_table_instance_" + std::to_string(counter++);
+            out << "/-- Mechanically emitted: every node C++ actually built for the \""
+                << node->table << "\" table equals secondBackwardNodeG. -/\n";
+            out << "theorem " << name << " :\n";
+            out << "    ∀ node ∈ " << render_class_ii_node_list(node->nodes) << ", "
+                << "node = secondBackwardNodeG := by\n";
+            out << "  decide\n\n";
+            continue;
+        }
+        else continue;  // unknown table name (e.g. "round1_raw27") -- handled elsewhere
         std::string name = "class_ii_fixed_table_instance_" + std::to_string(counter++);
         out << "/-- Mechanically emitted: every node C++ actually built for the \""
             << node->table << "\" table is in " << nodeFn << "'s range. -/\n";
         out << "theorem " << name << " :\n";
         out << "    ∀ node ∈ " << render_class_ii_node_list(node->nodes) << ", "
             << "∃ k : " << kindType << ", " << nodeFn << " k = node := by\n";
+        out << "  decide\n\n";
+    }
+    return out.str();
+}
+
+// Reuses the ALREADY-RECORDED `ClassIIFixedTableCertificate{table=
+// "d_cont"}` data (no new C++ certificate -- same reuse pattern
+// Finding 26's `render_colored_walk_congruence_instances` already
+// established) for a SECOND consequence: `lean/class_ii_affine_
+// shells.lean` also proves `dContNode_in_preContact` (every D_cont
+// seed is itself a pre-contact node, for ALL nine DContKind cases).
+// This emits, PER "d_cont" node, a `decide`-checked instance of that
+// same containment fact against the CONCRETE nodes C++ actually built
+// -- not a re-citation of the general theorem's name, a fresh
+// decidable check over the same concrete data the fixed-table
+// instance above already threaded.
+inline std::string render_class_ii_d_cont_in_pre_contact_instances(const mathlib::reflection::Trace& trace) {
+    std::ostringstream out;
+    long long counter = 0;
+    auto nodes = trace.find<mathlib::reflection::ClassIIFixedTableCertificate>();
+    bool any = false;
+    for (const auto& [id, node] : nodes) { (void)id; if (node->table == "d_cont") { any = true; break; } }
+    if (!any) return {};
+    for (const auto& [id, node] : nodes) {
+        (void)id;
+        if (node->table != "d_cont") continue;
+        std::string name = "class_ii_d_cont_in_pre_contact_instance_" + std::to_string(counter++);
+        out << "/-- Mechanically emitted (reusing the \"d_cont\" fixed-table data\n";
+        out << "    above, no new C++ certificate): every one of THESE CONCRETE\n";
+        out << "    d_cont nodes is also a pre-contact node -- the same containment\n";
+        out << "    `dContNode_in_preContact` proves for ALL DContKind, checked here\n";
+        out << "    directly against the concrete data. -/\n";
+        out << "theorem " << name << " :\n";
+        out << "    ∀ node ∈ " << render_class_ii_node_list(node->nodes) << ", "
+            << "∃ pre : PreContactKindG, node = preContactNodeG pre := by\n";
+        out << "  decide\n\n";
+    }
+    return out.str();
+}
+
+// A self-contained excerpt of `lean/class_ii_round1_red_pruning.lean`
+// covering the 27-state raw pre-Red target list and its length/x2-bound
+// facts -- reproduced, not re-derived; the full file additionally
+// proves the six-raw-candidate closure this excerpt doesn't need.
+inline const char* round1_raw27_lemma_lean() {
+    return
+        "abbrev NeighborNodeG := ℤ × ℤ × ℤ × ℤ × ℤ\n\n"
+        "def round1Raw27G : List NeighborNodeG :=\n"
+        "  [ (0,-1, 1, 1,0), (0,-1, 1, 1,2), (0, 1,-1, 0,2), (0, 1,-1, 1,0),\n"
+        "    (0, 1, 0,-1,0), (1, 0, 1, 0,0), (1, 1,-1, 0,1), (1, 2,-1,-1,0),\n"
+        "    (2,-1, 2, 0,1), (2, 1,-1, 0,0), (2, 1,-1, 0,2),\n"
+        "    (0,-1, 1, 1,1), (0, 0, 0, 0,1), (0, 0, 0, 0,2), (0, 0, 0, 1,0),\n"
+        "    (0, 0, 0, 1,1), (0, 0, 1, 0,0), (0, 1,-1, 0,0), (1, 0, 0, 0,2),\n"
+        "    (1, 1,-1, 0,0), (1, 1,-1, 0,2), (1, 1, 0,-1,0), (2, 0, 1,-1,0),\n"
+        "    (2, 0, 1, 0,0), (2, 1, 0,-1,0),\n"
+        "    (1, 0, 0, 1,1), (2, 0, 1,-1,1) ]\n\n"
+        "/-- Reproduced from the independently kernel-checked\n"
+        "    `lean/class_ii_round1_red_pruning.lean` (not re-derived here). -/\n"
+        "theorem round1Raw27G_length : round1Raw27G.length = 27 := by decide\n\n"
+        "theorem round1Raw27G_x2_bound :\n"
+        "    ∀ n ∈ round1Raw27G, n.2.2.2.1 = -1 ∨ n.2.2.2.1 = 0 ∨ n.2.2.2.1 = 1 := by\n"
+        "  decide\n\n";
+}
+
+// Renders `[(a,b,c,d,e), ...]` (plain tuple syntax, no wrapping
+// structure) for a concrete node list, matching `NeighborNodeG`.
+inline std::string render_neighbor_node_list(
+    const std::vector<mathlib::reflection::ClassIINodeData>& nodes) {
+    std::ostringstream out;
+    out << "[";
+    for (std::size_t i = 0; i < nodes.size(); ++i) {
+        if (i > 0) out << ", ";
+        const auto& n = nodes[i];
+        out << "(" << n.left << "," << n.x0 << "," << n.x1 << "," << n.x2 << "," << n.right << ")";
+    }
+    out << "]";
+    return out.str();
+}
+
+// Mechanically emits, PER `ClassIIFixedTableCertificate` node tagged
+// "round1_raw27", a `decide`-checked EQUALITY between the CONCRETE
+// list C++ actually threaded (via `class_ii_round1_raw27_targets()`,
+// shared with `app/class_ii_neighbor2_round1_red_forward_check.cpp`)
+// and the Lean file's own `round1Raw27G` list -- the strongest form of
+// this check (not just membership): if the two lists ever diverged in
+// content OR order, this kernel check would legitimately fail.
+inline std::string render_round1_raw27_instances(const mathlib::reflection::Trace& trace) {
+    std::ostringstream out;
+    long long counter = 0;
+    auto nodes = trace.find<mathlib::reflection::ClassIIFixedTableCertificate>();
+    bool any = false;
+    for (const auto& [id, node] : nodes) {
+        (void)id;
+        if (node->table == "round1_raw27") { any = true; break; }
+    }
+    if (!any) return {};
+    out << round1_raw27_lemma_lean();
+    for (const auto& [id, node] : nodes) {
+        (void)id;
+        if (node->table != "round1_raw27") continue;
+        std::string name = "round1_raw27_instance_" + std::to_string(counter++);
+        out << "/-- Mechanically emitted: the concrete 27-node list C++ actually\n";
+        out << "    built equals `round1Raw27G` exactly (content and order). -/\n";
+        out << "theorem " << name << " :\n";
+        out << "    (" << render_neighbor_node_list(node->nodes) << " : List NeighborNodeG) = round1Raw27G := by\n";
         out << "  decide\n\n";
     }
     return out.str();
@@ -1208,6 +1354,579 @@ inline std::string render_depressed_cubic_instances(const mathlib::reflection::T
     return out.str();
 }
 
+// A self-contained excerpt of `lean/class_ii_neighbor_d_support.lean`
+// covering the three neighbors' boundary-layer source/target index
+// sets -- reproduced, not re-derived; the full file additionally
+// proves the affine closed-form identity this excerpt doesn't need.
+inline const char* class_ii_neighbor_d_support_lemma_lean() {
+    return
+        "structure AffineEdgeG where\n"
+        "  source : Nat\n  target : Nat\n  intercept : Int\n  slope : Int\n"
+        "  deriving DecidableEq\n\n"
+        "def neighbor0EdgeListG : List AffineEdgeG :=\n"
+        "  [⟨0, 4, 1, 0⟩, ⟨0, 5, 1, 0⟩,\n"
+        "   ⟨1, 9, -2, 1⟩, ⟨1, 10, -3, 1⟩, ⟨1, 12, -2, 1⟩, ⟨1, 14, 1, 0⟩,\n"
+        "   ⟨2, 9, 1, 0⟩, ⟨2, 10, 1, 0⟩, ⟨2, 12, 1, 0⟩,\n"
+        "   ⟨3, 6, 1, 0⟩, ⟨3, 9, 1, 0⟩,\n"
+        "   ⟨4, 0, -2, 1⟩, ⟨4, 1, 0, 1⟩, ⟨4, 2, -1, 1⟩, ⟨4, 3, 1, 0⟩,\n"
+        "   ⟨4, 11, 1, 0⟩, ⟨5, 7, 1, 0⟩, ⟨5, 13, 1, 0⟩,\n"
+        "   ⟨6, 1, 1, 0⟩, ⟨6, 11, 1, 0⟩, ⟨7, 5, 1, 0⟩,\n"
+        "   ⟨8, 6, 1, 0⟩, ⟨8, 9, 0, 1⟩, ⟨8, 10, -2, 1⟩, ⟨8, 12, -1, 1⟩,\n"
+        "   ⟨8, 14, 1, 0⟩,\n"
+        "   ⟨9, 0, -3, 1⟩, ⟨9, 1, -2, 1⟩, ⟨9, 2, -2, 1⟩, ⟨9, 3, 1, 0⟩,\n"
+        "   ⟨10, 7, 1, 0⟩, ⟨10, 8, 1, 0⟩, ⟨11, 6, 1, 0⟩, ⟨11, 9, 1, 0⟩,\n"
+        "   ⟨12, 0, 1, 0⟩, ⟨12, 1, 1, 0⟩, ⟨12, 2, 1, 0⟩,\n"
+        "   ⟨13, 4, 1, 0⟩, ⟨13, 5, 1, 0⟩, ⟨14, 1, 1, 0⟩, ⟨14, 11, 1, 0⟩]\n\n"
+        "def neighbor1EdgeListG : List AffineEdgeG :=\n"
+        "  [⟨0, 9, 1, 0⟩, ⟨0, 12, 1, 0⟩,\n"
+        "   ⟨1, 9, -1, 1⟩, ⟨1, 12, -2, 1⟩, ⟨1, 14, 1, 0⟩,\n"
+        "   ⟨2, 15, 1, 0⟩, ⟨3, 9, 1, 0⟩, ⟨3, 12, 1, 0⟩,\n"
+        "   ⟨4, 15, 1, 0⟩, ⟨4, 16, 1, 0⟩, ⟨5, 10, 1, 0⟩,\n"
+        "   ⟨6, 7, 1, 0⟩, ⟨6, 11, 1, 0⟩, ⟨7, 8, 1, 0⟩, ⟨7, 13, 1, 0⟩,\n"
+        "   ⟨8, 12, 1, 0⟩,\n"
+        "   ⟨9, 0, -2, 1⟩, ⟨9, 1, -1, 1⟩, ⟨9, 2, -1, 1⟩, ⟨9, 3, 1, 0⟩,\n"
+        "   ⟨9, 4, 1, 0⟩, ⟨10, 0, 1, 0⟩, ⟨11, 5, 1, 0⟩, ⟨11, 6, 1, 0⟩,\n"
+        "   ⟨12, 0, 1, 0⟩, ⟨12, 1, 1, 0⟩, ⟨12, 2, 1, 0⟩, ⟨13, 9, 1, 0⟩,\n"
+        "   ⟨14, 0, 1, 0⟩, ⟨14, 1, 1, 0⟩, ⟨14, 2, 1, 0⟩, ⟨15, 10, 1, 0⟩,\n"
+        "   ⟨16, 7, 1, 0⟩, ⟨16, 11, 1, 0⟩]\n\n"
+        "def neighbor2EdgeListG : List AffineEdgeG :=\n"
+        "  [⟨0, 21, 1, 0⟩, ⟨1, 22, 1, 0⟩, ⟨1, 34, 1, 0⟩, ⟨2, 26, 1, 0⟩,\n"
+        "   ⟨3, 15, 0, 1⟩, ⟨3, 16, -1, 1⟩, ⟨3, 18, -2, 1⟩, ⟨3, 24, -1, 1⟩,\n"
+        "   ⟨3, 25, -1, 1⟩, ⟨3, 26, -2, 1⟩, ⟨3, 36, 1, 0⟩,\n"
+        "   ⟨4, 16, 1, 0⟩, ⟨4, 18, 1, 0⟩, ⟨5, 26, 1, 0⟩, ⟨6, 24, 1, 0⟩,\n"
+        "   ⟨7, 19, 1, 0⟩, ⟨7, 25, 1, 0⟩, ⟨7, 28, 1, 0⟩, ⟨7, 38, 1, 0⟩,\n"
+        "   ⟨8, 29, 1, 0⟩,\n"
+        "   ⟨9, 2, -1, 1⟩, ⟨9, 3, 0, 1⟩, ⟨9, 4, -1, 1⟩, ⟨9, 5, 1, 0⟩,\n"
+        "   ⟨9, 6, -1, 1⟩, ⟨9, 7, -2, 1⟩, ⟨9, 20, 0, 1⟩, ⟨9, 30, 1, 0⟩,\n"
+        "   ⟨9, 31, 1, 0⟩, ⟨9, 32, 1, 0⟩,\n"
+        "   ⟨10, 11, 1, 0⟩, ⟨10, 13, 1, 0⟩, ⟨11, 12, 1, 0⟩,\n"
+        "   ⟨12, 21, 1, 0⟩, ⟨12, 22, 1, 0⟩, ⟨12, 34, 1, 0⟩,\n"
+        "   ⟨13, 14, 1, 0⟩, ⟨13, 23, 1, 0⟩, ⟨13, 35, 1, 0⟩,\n"
+        "   ⟨14, 15, -1, 1⟩, ⟨14, 16, 0, 1⟩, ⟨14, 17, 1, 0⟩,\n"
+        "   ⟨14, 18, -1, 1⟩, ⟨14, 24, -2, 1⟩, ⟨14, 25, -1, 1⟩,\n"
+        "   ⟨14, 26, 0, 1⟩, ⟨14, 27, 1, 0⟩, ⟨14, 36, 1, 0⟩, ⟨14, 37, 1, 0⟩,\n"
+        "   ⟨15, 7, 1, 0⟩,\n"
+        "   ⟨16, 2, -2, 1⟩, ⟨16, 3, -1, 1⟩, ⟨16, 4, -1, 1⟩, ⟨16, 5, 1, 0⟩,\n"
+        "   ⟨16, 6, 0, 1⟩, ⟨16, 7, -1, 1⟩, ⟨16, 8, 1, 0⟩,\n"
+        "   ⟨16, 20, -2, 1⟩, ⟨16, 33, 1, 0⟩,\n"
+        "   ⟨17, 7, 1, 0⟩, ⟨18, 20, 1, 0⟩, ⟨19, 13, 1, 0⟩,\n"
+        "   ⟨20, 15, 1, 0⟩, ⟨21, 9, 1, 0⟩, ⟨22, 10, 1, 0⟩, ⟨23, 15, 1, 0⟩,\n"
+        "   ⟨24, 0, 1, 0⟩, ⟨24, 1, 1, 0⟩, ⟨24, 4, 1, 0⟩,\n"
+        "   ⟨25, 2, 1, 0⟩, ⟨25, 3, 1, 0⟩, ⟨26, 6, 1, 0⟩,\n"
+        "   ⟨27, 4, 1, 0⟩, ⟨27, 12, 1, 0⟩, ⟨28, 11, 1, 0⟩, ⟨29, 7, 1, 0⟩,\n"
+        "   ⟨30, 24, 1, 0⟩, ⟨31, 10, 1, 0⟩, ⟨31, 25, 1, 0⟩,\n"
+        "   ⟨32, 15, 1, 0⟩, ⟨33, 15, 1, 0⟩, ⟨34, 9, 1, 0⟩, ⟨34, 26, 1, 0⟩,\n"
+        "   ⟨35, 10, 1, 0⟩, ⟨35, 24, 1, 0⟩, ⟨35, 25, 1, 0⟩,\n"
+        "   ⟨36, 20, 1, 0⟩, ⟨37, 6, 1, 0⟩,\n"
+        "   ⟨38, 0, 1, 0⟩, ⟨38, 1, 1, 0⟩, ⟨38, 4, 1, 0⟩]\n\n"
+        "def neighbor0EdgesG : Finset AffineEdgeG := neighbor0EdgeListG.toFinset\n"
+        "def neighbor1EdgesG : Finset AffineEdgeG := neighbor1EdgeListG.toFinset\n"
+        "def neighbor2EdgesG : Finset AffineEdgeG := neighbor2EdgeListG.toFinset\n\n"
+        "def neighbor0BoundarySourceG : Finset Nat :=\n"
+        "  ({e ∈ neighbor0EdgesG | e.slope ≠ 0} : Finset AffineEdgeG).image AffineEdgeG.source\n"
+        "def neighbor0BoundaryTargetG : Finset Nat :=\n"
+        "  ({e ∈ neighbor0EdgesG | e.slope ≠ 0} : Finset AffineEdgeG).image AffineEdgeG.target\n"
+        "def neighbor1BoundarySourceG : Finset Nat :=\n"
+        "  ({e ∈ neighbor1EdgesG | e.slope ≠ 0} : Finset AffineEdgeG).image AffineEdgeG.source\n"
+        "def neighbor1BoundaryTargetG : Finset Nat :=\n"
+        "  ({e ∈ neighbor1EdgesG | e.slope ≠ 0} : Finset AffineEdgeG).image AffineEdgeG.target\n"
+        "def neighbor2BoundarySourceG : Finset Nat :=\n"
+        "  ({e ∈ neighbor2EdgesG | e.slope ≠ 0} : Finset AffineEdgeG).image AffineEdgeG.source\n"
+        "def neighbor2BoundaryTargetG : Finset Nat :=\n"
+        "  ({e ∈ neighbor2EdgesG | e.slope ≠ 0} : Finset AffineEdgeG).image AffineEdgeG.target\n\n"
+        "/-- Reproduced from the independently kernel-checked\n"
+        "    `lean/class_ii_neighbor_d_support.lean` (not re-derived here). -/\n"
+        "theorem neighbor0BoundarySourceG_eq : neighbor0BoundarySourceG = {1, 4, 8, 9} := by\n"
+        "  unfold neighbor0BoundarySourceG neighbor0EdgesG neighbor0EdgeListG; native_decide\n"
+        "theorem neighbor0BoundaryTargetG_eq : neighbor0BoundaryTargetG = {0, 1, 2, 9, 10, 12} := by\n"
+        "  unfold neighbor0BoundaryTargetG neighbor0EdgesG neighbor0EdgeListG; native_decide\n"
+        "theorem neighbor1BoundarySourceG_eq : neighbor1BoundarySourceG = {1, 9} := by\n"
+        "  unfold neighbor1BoundarySourceG neighbor1EdgesG neighbor1EdgeListG; native_decide\n"
+        "theorem neighbor1BoundaryTargetG_eq : neighbor1BoundaryTargetG = {0, 1, 2, 9, 12} := by\n"
+        "  unfold neighbor1BoundaryTargetG neighbor1EdgesG neighbor1EdgeListG; native_decide\n"
+        "theorem neighbor2BoundarySourceG_eq : neighbor2BoundarySourceG = {3, 9, 14, 16} := by\n"
+        "  unfold neighbor2BoundarySourceG neighbor2EdgesG neighbor2EdgeListG; native_decide\n"
+        "theorem neighbor2BoundaryTargetG_eq :\n"
+        "    neighbor2BoundaryTargetG = {2, 3, 4, 6, 7, 15, 16, 18, 20, 24, 25, 26} := by\n"
+        "  unfold neighbor2BoundaryTargetG neighbor2EdgesG neighbor2EdgeListG; native_decide\n\n";
+}
+
+// Renders `{a, b, c, ...}` for a concrete Nat list (Finset literal syntax).
+inline std::string render_nat_finset(const std::vector<long long>& xs) {
+    std::ostringstream out;
+    out << "{";
+    for (std::size_t i = 0; i < xs.size(); ++i) {
+        if (i > 0) out << ", ";
+        out << xs[i];
+    }
+    out << "}";
+    return out.str();
+}
+
+// Mechanically emits, PER `ClassIINeighborDSupportCertificate` node, a
+// `decide`-checked EQUALITY between the CONCRETE source/target index
+// sets C++ actually computed (from its own affine-edge catalog) and
+// the corresponding `neighborXBoundarySourceG`/`TargetG` -- which are
+// themselves proven, in the SAME embedded excerpt above, to equal the
+// literal sets `lean/class_ii_neighbor_d_support.lean` derives from
+// its independently maintained edge catalog. A divergence anywhere in
+// that chain (C++'s edges, this file's embedded copy, or the two
+// catalogs disagreeing on the boundary layer) would make the kernel
+// check legitimately fail.
+inline std::string render_class_ii_neighbor_d_support_instances(const mathlib::reflection::Trace& trace) {
+    std::ostringstream out;
+    long long counter = 0;
+    auto nodes = trace.find<mathlib::reflection::ClassIINeighborDSupportCertificate>();
+    if (nodes.empty()) return {};
+    out << class_ii_neighbor_d_support_lemma_lean();
+    for (const auto& [id, node] : nodes) {
+        (void)id;
+        std::string srcDef, tgtDef, srcEq, tgtEq;
+        if (node->neighbor == 0) {
+            srcDef = "neighbor0BoundarySourceG"; tgtDef = "neighbor0BoundaryTargetG";
+            srcEq = "neighbor0BoundarySourceG_eq"; tgtEq = "neighbor0BoundaryTargetG_eq";
+        } else if (node->neighbor == 1) {
+            srcDef = "neighbor1BoundarySourceG"; tgtDef = "neighbor1BoundaryTargetG";
+            srcEq = "neighbor1BoundarySourceG_eq"; tgtEq = "neighbor1BoundaryTargetG_eq";
+        } else if (node->neighbor == 2) {
+            srcDef = "neighbor2BoundarySourceG"; tgtDef = "neighbor2BoundaryTargetG";
+            srcEq = "neighbor2BoundarySourceG_eq"; tgtEq = "neighbor2BoundaryTargetG_eq";
+        } else {
+            continue;  // unknown neighbor index -- render nothing rather than guess
+        }
+        std::string name = "class_ii_neighbor_d_support_instance_" + std::to_string(counter++);
+        out << "/-- Mechanically emitted: the concrete source/target index sets C++\n";
+        out << "    actually computed for neighbor " << node->neighbor
+            << " equal " << srcDef << "/" << tgtDef << " exactly, which " << srcEq
+            << "/" << tgtEq << " (above) prove equal the literal sets. -/\n";
+        out << "theorem " << name << " :\n";
+        out << "    (" << render_nat_finset(node->sources) << " : Finset Nat) = " << srcDef
+            << " ∧ (" << render_nat_finset(node->targets) << " : Finset Nat) = " << tgtDef << " := by\n";
+        out << "  constructor <;> native_decide\n\n";
+    }
+    return out.str();
+}
+
+// Mechanically emits, PER `CayleyHamiltonCubicCertificate` node, a
+// `decide`-checked identity M^3 = M + I for the CONCRETE 3x3 integer
+// matrix C++ actually verified this for -- Lean re-derives M^3 itself
+// via Mathlib's own `Matrix` power (from these nine entries), it does
+// not just restate the C++'s own arithmetic.
+inline std::string render_cayley_hamilton_cubic_instances(const mathlib::reflection::Trace& trace) {
+    std::ostringstream out;
+    long long counter = 0;
+    auto nodes = trace.find<mathlib::reflection::CayleyHamiltonCubicCertificate>();
+    if (nodes.empty()) return {};
+    for (const auto& [id, node] : nodes) {
+        (void)id;
+        const auto& m = node->matrix;
+        std::string name = "cayley_hamilton_cubic_instance_" + std::to_string(counter++);
+        out << "/-- Mechanically emitted: " << node->description << ". -/\n";
+        out << "theorem " << name << " :\n";
+        out << "    (!![" << m[0] << "," << m[1] << "," << m[2] << ";"
+            << m[3] << "," << m[4] << "," << m[5] << ";"
+            << m[6] << "," << m[7] << "," << m[8]
+            << "] : Matrix (Fin 3) (Fin 3) Int) ^ 3 =\n";
+        out << "    (!![" << m[0] << "," << m[1] << "," << m[2] << ";"
+            << m[3] << "," << m[4] << "," << m[5] << ";"
+            << m[6] << "," << m[7] << "," << m[8]
+            << "] : Matrix (Fin 3) (Fin 3) Int) + 1 := by\n";
+        out << "  decide\n\n";
+    }
+    return out.str();
+}
+
+// Finding 29's general ordering lemma, hand-proven once: given a real
+// root bracketed above by hi3, another real root bracketed below by
+// lo4 and above by hi4, and a gap hi3 < lo4 plus a bound hi4 < target,
+// the first root is strictly less than the second, which is strictly
+// less than the target. Trivial from the bracket inequalities alone
+// (no polynomial-specific reasoning needed) -- the substance is in
+// the CONCRETE exact rational brackets each instance below supplies.
+inline const char* pisot_root_ordering_general_lemma_lean() {
+    return
+        "theorem pisot_root_strictly_between {hi3 lo4 hi4 beta3 beta4 target : ℝ}\n"
+        "    (h3hi : beta3 ≤ hi3) (h4lo : lo4 ≤ beta4) (h4hi : beta4 ≤ hi4)\n"
+        "    (hgap : hi3 < lo4) (hbound : hi4 < target) :\n"
+        "    beta3 < beta4 ∧ beta4 < target := by\n"
+        "  constructor <;> linarith\n\n";
+}
+
+// Mechanically emits one Lean corollary PER `PisotRootOrderingCertificate`
+// node -- concrete exact rational brackets from `pisot_classify_3x3`/
+// `_4x4` (Sturm-chain isolation, not floating point); the gap/bound
+// inequalities are concrete rational facts discharged by `norm_num`.
+inline std::string render_pisot_root_ordering_instances(const mathlib::reflection::Trace& trace) {
+    std::ostringstream out;
+    long long counter = 0;
+    auto nodes = trace.find<mathlib::reflection::PisotRootOrderingCertificate>();
+    if (nodes.empty()) return {};
+    out << pisot_root_ordering_general_lemma_lean();
+    for (const auto& [id, node] : nodes) {
+        (void)id;
+        std::string name = "pisot_root_ordering_instance_" + std::to_string(counter++);
+        out << "/-- Mechanically emitted: instantiates the general lemma above for the\n";
+        out << "    a-bonacci family at a=" << node->a << " (Finding 29). -/\n";
+        out << "theorem " << name << " {beta3 beta4 : ℝ}\n";
+        out << "    (h3hi : beta3 ≤ (" << node->hi3_num << " : ℝ) / (" << node->hi3_den << " : ℝ))\n";
+        out << "    (h4lo : (" << node->lo4_num << " : ℝ) / (" << node->lo4_den << " : ℝ) ≤ beta4)\n";
+        out << "    (h4hi : beta4 ≤ (" << node->hi4_num << " : ℝ) / (" << node->hi4_den << " : ℝ)) :\n";
+        out << "    beta3 < beta4 ∧ beta4 < (" << (node->a + 1) << " : ℝ) := by\n";
+        out << "  have hgap : (" << node->hi3_num << " : ℝ) / (" << node->hi3_den << " : ℝ) < ("
+            << node->lo4_num << " : ℝ) / (" << node->lo4_den << " : ℝ) := by norm_num\n";
+        out << "  have hbound : (" << node->hi4_num << " : ℝ) / (" << node->hi4_den << " : ℝ) < ("
+            << (node->a + 1) << " : ℝ) := by norm_num\n";
+        out << "  exact pisot_root_strictly_between h3hi h4lo h4hi hgap hbound\n\n";
+    }
+    return out.str();
+}
+
+// A self-contained excerpt of `lean/class_ii_six_vertex_graduation.
+// lean` -- reproduced, not re-derived. `promotedNodes`/`transferredNode`
+// are GENERAL functions of q (not a fixed table), and `promotedNodes_
+// nodup`/`promoted_disjoint_transferred` are already proven for EVERY
+// q >= 4 -- the general lemmas this excerpt instantiates.
+inline const char* class_ii_six_vertex_graduation_lemma_lean() {
+    return
+        "structure Node5G where\n"
+        "  i : Int\n  x0 : Int\n  x1 : Int\n  x2 : Int\n  j : Int\n"
+        "  deriving DecidableEq\n\n"
+        "def promotedNodesG (q : Int) : List Node5G :=\n"
+        "  [⟨0, q - 2, -(q - 2), 2, 1⟩,\n"
+        "   ⟨2, -(q - 2), q - 2, -2, 0⟩,\n"
+        "   ⟨2, -(q - 1), q - 1, -1, 1⟩,\n"
+        "   ⟨2, -q, q, -1, 1⟩,\n"
+        "   ⟨2, -q, q, -2, 0⟩,\n"
+        "   ⟨2, q - 2, -(q - 2), 1, 1⟩]\n\n"
+        "def transferredNodeG (q : Int) : Node5G :=\n"
+        "  ⟨2, -(q - 1), q - 1, -2, 0⟩\n\n"
+        "/-- Reproduced from the independently kernel-checked\n"
+        "    `lean/class_ii_six_vertex_graduation.lean` (not re-derived here). -/\n"
+        "theorem promotedNodesG_nodup (q : Int) (_hq : 4 ≤ q) :\n"
+        "    (promotedNodesG q).Nodup := by\n"
+        "  unfold promotedNodesG; simp [Node5G.mk.injEq]\n\n"
+        "theorem promoted_disjoint_transferredG (q : Int) (_hq : 4 ≤ q) :\n"
+        "    (promotedNodesG q).all (· ≠ transferredNodeG q) := by\n"
+        "  unfold promotedNodesG transferredNodeG; simp [Node5G.mk.injEq] <;> omega\n\n";
+}
+
+// Renders `[⟨i,x0,x1,x2,j⟩, ...]` for a concrete Node5G list.
+inline std::string render_node5g_list(const std::array<mathlib::reflection::ClassIINodeData, 6>& nodes) {
+    std::ostringstream out;
+    out << "[";
+    for (std::size_t i = 0; i < nodes.size(); ++i) {
+        if (i > 0) out << ", ";
+        const auto& n = nodes[i];
+        out << "(⟨" << n.left << "," << n.x0 << "," << n.x1 << "," << n.x2 << "," << n.right << "⟩ : Node5G)";
+    }
+    out << "]";
+    return out.str();
+}
+
+// Mechanically emits, PER `ClassIISixVertexGraduationCertificate`
+// node, `decide`-checked equalities between the CONCRETE promoted/
+// transferred nodes C++ actually built at that `a` and `promotedNodesG`/
+// `transferredNodeG` evaluated at q=a-1 (order-independent for the
+// promoted six, via `.toFinset`, since the C++ side is an
+// order-agnostic `std::set`), then instantiates the ALREADY-PROVEN
+// general `Nodup`/disjoint lemmas at that q and rewrites through the
+// equalities to conclude they hold for the concrete data too.
+inline std::string render_class_ii_six_vertex_graduation_instances(const mathlib::reflection::Trace& trace) {
+    std::ostringstream out;
+    long long counter = 0;
+    auto nodes = trace.find<mathlib::reflection::ClassIISixVertexGraduationCertificate>();
+    if (nodes.empty()) return {};
+    out << class_ii_six_vertex_graduation_lemma_lean();
+    for (const auto& [id, node] : nodes) {
+        (void)id;
+        const long long q = node->a - 1;
+        const auto& t = node->transferred;
+        std::string name = "class_ii_six_vertex_graduation_instance_" + std::to_string(counter++);
+        out << "/-- Mechanically emitted: the concrete promoted/transferred nodes C++\n";
+        out << "    actually built at a=" << node->a << " equal promotedNodesG/transferredNodeG\n";
+        out << "    at q=" << q << " exactly, so the already-proven general Nodup/disjoint\n";
+        out << "    facts (above) transfer to this concrete data. -/\n";
+        out << "theorem " << name << " :\n";
+        out << "    (" << render_node5g_list(node->promoted) << " : List Node5G).toFinset = (promotedNodesG (" << q << " : Int)).toFinset ∧\n";
+        out << "    (⟨" << t.left << "," << t.x0 << "," << t.x1 << "," << t.x2 << "," << t.right
+            << "⟩ : Node5G) = transferredNodeG (" << q << " : Int) ∧\n";
+        out << "    (promotedNodesG (" << q << " : Int)).Nodup ∧\n";
+        out << "    (promotedNodesG (" << q << " : Int)).all (· ≠ transferredNodeG (" << q << " : Int)) := by\n";
+        out << "  refine ⟨by decide, by decide, ?_, ?_⟩\n";
+        out << "  · exact promotedNodesG_nodup (" << q << " : Int) (by norm_num)\n";
+        out << "  · exact promoted_disjoint_transferredG (" << q << " : Int) (by norm_num)\n\n";
+    }
+    return out.str();
+}
+
+// A self-contained excerpt of `lean/class_ii_neighbor2_extensions.
+// lean`'s `neighbor2TerminalSextet` -- reproduced, not re-derived
+// (re-expressed with a locally-defined `ClassIINodeTSG` struct rather
+// than the source file's tuple type or the `ClassIINodeG` struct used
+// by other excerpts, to keep this excerpt self-contained regardless
+// of which other excerpts co-occur in the same generated module).
+inline const char* class_ii_terminal_sextet_lemma_lean() {
+    return
+        "structure ClassIINodeTSG where\n"
+        "  left : Int\n  x0 : Int\n  x1 : Int\n  x2 : Int\n  right : Int\n"
+        "  deriving DecidableEq\n\n"
+        "def neighbor2TerminalSextetG (a : Int) : List ClassIINodeTSG :=\n"
+        "  let q := a - 2\n"
+        "  [⟨0, q, -(q+1), 2, 2⟩, ⟨0, q, -q, 2, 1⟩, ⟨1, -q, q, -2, 0⟩,\n"
+        "   ⟨2, -q, q, -2, 0⟩, ⟨2, -q, q+1, -2, 0⟩, ⟨2, q, -q, 1, 1⟩]\n\n"
+        "/-- Reproduced from the independently kernel-checked\n"
+        "    `lean/class_ii_neighbor2_extensions.lean` (not re-derived here). -/\n"
+        "theorem neighbor2TerminalSextetG_length (a : Int) :\n"
+        "    (neighbor2TerminalSextetG a).length = 6 := by\n"
+        "  unfold neighbor2TerminalSextetG; rfl\n\n";
+}
+
+// Renders `[⟨i,x0,x1,x2,j⟩, ...]` for a concrete ClassIINodeTSG list.
+inline std::string render_class_ii_node_tsg_list(
+    const std::vector<mathlib::reflection::ClassIINodeData>& nodes) {
+    std::ostringstream out;
+    out << "[";
+    for (std::size_t i = 0; i < nodes.size(); ++i) {
+        if (i > 0) out << ", ";
+        const auto& n = nodes[i];
+        out << "(⟨" << n.left << "," << n.x0 << "," << n.x1 << "," << n.x2 << "," << n.right << "⟩ : ClassIINodeTSG)";
+    }
+    out << "]";
+    return out.str();
+}
+
+// Mechanically emits, PER `ClassIITerminalSextetCertificate` node, a
+// `decide`-checked EQUALITY between the CONCRETE 6-node list C++
+// actually built at that `a` and `neighbor2TerminalSextetG` evaluated
+// at that exact `a` (same field order both sides -- a genuine list
+// equality, not just membership).
+inline std::string render_class_ii_terminal_sextet_instances(const mathlib::reflection::Trace& trace) {
+    std::ostringstream out;
+    long long counter = 0;
+    auto nodes = trace.find<mathlib::reflection::ClassIITerminalSextetCertificate>();
+    if (nodes.empty()) return {};
+    out << class_ii_terminal_sextet_lemma_lean();
+    for (const auto& [id, node] : nodes) {
+        (void)id;
+        std::array<mathlib::reflection::ClassIINodeData, 6> arr = node->nodes;
+        std::vector<mathlib::reflection::ClassIINodeData> vec(arr.begin(), arr.end());
+        std::string name = "class_ii_terminal_sextet_instance_" + std::to_string(counter++);
+        out << "/-- Mechanically emitted: the concrete terminal sextet C++ actually\n";
+        out << "    built at a=" << node->a << " equals neighbor2TerminalSextetG at that a. -/\n";
+        out << "theorem " << name << " :\n";
+        out << "    " << render_class_ii_node_tsg_list(vec) << " = neighbor2TerminalSextetG (" << node->a << " : Int) := by\n";
+        out << "  decide\n\n";
+    }
+    return out.str();
+}
+
+// A self-contained excerpt of `lean/class_ii_neighbor2_extensions.
+// lean`'s `neighbor2PenultimatePair` -- reproduced, not re-derived
+// (own locally-scoped struct, same reasoning as the terminal-sextet
+// excerpt above: stays correct whether rendered alone or alongside
+// other excerpts).
+inline const char* class_ii_penultimate_pair_lemma_lean() {
+    return
+        "structure ClassIINodePPG where\n"
+        "  left : Int\n  x0 : Int\n  x1 : Int\n  x2 : Int\n  right : Int\n"
+        "  deriving DecidableEq\n\n"
+        "def neighbor2PenultimatePairG (a : Int) : List ClassIINodePPG :=\n"
+        "  [⟨2, -(a-1), a-1, -1, 0⟩, ⟨2, -(a-2), a-2, -2, 0⟩]\n\n"
+        "/-- Reproduced from the independently kernel-checked\n"
+        "    `lean/class_ii_neighbor2_extensions.lean` (not re-derived here). -/\n"
+        "theorem neighbor2PenultimatePairG_length (a : Int) :\n"
+        "    (neighbor2PenultimatePairG a).length = 2 := by\n"
+        "  unfold neighbor2PenultimatePairG; rfl\n\n";
+}
+
+// Mechanically emits, PER `ClassIIPenultimatePairCertificate` node, a
+// `decide`-checked EQUALITY (order-independent, via `.toFinset`,
+// since the C++ side is an order-agnostic `std::set`) between the
+// CONCRETE pair C++ actually built at that `a` and
+// `neighbor2PenultimatePairG` evaluated at that exact `a`.
+inline std::string render_class_ii_penultimate_pair_instances(const mathlib::reflection::Trace& trace) {
+    std::ostringstream out;
+    long long counter = 0;
+    auto nodes = trace.find<mathlib::reflection::ClassIIPenultimatePairCertificate>();
+    if (nodes.empty()) return {};
+    out << class_ii_penultimate_pair_lemma_lean();
+    for (const auto& [id, node] : nodes) {
+        (void)id;
+        std::string name = "class_ii_penultimate_pair_instance_" + std::to_string(counter++);
+        out << "/-- Mechanically emitted: the concrete penultimate pair C++ actually\n";
+        out << "    built at a=" << node->a << " equals neighbor2PenultimatePairG at that a. -/\n";
+        out << "theorem " << name << " :\n";
+        out << "    ([";
+        for (std::size_t i = 0; i < node->nodes.size(); ++i) {
+            if (i > 0) out << ", ";
+            const auto& n = node->nodes[i];
+            out << "(⟨" << n.left << "," << n.x0 << "," << n.x1 << "," << n.x2 << "," << n.right << "⟩ : ClassIINodePPG)";
+        }
+        out << "] : List ClassIINodePPG).toFinset = (neighbor2PenultimatePairG (" << node->a << " : Int)).toFinset := by\n";
+        out << "  decide\n\n";
+    }
+    return out.str();
+}
+
+// A self-contained excerpt of `lean/class_ii_neighbor2_extensions.
+// lean`'s `neighbor2InteriorTip` -- reproduced, not re-derived (own
+// locally-scoped struct, same reasoning as the other class_ii_
+// neighbor2_extensions excerpts above).
+inline const char* class_ii_interior_tip_lemma_lean() {
+    return
+        "structure ClassIINodeITG where\n"
+        "  left : Int\n  x0 : Int\n  x1 : Int\n  x2 : Int\n  right : Int\n"
+        "  deriving DecidableEq\n\n"
+        "def neighbor2InteriorTipG (r : Int) : ClassIINodeITG :=\n"
+        "  ⟨2, -r, r, -1, 0⟩\n\n"
+        "/-- Reproduced from the independently kernel-checked\n"
+        "    `lean/class_ii_neighbor2_extensions.lean` (not re-derived here). -/\n"
+        "theorem neighbor2InteriorTipG_injective :\n"
+        "    Function.Injective neighbor2InteriorTipG := by\n"
+        "  intro r s h\n"
+        "  simp [neighbor2InteriorTipG, ClassIINodeITG.mk.injEq] at h\n"
+        "  exact h\n\n";
+}
+
+// Mechanically emits, PER `ClassIIInteriorTipCertificate` node, a
+// `decide`-checked EQUALITY between the CONCRETE node C++ actually
+// built at that `r` and `neighbor2InteriorTipG` evaluated at that
+// exact `r`.
+inline std::string render_class_ii_interior_tip_instances(const mathlib::reflection::Trace& trace) {
+    std::ostringstream out;
+    long long counter = 0;
+    auto nodes = trace.find<mathlib::reflection::ClassIIInteriorTipCertificate>();
+    if (nodes.empty()) return {};
+    out << class_ii_interior_tip_lemma_lean();
+    for (const auto& [id, node] : nodes) {
+        (void)id;
+        const auto& n = node->node;
+        std::string name = "class_ii_interior_tip_instance_" + std::to_string(counter++);
+        out << "/-- Mechanically emitted: the concrete node C++ actually built at r="
+            << node->r << " equals neighbor2InteriorTipG at that r. -/\n";
+        out << "theorem " << name << " :\n";
+        out << "    (⟨" << n.left << "," << n.x0 << "," << n.x1 << "," << n.x2 << "," << n.right
+            << "⟩ : ClassIINodeITG) = neighbor2InteriorTipG (" << node->r << " : Int) := by\n";
+        out << "  decide\n\n";
+    }
+    return out.str();
+}
+
+// A self-contained excerpt of `lean/class_ii_global_round_partition.
+// lean` -- reproduced, not re-derived. `classIIGlobalRoundPhase` is a
+// GENERAL, total decision procedure over (a, r), already proven
+// exhaustive/unique for every legal round (a>=7, 1<=r<=a+1).
+inline const char* class_ii_global_round_phase_lemma_lean() {
+    return
+        "inductive ClassIIGlobalRoundPhaseG\n"
+        "  | base | stable | penultimate | terminal | repeated\n"
+        "  deriving DecidableEq\n\n"
+        "def classIIGlobalRoundPhaseG (a r : Int) : ClassIIGlobalRoundPhaseG :=\n"
+        "  if r ≤ 4 then .base\n"
+        "  else if r ≤ a - 2 then .stable\n"
+        "  else if r = a - 1 then .penultimate\n"
+        "  else if r = a then .terminal\n"
+        "  else .repeated\n\n"
+        "/-- Reproduced from the independently kernel-checked\n"
+        "    `lean/class_ii_global_round_partition.lean` (not re-derived here). -/\n"
+        "theorem classIIGlobalRoundPhaseG_spec (a r : Int) (ha : 7 ≤ a)\n"
+        "    (hr0 : 1 ≤ r) (hr1 : r ≤ a + 1) :\n"
+        "    (classIIGlobalRoundPhaseG a r = .base ↔ r ≤ 4) ∧\n"
+        "    (classIIGlobalRoundPhaseG a r = .stable ↔ 5 ≤ r ∧ r ≤ a - 2) ∧\n"
+        "    (classIIGlobalRoundPhaseG a r = .penultimate ↔ r = a - 1) ∧\n"
+        "    (classIIGlobalRoundPhaseG a r = .terminal ↔ r = a) ∧\n"
+        "    (classIIGlobalRoundPhaseG a r = .repeated ↔ r = a + 1) := by\n"
+        "  unfold classIIGlobalRoundPhaseG\n"
+        "  split_ifs <;> simp_all <;> omega\n\n";
+}
+
+inline const char* class_ii_global_round_phase_name(int phase) {
+    switch (phase) {
+        case 0: return "ClassIIGlobalRoundPhaseG.base";
+        case 1: return "ClassIIGlobalRoundPhaseG.stable";
+        case 2: return "ClassIIGlobalRoundPhaseG.penultimate";
+        case 3: return "ClassIIGlobalRoundPhaseG.terminal";
+        default: return "ClassIIGlobalRoundPhaseG.repeated";
+    }
+}
+
+// Mechanically emits, PER `ClassIIGlobalRoundPhaseCertificate` node, a
+// `decide`-checked EQUALITY between the CONCRETE phase C++ actually
+// computed at that (a, round) and `classIIGlobalRoundPhaseG` evaluated
+// at that exact (a, round). The already-proven general `_spec`
+// iff-characterization (embedded above, reproduced from the source
+// file) additionally guarantees -- for any legal (a, round) -- that
+// this phase satisfies its displayed domain condition, without this
+// excerpt needing to instantiate it separately per instance.
+inline std::string render_class_ii_global_round_phase_instances(const mathlib::reflection::Trace& trace) {
+    std::ostringstream out;
+    long long counter = 0;
+    auto nodes = trace.find<mathlib::reflection::ClassIIGlobalRoundPhaseCertificate>();
+    if (nodes.empty()) return {};
+    out << class_ii_global_round_phase_lemma_lean();
+    for (const auto& [id, node] : nodes) {
+        (void)id;
+        std::string name = "class_ii_global_round_phase_instance_" + std::to_string(counter++);
+        out << "/-- Mechanically emitted: the concrete phase C++ actually computed at\n";
+        out << "    a=" << node->a << ", round=" << node->round
+            << " equals classIIGlobalRoundPhaseG at that (a,round). -/\n";
+        out << "theorem " << name << " :\n";
+        out << "    classIIGlobalRoundPhaseG (" << node->a << " : Int) (" << node->round << " : Int) = "
+            << class_ii_global_round_phase_name(node->phase) << " := by\n";
+        out << "  decide\n\n";
+    }
+    return out.str();
+}
+
+// Finding 12's general lemma, already kernel-checked once
+// (lean/class_ii_round234_shape_closure.lean): an affine integer
+// function with nonzero slope can equal a fixed target for at most
+// one input; if that unique solution is below a threshold, it never
+// re-hits the target at or above it.
+inline const char* both_fixed_affine_general_lemma_lean() {
+    return
+        "theorem affine_no_solution_at_or_above_threshold\n"
+        "    (const_ slope target a0 threshold : ℤ)\n"
+        "    (hslope : slope ≠ 0)\n"
+        "    (ha0 : const_ + a0 * slope = target)\n"
+        "    (hbelow : a0 < threshold) :\n"
+        "    ∀ a : ℤ, threshold ≤ a → const_ + a * slope ≠ target := by\n"
+        "  intro a ha hcontra\n"
+        "  have heq : a0 * slope = a * slope := by linarith [ha0, hcontra]\n"
+        "  have : a0 = a := by\n"
+        "    have := mul_right_cancel₀ hslope heq\n"
+        "    linarith [this]\n"
+        "  omega\n\n";
+}
+
+// Mechanically emits one Lean corollary PER `BothFixedAffineCertificate`
+// node -- concrete CONST/slope/target/a_required from Finding 12's
+// closed-form both-fixed proof; `ha0`/`hbelow` are decided by
+// `norm_num` on concrete integers.
+inline std::string render_both_fixed_affine_instances(const mathlib::reflection::Trace& trace) {
+    std::ostringstream out;
+    long long counter = 0;
+    auto nodes = trace.find<mathlib::reflection::BothFixedAffineCertificate>();
+    if (nodes.empty()) return {};
+    out << both_fixed_affine_general_lemma_lean();
+    for (const auto& [id, node] : nodes) {
+        (void)id;
+        std::string name = "both_fixed_affine_instance_" + std::to_string(counter++);
+        out << "/-- Mechanically emitted: instantiates the general lemma above for\n";
+        out << "    CONST=" << node->const_ << ", slope=" << node->slope
+            << ", target=" << node->target << ", a_required=" << node->a_required << ". -/\n";
+        out << "theorem " << name << " :\n";
+        out << "    ∀ a : ℤ, (7 : ℤ) ≤ a → (" << node->const_ << " : ℤ) + a * (" << node->slope
+            << " : ℤ) ≠ (" << node->target << " : ℤ) := by\n";
+        out << "  apply affine_no_solution_at_or_above_threshold (" << node->const_ << " : ℤ) ("
+            << node->slope << " : ℤ) (" << node->target << " : ℤ) (" << node->a_required << " : ℤ) (7 : ℤ)\n";
+        out << "  · norm_num\n";
+        out << "  · norm_num\n";
+        out << "  · norm_num\n\n";
+    }
+    return out.str();
+}
+
 inline std::string render_reflective_lean_module(const mathlib::reflection::Trace& trace) {
     if (trace.empty()) throw std::runtime_error("cannot render proof module without provenance");
     std::ostringstream out;
@@ -1220,7 +1939,18 @@ inline std::string render_reflective_lean_module(const mathlib::reflection::Trac
 
     out << render_class_ii_shell_round_instances(trace);
     out << render_class_ii_fixed_table_instances(trace);
+    out << render_class_ii_d_cont_in_pre_contact_instances(trace);
+    out << render_round1_raw27_instances(trace);
+    out << render_class_ii_neighbor_d_support_instances(trace);
     out << render_class_ii_terminal_shell_instances(trace);
+    out << render_cayley_hamilton_cubic_instances(trace);
+    out << render_pisot_root_ordering_instances(trace);
+    out << render_class_ii_six_vertex_graduation_instances(trace);
+    out << render_class_ii_terminal_sextet_instances(trace);
+    out << render_class_ii_penultimate_pair_instances(trace);
+    out << render_class_ii_interior_tip_instances(trace);
+    out << render_class_ii_global_round_phase_instances(trace);
+    out << render_both_fixed_affine_instances(trace);
 
     if (has_r_matrix_proof(trace)) {
         out << "/-- Symbolic family reflected by `mathlib::nbonacci_r_matrix`. -/\n";

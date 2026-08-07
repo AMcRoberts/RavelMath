@@ -45,6 +45,21 @@ class_ii_neighbor2_global_round_phase(long long a, long long round) {
     return ClassIINeighbor2GlobalRoundPhase::repeated;
 }
 
+// Threads the CONCRETE phase C++ actually computed for (a, round) at
+// the reflection trace -- a dedicated wrapper rather than
+// instrumenting class_ii_neighbor2_global_round_phase itself (which
+// runs inside loops at several other call sites in this file; adding
+// tracing there would flood any active trace with unrelated entries).
+inline void class_ii_global_round_phase_reflect(long long a, long long round) {
+    if (!mathlib::reflection::enabled()) return;
+    const auto phase = class_ii_neighbor2_global_round_phase(a, round);
+    mathlib::reflection::ClassIIGlobalRoundPhaseCertificate node;
+    node.a = a;
+    node.round = round;
+    node.phase = static_cast<int>(phase);
+    mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, node);
+}
+
 inline std::set<SNode<3>>
 class_ii_neighbor2_interior_pruning_rank1_seed() {
     std::set<SNode<3>> result;
@@ -406,6 +421,25 @@ inline std::set<SNode<3>>
 class_ii_neighbor2_penultimate_survivor_transfer(long long a) {
     const long long q = a - 1;
     return {{2, {-(q - 1), q - 1, -2}, 0}};
+}
+
+// Threads the CONCRETE promoted/transferred nodes at a specific `a`
+// into the trace (if one is active). Matches lean/class_ii_six_
+// vertex_graduation.lean's `promotedNodes`/`transferredNode` (already
+// independently cross-checked at runtime for a in [5,32] by
+// tests/lean_class_ii_catalogue_cross_check_test.cpp, entry [1]).
+inline void class_ii_six_vertex_graduation_reflect(long long a) {
+    if (!mathlib::reflection::enabled()) return;
+    const auto promoted = class_ii_neighbor2_penultimate_promoted_states(a);
+    const auto transfer = class_ii_neighbor2_penultimate_survivor_transfer(a);
+    if (promoted.size() != 6 || transfer.size() != 1) return;
+    mathlib::reflection::ClassIISixVertexGraduationCertificate node;
+    node.a = a;
+    std::size_t idx = 0;
+    for (const auto& n : promoted) node.promoted[idx++] = {n.i, n.x[0], n.x[1], n.x[2], n.j};
+    const auto& t = *transfer.begin();
+    node.transferred = {t.i, t.x[0], t.x[1], t.x[2], t.j};
+    mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, node);
 }
 
 inline std::vector<std::set<SNode<3>>>

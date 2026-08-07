@@ -473,6 +473,211 @@ NOT get a Lean corollary" as part of adding it, rather than retrofitting
 blind and forcing empirical results into a formal-proof shape they
 don't deserve.
 
+**2026-08-07 update -- seventh Class-II connection: Round-1 raw-27
+target, via extract-then-reflect.** `app/class_ii_neighbor2_round1_
+red_forward_check.cpp`'s `target_states()` (27-tuple raw-target list)
+was verified byte-for-byte identical to `lean/class_ii_round1_red_
+pruning.lean`'s `round1Raw27`. Rather than record a citation, extracted
+it into a shared `ravel::class_ii_round1_raw27_targets()` (`include/
+ravel/proof/class_ii_round1_red_pruning_data.hpp`) that the app file
+now calls (regression-checked identical output: `CLOSED_FORM_CHECK
+tested=202 mismatches=0`, same as before the refactor) and that
+threads its concrete output into `ClassIIFixedTableCertificate`. The
+renderer emits a `decide`-checked list EQUALITY (content and order,
+the strongest form used so far -- prior fixed-table checks only
+proved membership) against `round1Raw27G`, a verbatim reproduction of
+the Lean file's own list. Kernel-checks clean, zero `sorry`. See
+Finding 9's 2026-08-07 addendum for detail. Seven of Findings 1-16 now
+genuinely connected.
+
+**2026-08-07 update -- eighth Class-II connection: neighbor-2 fixed
+24-state table.** Instrumented `class_ii_neighbor2_fixed_extension_
+states()` directly (it's already a shared function called from ~10
+sites, no extraction needed) to thread its concrete 24 nodes into
+`ClassIIFixedTableCertificate{table="neighbor2_fixed"}`. Renderer
+embeds `neighbor2FixedNode`'s Lean table verbatim and decides
+membership. This is the first connection for a table the project ALSO
+independently cross-checks numerically at runtime
+(`tests/lean_class_ii_catalogue_cross_check_test.cpp`, all 8 of its
+comparisons re-run and still agree after the change) -- the reflection
+layer adds a kernel-checked form on top of, not instead of, that
+existing computational trust. See Finding 9's 2026-08-07 addendum.
+Eight of Findings 1-16 now genuinely connected.
+
+**2026-08-07 update -- ninth Class-II connection: neighbor D-matrix
+boundary-layer support.** Added `class_ii_neighbor_d_support_reflect
+(neighbor)` (`include/ravel/class_ii_neighbor_family.hpp`) threading
+the concrete boundary-layer source/target index sets into
+`ClassIINeighborDSupportCertificate`. The renderer embeds `lean/
+class_ii_neighbor_d_support.lean`'s three affine-edge catalogs (41/34/
+91 entries) and re-derives (via `native_decide`) the same boundary-
+layer facts that file proves, then decides the CONCRETE C++ sets equal
+those Lean-derived sets -- both sides independently computed from
+their own (separately maintained) edge catalog, forced to agree by
+the kernel. See Finding 9's 2026-08-07 addendum. Nine of Findings 1-16
+now genuinely connected.
+
+**2026-08-07 update -- Finding 23's Cayley-Hamilton relation
+retrofitted.** Finding 23's argument leans on sigma_{0,1}'s incidence
+matrix satisfying `M^3 = M + I` (from its minimal polynomial having
+coefficients in `{-1,0,1}`) -- previously asserted only by hand. Built
+`stage_cayley_hamilton_cubic` (computes `M` from the actual
+substitution images, checks the relation by exact integer arithmetic,
+records only on success; negative-control-tested with the identity
+matrix, which correctly records nothing) and a renderer that has Lean
+independently re-derive `M^3` via Mathlib's `Matrix` power and
+`decide` the identity. This closes a small but real gap: the fact was
+used but never previously checkable outside prose. See Finding 23's
+2026-08-07 addendum. The REST of Finding 23 (the walk-realizability
+composition-counting layer) and all of Finding 22 (the landmark-vector
+subset-sum-collision question) remain open/unformalized -- this
+retrofit covers only the one clean finite sub-fact, not the findings'
+main open questions.
+
+**2026-08-07 update -- Finding 29's n=3<n=4<a+1 ordering retrofitted
+(the exact instance-level fact, not the open general claim).** Reused
+the exact rational brackets `pisot_classify_3x3`/`_4x4` already
+certify (Sturm-chain isolation, no floating point) rather than the
+app's floating-point midpoints. A general ordering lemma over bracket
+hypotheses (`beta ≤ hi`, `lo ≤ beta'`, `hi < lo'`, `hi' < target`
+implies `beta < beta' < target` -- trivial, `linarith`) is instantiated
+per `a=1..5` with the concrete rational bounds, discharged by
+`norm_num`. This is the SAME shape as Finding 32's earlier win
+(bracket data + a tiny general ordering/algebra lemma), applied here
+to root COMPARISON rather than root ALGEBRA. See Finding 29's
+2026-08-07 addendum. The general "monotone in n, for every n" claim
+Finding 29 actually makes remains open -- this covers only the
+n=3-vs-n=4 instance, exactly as the underlying C++ computation itself
+only ever checked those two degrees.
+
+**2026-08-07 update -- tenth Class-II connection: six-vertex
+graduation, the first GENERAL-in-q Lean function connected (not a
+fixed table).** `class_ii_six_vertex_graduation_reflect(a)` threads
+the concrete 6 promoted + 1 transferred nodes; the renderer decides
+them equal to `promotedNodes`/`transferredNode` (functions of `q=a-1`,
+already proven `Nodup`/disjoint for EVERY `q>=4`) evaluated at that
+`q`, then instantiates those already-proven general facts. This is a
+step up in generality from the earlier fixed-table connections: the
+Lean side genuinely varies with the instance parameter, not just the
+C++ side. See Finding 9's 2026-08-07 addendum. Ten of Findings 1-16
+now genuinely connected.
+
+**2026-08-07 update -- eleventh/twelfth Class-II connections: backward
+closure layers.** Instrumented the two previously-bare
+`class_ii_pre_contact_first_backward_layer`/`_second_backward_layer`
+functions directly (small, already-shared, no extraction needed).
+Extended the fixed-table renderer with a new dispatch case for a
+single non-Kind-indexed node (`second_backward`, direct equality
+instead of an existential). Twelve of Findings 1-16 now genuinely
+connected -- most of the low-risk fixed-table surface in `class_ii_
+affine_shells.lean`/`class_ii_neighbor2_extensions.lean` is now
+covered; remaining untouched Class-II Lean files (`class_ii_balanced_
+pivot.lean`, `class_ii_global_round_partition.lean`, `class_ii_
+round234_shape_closure.lean`, `class_ii_neighbor2_extensions.lean`'s
+terminal-sextet/penultimate-pair/interior-tip parametric families) are
+the next candidates if this continues.
+
+**2026-08-07 update -- thirteenth Class-II connection: terminal
+sextet, second general-in-parameter Lean function connected.**
+Instrumented `class_ii_neighbor2_terminal_affine_states(a)` directly;
+decides LIST equality (not membership) against `neighbor2TerminalSextet`
+evaluated at that `a`. Hit a real issue building this: the excerpt
+initially reused the `ClassIINodeG` struct from the fixed-tables
+excerpt, which broke when rendered ALONE (a trace with only this
+certificate type never emits that struct) -- fixed by giving this
+excerpt its own locally-scoped `ClassIINodeTSG` struct, so each
+excerpt stays correct standalone AND collision-free when co-present
+with others. Worth remembering for future excerpts: don't assume
+another render function's struct is in scope. Thirteen of Findings
+1-16 now genuinely connected. Remaining candidates in `class_ii_
+neighbor2_extensions.lean`: the penultimate pair and interior tip
+(both also general-in-parameter, same shape as this one).
+
+**2026-08-07 update -- fourteenth Class-II connection: penultimate
+pair, first genuine extract-a-shared-lemma refactor this stretch.**
+`class_ii_neighbor2_penultimate_extension_states(a)`'s inline 2-node
+construction was pulled out into its own `class_ii_neighbor2_
+penultimate_pair(a)` -- directly matching AM's "convert shared uses of
+a piece of code to produce a lemma" instruction, same spirit as the
+Round-1 raw-27 extraction earlier. Threads the concrete pair; decides
+SET equality against `neighbor2PenultimatePair` at that `a`.
+Regression-checked against both the cross-check test and the broader
+`substitution_neighborhood_test.cpp`. Fourteen of Findings 1-16 now
+genuinely connected. Only the interior tip remains from `class_ii_
+neighbor2_extensions.lean`'s parametric families (single-node,
+smallest of the three, straightforward next step).
+
+**2026-08-07 update -- fifteenth Class-II connection: interior tip,
+completing all three class_ii_neighbor2_extensions.lean parametric
+families.** Extracted the single-node inline construction out of
+`class_ii_neighbor2_interior_extension_states(round)` into `class_ii_
+neighbor2_interior_tip(r)`. With this, terminal sextet, penultimate
+pair, and interior tip -- all three of `class_ii_neighbor2_
+extensions.lean`'s general-in-parameter families -- are now genuinely
+connected, each via the same extract-then-reflect-then-decide-equal
+pattern. Fifteen of Findings 1-16 now genuinely connected. This
+closes out `class_ii_neighbor2_extensions.lean`; remaining untouched
+Class-II Lean files are `class_ii_balanced_pivot.lean`, `class_ii_
+global_round_partition.lean`, and `class_ii_round234_shape_closure.
+lean` -- the next candidates if this continues.
+
+**2026-08-07 update -- sixteenth Class-II connection: global round
+phase, a decision procedure rather than a node table.** Added a
+dedicated `class_ii_global_round_phase_reflect(a, round)` wrapper
+rather than instrumenting `class_ii_neighbor2_global_round_phase`
+itself (that function runs inside loops at several other call sites
+in `class_ii_neighbor2_pruning.hpp`; instrumenting it directly would
+flood any active trace with unrelated entries whenever those other
+call sites run). Decides equality of the concrete phase against
+`classIIGlobalRoundPhase` (already proven exhaustive/unique) at that
+exact (a, round). Sixteen of Findings 1-16 now genuinely connected --
+all of the low-risk, already-cross-checked Class-II catalogue surface
+identified via `tests/lean_class_ii_catalogue_cross_check_test.cpp`'s
+8 entries is now covered. Remaining Class-II Lean files (`class_ii_
+balanced_pivot.lean`, `class_ii_round234_shape_closure.lean`) were not
+in that cross-check test and would need fresh verification before
+connecting -- higher risk, not yet attempted.
+
+**2026-08-07 update -- Finding 12's Round-4 closed-form core
+retrofitted (first connection outside the Findings 1-16/32/23/29
+territory this session).** Extracted `app/class_ii_both_fixed_full_
+proof.cpp`'s inline 410-combination sweep into a shared, reusable
+`class_ii_both_fixed_affine_instances()` (regression-verified
+byte-identical: `323 instances, would_need_a>=7=0`, before and after,
+both by direct run and via the Makefile's own app target). Rather than
+embed all 323 (unwieldy for no honesty gain -- each is an independent
+trivial arithmetic fact), threads a representative STRIDE sample of
+20; the renderer instantiates `lean/class_ii_round234_shape_closure.
+lean`'s already-proven general `affine_no_solution_at_or_above_
+threshold` at each. This demonstrates the pattern generalizes beyond
+the Class-II fixed-table/parametric-function territory to a THIRD
+shape: a general arithmetic lemma instantiated against a large,
+sampled instance population from a proof-critical standalone app.
+`docs/GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md`'s other three
+base-premise rounds (1, 2, 3) were not attempted -- Round 1 closes by
+a literature argument (no C++ computation to thread), Rounds 2/3 share
+this same arithmetic core but via different catalogue data not yet
+assessed for a clean instance extraction.
+
+**2026-08-07 update -- zero-marginal-cost connection: D_cont-in-pre-
+contact, reusing existing trace data (Finding 26's pattern).** Rather
+than hunt for new C++ facts, checked whether any ALREADY-RECORDED
+payload's data also backs another already-proven Lean fact not yet
+rendered. `ClassIIFixedTableCertificate{table="d_cont"}` (recorded
+since earlier this session) also satisfies `class_ii_affine_shells.
+lean`'s `dContNode_in_preContact` -- added a new renderer function
+consuming the SAME data, no new C++ certificate. This is the second
+time this exact "reuse an existing trace for a second consequence"
+move has paid off (first was Finding 26's `colored_walk_congruence`
+reuse of `PeriodRotationCertificate`) -- worth checking systematically
+for OTHER already-recorded payloads with unrendered secondary
+consequences before reaching for new C++ instrumentation each time.
+Candidates not yet checked this way: `ClassIIFixedTableCertificate
+{table="pre_contact"}` (class_ii_affine_shells.lean likely has more
+containment/window facts about pre_contact not yet rendered),
+`ClassIISixVertexGraduationCertificate`, `ClassIINeighborDSupport
+Certificate`.
+
 ## What this plan deliberately does NOT promise
 
 - A general "compile arbitrary C++ derivations into Lean" system.
