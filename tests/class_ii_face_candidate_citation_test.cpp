@@ -23,12 +23,17 @@ int main() {
     assert(candidates.size() == 33);
 
     auto lemmas = trace.find<mathlib::reflection::LemmaApplication>();
-    bool found = false;
-    for (auto& [id, l] : lemmas) { (void)id; if (l->theorem_name == "class_ii_dCont_face_candidate_valid_iff") found = true; }
-    assert(found);
+    bool found_iff = false, found_x0 = false;
+    for (auto& [id, l] : lemmas) {
+        (void)id;
+        if (l->theorem_name == "class_ii_dCont_face_candidate_valid_iff") found_iff = true;
+        if (l->theorem_name == "class_ii_rawContact_x0_bounded") found_x0 = true;
+    }
+    assert(found_iff && found_x0);
 
     std::string lean = ravel::proof::render_reflective_lean_module(trace);
     assert(lean.find("class_ii_dCont_face_candidate_valid_iff") != std::string::npos);
+    assert(lean.find("class_ii_rawContact_x0_bounded") != std::string::npos);
 
     std::ofstream out("/tmp/class_ii_face_candidate_generated.lean");
     out << lean;

@@ -1350,6 +1350,141 @@ inline const char* face_candidate_lemma_lean() {
         "  exact dContFaceCandidate_window_iffE kind beta (a + 1 / beta) hc hbc\n\n";
 }
 
+// True iff the trace cites `class_ii_rawContact_x0_bounded`.
+inline bool has_x0_bound_citation(const mathlib::reflection::Trace& trace) {
+    for (const auto& [id, lemma] : trace.find<mathlib::reflection::LemmaApplication>()) {
+        (void)id;
+        if (lemma->theorem_name == "class_ii_rawContact_x0_bounded") return true;
+    }
+    return false;
+}
+
+// A self-contained excerpt of `lean/class_ii_affine_shells.lean`
+// covering the raw-contact-envelope x0-bound theorem, parametrized
+// over ANY `a >= 2` and its actual Class-II Perron root.
+inline const char* x0_bound_lemma_lean() {
+    return
+        "structure ClassIINodeF where\n"
+        "  left : Int\n"
+        "  x0 : Int\n"
+        "  x1 : Int\n"
+        "  x2 : Int\n"
+        "  right : Int\n"
+        "  deriving DecidableEq\n\n"
+        "def nodeHeightF (node : ClassIINodeF) (b c : ℝ) : ℝ :=\n"
+        "  node.x0 * b + node.x1 * c + node.x2\n\n"
+        "def rightWidthF (node : ClassIINodeF) (b c : ℝ) : ℝ :=\n"
+        "  if node.right = 0 then b else if node.right = 1 then c else 1\n\n"
+        "def InRestrictedHF (node : ClassIINodeF) (b c : ℝ) : Prop :=\n"
+        "  0 ≤ nodeHeightF node b c ∧ nodeHeightF node b c < rightWidthF node b c\n\n"
+        "/-- A raw contact-envelope category has `x1 ∈ [-2,2]` and `x2 ∈ [-1,1]`. Once\n"
+        "    the Perron gap exceeds one half, restricted window membership forces its\n"
+        "    remaining integer coordinate into the five slices `x0 ∈ [-2,2]`. -/\n"
+        "theorem restrictedHF_forces_bounded_x0\n"
+        "    (node : ClassIINodeF) (b c : ℝ)\n"
+        "    (hc : 1 < c) (hcb : c < b) (hgap : 1 / 2 < b - c)\n"
+        "    (hx1lo : -2 ≤ node.x1) (hx1hi : node.x1 ≤ 2)\n"
+        "    (hx2lo : -1 ≤ node.x2) (hx2hi : node.x2 ≤ 1)\n"
+        "    (hright : node.right = 0 ∨ node.right = 1 ∨ node.right = 2)\n"
+        "    (hwindow : InRestrictedHF node b c) :\n"
+        "    -2 ≤ node.x0 ∧ node.x0 ≤ 2 := by\n"
+        "  have hb : 0 < b := by linarith\n"
+        "  constructor\n"
+        "  · by_contra hnot\n"
+        "    have hx0 : node.x0 ≤ -3 := by omega\n"
+        "    have hx0r : (node.x0 : ℝ) ≤ -3 := by exact_mod_cast hx0\n"
+        "    have hx1r : (node.x1 : ℝ) ≤ 2 := by exact_mod_cast hx1hi\n"
+        "    have hx2r : (node.x2 : ℝ) ≤ 1 := by exact_mod_cast hx2hi\n"
+        "    have h0 : (node.x0 : ℝ) * b ≤ -3 * b :=\n"
+        "      mul_le_mul_of_nonneg_right hx0r hb.le\n"
+        "    have h1 : (node.x1 : ℝ) * c ≤ 2 * c :=\n"
+        "      mul_le_mul_of_nonneg_right hx1r (by linarith)\n"
+        "    have hheight : nodeHeightF node b c < 0 := by\n"
+        "      simp [nodeHeightF]\n"
+        "      linarith\n"
+        "    linarith [hwindow.1]\n"
+        "  · by_contra hnot\n"
+        "    have hx0 : 3 ≤ node.x0 := by omega\n"
+        "    have hx0r : (3 : ℝ) ≤ node.x0 := by exact_mod_cast hx0\n"
+        "    have hx1r : (-2 : ℝ) ≤ node.x1 := by exact_mod_cast hx1lo\n"
+        "    have hx2r : (-1 : ℝ) ≤ node.x2 := by exact_mod_cast hx2lo\n"
+        "    have h0 : 3 * b ≤ (node.x0 : ℝ) * b :=\n"
+        "      mul_le_mul_of_nonneg_right hx0r hb.le\n"
+        "    have h1 : -2 * c ≤ (node.x1 : ℝ) * c :=\n"
+        "      mul_le_mul_of_nonneg_right hx1r (by linarith)\n"
+        "    have hheight : b < nodeHeightF node b c := by\n"
+        "      simp [nodeHeightF]\n"
+        "      linarith\n"
+        "    rcases hright with hr | hr | hr <;>\n"
+        "      simp [InRestrictedHF, rightWidthF, hr] at hwindow <;>\n"
+        "      linarith\n\n"
+        "theorem class_ii_perron_gap_gt_halfF\n"
+        "    (a beta : ℝ)\n"
+        "    (ha : 2 ≤ a) (hbeta : 0 < beta)\n"
+        "    (hcubic : beta^3 = a * beta^2 + (a + 1) * beta + 1) :\n"
+        "    1 / 2 < beta - (a + 1 / beta) := by\n"
+        "  have hne : beta ≠ 0 := hbeta.ne'\n"
+        "  have hd : beta^2 * (beta - (a + 1 / beta)) = a * beta + 1 := by\n"
+        "    field_simp [hne]\n"
+        "    nlinarith [hcubic]\n"
+        "  by_contra hnot\n"
+        "  have hgap_le : beta - (a + 1 / beta) ≤ 1 / 2 := le_of_not_gt hnot\n"
+        "  have hscaled : 2 * (a * beta + 1) ≤ beta^2 := by\n"
+        "    have hmul := mul_le_mul_of_nonneg_left hgap_le (sq_nonneg beta)\n"
+        "    rw [hd] at hmul\n"
+        "    nlinarith\n"
+        "  have hbeta_two_a : 2 * a < beta := by\n"
+        "    by_contra hle\n"
+        "    have hbeta_le : beta ≤ 2 * a := le_of_not_gt hle\n"
+        "    have hproduct : 0 ≤ beta * (2 * a - beta) :=\n"
+        "      mul_nonneg hbeta.le (by linarith)\n"
+        "    nlinarith\n"
+        "  have heq : beta^2 * (beta - a) = (a + 1) * beta + 1 := by nlinarith [hcubic]\n"
+        "  have hleft : a * beta^2 < beta^2 * (beta - a) := by\n"
+        "    have hdelta : a < beta - a := by linarith\n"
+        "    simpa [mul_comm] using mul_lt_mul_of_pos_left hdelta (sq_pos_of_pos hbeta)\n"
+        "  have hfactor : 1 < a * beta - a - 1 := by\n"
+        "    nlinarith [mul_nonneg (show 0 ≤ a by linarith) (show 0 ≤ beta - 2 * a by linarith)]\n"
+        "  have hright : (a + 1) * beta + 1 < a * beta^2 := by\n"
+        "    have hproduct : beta < beta * (a * beta - a - 1) := by\n"
+        "      simpa using mul_lt_mul_of_pos_left hfactor hbeta\n"
+        "    nlinarith\n"
+        "  nlinarith\n\n"
+        "/-- Universal Class-II specialization: for ANY `a >= 2` and its actual\n"
+        "    Perron root `beta`, a raw-contact-envelope node's `x0` coordinate is\n"
+        "    forced into `[-2,2]` -- exactly the search range this project's\n"
+        "    `class_ii_d_cont_face_candidates` uses. Reproduced from the\n"
+        "    independently kernel-checked `lean/class_ii_affine_shells.lean` (not\n"
+        "    re-derived here). -/\n"
+        "theorem class_ii_rawContact_x0_bounded\n"
+        "    (node : ClassIINodeF) (a beta : ℝ)\n"
+        "    (ha : 2 ≤ a) (hbeta : 0 < beta)\n"
+        "    (hcubic : beta^3 = a * beta^2 + (a + 1) * beta + 1)\n"
+        "    (hx1lo : -2 ≤ node.x1) (hx1hi : node.x1 ≤ 2)\n"
+        "    (hx2lo : -1 ≤ node.x2) (hx2hi : node.x2 ≤ 1)\n"
+        "    (hright : node.right = 0 ∨ node.right = 1 ∨ node.right = 2)\n"
+        "    (hwindow : InRestrictedHF node beta (a + 1 / beta)) :\n"
+        "    -2 ≤ node.x0 ∧ node.x0 ≤ 2 := by\n"
+        "  have hne : beta ≠ 0 := hbeta.ne'\n"
+        "  have hd : beta^2 * (beta - (a + 1 / beta)) = a * beta + 1 := by\n"
+        "    field_simp [hne]\n"
+        "    nlinarith [hcubic]\n"
+        "  have hprod : 0 < beta^2 * (beta - (a + 1 / beta)) := by\n"
+        "    rw [hd]\n"
+        "    positivity\n"
+        "  have hbc : a + 1 / beta < beta := by\n"
+        "    have hgap : 0 < beta - (a + 1 / beta) :=\n"
+        "      pos_of_mul_pos_right hprod (sq_nonneg beta)\n"
+        "    linarith\n"
+        "  have hc : (1 : ℝ) < a + 1 / beta := by\n"
+        "    have hinv : 0 < 1 / beta := one_div_pos.mpr hbeta\n"
+        "    linarith\n"
+        "  exact restrictedHF_forces_bounded_x0\n"
+        "    node beta (a + 1 / beta) hc hbc\n"
+        "    (class_ii_perron_gap_gt_halfF a beta ha hbeta hcubic)\n"
+        "    hx1lo hx1hi hx2lo hx2hi hright hwindow\n\n";
+}
+
 inline std::string render_reflective_lean_module(const mathlib::reflection::Trace& trace) {
     if (trace.empty()) throw std::runtime_error("cannot render proof module without provenance");
     std::ostringstream out;
@@ -1365,6 +1500,7 @@ inline std::string render_reflective_lean_module(const mathlib::reflection::Trac
     if (has_contact_valid_citation(trace)) out << contact_valid_lemma_lean();
     if (has_d_cont_citation(trace) || has_pre_contact_citation(trace)) out << pre_contact_lemma_lean();
     if (has_face_candidate_citation(trace)) out << face_candidate_lemma_lean();
+    if (has_x0_bound_citation(trace)) out << x0_bound_lemma_lean();
 
     if (has_r_matrix_proof(trace)) {
         out << "/-- Symbolic family reflected by `mathlib::nbonacci_r_matrix`. -/\n";
