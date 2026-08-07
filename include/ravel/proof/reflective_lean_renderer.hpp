@@ -1085,6 +1085,57 @@ inline std::string render_class_ii_fixed_table_instances(const mathlib::reflecti
     return out.str();
 }
 
+// A self-contained excerpt of `lean/class_ii_terminal_shells.lean`
+// covering the terminal cross-colour edit's distinctness facts --
+// reproduced, not re-derived; the full file additionally proves
+// interior-shell avoidance this excerpt doesn't need.
+inline const char* class_ii_terminal_shell_lemma_lean() {
+    return
+        "structure TermNodeG where\n"
+        "  left : Int\n  x0 : Int\n  x1 : Int\n  x2 : Int\n  right : Int\n"
+        "  deriving DecidableEq\n\n"
+        "def terminalCrossColour1G (a : Int) : TermNodeG := ⟨0, a - 1, -a, 1, 2⟩\n"
+        "def terminalCrossColour2G (a : Int) : TermNodeG := ⟨2, -(a - 1), a - 1, -1, 1⟩\n"
+        "def interiorExtreme00G (a : Int) : TermNodeG := ⟨0, -a, a, 0, 0⟩\n"
+        "def interiorExtreme11G (a : Int) : TermNodeG := ⟨0, a, -a, 0, 0⟩\n\n"
+        "/-- For every integer a, none of the four (cross-colour, interior-extreme)\n"
+        "    coincidences hold -- the terminal edit never double-counts. Reproduced\n"
+        "    from the independently kernel-checked\n"
+        "    `lean/class_ii_terminal_shells.lean` (not re-derived here). -/\n"
+        "theorem terminalCrossColours_not_eq_interior_extremesG (a : Int) :\n"
+        "    terminalCrossColour1G a ≠ interiorExtreme00G a ∧\n"
+        "      terminalCrossColour1G a ≠ interiorExtreme11G a ∧\n"
+        "      terminalCrossColour2G a ≠ interiorExtreme00G a ∧\n"
+        "      terminalCrossColour2G a ≠ interiorExtreme11G a := by\n"
+        "  refine ⟨?_, ?_, ?_, ?_⟩ <;> intro h <;>\n"
+        "    simp [terminalCrossColour1G, terminalCrossColour2G, interiorExtreme00G,\n"
+        "      interiorExtreme11G, TermNodeG.mk.injEq] at h\n\n";
+}
+
+// Mechanically emits, PER `ClassIITerminalShellCertificate` node, a
+// `decide`-checked instantiation of the distinctness fact at that
+// CONCRETE `a`.
+inline std::string render_class_ii_terminal_shell_instances(const mathlib::reflection::Trace& trace) {
+    std::ostringstream out;
+    long long counter = 0;
+    auto nodes = trace.find<mathlib::reflection::ClassIITerminalShellCertificate>();
+    if (nodes.empty()) return {};
+    out << class_ii_terminal_shell_lemma_lean();
+    for (const auto& [id, node] : nodes) {
+        (void)id;
+        std::string name = "class_ii_terminal_shell_instance_" + std::to_string(counter++);
+        out << "/-- Mechanically emitted: instantiates the general lemma above at a="
+            << node->a << ". -/\n";
+        out << "theorem " << name << " :\n";
+        out << "    terminalCrossColour1G (" << node->a << " : Int) ≠ interiorExtreme00G (" << node->a << " : Int) ∧\n";
+        out << "      terminalCrossColour1G (" << node->a << " : Int) ≠ interiorExtreme11G (" << node->a << " : Int) ∧\n";
+        out << "      terminalCrossColour2G (" << node->a << " : Int) ≠ interiorExtreme00G (" << node->a << " : Int) ∧\n";
+        out << "      terminalCrossColour2G (" << node->a << " : Int) ≠ interiorExtreme11G (" << node->a << " : Int) :=\n";
+        out << "  terminalCrossColours_not_eq_interior_extremesG (" << node->a << " : Int)\n\n";
+    }
+    return out.str();
+}
+
 // Finding 32's general lemma, hand-derived and kernel-checked once
 // (lean/depressed_cubic_complex_pair_modulus.lean) -- generalized (NOT
 // specific to sigma_{0,2}): for a positive real root of x^3+c*x+d,
@@ -1169,6 +1220,7 @@ inline std::string render_reflective_lean_module(const mathlib::reflection::Trac
 
     out << render_class_ii_shell_round_instances(trace);
     out << render_class_ii_fixed_table_instances(trace);
+    out << render_class_ii_terminal_shell_instances(trace);
 
     if (has_r_matrix_proof(trace)) {
         out << "/-- Symbolic family reflected by `mathlib::nbonacci_r_matrix`. -/\n";

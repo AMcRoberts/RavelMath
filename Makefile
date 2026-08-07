@@ -154,6 +154,7 @@ lean-check: nbonacci_charmpoly_proof_probe
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/leftmost_loop_batch.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/class_ii_shell_round_batch.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/class_ii_fixed_tables_batch.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/class_ii_terminal_shell_batch.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/depressed_cubic_complex_pair_modulus.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/depressed_cubic_not_pisot_batch.lean)
 	@if rg -n '^[[:space:]]*sorry([[:space:]]|$$)' \
@@ -195,6 +196,7 @@ lean-check: nbonacci_charmpoly_proof_probe
 		lean/generated/leftmost_loop_batch.lean \
 		lean/generated/class_ii_shell_round_batch.lean \
 		lean/generated/class_ii_fixed_tables_batch.lean \
+		lean/generated/class_ii_terminal_shell_batch.lean \
 		lean/depressed_cubic_complex_pair_modulus.lean \
 		lean/generated/depressed_cubic_not_pisot_batch.lean \
 		lean/generated/period_rotation_batch.lean; then \

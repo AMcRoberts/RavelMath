@@ -440,6 +440,19 @@ inline std::set<SNode<3>> class_ii_terminal_shell(std::size_t a) {
     shell.erase(SNode<3>{0, {q, -q, 0}, 0});
     shell.insert(SNode<3>{0, {q - 1, -q, 1}, 2});
     shell.insert(SNode<3>{2, {-(q - 1), q - 1, -1}, 1});
+    // The erase/insert pair above is EXACTLY
+    // `lean/class_ii_terminal_shells.lean`'s own edit (verified):
+    // erase(0,-q,q,0,0)=interiorExtreme00(q), erase(0,q,-q,0,0)=
+    // interiorExtreme11(q), insert(0,q-1,-q,1,2)=terminalCrossColour1(q),
+    // insert(2,-(q-1),q-1,-1,1)=terminalCrossColour2(q). Record the
+    // concrete `q` so the renderer instantiates
+    // `terminalCrossColours_not_eq_interior_extremes` AT this exact
+    // parameter, via `decide`.
+    if (mathlib::reflection::enabled()) {
+        mathlib::reflection::ClassIITerminalShellCertificate node;
+        node.a = q;
+        mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, node);
+    }
     return shell;
 }
 
