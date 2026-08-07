@@ -3216,3 +3216,18 @@ contradiction), reimplemented completely and correctly. It is NOT yet
 a general "retrofit every finding in the project through this
 pipeline" -- that is explicitly scoped as a separate, later effort
 (see the reading list entry and the project-wide retrofit plan).
+
+**2026-08-07 addendum — pipeline reach widened to two more real,
+previously-established Pisot substitutions from this project's own
+history, with zero new C++ or Lean risk.** Ran the SAME `certify_
+barge_diamond`/`render_barge_diamond_instances` pipeline (unmodified)
+on `sigma_{1,1}` (Finding 36's genuine multi-junction Pisot example,
+`0->012, 1->02, 2->0`) and the supergolden canonical substitution
+(QRS reading list, `0->01, 1->2, 2->0`) -- both degree-3, within the
+certificate's stated rational-root-theorem scope. Both certify beta
+irrational exactly; for these `d=3` substitutions this instantiates
+Theorem 1's "some pair is eventually coincident" conclusion (not yet
+the full Strong Coincidence Conjecture, which only follows immediately
+at `d=2`). Rendered and kernel-checked with zero errors and zero
+`sorry` (`lean/generated/barge_diamond_wide_batch.lean`,
+`tests/barge_diamond_wide_batch_test.cpp`).
