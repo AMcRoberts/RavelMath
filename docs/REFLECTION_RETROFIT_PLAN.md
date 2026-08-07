@@ -46,22 +46,31 @@ changed, only the demonstrated rate and the confirmation that shared
 trace data can back MULTIPLE independent Lean corollaries (Finding
 26's whole retrofit cost zero new C++).
 
+**2026-08-07 update, item (2) done -- and cheaper than planned.**
+Re-examined the degree-2-3 restriction on `barge_diamond_certificate.hpp`
+before implementing the planned quartic-factorization search, and
+found the restriction was simply a mistake: it conflated "no rational
+root implies the polynomial is irreducible" (only true at degree<=3)
+with the actually-needed, degree-independent claim "no rational root
+implies THIS polynomial's own genuine root beta is irrational" (true
+at any degree for a monic integer polynomial, unconditionally, by the
+rational-root theorem's necessity direction alone). Fixed the comment
+and removed the restriction -- no new C++ logic needed, let alone a
+quartic factorization search. Re-ran the unchanged pipeline on all 10
+of Finding 37's real substitutions (degree 4 and 5): all 10 certify
+and kernel-check cleanly. See Finding 37's 2026-08-07 addendum.
+
 **Immediate next-in-queue, in priority order** (for whoever picks this
 back up, session or not): (1) Finding 30 -- Sturm-based Pisot
 classification, a genuinely different, harder shape (no short
-algebraic/graph identity to lean on); (2) extend `barge_diamond_
-certificate.hpp`'s degree scope from 2-3 to a real quartic
-irreducibility check (rational-root theorem is necessary but not
-sufficient at degree 4 -- needs an explicit search over integer
-`(x^2+px+q)(x^2+rx+s)` factorizations), which would unlock Finding
-37's 8 alphabet-4 non-unit Pisot instances for the SAME already-built
-pipeline, no new Lean lemma required, only a stronger C++
-irreducibility check; (3) the coincidence-depth family (Findings 17,
-38, 39, 41), which needs modeling `pair_has_coincidence`'s own
-abelianized-prefix-set semantics as a Lean predicate before any lemma
-can be stated honestly -- the real blocker there is that modeling
-step, not the underlying combinatorial facts (which are individually
-simple).
+algebraic/graph identity to lean on); (2) the coincidence-depth family
+(Findings 17, 38, 39, 41), which needs modeling `pair_has_coincidence`'s
+own abelianized-prefix-set semantics as a Lean predicate before any
+lemma can be stated honestly -- the real blocker there is that
+modeling step, not the underlying combinatorial facts (which are
+individually simple); (3) property (F) / the zero-expansion graph
+(Findings 18-21), the hardest category, deliberately last per the
+original phased plan.
 
 ## What "done" actually requires, per finding
 

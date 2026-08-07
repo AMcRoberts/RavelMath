@@ -8,12 +8,31 @@
 //
 // EXACT CORE (the part that is proof-critical): beta's irrationality,
 // checked via the rational-root theorem on the integer characteristic
-// polynomial -- correct (necessary AND sufficient) for degree 2 and 3
-// (any reducible polynomial of degree <=3 must have a linear factor,
-// hence a rational root); NOT sufficient in general for degree >=4,
-// stated honestly as a scope limit, not silently assumed away. All
-// arithmetic here is exact integer arithmetic (`long long`, safe at
-// the scales this project actually certifies -- small alphabets,
+// polynomial. IMPORTANT CORRECTION (2026-08-07): an earlier version of
+// this file restricted the check to degree 2-3, reasoning that the
+// rational-root theorem is only necessary-AND-sufficient for
+// IRREDUCIBILITY at that degree (a reducible degree<=3 polynomial must
+// have a linear factor, hence a rational root; NOT true in general at
+// degree>=4, e.g. a product of two irreducible quadratics has no
+// rational root but is still reducible). That caveat is real, but it
+// answers a DIFFERENT question than the one this certificate actually
+// needs. We do not need the WHOLE characteristic polynomial to be
+// irreducible -- we only need its own genuine root beta (the Perron
+// eigenvalue, a specific real number the matrix actually has as an
+// eigenvalue) to be irrational. The rational-root theorem's necessity
+// direction is unconditional at ANY degree: since the charpoly is
+// monic (leading coefficient exactly 1, guaranteed by
+// `charpoly_faddeev_leverrier`), any RATIONAL root must be an integer
+// dividing the constant term. beta genuinely is a root of this
+// polynomial; if beta were rational, it would therefore have to be one
+// of the finitely many integer-divisor candidates `no_rational_root`
+// already enumerates exhaustively. Finding none among them directly
+// rules out beta being rational, regardless of whether some OTHER,
+// unrelated factor of the polynomial happens to be reducible. The
+// degree restriction was therefore an unnecessary, overly conservative
+// scope limit, not a real mathematical requirement -- removed below.
+// All arithmetic here is exact integer arithmetic (`long long`, safe
+// at the scales this project actually certifies -- small alphabets,
 // small coefficients).
 //
 // When this check succeeds, it records a reflection trace node
@@ -73,10 +92,15 @@ struct BargeDiamondCertificate {
 
 namespace barge_diamond_detail {
 
-// Rational-root-theorem irreducibility check -- exact, `long long`
-// throughout (safe at this project's scale: small alphabets, small
-// substitution image lengths, hence small charpoly coefficients).
-// See the header comment for the degree 2-3 scope limit.
+// Rational-root-theorem check: true iff no INTEGER divisor of the
+// constant term is a root -- exact and COMPLETE for any monic integer
+// polynomial (leading coefficient 1, guaranteed here), at ANY degree,
+// since a monic polynomial's only possible rational roots are integers
+// dividing the constant term. `long long` throughout (safe at this
+// project's scale: small alphabets, small substitution image lengths,
+// hence small charpoly coefficients). See the header comment's
+// 2026-08-07 correction for why this suffices for beta's
+// irrationality without needing the whole polynomial irreducible.
 inline bool no_rational_root(const mathlib::PolyZ& charpoly) {
     long long deg = charpoly.degree();
     long long c0 = std::stoll(mathlib::str(charpoly.coeff(0)));
@@ -115,12 +139,13 @@ inline BargeDiamondCertificate certify_barge_diamond(
     for (std::size_t i = 0; i < d; ++i) for (std::size_t j = 0; j < d; ++j) M[i][j] = Mij(i, j);
 
     auto charpoly = mathlib::charpoly_faddeev_leverrier(M);
-    if (charpoly.degree() < 2 || charpoly.degree() > 3) {
-        out.conclusion = "SCOPE LIMIT: rational-root-theorem irreducibility check is only valid "
-                          "for degree 2-3; degree " + std::to_string(charpoly.degree())
-                          + " needs a stronger check, not attempted here.";
+    if (charpoly.degree() < 1) {
+        out.conclusion = "SCOPE LIMIT: degenerate (degree<1) characteristic polynomial.";
         return out;
     }
+    // `no_rational_root` proves beta (a genuine root of this monic
+    // polynomial) is irrational at ANY degree -- see the header
+    // comment's 2026-08-07 correction. No degree restriction needed.
     out.beta_irrational = no_rational_root(charpoly);
     if (!out.beta_irrational) {
         out.conclusion = "PREMISE FAILS: beta not irrational -- Theorem 1 does not apply";
