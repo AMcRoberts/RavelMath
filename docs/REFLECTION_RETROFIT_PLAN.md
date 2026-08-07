@@ -101,6 +101,24 @@ citation the same way as property F's retrofit -- see Finding 9's
 2026-08-07 addendum in `FINDINGS_FOR_CITATION.md`. This is the FIRST
 of Findings 1-16 to get any `mathlib::reflection` connection.
 
+**Second match found and closed the same session**:
+`class_ii_contact_set()` matches `contactNode`'s 14-state table
+exactly; cited `class_ii_contactNode_valid` (window validity for ANY
+`a>=2` and its actual Perron root -- a stronger, more analytic fact
+than the shell propagation citation). Kernel-checks clean.
+
+**The pattern is now proven to generalize within this thread, not just
+work once.** Two matches found by directly comparing C++ table-building
+functions against the Lean file's `Kind`/`Node` definitions
+entry-by-entry (not assumed from naming). At least two more direct
+matches are visible without further searching:
+`class_ii_pre_contact_set()` (16 states, matches `PreContactKind`/
+`preContactNode`, citable theorem `preContactNode_partition` or
+`preContactNode_backward_layer_partition`) and `class_ii_d_cont_set()`
+(9 states, matches `DContKind`/`dContNode`, citable theorem
+`dContNode_in_preContact`) -- both left for a future pass, purely
+mechanical repeats of the same verified pattern, not new investigation.
+
 **2026-08-07 update (measured again, not estimated):** 5 call sites
 now (`barge_diamond_certificate.hpp`, `period_rotation_certificate.hpp`,
 plus the original 3), covering 2 fully-retrofitted findings (35, 26 --
