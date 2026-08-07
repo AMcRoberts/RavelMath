@@ -1238,6 +1238,118 @@ inline const char* pre_contact_lemma_lean() {
         "  cases kind <;> native_decide\n\n";
 }
 
+// True iff the trace cites `class_ii_dCont_face_candidate_valid_iff`.
+inline bool has_face_candidate_citation(const mathlib::reflection::Trace& trace) {
+    for (const auto& [id, lemma] : trace.find<mathlib::reflection::LemmaApplication>()) {
+        (void)id;
+        if (lemma->theorem_name == "class_ii_dCont_face_candidate_valid_iff") return true;
+    }
+    return false;
+}
+
+// A self-contained excerpt of `lean/class_ii_affine_shells.lean`
+// covering the 33-state face-candidate window-validity iff,
+// parametrized over ANY `a >= 2` and its actual Class-II Perron root.
+inline const char* face_candidate_lemma_lean() {
+    return
+        "structure ClassIINodeE where\n"
+        "  left : Int\n"
+        "  x0 : Int\n"
+        "  x1 : Int\n"
+        "  x2 : Int\n"
+        "  right : Int\n"
+        "  deriving DecidableEq\n\n"
+        "inductive DContFaceCandidateKindE\n"
+        "  | f00 | f01 | f02 | f03 | f04 | f05 | f06 | f07 | f08 | f09\n"
+        "  | f10 | f11 | f12 | f13 | f14 | f15 | f16 | f17 | f18 | f19\n"
+        "  | f20 | f21 | f22 | f23 | f24 | f25 | f26 | f27 | f28 | f29\n"
+        "  | f30 | f31 | f32\n"
+        "  deriving DecidableEq, Fintype\n\n"
+        "def dContFaceCandidateNodeE : DContFaceCandidateKindE → ClassIINodeE\n"
+        "  | .f00 => ⟨0,  0, -1,  0, 0⟩\n"
+        "  | .f01 => ⟨0,  0,  0, -1, 0⟩\n"
+        "  | .f02 => ⟨0,  0,  0,  1, 0⟩\n"
+        "  | .f03 => ⟨0,  0,  1,  0, 0⟩\n"
+        "  | .f04 => ⟨0, -1,  0,  0, 1⟩\n"
+        "  | .f05 => ⟨0, -1,  1,  0, 1⟩\n"
+        "  | .f06 => ⟨0,  0,  0,  0, 1⟩\n"
+        "  | .f07 => ⟨0,  0,  1,  0, 1⟩\n"
+        "  | .f08 => ⟨0, -1,  0,  0, 2⟩\n"
+        "  | .f09 => ⟨0, -1,  0,  1, 2⟩\n"
+        "  | .f10 => ⟨0,  0,  0,  0, 2⟩\n"
+        "  | .f11 => ⟨0,  0,  0,  1, 2⟩\n"
+        "  | .f12 => ⟨1,  0, -1,  0, 0⟩\n"
+        "  | .f13 => ⟨1,  1, -1,  0, 0⟩\n"
+        "  | .f14 => ⟨1,  1,  0,  0, 0⟩\n"
+        "  | .f15 => ⟨1, -1,  0,  0, 1⟩\n"
+        "  | .f16 => ⟨1,  0,  0, -1, 1⟩\n"
+        "  | .f17 => ⟨1,  0,  0,  1, 1⟩\n"
+        "  | .f18 => ⟨1,  1,  0,  0, 1⟩\n"
+        "  | .f19 => ⟨1,  0, -1,  0, 2⟩\n"
+        "  | .f20 => ⟨1,  0, -1,  1, 2⟩\n"
+        "  | .f21 => ⟨1,  0,  0,  0, 2⟩\n"
+        "  | .f22 => ⟨1,  0,  0,  1, 2⟩\n"
+        "  | .f23 => ⟨2,  0,  0, -1, 0⟩\n"
+        "  | .f24 => ⟨2,  1,  0, -1, 0⟩\n"
+        "  | .f25 => ⟨2,  1,  0,  0, 0⟩\n"
+        "  | .f26 => ⟨2,  0,  0, -1, 1⟩\n"
+        "  | .f27 => ⟨2,  0,  1, -1, 1⟩\n"
+        "  | .f28 => ⟨2,  0,  1,  0, 1⟩\n"
+        "  | .f29 => ⟨2, -1,  0,  0, 2⟩\n"
+        "  | .f30 => ⟨2,  0, -1,  0, 2⟩\n"
+        "  | .f31 => ⟨2,  0,  1,  0, 2⟩\n"
+        "  | .f32 => ⟨2,  1,  0,  0, 2⟩\n\n"
+        "def dContFaceCandidateAcceptedE : DContFaceCandidateKindE → Bool\n"
+        "  | .f02 | .f03 | .f06 | .f10 | .f13\n"
+        "  | .f17 | .f21 | .f24 | .f27 => true\n"
+        "  | _ => false\n\n"
+        "def nodeHeightE (node : ClassIINodeE) (b c : ℝ) : ℝ :=\n"
+        "  node.x0 * b + node.x1 * c + node.x2\n\n"
+        "def rightWidthE (node : ClassIINodeE) (b c : ℝ) : ℝ :=\n"
+        "  if node.right = 0 then b else if node.right = 1 then c else 1\n\n"
+        "def InRestrictedHE (node : ClassIINodeE) (b c : ℝ) : Prop :=\n"
+        "  0 ≤ nodeHeightE node b c ∧ nodeHeightE node b c < rightWidthE node b c\n\n"
+        "theorem dContFaceCandidate_window_iffE\n"
+        "    (kind : DContFaceCandidateKindE) (b c : ℝ)\n"
+        "    (hc : 1 < c) (hcb : c < b) :\n"
+        "    InRestrictedHE (dContFaceCandidateNodeE kind) b c ↔\n"
+        "      dContFaceCandidateAcceptedE kind = true := by\n"
+        "  cases kind <;>\n"
+        "    simp [InRestrictedHE, rightWidthE, nodeHeightE,\n"
+        "      dContFaceCandidateNodeE, dContFaceCandidateAcceptedE] <;>\n"
+        "    first\n"
+        "    | linarith\n"
+        "    | (constructor <;> linarith)\n"
+        "    | (intro h; linarith)\n\n"
+        "/-- Universal Perron-window classification of the fixed `D_cont`\n"
+        "    face-candidate table: for ANY `a >= 2` and its actual Class-II Perron root\n"
+        "    `beta`, a candidate lies in the restricted stepped hyperplane IFF it is one\n"
+        "    of the nine flagged candidates. Reproduced from the independently\n"
+        "    kernel-checked `lean/class_ii_affine_shells.lean` (not re-derived here). -/\n"
+        "theorem class_ii_dCont_face_candidate_valid_iff\n"
+        "    (kind : DContFaceCandidateKindE) (a beta : ℝ)\n"
+        "    (ha : 2 ≤ a) (hbeta : 0 < beta)\n"
+        "    (hcubic : beta^3 = a * beta^2 + (a + 1) * beta + 1) :\n"
+        "    InRestrictedHE (dContFaceCandidateNodeE kind) beta (a + 1 / beta) ↔\n"
+        "      dContFaceCandidateAcceptedE kind = true := by\n"
+        "  have hne : beta ≠ 0 := hbeta.ne'\n"
+        "  have hd :\n"
+        "      beta^2 * (beta - (a + 1 / beta)) = a * beta + 1 := by\n"
+        "    field_simp [hne]\n"
+        "    nlinarith [hcubic]\n"
+        "  have hprod : 0 < beta^2 * (beta - (a + 1 / beta)) := by\n"
+        "    rw [hd]\n"
+        "    positivity\n"
+        "  have hbc : a + 1 / beta < beta := by\n"
+        "    have hgap : 0 < beta - (a + 1 / beta) :=\n"
+        "      pos_of_mul_pos_right hprod (sq_nonneg beta)\n"
+        "    linarith\n"
+        "  have hc : (1 : ℝ) < a + 1 / beta := by\n"
+        "    have hinv : 0 < 1 / beta := one_div_pos.mpr hbeta\n"
+        "    linarith\n"
+        "  exact dContFaceCandidate_window_iffE kind beta (a + 1 / beta) hc hbc\n\n";
+}
+
 inline std::string render_reflective_lean_module(const mathlib::reflection::Trace& trace) {
     if (trace.empty()) throw std::runtime_error("cannot render proof module without provenance");
     std::ostringstream out;
@@ -1252,6 +1364,7 @@ inline std::string render_reflective_lean_module(const mathlib::reflection::Trac
     if (has_shell_propagation_citation(trace)) out << shell_propagation_lemma_lean();
     if (has_contact_valid_citation(trace)) out << contact_valid_lemma_lean();
     if (has_d_cont_citation(trace) || has_pre_contact_citation(trace)) out << pre_contact_lemma_lean();
+    if (has_face_candidate_citation(trace)) out << face_candidate_lemma_lean();
 
     if (has_r_matrix_proof(trace)) {
         out << "/-- Symbolic family reflected by `mathlib::nbonacci_r_matrix`. -/\n";
