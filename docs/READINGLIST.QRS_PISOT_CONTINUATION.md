@@ -536,3 +536,28 @@ Next real step if this comes back: either execute the Schmidt-style
 pigeonhole argument, or test the permanence phenomenon on a second,
 structurally different multi-junction example before trusting it as
 universal.
+
+### 2026-08-06 (PC session, converse redirected) — Finding 35: g>1 provably can't be Pisot
+
+AM's own question caught something important right as Finding 34 was
+about to build further on it: is the non-Pisot-ness just found in the
+gcd=2 test matrix a one-off, or does the WHOLE g>1 gcd-obstruction
+scenario provably rule out Pisot-ness? Proved it in general: g>1
+forces the Perron-Frobenius period of the incidence matrix to be a
+multiple of g (every cycle in the full digraph passes through a
+junction and decomposes into jump-size sums, all divisible by g), and
+period>=2 forces multiple eigenvalues tied at the top modulus by
+standard Perron-Frobenius theory -- directly contradicting Pisot's
+unique-dominant-eigenvalue requirement. Verified exactly (Wielandt-
+bound is_primitive, no floating point) on two independent g>1
+examples (both imprimitive) plus the g=1 control (primitive). See
+Finding 35, tests/gcd_obstruction_implies_nonpisot_test.cpp.
+
+This redirects, not invalidates, Findings 25-27/34: the theorems are
+correct but their nontrivial content only ever applies to substitutions
+that can't be Pisot. For real Pisot substitutions g is always 1, so
+the actually-relevant open question is whether coincidence witnesses
+always exist for g=1 across genuine multi-junction Pisot substitutions
+-- not yet tested on an actual Pisot example (every multi-junction
+example built so far was for combinatorial testing and turned out
+non-Pisot). That's the natural next step if this thread continues.
