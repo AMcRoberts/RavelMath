@@ -30,6 +30,28 @@ a phased plan, not a guess at how long it takes.
 The gap between "3 call sites" and "178 proof headers" is the real
 size of this project.
 
+**2026-08-07, full-scope check.** `docs/FINDINGS_FOR_CITATION.md` has
+exactly 45 `## Finding` headers (verified by count, not estimated).
+Findings 17-42 (26 of the 45) have now each been individually assessed
+this session -- 8 retrofitted with real kernel-checked Lean, the rest
+correctly triaged as empirical/open/out-of-current-reach with reasons
+recorded per finding. Findings 1-16 (19 of the 45, including the
+fractional 6.5/6.6/6.7) have NOT been touched or individually assessed
+at all this session -- they belong to a substantively different, OLDER
+research thread (n-bonacci contact-boundary rigidity, Class-II shells,
+involution structure, `rho_nc = lambda(G_B)`) than the coincidence/Pisot
+thread Findings 17+ belong to. The pre-existing `rMatrix`/`has_r_matrix_
+proof` reflection call site covers ONE narrow fact from that thread
+(the n-bonacci charpoly's lower-triangular determinant) -- checked
+directly (`app/nbonacci_charmpoly_proof_general.cpp` calls
+`mathlib::nbonacci_r_matrix`) -- but Finding 4's actual headline claim
+(`rho_nc = lambda(G_B)`, proved via ruler-sequence/nilpotent-cofactor
+structure) is a DIFFERENT, more complex fact that pipeline does not
+cover. Findings 1-16 as a whole need their own dedicated
+investigation pass before any retrofit-vs-triage assessment can be
+made honestly -- not attempted here, recorded as the real remaining
+scope rather than left implicit in the "17-42 done" framing above.
+
 **2026-08-07 update (measured again, not estimated):** 5 call sites
 now (`barge_diamond_certificate.hpp`, `period_rotation_certificate.hpp`,
 plus the original 3), covering 2 fully-retrofitted findings (35, 26 --
