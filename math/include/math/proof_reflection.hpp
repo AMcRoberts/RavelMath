@@ -419,6 +419,14 @@ struct ClassIIFixedTableCertificate {
     std::vector<ClassIINodeData> nodes;
 };
 
+// `class_ii_terminal_shell(a)` at a CONCRETE parameter `a` -- carries
+// `a` so the renderer instantiates `lean/class_ii_terminal_shells.lean`'s
+// `terminalCrossColours_not_eq_interior_extremes` AT that exact `a`
+// via `decide`.
+struct ClassIITerminalShellCertificate {
+    long long a = 0;
+};
+
 using Payload = std::variant<MatrixFamily, MatrixInstance, EraseIndexMap,
                              SparseSupportCertificate, TriangularityCertificate,
                              DeterminantIdentity, LemmaApplication, IntegerEigenvectorNoWitness,
@@ -427,6 +435,7 @@ using Payload = std::variant<MatrixFamily, MatrixInstance, EraseIndexMap,
                              FirstLetterOrbitCertificate, LastLetterOrbitCertificate,
                              LeftmostLoopCertificate, DepressedCubicNotPisotCertificate,
                              ClassIIShellRoundCertificate, ClassIIFixedTableCertificate,
+                             ClassIITerminalShellCertificate,
                              ProofObligation, TextObservation>;
 
 struct Node {
@@ -707,6 +716,7 @@ inline std::string payload_name(const Payload& payload) {
         else if constexpr (std::is_same_v<T, DepressedCubicNotPisotCertificate>) return "lean.depressed_cubic_not_pisot_certificate";
         else if constexpr (std::is_same_v<T, ClassIIShellRoundCertificate>) return "lean.class_ii_shell_round_certificate";
         else if constexpr (std::is_same_v<T, ClassIIFixedTableCertificate>) return "lean.class_ii_fixed_table_certificate";
+        else if constexpr (std::is_same_v<T, ClassIITerminalShellCertificate>) return "lean.class_ii_terminal_shell_certificate";
         else if constexpr (std::is_same_v<T, ProofObligation>) return "proof.obligation";
         else return value.operation;
     }, payload);
@@ -772,6 +782,8 @@ inline std::string payload_detail(const Payload& payload) {
                 << " -- instantiates shellNode_propagates/shellNode_injective_at_round";
         } else if constexpr (std::is_same_v<T, ClassIIFixedTableCertificate>) {
             out << value.table << " table, " << value.nodes.size() << " concrete nodes";
+        } else if constexpr (std::is_same_v<T, ClassIITerminalShellCertificate>) {
+            out << "a=" << value.a << " -- instantiates terminalCrossColours_not_eq_interior_extremes";
         } else if constexpr (std::is_same_v<T, ProofObligation>) {
             out << value.obligation_id << ": " << value.proposition;
             if (!value.blocked_by.empty()) out << " [blocked by " << value.blocked_by << ']';

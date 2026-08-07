@@ -1000,10 +1000,25 @@ certificate.hpp` already demonstrates -- not yet built for the
 Class-II cubic specifically. Regression-checked against
 `tests/class_ii_boundary_family_test.cpp`'s full existing suite --
 identical results throughout, confirming none of this changed the
-actual computation. Five of Findings 1-16's foundational tables
-(interior shell, contact, pre-contact, D_cont, face candidates) are
-now genuinely connected; the other 14 in that range remain
-unassessed for this pipeline (see `docs/REFLECTION_RETROFIT_PLAN.md`).
+actual computation.
+
+**A sixth connection, same session**: `class_ii_terminal_shell(a)`'s
+erase/insert edit (removing the two interior extremes, inserting the
+two cross-colour replacements) matches `lean/class_ii_terminal_
+shells.lean`'s `terminalCrossColour1`/`terminalCrossColour2`/
+`interiorExtreme00`/`interiorExtreme11` exactly (verified by direct
+comparison of the C++ literal `(i,x,j)` tuples against the Lean
+definitions, not assumed from the file's own doc comment naming this
+correspondence). Records the concrete `a`; the renderer instantiates
+`terminalCrossColours_not_eq_interior_extremes` AT that `a` via
+`decide`. Run at `a=7` and `a=12`: kernel-checks with zero errors, zero
+`sorry` (`lean/generated/class_ii_terminal_shell_batch.lean`,
+`tests/class_ii_terminal_shell_reflection_test.cpp`).
+
+Six of Findings 1-16's foundational tables (interior shell, contact,
+pre-contact, D_cont, face candidates, terminal shell) are now
+genuinely connected; the other 13 in that range remain unassessed for
+this pipeline (see `docs/REFLECTION_RETROFIT_PLAN.md`).
 
 ## Finding 10 — Item A's AR-partial: A1's nilpotent-cofactor divisibility is symbolically IMPOSSIBLE for every a>=2, not just numerically absent
 
