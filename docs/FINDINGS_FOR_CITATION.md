@@ -2142,6 +2142,36 @@ remains strong empirical support (every tested case, both single- and
 multi-junction), not a completed proof. Flagged as still open, not
 glossed over.
 
+**2026-08-06/07 addendum — the core mechanism retrofitted through the
+reflection pipeline, reusing Finding 35's own trace data (zero new C++
+certificate).** This finding's central induction (`d + dist(terminal)
+= 0 (mod g)`, and its consequence that two states reached at different
+depths differing by a non-multiple of `g` can never coincide) is, at
+its core, exactly the fact that two walks between the same pair of
+vertices in a `p`-colored graph have lengths congruent mod `p` -- the
+SAME coloring-consistency mechanism `period_rotation_certificate.hpp`
+already builds (exactly) for Finding 35. Extracted that shared
+mechanism as its own general, hand-proven, kernel-checked Lean lemma,
+`colored_walk_lengths_agree_mod`
+(`lean/period_rotation_forces_equal_modulus.lean`, proved via a new
+walk-induction lemma `colored_walk_congruence`, pure `ℕ`-indexed walks
+with no List-API dependency), then mechanically rendered a corollary
+of it for EVERY `PeriodRotationCertificate` trace node already
+recorded by Finding 35's certificate run -- the identical data, read a
+second time for a different consequence, via a new renderer function
+(`render_colored_walk_congruence_instances`) with no new payload type
+and no new C++ certificate. All three `g>=2` instances kernel-check
+with zero errors and zero `sorry`
+(`lean/generated/period_rotation_batch.lean`).
+
+Honest scope: this mechanizes the GRAPH-LEVEL mechanism behind the
+theorem (walks between the same two vertices agree mod `g`), not the
+full statement as phrased over the coincidence closure's own
+`(junction, remaining depth)` state space (which additionally tracks
+an accumulated exact vector and mid-chain-cutoff bookkeeping the raw
+graph walk does not) -- connecting THAT precisely is still open, same
+as the honest scope note left on Finding 35's own retrofit.
+
 ## Finding 27 — a proved (partial) converse: the leftmost-loop corollary
 
 **Status: a genuine sub-case of Finding 26's open converse, closed

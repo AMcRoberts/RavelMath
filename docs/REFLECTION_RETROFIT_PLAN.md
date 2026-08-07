@@ -113,7 +113,22 @@ CLOSEST to Finding 42's shape.
   redesign of the trace/render architecture itself. Three real
   substitutions kernel-checked, zero `sorry`. See Finding 35's
   2026-08-06 addendum in `FINDINGS_FOR_CITATION.md`.
-- Finding 30 (arbitrary-degree Pisot classification) is next.
+- Finding 26 (the gcd-obstruction theorem itself) is **done**, and
+  cost almost nothing extra: its core mechanism (two walks between the
+  same pair of vertices in a `p`-colored graph agree mod `p`) turned
+  out to be literally the same coloring-consistency fact Finding 35's
+  certificate already builds. One new hand-proven general lemma
+  (`colored_walk_lengths_agree_mod`, same Lean file) plus one new
+  renderer function reading the SAME `PeriodRotationCertificate` trace
+  nodes a second time -- zero new payload type, zero new C++
+  certificate. This is the "convert a shared piece of code into a more
+  general lemma" pattern AM asked for, applied for real: one piece of
+  already-computed data now backs two independently kernel-checked
+  Lean corollaries. See Finding 26's 2026-08-06/07 addendum.
+- Finding 30 (arbitrary-degree Pisot classification) is next -- a
+  genuinely different shape again (Sturm-sequence root isolation, not
+  a short algebraic/graph identity), likely the first target that
+  needs real new proof engineering rather than a reusable lemma.
 
 **Phase 2:** the coincidence-depth family (Findings 17, 38, 39, 41) --
 structurally related to each other, so one well-designed payload type

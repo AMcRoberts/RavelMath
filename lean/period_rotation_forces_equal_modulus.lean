@@ -93,4 +93,53 @@ theorem rotated_eigenvalue_has_same_modulus
     exact inv_eq_one.mp hz1
   · rw [norm_mul, norm_inv, habs1, inv_one, mul_one]
 
+/-- THE SHARED GRAPH FACT underlying both Finding 35 (above) and
+Finding 26 (`coincidence_gcd_obstruction_theorem.hpp`'s own `d +
+dist(terminal) = 0 (mod g)` invariant): if a directed graph `E` on
+`Fin n` carries an integer coloring `c` that steps by exactly `1`
+modulo `p` along every edge, then walking `L` edges from any start
+vertex changes the coloring by exactly `L` modulo `p` -- the general
+mechanism this project's own C++ certificate
+(`ravel/proof/period_rotation_certificate.hpp`) already exploits (via
+BFS-distance colorings) to justify `period_coloring_rotates_eigenvalue`
+above, extracted here as its own reusable fact rather than re-derived
+inline for each finding that needs it. A walk is represented directly
+as `w : ℕ → Fin n` together with a length `L` and a step hypothesis,
+avoiding any List-API dependency. -/
+theorem colored_walk_congruence
+    {n : ℕ} (E : Fin n → Fin n → Prop) (c : Fin n → ℤ) (p : ℕ) (k : Fin n → Fin n → ℤ)
+    (hColor : ∀ i j, E i j → c j = c i + 1 + k i j * (p : ℤ))
+    (w : ℕ → Fin n) (L : ℕ) (hwalk : ∀ i, i < L → E (w i) (w (i + 1))) :
+    ∃ m : ℤ, c (w L) = c (w 0) + (L : ℤ) + m * (p : ℤ) := by
+  induction L with
+  | zero => exact ⟨0, by simp⟩
+  | succ L ih =>
+    obtain ⟨m, hm⟩ := ih (fun i hi => hwalk i (Nat.lt_succ_of_lt hi))
+    have hstep := hColor (w L) (w (L + 1)) (hwalk L (Nat.lt_succ_self L))
+    refine ⟨m + k (w L) (w (L + 1)), ?_⟩
+    rw [hstep, hm]
+    simp only [Nat.cast_add, Nat.cast_one]
+    ring
+
+/-- Finding 26's own conclusion, in general graph form: TWO walks
+between the SAME pair of vertices (same start, same end) must have
+lengths differing by a multiple of `p` -- exactly "the gap between two
+run-in lengths reaching the same coincidence-closure state is
+divisible by g", stated and proved purely in terms of the coloring's
+existence, with no reference to the coincidence closure's own
+bookkeeping. -/
+theorem colored_walk_lengths_agree_mod
+    {n : ℕ} (E : Fin n → Fin n → Prop) (c : Fin n → ℤ) (p : ℕ) (k : Fin n → Fin n → ℤ)
+    (hColor : ∀ i j, E i j → c j = c i + 1 + k i j * (p : ℤ))
+    (w1 w2 : ℕ → Fin n) (L1 L2 : ℕ)
+    (hwalk1 : ∀ i, i < L1 → E (w1 i) (w1 (i + 1)))
+    (hwalk2 : ∀ i, i < L2 → E (w2 i) (w2 (i + 1)))
+    (hstart : w1 0 = w2 0) (hend : w1 L1 = w2 L2) :
+    ∃ m : ℤ, (L1 : ℤ) - (L2 : ℤ) = m * (p : ℤ) := by
+  obtain ⟨m1, hm1⟩ := colored_walk_congruence E c p k hColor w1 L1 hwalk1
+  obtain ⟨m2, hm2⟩ := colored_walk_congruence E c p k hColor w2 L2 hwalk2
+  rw [hstart, hend] at hm1
+  refine ⟨m2 - m1, ?_⟩
+  linear_combination hm2 - hm1
+
 end RavelGenerated
