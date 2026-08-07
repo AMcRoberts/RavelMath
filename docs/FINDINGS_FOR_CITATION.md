@@ -2709,3 +2709,81 @@ answer, for real substitutions, is likely "yes, easily," reframing
 this entire session's coincidence-closure work as having correctly
 identified a real phenomenon, just needing the right (Pisot-certified)
 examples to see it clearly.
+
+## Finding 37 — 10 genuine non-unit Pisot substitutions in Barge's (2016) structural class, all ESTABLISHED via this project's own corrected machinery
+
+**Status: STRONG, freshly-generated evidence for a likely-novel extension.
+Not yet independently peer-reviewed or literature-cross-checked for
+prior art beyond the searches already run this session (see the
+"literature check" conversation this same session) -- reported with
+that caveat explicit, not as a closed result.**
+
+Context: M. Barge (2016) proved the classical Pisot substitution
+conjecture (pure discrete spectrum) for substitutions that are
+"injective on first letters" (the map `a -> first letter of sigma(a)`
+is a bijection) AND "constant on final letters" (every image ends in
+the same fixed letter). That proof operates in the classical
+(unimodular-framed) tiling-space setting. The non-unit EXTENSION of
+the Pisot conjecture (Minervino-Thuswaldner 2014, using a genuinely
+different adelic representation space `K_sigma`) is newer and far less
+studied -- no evidence was found in this session's literature search
+that Barge's class has been checked against the non-unit extension.
+
+**Found genuine non-unit examples in Barge's class.** A randomized
+search over "injective-first, constant-last" substitutions (4- and
+5-letter alphabets), filtered through the certified, arbitrary-degree
+Pisot classifier (Finding 30) plus an explicit irreducibility check
+(algebraic degree of beta must equal alphabet size, per the
+literature's own "irreducible Pisot substitution" hypothesis) found
+this is NOT a rare or vacuous intersection -- unlike the earlier,
+much narrower exhaustive check at alphabet 3 (0 hits), alphabet 4-5
+randomized search found genuine non-unit Pisot hits at a normal rate
+(dozens found in a few thousand trials). 10 structurally diverse
+examples (`|det| in {2,3}`, both signs, 4- and 5-letter alphabets)
+were taken forward.
+
+**All 10 run through the full pipeline, correctly.** Using the
+DEDICATED `left_eigenvector_via_qbeta` (not the M/M-transpose-
+guessing pattern this project's own earlier `nonunit_family_sweep.cpp`
+driver used, which this investigation found can silently select a
+mathematically wrong eigenvector on some inputs -- exactly the
+documented bug class in `math/linalg_qbeta.hpp`'s own history) and
+independently re-verifying the eigenvector via `verify_left_
+eigenvector` before trusting it (`eig_verified=yes` on all 10, not
+assumed): **all 10 show strong coincidence HOLDS (depth 1, every
+case) and property (F) HOLDS** (one case, needing a 2,000,000-node
+budget to resolve past 635,855 nodes rather than a smaller default --
+resolved cleanly to HOLDS, not left inconclusive). By Minervino-
+Thuswaldner's own tiling theorem (Lemma 9.8 and the surrounding
+argument, already used throughout Findings 18-21), strong coincidence
++ property (F) together establish the (non-unit) Pisot substitution
+conjecture for each of these 10 substitutions.
+
+See `app/probe_barge_class_nonunit_instances.cpp`.
+
+**Two elementary observations worth separating out for their own
+right**: (1) EVERY one of the 10 examples resolves strong coincidence
+at depth 1 -- not the constant-FIRST-letter mechanism of Finding 17
+(these substitutions have DISTINCT, not shared, first letters), but
+plausibly a dual, SUFFIX-based mechanism from the shared constant
+LAST letter. Not yet proved as a general theorem the way Finding 17
+was -- flagged as the natural next elementary result to chase.
+(2) The full-node-count spread (14 to 635,855) shows property (F)'s
+difficulty genuinely varies across this class, unlike strong
+coincidence's uniform depth-1 resolution -- consistent with Finding
+18's earlier finding that constant-factor-type structure helps
+coincidence but doesn't automatically help property (F).
+
+**SCOPE, stated honestly**: (a) this is 10 examples, not a general
+theorem covering all of Barge's class -- the natural next step (which
+AM has asked to pursue) is finding a genuine structural proof, the way
+Finding 17 did for the constant-factor coincidence case, rather than
+resting on case-by-case verification; (b) this project's property-(F)
+implementation, while corrected and primary-source-checked (Findings
+19-21), has not been independently reviewed by a third party or
+cross-checked against the literature beyond this project's own
+reading; (c) whether Barge's class or this specific non-unit
+intersection has already been addressed somewhere in the literature
+not surfaced by this session's searches remains a real, open
+possibility that should be checked more thoroughly before any formal
+claim of priority.
