@@ -2522,3 +2522,79 @@ minima of `S''`, `S'''`, etc. (only their bracket is reproduced here)
 and any structure beyond degree 7 or coefficient bound ~4 are not
 computed -- Boyd's own specific numeric tables were not accessible
 (paywalled) and are not reproduced.
+
+## Finding 34 — the converse of the gcd-obstruction theorem: a genuine "permanence" phenomenon found, full proof still open
+
+**Status: substantially stronger empirical evidence than Finding 27's
+leftmost-loop corollary, plus an identified but unproven likely proof
+mechanism. NOT a completed proof of the general converse.**
+
+Picked the open converse back up (every compatible gap eventually
+coincides -- Finding 26's unproven direction; Finding 27 proved only
+the sub-lattice of gaps that are multiples of a junction's own
+leftmost-cycle length). Rather than test isolated gap values, checked
+a sharper question directly on the Finding 26 multi-junction `gcd=2`
+example: does `reachable(0,D)` and `reachable(0,D+g)` share a state,
+as a function of `D` itself?
+
+**Result: a hard threshold, then permanence.** Exhaustively checked
+every `D` from 0 to 40: the intersection is EMPTY for every `D < 10`,
+and NONEMPTY for every single `D` from 10 to 40 (31 consecutive
+depths, not a sample). This is a qualitatively different, stronger
+kind of evidence than "gap=g has some witness" -- it says the
+coincidence mechanism, once it starts, never turns back off, at least
+as far as verified.
+
+**Sharper still: a literal recurring fixed point.** The exact same
+state -- `(terminal=0, vec=(10,0,6,0,0,0,3,0))` -- was found as the
+shared witness at `D=10,12,14,16,18,20`, six independently-computed
+depths in a row landing on the identical integer vector, not six
+different coincidences. This state is a genuine fixed point under
+`+g` extension, and if it continues indefinitely (not verified beyond
+`D=20` for the exact-witness check, though the weaker "some witness
+exists" check was verified through `D=40`), it alone would prove the
+FULL converse for `gcd=2` immediately: repeating whatever produces it
+gives a witness for `gap=2` at every sufficiently large `K`, and
+combined with Finding 27's `gap=4` mechanism (multiples of `L=4`), this
+covers every multiple of `g=2`.
+
+**Why this ISN'T a complete proof yet.** Two honest gaps:
+1. The natural inductive argument ("if `reachable(0,D0)` meets
+   `reachable(0,D0+g)`, does the SAME hold at `D0+g` meeting
+   `D0+2g`, etc.?") requires an actual insertable "return-to-self"
+   loop of length exactly `g` somewhere in the state graph, not just
+   an observed recurring witness. The direct length-`g` return edge
+   at junction 0 (the `child_index=1` self-loop) carries a NONZERO
+   landmark (`e_1`, the unit vector for the sibling letter before it)
+   -- unlike Finding 27's landmark-FREE leftmost loop, this edge does
+   NOT trivially preserve the vector on repetition, so the mechanism
+   behind the observed fixed point is not simply "repeat one edge."
+2. This was checked on ONE example (the same one used throughout
+   Findings 25-27). No second structurally-different multi-junction
+   case was tried this session -- unlike Finding 27, which was cross-
+   checked against two examples before being trusted.
+
+**The most likely route to a real proof, identified but not
+executed**: Schmidt's own classical proof that `d_beta(1)` is
+eventually periodic for Pisot `beta` (cited since Finding 6.5) uses
+exactly this shape of argument -- Pisot contraction (all conjugates of
+`beta` besides the dominant root have modulus `<1`) bounds an
+appropriately-normalized embedding of the state sequence into a
+bounded region, forcing an eventual return by pigeonhole. The
+`reachable(J,D)` state sets here are built from the SAME incidence
+matrix `M`, whose spectrum has the same Pisot-contraction property by
+construction -- so a Schmidt-style pigeonhole argument, projecting
+state vectors through `M`'s contracting eigenspaces, is a plausible
+and structurally well-motivated way to prove permanence in general,
+not just observe it. Not attempted this session.
+
+See `tests/coincidence_converse_permanence_test.cpp` for the locked-in
+regression (permanence over `D=0..26`, exact fixed-point witness at
+`D=10..20`).
+
+**Honest bottom line**: the converse is now much better characterized
+-- a genuine, striking, reproducible phenomenon (permanence + a
+literal fixed point) has been found, and a concrete, technically
+sound-looking proof strategy has been named -- but the general
+theorem for arbitrary multi-junction Pisot substitutions is still
+open.
