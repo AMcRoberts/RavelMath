@@ -2787,3 +2787,54 @@ intersection has already been addressed somewhere in the literature
 not surfaced by this session's searches remains a real, open
 possibility that should be checked more thoroughly before any formal
 claim of priority.
+
+## Finding 38 — constant last letter forces depth-1 strong coincidence, unconditionally: the exact dual of Finding 17, closing the coincidence half of Finding 37
+
+**Status: PROVED (definitional, from `pair_has_coincidence`'s own
+suffix-matching loop), cross-checked against all 10 of Finding 37's
+actual non-unit Pisot substitutions plus two synthetic controls.
+`include/ravel/proof/constant_last_letter_forces_depth1_coincidence.hpp`.**
+
+Finding 37 found strong coincidence resolving at depth 1 for all 10
+genuine non-unit Pisot substitutions in Barge's (2016) class, but that
+was only ever an OBSERVATION -- unlike Finding 17's constant-factor
+case, which was proved. This closes exactly that gap, needed because
+Lemma 9.8's zero-expansion-graph apparatus (which Findings 34-37's
+property-(F) work all rests on) is stated with strong coincidence as a
+HYPOTHESIS, not something it establishes -- any general property-(F)
+argument for this class needs a proven coincidence foundation under
+it, not an empirical one.
+
+**Theorem.** If `sigma(i)` and `sigma(j)` end with the same letter
+`c`, the pair `(i,j)` exhibits a coincidence at k=1, unconditionally.
+
+**Proof** (exact dual of Finding 17, using the SUFFIX half of
+`pair_has_coincidence` instead of the prefix half -- Definition 2.1's
+coincidence condition is `P(p1)=P(p2)` OR `P(s1)=P(s2)`, and Finding
+17 only ever used the first disjunct): at word `w1`'s FINAL position
+(necessarily letter `c`, by hypothesis), the computed suffix
+(`total1 - running - e_c`, i.e. "how many letters remain after this
+position") is exactly the ZERO vector, since this IS the last
+position -- inserted into `suffix_set1[c]`. When `w2` (also ending in
+`c`) is scanned and its own final position is reached, the identical
+computation gives the zero vector again, and `suffix_set1[c]` already
+contains it -- an unconditional hit, regardless of anything about
+either word before its last position. Needs no Pisot property, no
+irreducibility, nothing beyond the two words sharing a last letter.
+
+**Verified against all 10 of Finding 37's actual substitutions**
+(all genuinely have constant last letter -- that is half of Barge's
+own hypothesis) plus a synthetic case with constant letter 2 (not 0,
+ruling out a letter-0-specific artifact) and a no-constant-last-letter
+control that correctly declines to predict.
+
+**Consequence**: strong coincidence for the ENTIRE class of
+substitutions satisfying "constant last letter" (which includes all of
+Barge's class, unit or non-unit) is now PROVED, not observed --
+closing exactly the missing foundation stone under Finding 37's
+empirical result, and giving the same certainty Finding 17 already
+gives for the dual (constant-first-letter) class. Combined, Findings
+17 and 38 mean strong coincidence is never the obstruction for EITHER
+of these two large, easily-recognized classes -- any future
+counterexample search for the open Strong Coincidence Conjecture can
+skip both.
