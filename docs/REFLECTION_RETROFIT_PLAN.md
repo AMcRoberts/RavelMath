@@ -127,13 +127,38 @@ proved as a Lean existence theorem) and doesn't derive the exact
 `R+1` depth formula as a general identity (the C++ certificate finds
 A collision depth by search, matching `R+1` on the case checked).
 
-**Immediate next-in-queue, in priority order**: (1) Finding 30 --
-Sturm-based Pisot classification, a genuinely different, harder shape
-(no short algebraic/graph identity to lean on); (2) close Finding
-39/41's two remaining gaps (orbit-collision existence, exact depth
-formula) if there's appetite -- diminishing marginal value versus (1)
-or (3); (3) property (F) / the zero-expansion graph (Findings 18-21),
-the hardest category, deliberately last per the original phased plan.
+**2026-08-07 update -- suffix dual closed too.** Built
+`last_letter_orbit_coincidence.lean`, the exact suffix dual of
+`first_letter_orbit_coincidence.lean` (Finding 38's own general case).
+Hit real Mathlib API friction on the first attempt (`getLastI`/
+`dropLast` append lemmas didn't exist under the names tried) and
+correctly backed off rather than force a shaky proof; the fix was
+switching induction principle to `List.reverseRecOn`, which sidesteps
+the friction entirely and succeeded cleanly. This is a real instance
+of the discipline this project has always tried to apply: recognize
+when a path is fighting the tools rather than the math, and switch
+approach instead of pushing through.
+
+**Assessed Finding 30 directly (not just flagged as hard).** Read
+`pisot_classify_poly` in `math/src/exact_pisot.c`: Sturm chains, exact
+rational root isolation via bigint interval bisection, a
+resultant-style modulus-squeeze argument for complex-pair bounds.
+Formalizing this properly means formalizing Sturm's theorem and
+interval root isolation in Lean first -- genuinely a separate,
+multi-week undertaking, not a next increment. Not attempted; recorded
+here so a future session doesn't have to re-derive this assessment.
+
+**Immediate next-in-queue, in priority order**: (1) property (F) / the
+zero-expansion graph (Findings 18-21) -- worth a direct, honest
+assessment the same way Finding 30 just got one, rather than leaving
+"hardest category" unexamined; (2) Finding 30, only if a
+narrower-scoped sub-question can be found (e.g., certifying a SPECIFIC
+polynomial's classification via an explicit numeric witness, rather
+than the general Sturm-based decision procedure); (3) closing Finding
+39/41's remaining honest gaps (orbit-collision existence, exact depth
+formula as a derived identity) if there's appetite -- lower marginal
+value than (1) since the mechanism is already demonstrated correct on
+real cases.
 
 ## What "done" actually requires, per finding
 

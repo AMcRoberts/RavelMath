@@ -352,12 +352,24 @@ struct FirstLetterOrbitCertificate {
     std::string description;
 };
 
+// The exact dual of `FirstLetterOrbitCertificate` for the SUFFIX side:
+// instantiates `RavelGenerated.last_letter_orbit_collision_forces_coincidence`
+// (lean/last_letter_orbit_coincidence.lean).
+struct LastLetterOrbitCertificate {
+    long long d = 0;
+    std::vector<std::vector<long long>> images;
+    long long i = 0;
+    long long j = 0;
+    long long k = 0;
+    std::string description;
+};
+
 using Payload = std::variant<MatrixFamily, MatrixInstance, EraseIndexMap,
                              SparseSupportCertificate, TriangularityCertificate,
                              DeterminantIdentity, LemmaApplication, IntegerEigenvectorNoWitness,
                              PeriodRotationCertificate, ConstantFirstLetterCertificate,
                              ConstantLastLetterCertificate, ZeroRunSameChainCertificate,
-                             FirstLetterOrbitCertificate,
+                             FirstLetterOrbitCertificate, LastLetterOrbitCertificate,
                              ProofObligation, TextObservation>;
 
 struct Node {
@@ -633,6 +645,7 @@ inline std::string payload_name(const Payload& payload) {
         else if constexpr (std::is_same_v<T, ConstantLastLetterCertificate>) return "lean.constant_last_letter_certificate";
         else if constexpr (std::is_same_v<T, ZeroRunSameChainCertificate>) return "lean.zero_run_same_chain_certificate";
         else if constexpr (std::is_same_v<T, FirstLetterOrbitCertificate>) return "lean.first_letter_orbit_certificate";
+        else if constexpr (std::is_same_v<T, LastLetterOrbitCertificate>) return "lean.last_letter_orbit_certificate";
         else if constexpr (std::is_same_v<T, ProofObligation>) return "proof.obligation";
         else return value.operation;
     }, payload);
@@ -684,6 +697,9 @@ inline std::string payload_detail(const Payload& payload) {
         } else if constexpr (std::is_same_v<T, FirstLetterOrbitCertificate>) {
             out << "d=" << value.d << " i=" << value.i << " j=" << value.j << " k=" << value.k
                 << " " << value.description << " -- instantiates first_letter_orbit_collision_forces_coincidence";
+        } else if constexpr (std::is_same_v<T, LastLetterOrbitCertificate>) {
+            out << "d=" << value.d << " i=" << value.i << " j=" << value.j << " k=" << value.k
+                << " " << value.description << " -- instantiates last_letter_orbit_collision_forces_coincidence";
         } else if constexpr (std::is_same_v<T, ProofObligation>) {
             out << value.obligation_id << ": " << value.proposition;
             if (!value.blocked_by.empty()) out << " [blocked by " << value.blocked_by << ']';

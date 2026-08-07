@@ -3016,6 +3016,30 @@ kernel-check with zero errors and zero `sorry`
 `tests/constant_last_letter_reflection_test.cpp`); a synthetic
 no-shared-last-letter control correctly records nothing.
 
+**2026-08-07, later -- the general (orbit-collision) case closed too,
+dual to Finding 39/41's own generalization.** Built
+`lastLetterMap(a) := (sigma a).getLastI` and proved the exact suffix
+dual of `first_letter_orbit_collision_forces_coincidence`: the LAST
+letter of the K-fold image of `[a]` equals `(lastLetterMap sigma)^[k] a`
+(`applyN_getLastI`, proved via `List.reverseRecOn` rather than
+`dropLast`/`getLast` bookkeeping, after an initial attempt using those
+directly hit Mathlib API friction and was abandoned in favor of this
+cleaner induction principle). See
+`lean/last_letter_orbit_coincidence.lean`
+(`last_letter_orbit_collision_forces_coincidence`, kernel-checks clean
+-- the same harmless linter warning as the prefix side, zero errors,
+zero `sorry`). New reflection payload (`LastLetterOrbitCertificate`),
+new C++ certificate (`last_letter_orbit_certificate.hpp`), new renderer
+(`render_last_letter_orbit_instances`). Verified on a real collision
+case (a 3-letter substitution where `lastLetterMap` orbits of two
+distinct starting letters merge after 1 step): kernel-checks with zero
+errors, zero `sorry`. Note, honestly: NOT every pair's `lastLetterMap`
+orbits collide -- a pure-rotation `lastLetterMap` (checked on one
+digit-sequence example) never merges for any nonzero starting gap,
+which is a genuine structural fact about that example, not a
+limitation of the certificate; the certificate correctly reports "not
+found" rather than asserting a false collision.
+
 ## Finding 39 — the zero-run bound: Finding 17 generalized to the ENTIRE canonical terminating-expansion family, not just the constant-factor special case
 
 **Status: PROVED (mechanistic argument from the substitution's own

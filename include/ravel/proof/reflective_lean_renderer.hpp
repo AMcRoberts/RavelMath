@@ -666,6 +666,137 @@ inline std::string render_first_letter_orbit_instances(const mathlib::reflection
     return out.str();
 }
 
+// The exact dual of `first_letter_orbit_general_lemma_lean` --
+// hand-derived and kernel-checked once
+// (lean/last_letter_orbit_coincidence.lean), reproduced here.
+inline const char* last_letter_orbit_general_lemma_lean() {
+    return
+        "def applyOnce {d : ℕ} (sigma : Fin d → List (Fin d)) (w : List (Fin d)) : List (Fin d) :=\n"
+        "  w.flatMap sigma\n\n"
+        "def applyN {d : ℕ} (sigma : Fin d → List (Fin d)) (k : ℕ) (w : List (Fin d)) : List (Fin d) :=\n"
+        "  (applyOnce sigma)^[k] w\n\n"
+        "theorem applyN_succ {d : ℕ} (sigma : Fin d → List (Fin d)) (k : ℕ) (w : List (Fin d)) :\n"
+        "    applyN sigma (k + 1) w = applyOnce sigma (applyN sigma k w) := by\n"
+        "  simp [applyN, Function.iterate_succ_apply']\n\n"
+        "def abelianize {d : ℕ} : List (Fin d) → (Fin d → ℤ)\n"
+        "  | [] => fun _ => 0\n"
+        "  | (a :: rest) => fun j => abelianize rest j + if j = a then 1 else 0\n\n"
+        "def sufSeq {d : ℕ} : List (Fin d) → List (Fin d → ℤ)\n"
+        "  | [] => []\n"
+        "  | (_ :: rest) => abelianize rest :: sufSeq rest\n\n"
+        "def suffixPairs {d : ℕ} (w : List (Fin d)) : List (Fin d × (Fin d → ℤ)) :=\n"
+        "  w.zip (sufSeq w)\n\n"
+        "def hasCoincidenceSuffix {d : ℕ} (w1 w2 : List (Fin d)) : Prop :=\n"
+        "  ∃ p, p ∈ suffixPairs w1 ∧ p ∈ suffixPairs w2\n\n"
+        "theorem mem_suffixPairs_append_singleton {d : ℕ} (w : List (Fin d)) (c : Fin d) :\n"
+        "    (c, fun _ => (0 : ℤ)) ∈ suffixPairs (w ++ [c]) := by\n"
+        "  induction w with\n"
+        "  | nil => simp [suffixPairs, sufSeq, abelianize]\n"
+        "  | cons a w' ih =>\n"
+        "      simp only [List.cons_append, suffixPairs, sufSeq, List.zip_cons_cons, List.mem_cons]\n"
+        "      exact Or.inr ih\n\n"
+        "theorem constant_last_letter_forces_suffix_coincidence\n"
+        "    {d : ℕ} (c : Fin d) (w1' w2' : List (Fin d)) :\n"
+        "    hasCoincidenceSuffix (w1' ++ [c]) (w2' ++ [c]) :=\n"
+        "  ⟨(c, fun _ => 0), mem_suffixPairs_append_singleton w1' c, mem_suffixPairs_append_singleton w2' c⟩\n\n"
+        "variable {d : ℕ} [Inhabited (Fin d)]\n\n"
+        "def lastLetterMap (sigma : Fin d → List (Fin d)) : Fin d → Fin d :=\n"
+        "  fun a => (sigma a).getLastI\n\n"
+        "theorem applyOnce_ne_nil (sigma : Fin d → List (Fin d)) (hne : ∀ a, sigma a ≠ [])\n"
+        "    (w : List (Fin d)) (hw : w ≠ []) : applyOnce sigma w ≠ [] := by\n"
+        "  cases w with\n"
+        "  | nil => exact absurd rfl hw\n"
+        "  | cons a rest => simp [applyOnce, hne a]\n\n"
+        "theorem applyN_ne_nil (sigma : Fin d → List (Fin d)) (hne : ∀ a, sigma a ≠ [])\n"
+        "    (k : ℕ) (w : List (Fin d)) (hw : w ≠ []) : applyN sigma k w ≠ [] := by\n"
+        "  induction k with\n"
+        "  | zero => exact hw\n"
+        "  | succ k ih => rw [applyN_succ]; exact applyOnce_ne_nil sigma hne _ ih\n\n"
+        "theorem applyOnce_getLastI (sigma : Fin d → List (Fin d)) (hne : ∀ a, sigma a ≠ [])\n"
+        "    (w : List (Fin d)) (hw : w ≠ []) :\n"
+        "    (applyOnce sigma w).getLastI = lastLetterMap sigma w.getLastI := by\n"
+        "  induction w using List.reverseRecOn with\n"
+        "  | nil => exact absurd rfl hw\n"
+        "  | append_singleton l a _ =>\n"
+        "      have hlast : (l ++ [a]).getLastI = a := by\n"
+        "        rw [List.getLastI_eq_getLast?_getD, List.getLast?_append_of_ne_nil _ (by simp)]\n"
+        "        simp\n"
+        "      have hstep : (applyOnce sigma l ++ sigma a).getLastI = (sigma a).getLastI := by\n"
+        "        rw [List.getLastI_eq_getLast?_getD, List.getLast?_append_of_ne_nil _ (hne a),\n"
+        "            ← List.getLastI_eq_getLast?_getD]\n"
+        "      simp only [applyOnce, List.flatMap_append, List.flatMap_cons, List.flatMap_nil,\n"
+        "        List.append_nil] at hstep ⊢\n"
+        "      rw [hstep, hlast]\n"
+        "      rfl\n\n"
+        "theorem applyN_getLastI (sigma : Fin d → List (Fin d)) (hne : ∀ a, sigma a ≠ [])\n"
+        "    (a : Fin d) (k : ℕ) :\n"
+        "    (applyN sigma k [a]).getLastI = (lastLetterMap sigma)^[k] a := by\n"
+        "  induction k with\n"
+        "  | zero => rfl\n"
+        "  | succ k ih =>\n"
+        "      rw [applyN_succ, applyOnce_getLastI sigma hne _ (applyN_ne_nil sigma hne k [a] (by simp)), ih,\n"
+        "        Function.iterate_succ_apply']\n\n"
+        "/-- Finding 39/41's suffix-side general case, dual to\n"
+        "    `first_letter_orbit_collision_forces_coincidence`. Reproduced from the\n"
+        "    independently kernel-checked `lean/last_letter_orbit_coincidence.lean`\n"
+        "    (not re-derived here). -/\n"
+        "theorem last_letter_orbit_collision_forces_coincidence\n"
+        "    (sigma : Fin d → List (Fin d)) (hne : ∀ a, sigma a ≠ [])\n"
+        "    (i j : Fin d) (k : ℕ) (hcollide : (lastLetterMap sigma)^[k] i = (lastLetterMap sigma)^[k] j) :\n"
+        "    hasCoincidenceSuffix (applyN sigma k [i]) (applyN sigma k [j]) := by\n"
+        "  have hi : (applyN sigma k [i]).getLastI = (lastLetterMap sigma)^[k] i := applyN_getLastI sigma hne i k\n"
+        "  have hj : (applyN sigma k [j]).getLastI = (lastLetterMap sigma)^[k] j := applyN_getLastI sigma hne j k\n"
+        "  have hine : applyN sigma k [i] ≠ [] := applyN_ne_nil sigma hne k [i] (by simp)\n"
+        "  have hjne : applyN sigma k [j] ≠ [] := applyN_ne_nil sigma hne k [j] (by simp)\n"
+        "  induction hw1 : applyN sigma k [i] using List.reverseRecOn with\n"
+        "  | nil => exact absurd hw1 hine\n"
+        "  | append_singleton w1' a _ =>\n"
+        "      induction hw2 : applyN sigma k [j] using List.reverseRecOn with\n"
+        "      | nil => exact absurd hw2 hjne\n"
+        "      | append_singleton w2' b _ =>\n"
+        "          have ha : a = (lastLetterMap sigma)^[k] i := by\n"
+        "            rw [← hi, hw1]; simp [List.getLastI_eq_getLast?_getD]\n"
+        "          have hb : b = (lastLetterMap sigma)^[k] j := by\n"
+        "            rw [← hj, hw2]; simp [List.getLastI_eq_getLast?_getD]\n"
+        "          have hab : a = b := by rw [ha, hb, hcollide]\n"
+        "          rw [hab]\n"
+        "          exact constant_last_letter_forces_suffix_coincidence b w1' w2'\n\n";
+}
+
+// Mechanically emits one Lean corollary of `last_letter_orbit_
+// collision_forces_coincidence` PER `LastLetterOrbitCertificate` node.
+inline std::string render_last_letter_orbit_instances(const mathlib::reflection::Trace& trace) {
+    std::ostringstream out;
+    long long counter = 0;
+    auto nodes = trace.find<mathlib::reflection::LastLetterOrbitCertificate>();
+    if (nodes.empty()) return {};
+    out << last_letter_orbit_general_lemma_lean();
+    for (const auto& [id, node] : nodes) {
+        (void)id;
+        std::string name = "last_letter_orbit_instance_" + std::to_string(counter++);
+        std::ostringstream sigmavec;
+        sigmavec << "(![";
+        for (long long a = 0; a < node->d; ++a) {
+            if (a > 0) sigmavec << ", ";
+            sigmavec << render_lean_fin_list(node->images[static_cast<std::size_t>(a)]);
+        }
+        sigmavec << "] : Fin " << node->d << " → List (Fin " << node->d << "))";
+        std::string sigma_typed = sigmavec.str();
+        out << "/-- Mechanically emitted: instantiates the general lemma above for\n";
+        out << "    " << node->description << " (" << node->k << " collision steps). -/\n";
+        out << "theorem " << name << " :\n";
+        out << "    hasCoincidenceSuffix\n";
+        out << "      (applyN " << sigma_typed << " " << node->k << " [(" << node->i << " : Fin "
+            << node->d << ")])\n";
+        out << "      (applyN " << sigma_typed << " " << node->k << " [(" << node->j << " : Fin "
+            << node->d << ")]) :=\n";
+        out << "  last_letter_orbit_collision_forces_coincidence " << sigma_typed << " (by decide)\n";
+        out << "    (" << node->i << " : Fin " << node->d << ") (" << node->j << " : Fin " << node->d
+            << ") " << node->k << " (by decide)\n\n";
+    }
+    return out.str();
+}
+
 inline std::string render_reflective_lean_module(const mathlib::reflection::Trace& trace) {
     if (trace.empty()) throw std::runtime_error("cannot render proof module without provenance");
     std::ostringstream out;
@@ -708,6 +839,7 @@ inline std::string render_reflective_lean_module(const mathlib::reflection::Trac
     out << render_constant_last_letter_instances(trace);
     out << render_zero_run_same_chain_instances(trace);
     out << render_first_letter_orbit_instances(trace);
+    out << render_last_letter_orbit_instances(trace);
 
     out << "/- Semantic proof graph for: " << trace.theorem_id() << "\n";
     for (std::size_t i = 0; i < trace.nodes().size(); ++i) {
