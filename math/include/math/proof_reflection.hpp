@@ -245,9 +245,26 @@ struct TextObservation {
     std::string detail;
 };
 
+// Records that a specific integer matrix M (n x n, row-major flat)
+// instantiates the GENERAL, already-checked Lean lemma
+// `RavelGenerated.irrational_eigenvalue_has_no_integer_eigenvector`
+// (lean/barge_diamond_lattice_line.lean): for THIS M, no nonzero
+// integer vector w can satisfy the eigenvector equation at any index
+// i for an irrational eigenvalue beta. w, i, and the eigenvector
+// equation itself stay universally quantified in the emitted
+// corollary -- only M (and its dimension) are concrete, matching what
+// Barge & Diamond's Theorem 1 proof actually needs (the fact applies
+// to whatever hypothetical vector/index the pigeonhole argument
+// produces, not a specific one fixed in advance).
+struct IntegerEigenvectorNoWitness {
+    long long n = 0;
+    std::vector<long long> matrix_flat;  // n*n, row-major
+    std::string charpoly_description;    // human-readable, for the trace report
+};
+
 using Payload = std::variant<MatrixFamily, MatrixInstance, EraseIndexMap,
                              SparseSupportCertificate, TriangularityCertificate,
-                             DeterminantIdentity, LemmaApplication,
+                             DeterminantIdentity, LemmaApplication, IntegerEigenvectorNoWitness,
                              ProofObligation, TextObservation>;
 
 struct Node {
@@ -517,6 +534,7 @@ inline std::string payload_name(const Payload& payload) {
         else if constexpr (std::is_same_v<T, TriangularityCertificate>) return "matrix.triangularity";
         else if constexpr (std::is_same_v<T, DeterminantIdentity>) return "matrix.determinant_identity";
         else if constexpr (std::is_same_v<T, LemmaApplication>) return "lean.lemma_application";
+        else if constexpr (std::is_same_v<T, IntegerEigenvectorNoWitness>) return "lean.integer_eigenvector_no_witness";
         else if constexpr (std::is_same_v<T, ProofObligation>) return "proof.obligation";
         else return value.operation;
     }, payload);
@@ -550,6 +568,9 @@ inline std::string payload_detail(const Payload& payload) {
             out << value.identity;
         } else if constexpr (std::is_same_v<T, LemmaApplication>) {
             out << value.theorem_name << " proves " << value.conclusion;
+        } else if constexpr (std::is_same_v<T, IntegerEigenvectorNoWitness>) {
+            out << "n=" << value.n << " M=" << value.charpoly_description
+                << " -- instantiates irrational_eigenvalue_has_no_integer_eigenvector";
         } else if constexpr (std::is_same_v<T, ProofObligation>) {
             out << value.obligation_id << ": " << value.proposition;
             if (!value.blocked_by.empty()) out << " [blocked by " << value.blocked_by << ']';

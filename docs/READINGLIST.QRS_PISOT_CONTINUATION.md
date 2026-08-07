@@ -735,3 +735,40 @@ own digit-expansion tooling produces are now fully covered. Next
 Stage-1 candidates if this continues: reprove Barge-Diamond's binary
 case independently, or move to Stage 2 (property F's distinctness
 conjecture) now that the coincidence foundation is much more solid.
+
+### 2026-08-06 (PC session, final stretch) — Finding 42: Barge-Diamond fully reimplemented, reflection-to-Lean pipeline working end-to-end
+
+AM's "reprove Barge-Diamond" request went through several rounds of
+sharpening: first a computational verification of their conclusion via
+this project's own coincidence machinery (rejected -- not the point);
+then a from-scratch geometric reimplementation of their actual
+apparatus (segments, stable/unstable eigenspaces, the B and M
+finiteness bounds -- built and verified to stabilize numerically);
+then a hard architectural correction -- no Lean proof should be
+authored by hand, only emitted by mechanically unfolding a reflection
+trace recorded by the executing math machinery itself, reusing
+math/proof_reflection.hpp's existing (if narrowly-used) trace/render
+infrastructure rather than inventing a new one.
+
+Landed on a complete, correct, end-to-end pipeline: certify_barge_
+diamond (exact, rational-root-theorem irreducibility check, long-long
+arithmetic, degree 2-3 scope stated honestly) records an
+IntegerEigenvectorNoWitness trace node the moment it establishes
+beta's irrationality; the extended reflective_lean_renderer walks
+EVERY such node in a trace (not a single hardcoded pattern) and emits
+a Lean corollary instantiating the general, independently kernel-
+checked lemma (lean/barge_diamond_lattice_line.lean) with that node's
+own concrete matrix -- w, i, and the eigenvector equation stay
+universally quantified, only the matrix is concrete. Ran on 3 real
+substitutions, rendered, kernel-checked with zero errors and zero
+sorry. See Finding 42.
+
+For d=2 this closes the FULL Strong Coincidence Conjecture, exactly,
+for every substitution the pipeline is run on -- a real, reproducible,
+machine-checked result, not a hand proof.
+
+Explicitly scoped OUT of this session: "retrofit literally every
+finding in the project through this pipeline" is real, and next, but
+it is its own large project -- needs a proper plan, not an in-session
+scramble. AM is compacting manually; the next thing after this entry
+is scoping that retrofit properly.
