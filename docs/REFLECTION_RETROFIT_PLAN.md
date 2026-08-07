@@ -170,15 +170,29 @@ that the code itself never actually touches. Worth scanning for more
 instances of this pattern before assuming everything needs brand-new
 math.
 
-**Immediate next-in-queue, in priority order**: (1) scan the codebase
-for other "comment cites a Lean file, code doesn't touch it" cases
-(the same low-risk pattern just closed for property F) -- likely the
-best remaining ROI; (2) Finding 30, only if a narrower-scoped
-sub-question can be found (e.g., certifying a SPECIFIC polynomial's
-classification via an explicit numeric witness, rather than the
-general Sturm-based decision procedure); (3) closing Finding 39/41's
-remaining honest gaps (orbit-collision existence, exact depth formula
-as a derived identity) if there's appetite.
+**2026-08-07 update -- triaged Findings 22-29/31-34 directly.** Scanned
+every one for shape rather than leaving them unexamined: most are
+either empirical/negative results this project's own discipline says
+should NOT get a Lean corollary (28, 31, 33 is a literature survey),
+open/unproved converses (25's own open half, 34), or methodological
+tools rather than theorems (24). Finding 27 (leftmost-loop corollary)
+stood out as genuinely provable and cheap: its core is a tiny, general
+periodic-point fact, now retrofitted
+(`lean/periodic_point_repetition.lean`, `LeftmostLoopCertificate`,
+`render_leftmost_loop_instances`), kernel-checked on the real g=2
+example. Findings 22, 23, 29, 32 remain genuinely unexamined for
+Lean-retrofit potential specifically (not yet ruled in or out) --
+next candidates if this continues, roughly in this order: 29
+(accumulation points -- likely a clean analytic fact about a monotone
+family, similar shape to what worked today) and 23 (walk-realizability
+-- exact but combinatorially heavier, needs assessment before
+estimating cost).
+
+**Immediate next-in-queue, in priority order**: (1) assess Finding 29
+directly (accumulation points at every integer >=2 -- described as
+"exact and provable", unexamined for Lean shape); (2) Finding 30, only
+if a narrower-scoped sub-question can be found; (3) closing Finding
+39/41's remaining honest gaps if there's appetite.
 
 ## What "done" actually requires, per finding
 

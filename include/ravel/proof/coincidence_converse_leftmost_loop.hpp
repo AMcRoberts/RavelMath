@@ -48,6 +48,7 @@
 #include <optional>
 #include <vector>
 
+#include "math/proof_reflection.hpp"
 #include "ravel/proof/coincidence_closure.hpp"
 
 namespace ravel::proof {
@@ -58,9 +59,19 @@ namespace ravel::proof {
 // length if `start` lies on its own eventual leftmost cycle within
 // `max_steps` junction-hops, else nullopt (start is only in the
 // transient, not on the cycle itself).
+//
+// When a trace is active and a loop is found, records a
+// `LeftmostLoopCertificate` -- the loop itself, modeled as a pure
+// rotation on `Fin L` (position i -> the loop's i-th visited junction;
+// the rotation returns to position 0 after exactly L steps BY
+// CONSTRUCTION, no per-instance verification needed beyond L, which
+// is already computed exactly here), instantiating
+// `RavelGenerated.periodic_point_iterate_mul`
+// (lean/periodic_point_repetition.lean) for `m = 0..max_m_to_certify`.
 template <std::size_t d>
 inline std::optional<long long> leftmost_loop_length(const std::vector<JunctionEdge<d>>& edges,
-                                                        long long start, long long max_steps = 10000) {
+                                                        long long start, long long max_steps = 10000,
+                                                        long long max_m_to_certify = 3) {
     long long current = start;
     long long total = 0;
     for (long long step = 0; step < max_steps; ++step) {
@@ -71,7 +82,18 @@ inline std::optional<long long> leftmost_loop_length(const std::vector<JunctionE
         if (!chosen) return std::nullopt;  // shouldn't happen for a real junction
         total += chosen->jump_size;
         current = chosen->to_junction;
-        if (current == start) return total;
+        if (current == start) {
+            if (mathlib::reflection::enabled()) {
+                mathlib::reflection::LeftmostLoopCertificate node;
+                node.start = start;
+                node.loop_length = total;
+                node.max_m = max_m_to_certify;
+                node.description = "leftmost-branch cycle at junction " + std::to_string(start)
+                    + ", length " + std::to_string(total);
+                mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, node);
+            }
+            return total;
+        }
     }
     return std::nullopt;
 }

@@ -2290,6 +2290,29 @@ general bound or construction -- remains open. The `+10` constant
 offset observed for the non-multiple-of-`L` residue class is a
 suggestive, unexplained regularity, not yet investigated.
 
+**2026-08-07 addendum — retrofitted through the reflection pipeline.**
+The corollary's mathematical core -- repeating a closed loop any
+number of times returns to the start -- is a small, fully general fact
+about iterated functions: `f^[L] x = x → f^[m*L] x = x` for every `m`
+(`periodic_point_iterate_mul`, `lean/periodic_point_repetition.lean`,
+kernel-checked, zero `sorry`). Modeled the leftmost loop itself as a
+PURE ROTATION on `Fin L` (position `i -> i+1`, wrapping automatically)
+rather than re-encoding the full junction-graph/landmark-vector
+machinery in Lean -- the rotation returns to position 0 after exactly
+`L` steps by construction, so no per-instance verification beyond `L`
+(already computed exactly by the existing `leftmost_loop_length`) is
+needed. `leftmost_loop_length` now records a `LeftmostLoopCertificate`
+whenever it finds a cycle; the renderer emits one corollary per `m` up
+to a configurable bound. Run on this finding's own g=2 multi-junction
+example (`L=4`, a proper multiple of `g=2`): 4 instances (`m=0..3`)
+kernel-check with zero errors, zero `sorry`
+(`lean/generated/leftmost_loop_batch.lean`,
+`tests/leftmost_loop_reflection_test.cpp`). Honest scope: this
+formalizes the ROTATION mechanism generally, not the specific
+junction-graph/zero-landmark-vector argument connecting it to
+`reachable(J, mL)` containing `(J, zero_vector)` -- that connection is
+still only proved in the C++/prose account above, not in Lean.
+
 ## Finding 28 — Finding 6.5's unimodularity hypothesis for beta-expansion termination is refuted; sigma_{0,2} remains genuinely open
 
 **Status: NEGATIVE RESULT (the hypothesis), narrows Task 4's scope

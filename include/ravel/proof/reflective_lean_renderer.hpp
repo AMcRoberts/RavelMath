@@ -871,6 +871,50 @@ inline std::string render_last_letter_orbit_instances(const mathlib::reflection:
     return out.str();
 }
 
+// Finding 27's general lemma -- hand-derived and kernel-checked once
+// (lean/periodic_point_repetition.lean), reproduced here.
+inline const char* periodic_point_repetition_lemma_lean() {
+    return
+        "/-- If `f^[L] x = x`, then `f^[m*L] x = x` for every `m`. Reproduced from the\n"
+        "    independently kernel-checked `lean/periodic_point_repetition.lean` (not\n"
+        "    re-derived here). -/\n"
+        "theorem periodic_point_iterate_mul {α : Type*} (f : α → α) (L : ℕ) (x : α)\n"
+        "    (h : f^[L] x = x) : ∀ m : ℕ, f^[L * m] x = x := by\n"
+        "  intro m\n"
+        "  induction m with\n"
+        "  | zero => simp\n"
+        "  | succ m ih =>\n"
+        "      rw [Nat.mul_succ, Function.iterate_add_apply, h, ih]\n\n";
+}
+
+// Mechanically emits one Lean corollary PER `LeftmostLoopCertificate`
+// node -- the loop is modeled as a pure rotation on `Fin L` (`f := fun
+// i => i + 1`), so `f^[L] 0 = 0` discharges via `decide` (Fin's own
+// wraparound addition makes this true by construction, not something
+// that needs the original junction-graph data at all).
+inline std::string render_leftmost_loop_instances(const mathlib::reflection::Trace& trace) {
+    std::ostringstream out;
+    long long counter = 0;
+    auto nodes = trace.find<mathlib::reflection::LeftmostLoopCertificate>();
+    if (nodes.empty()) return {};
+    out << periodic_point_repetition_lemma_lean();
+    for (const auto& [id, node] : nodes) {
+        (void)id;
+        long long L = node->loop_length;
+        std::string f_typed = "(fun (i : Fin " + std::to_string(L) + ") => i + 1)";
+        for (long long m = 0; m <= node->max_m; ++m) {
+            std::string name = "leftmost_loop_instance_" + std::to_string(counter++);
+            out << "/-- Mechanically emitted: instantiates the general lemma above for\n";
+            out << "    " << node->description << ", m=" << m << ". -/\n";
+            out << "theorem " << name << " :\n";
+            out << "    " << f_typed << "^[" << L << " * " << m << "] (0 : Fin " << L << ") = 0 :=\n";
+            out << "  periodic_point_iterate_mul " << f_typed << " " << L << " (0 : Fin " << L
+                << ") (by decide) " << m << "\n\n";
+        }
+    }
+    return out.str();
+}
+
 inline std::string render_reflective_lean_module(const mathlib::reflection::Trace& trace) {
     if (trace.empty()) throw std::runtime_error("cannot render proof module without provenance");
     std::ostringstream out;
@@ -916,6 +960,7 @@ inline std::string render_reflective_lean_module(const mathlib::reflection::Trac
     out << render_zero_run_same_chain_instances(trace);
     out << render_first_letter_orbit_instances(trace);
     out << render_last_letter_orbit_instances(trace);
+    out << render_leftmost_loop_instances(trace);
 
     out << "/- Semantic proof graph for: " << trace.theorem_id() << "\n";
     for (std::size_t i = 0; i < trace.nodes().size(); ++i) {
