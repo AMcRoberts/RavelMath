@@ -2457,3 +2457,68 @@ Pisot classification was trusted across three findings and a
 substantial compute budget (an exact search that ran 30 minutes)
 without ever being re-verified against the project's own certified
 tool, which would have taken under a second.
+
+## Finding 33 — a certified map of the Pisot numbers, grounding AM's "poles/harmonics" question in classical theory
+
+**Status: combines established literature (Salem, Siegel, Dufresnoy-
+Pisot, Boyd) with a fresh, independently certified computational
+sweep (201 points, degree 3-7, window (1,4.5)) via
+`pisot_classify_degree_n` (Finding 30). No new theorem -- a grounded
+synthesis plus direct quantitative confirmation.**
+
+AM asked for "a good map about where pisot numbers actually appear
+and where their points of lowest complexity are, and how complexity
+branches among the structure," having noticed "spottiness" near the
+smallest Pisot number. This is real, established structure, not a
+vague impression:
+
+- **Salem (1944) / Siegel (1944)**: the plastic number
+  (`~1.3247179572`, root of `x^3-x-1`) is THE smallest Pisot number,
+  and the set S of all Pisot numbers is closed.
+- **Dufresnoy & Pisot (1955)**: every Pisot number below the golden
+  ratio `phi=(1+sqrt5)/2~1.618034` is completely, exhaustively known
+  -- a short, closed, finite list, not merely "sparse in our search."
+  `phi` itself is proved to be the SMALLEST LIMIT POINT of the whole
+  set S -- an exact, not approximate, threshold between "discrete and
+  solved" and "self-accumulating."
+- **Boyd (1984-85), "Pisot numbers in the neighborhood of a limit
+  point" I & II**: continuing Dufresnoy-Pisot's study of the
+  successive derived sets `S' = limit points of S`,
+  `S'' = limit points of S'`, etc. Each `S^(k)` is nonempty, and its
+  minimum satisfies `sqrt(k) <= min S^(k) <= 2^(k/2)` -- a genuine
+  quantitative bound on AM's "harmonics" intuition: each level of the
+  hierarchy has its own "pole," climbing at a proven, bracketed rate.
+- **This project (Finding 29, same session)**: a THIRD, complementary
+  structure above 2 -- every integer `>=2` is a constructively
+  reachable accumulation point via the a-bonacci family, an explicit
+  arbitrary-degree recipe rather than a general existence statement.
+
+**Independent computational confirmation**: swept every monic integer
+polynomial of degree 3-7 with small bounded coefficients through the
+certified `pisot_classify_degree_n` classifier (honestly refusing
+multi-complex-pair cases per Finding 30's disclosed limitation),
+window `(1, 4.5)`. 201 distinct certified Pisot values found. Density
+per unit interval (points found / interval width, NOT a claim about
+the true infinite-degree density): `4.85` below `phi`, `18.32` in
+`[phi,2)`, `72` in `[2,3)`, `99` in `[3,4)` -- a clean, monotone climb
+exactly where the literature predicts the discrete-to-accumulating
+transition happens, reproduced from scratch rather than asserted.
+
+**An honest gap surfaced by the sweep itself**: the literature's
+`theta_3 ~ 1.443269` (root of `x^5-x^4-x^3+x^2-1`), one of the small
+number of Pisot numbers below `phi`, does NOT appear in the certified
+output -- confirmed (via direct root computation) to have TWO
+complex-conjugate pairs among its secondary roots, exactly the
+Finding-30 limitation (the modulus bound only certifies their combined
+product). A real, disclosed absence, not a silent gap in the map.
+
+See `app/probe_pisot_map.cpp` (the sweep) and the published map
+artifact (interactive number-line, density histogram, and derived-set
+harmonics diagram, built the same session).
+
+**SCOPE, stated honestly**: this is a synthesis and a bounded,
+degree-limited empirical confirmation, not a new theorem. The exact
+minima of `S''`, `S'''`, etc. (only their bracket is reproduced here)
+and any structure beyond degree 7 or coefficient bound ~4 are not
+computed -- Boyd's own specific numeric tables were not accessible
+(paywalled) and are not reproduced.
