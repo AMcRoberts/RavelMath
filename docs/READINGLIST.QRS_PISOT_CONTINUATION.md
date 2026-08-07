@@ -477,3 +477,29 @@ applied here -- a Pisot classification was trusted across three
 findings and a 30-minute compute budget without ever being re-run
 through the certified classifier, which would have taken under a
 second.
+
+### 2026-08-06 (PC session, harmonics/poles map) — Finding 33
+
+AM asked for a map of where Pisot numbers actually appear, noting
+"spottiness" near the smallest one, and framed the golden/silver
+ratio, plastic number, etc. as "poles" in a Pisot-approximation
+structure -- essentially asking about the classical derived-set theory
+without necessarily knowing its name. Searched the literature (web
+search, since this project's bibliography didn't have it): confirmed
+phi is PROVEN to be the smallest limit point of S (Dufresnoy-Pisot
+1955, who also completely classified every Pisot number below it --
+a short, closed, finite list), and that Boyd's 1984-85 papers give a
+genuine quantitative "harmonics" bound on successive derived sets:
+sqrt(k) <= min S^(k) <= 2^(k/2). Combined this with a fresh, certified
+201-point sweep (Finding 30's pisot_classify_degree_n) confirming the
+predicted density transition quantitatively (4.85/unit below phi,
+climbing to 99/unit by [3,4)) and surfacing an honest gap (theta_3, a
+real literature Pisot number our classifier can't certify due to its
+own disclosed two-complex-pair limitation). Published as an
+interactive map artifact. See Finding 33,
+app/probe_pisot_map.cpp.
+
+Open thread if this comes back: the exact minima of S'', S''', etc.
+(only the bracket is reproduced here, not Boyd's specific computed
+values, which are paywalled) and whether this project's own tools
+could independently re-derive them rather than cite Boyd.
