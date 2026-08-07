@@ -3103,11 +3103,55 @@ the real, unmodified `sigma` beyond the chain -- stated explicitly in
 the Lean file's own header, not glossed over. Run on a real
 zero-run-3 digit sequence: kernel-checks with zero errors, zero
 `sorry` (`lean/generated/zero_run_same_chain_batch.lean`,
-`tests/zero_run_same_chain_reflection_test.cpp`). NOT yet covered:
-pairs where only one letter is inside a run, or letters in different
-runs -- the harder cases still needing composition with
-`constant_first_letter_forces_prefix_coincidence` at the moment a
-nonzero digit is finally reached.
+`tests/zero_run_same_chain_reflection_test.cpp`).
+
+**2026-08-07, same day, later -- the GENERAL case closed too.**
+Found a cleaner reduction that covers the remaining cases at once
+instead of composing chain-synchronization with prefix-matching
+case-by-case: track ONLY the FIRST LETTER of each letter's iterated
+image. `firstLetterMap(a) := (sigma a).headI` is a plain function
+`Fin d -> Fin d`, and the head of `applyN sigma k [a]` equals
+`(firstLetterMap sigma)^[k] a` (proved by induction,
+`applyN_headI`) -- so "do letters i and j eventually coincide" reduces
+ENTIRELY to "do their `firstLetterMap` orbits collide at some depth
+K", independent of chain/growth bookkeeping, covering mixed
+in-run/out-of-run and cross-run pairs the same-chain lemma alone could
+not reach. See `lean/first_letter_orbit_coincidence.lean`
+(`first_letter_orbit_collision_forces_coincidence`, kernel-checked
+clean -- one harmless linter warning about an unused typeclass
+argument, zero errors, zero `sorry`). New reflection payload
+(`FirstLetterOrbitCertificate`), new C++ certificate
+(`first_letter_orbit_certificate.hpp`: simulates `firstLetterMap` from
+both letters simultaneously and finds the exact collision depth,
+verified with plain integer arithmetic, no floating point), new
+renderer (`render_first_letter_orbit_instances`).
+
+Run on digits `(1,0,0,0,1)` (longest zero-run `R=3`) on a genuinely
+MIXED pair -- letter 0 (itself NOT in any run, `t_0=1`) vs letter 2
+(mid-run) -- collision found at depth 3, and the same-chain pair (1,3)
+at depth 4; both kernel-check with zero errors, zero `sorry`
+(`lean/generated/first_letter_orbit_batch.lean`,
+`tests/first_letter_orbit_reflection_test.cpp`). Cross-validated
+against the ACTUAL `check_strong_coincidence` search on this same
+substitution (not merely internally consistent): it independently
+confirms strong coincidence HOLDS at depth 4, exactly matching
+`R+1=4` and consistent with both certified collision depths. Finding
+39/41 is now retrofitted for the FULL claim's underlying mechanism (any
+pair's eventual coincidence reduces to first-letter orbit collision),
+not just the tightness-witness special case.
+
+**Honest remaining scope**: `first_letter_orbit_collision_forces_
+coincidence` is a CONDITIONAL theorem ("IF the orbits collide at depth
+K, THEN coincidence at depth K") -- it does not itself prove orbit
+collision ALWAYS happens (true for this canonical family structurally,
+since every non-pass-through letter maps directly to letter 0 under
+`firstLetterMap`, but that existence argument is not yet formalized in
+Lean, only verified per-instance by the C++ certificate's bounded
+search) or that the collision depth always equals the EXACT `R+1`
+formula (the certificate finds A collision depth by search, matching
+`R+1` on the one case checked here, not derived as a general identity
+in Lean). Both remain real, well-scoped next steps, not silently
+assumed.
 
 ## Finding 40 — return-word induction dramatically reduces coincidence-resolution depth: sigma_{0,1}'s worst-case depth 13 collapses to 2
 

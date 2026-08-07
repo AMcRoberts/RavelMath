@@ -553,6 +553,119 @@ inline std::string render_zero_run_same_chain_instances(const mathlib::reflectio
     return out.str();
 }
 
+// A SIXTH general lemma, closing Finding 39/41's general case --
+// hand-derived and kernel-checked once
+// (lean/first_letter_orbit_coincidence.lean), reproduced here.
+inline const char* first_letter_orbit_general_lemma_lean() {
+    return
+        "def applyOnce {d : ℕ} (sigma : Fin d → List (Fin d)) (w : List (Fin d)) : List (Fin d) :=\n"
+        "  w.flatMap sigma\n\n"
+        "def applyN {d : ℕ} (sigma : Fin d → List (Fin d)) (k : ℕ) (w : List (Fin d)) : List (Fin d) :=\n"
+        "  (applyOnce sigma)^[k] w\n\n"
+        "theorem applyN_succ {d : ℕ} (sigma : Fin d → List (Fin d)) (k : ℕ) (w : List (Fin d)) :\n"
+        "    applyN sigma (k + 1) w = applyOnce sigma (applyN sigma k w) := by\n"
+        "  simp [applyN, Function.iterate_succ_apply']\n\n"
+        "def runningSeq {d : ℕ} : List (Fin d) → List (Fin d → ℤ)\n"
+        "  | [] => []\n"
+        "  | (a :: rest) =>\n"
+        "      (fun _ => (0 : ℤ)) :: (runningSeq rest).map (fun v => fun j => v j + if j = a then 1 else 0)\n\n"
+        "def prefixPairs {d : ℕ} (w : List (Fin d)) : List (Fin d × (Fin d → ℤ)) :=\n"
+        "  w.zip (runningSeq w)\n\n"
+        "def hasCoincidencePrefix {d : ℕ} (w1 w2 : List (Fin d)) : Prop :=\n"
+        "  ∃ p, p ∈ prefixPairs w1 ∧ p ∈ prefixPairs w2\n\n"
+        "theorem constant_first_letter_forces_prefix_coincidence\n"
+        "    {d : ℕ} (c : Fin d) (w1' w2' : List (Fin d)) :\n"
+        "    hasCoincidencePrefix (c :: w1') (c :: w2') := by\n"
+        "  refine ⟨(c, fun _ => (0 : ℤ)), ?_, ?_⟩ <;>\n"
+        "    simp [prefixPairs, runningSeq]\n\n"
+        "variable {d : ℕ} [Inhabited (Fin d)]\n\n"
+        "def firstLetterMap (sigma : Fin d → List (Fin d)) : Fin d → Fin d :=\n"
+        "  fun a => (sigma a).headI\n\n"
+        "theorem applyOnce_ne_nil (sigma : Fin d → List (Fin d)) (hne : ∀ a, sigma a ≠ [])\n"
+        "    (w : List (Fin d)) (hw : w ≠ []) : applyOnce sigma w ≠ [] := by\n"
+        "  cases w with\n"
+        "  | nil => exact absurd rfl hw\n"
+        "  | cons a rest => simp [applyOnce, hne a]\n\n"
+        "theorem applyN_ne_nil (sigma : Fin d → List (Fin d)) (hne : ∀ a, sigma a ≠ [])\n"
+        "    (k : ℕ) (w : List (Fin d)) (hw : w ≠ []) : applyN sigma k w ≠ [] := by\n"
+        "  induction k with\n"
+        "  | zero => exact hw\n"
+        "  | succ k ih => rw [applyN_succ]; exact applyOnce_ne_nil sigma hne _ ih\n\n"
+        "theorem applyOnce_headI (sigma : Fin d → List (Fin d)) (hne : ∀ a, sigma a ≠ [])\n"
+        "    (w : List (Fin d)) (hw : w ≠ []) :\n"
+        "    (applyOnce sigma w).headI = firstLetterMap sigma w.headI := by\n"
+        "  cases w with\n"
+        "  | nil => exact absurd rfl hw\n"
+        "  | cons a rest =>\n"
+        "      obtain ⟨x, xs, hxs⟩ := List.exists_cons_of_ne_nil (hne a)\n"
+        "      simp [applyOnce, hxs, firstLetterMap]\n\n"
+        "theorem applyN_headI (sigma : Fin d → List (Fin d)) (hne : ∀ a, sigma a ≠ [])\n"
+        "    (a : Fin d) (k : ℕ) :\n"
+        "    (applyN sigma k [a]).headI = (firstLetterMap sigma)^[k] a := by\n"
+        "  induction k with\n"
+        "  | zero => rfl\n"
+        "  | succ k ih =>\n"
+        "      rw [applyN_succ, applyOnce_headI sigma hne _ (applyN_ne_nil sigma hne k [a] (by simp)), ih,\n"
+        "        Function.iterate_succ_apply']\n\n"
+        "/-- Finding 39/41's general case: if two letters' `firstLetterMap` orbits\n"
+        "    collide at depth `K`, their depth-`K` substitution images share a first\n"
+        "    letter, hence exhibit prefix coincidence. Reproduced from the\n"
+        "    independently kernel-checked `lean/first_letter_orbit_coincidence.lean`\n"
+        "    (not re-derived here). -/\n"
+        "theorem first_letter_orbit_collision_forces_coincidence\n"
+        "    (sigma : Fin d → List (Fin d)) (hne : ∀ a, sigma a ≠ [])\n"
+        "    (i j : Fin d) (k : ℕ) (hcollide : (firstLetterMap sigma)^[k] i = (firstLetterMap sigma)^[k] j) :\n"
+        "    hasCoincidencePrefix (applyN sigma k [i]) (applyN sigma k [j]) := by\n"
+        "  have hi : (applyN sigma k [i]).headI = (firstLetterMap sigma)^[k] i := applyN_headI sigma hne i k\n"
+        "  have hj : (applyN sigma k [j]).headI = (firstLetterMap sigma)^[k] j := applyN_headI sigma hne j k\n"
+        "  have hine : applyN sigma k [i] ≠ [] := applyN_ne_nil sigma hne k [i] (by simp)\n"
+        "  have hjne : applyN sigma k [j] ≠ [] := applyN_ne_nil sigma hne k [j] (by simp)\n"
+        "  obtain ⟨a, w1', hw1⟩ := List.exists_cons_of_ne_nil hine\n"
+        "  obtain ⟨b, w2', hw2⟩ := List.exists_cons_of_ne_nil hjne\n"
+        "  have ha : a = (firstLetterMap sigma)^[k] i := by rw [← hi, hw1]; simp\n"
+        "  have hb : b = (firstLetterMap sigma)^[k] j := by rw [← hj, hw2]; simp\n"
+        "  have hab : a = b := by rw [ha, hb, hcollide]\n"
+        "  rw [hw1, hw2, hab]\n"
+        "  exact constant_first_letter_forces_prefix_coincidence b w1' w2'\n\n";
+}
+
+// Mechanically emits one Lean corollary of `first_letter_orbit_
+// collision_forces_coincidence` PER `FirstLetterOrbitCertificate`
+// node. `sigma` is rendered directly from the node's own image data
+// (a `Fin d → List (Fin d)` piecewise function via `![...]`); `hne`
+// and `hcollide` both discharge via `decide` (finite, concrete).
+inline std::string render_first_letter_orbit_instances(const mathlib::reflection::Trace& trace) {
+    std::ostringstream out;
+    long long counter = 0;
+    auto nodes = trace.find<mathlib::reflection::FirstLetterOrbitCertificate>();
+    if (nodes.empty()) return {};
+    out << first_letter_orbit_general_lemma_lean();
+    for (const auto& [id, node] : nodes) {
+        (void)id;
+        std::string name = "first_letter_orbit_instance_" + std::to_string(counter++);
+        std::ostringstream sigmavec;
+        sigmavec << "(![";
+        for (long long a = 0; a < node->d; ++a) {
+            if (a > 0) sigmavec << ", ";
+            sigmavec << render_lean_fin_list(node->images[static_cast<std::size_t>(a)]);
+        }
+        sigmavec << "] : Fin " << node->d << " → List (Fin " << node->d << "))";
+        std::string sigma_typed = sigmavec.str();
+        out << "/-- Mechanically emitted: instantiates the general lemma above for\n";
+        out << "    " << node->description << " (" << node->k << " collision steps). -/\n";
+        out << "theorem " << name << " :\n";
+        out << "    hasCoincidencePrefix\n";
+        out << "      (applyN " << sigma_typed << " " << node->k << " [(" << node->i << " : Fin "
+            << node->d << ")])\n";
+        out << "      (applyN " << sigma_typed << " " << node->k << " [(" << node->j << " : Fin "
+            << node->d << ")]) :=\n";
+        out << "  first_letter_orbit_collision_forces_coincidence " << sigma_typed << " (by decide)\n";
+        out << "    (" << node->i << " : Fin " << node->d << ") (" << node->j << " : Fin " << node->d
+            << ") " << node->k << " (by decide)\n\n";
+    }
+    return out.str();
+}
+
 inline std::string render_reflective_lean_module(const mathlib::reflection::Trace& trace) {
     if (trace.empty()) throw std::runtime_error("cannot render proof module without provenance");
     std::ostringstream out;
@@ -594,6 +707,7 @@ inline std::string render_reflective_lean_module(const mathlib::reflection::Trac
     out << render_constant_first_letter_instances(trace);
     out << render_constant_last_letter_instances(trace);
     out << render_zero_run_same_chain_instances(trace);
+    out << render_first_letter_orbit_instances(trace);
 
     out << "/- Semantic proof graph for: " << trace.theorem_id() << "\n";
     for (std::size_t i = 0; i < trace.nodes().size(); ++i) {

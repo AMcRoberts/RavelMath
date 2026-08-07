@@ -334,11 +334,30 @@ struct ZeroRunSameChainCertificate {
     std::string description;
 };
 
+// The GENERAL case of Finding 39/41 (not just the same-chain special
+// case `ZeroRunSameChainCertificate` covers): the substitution's FULL
+// image data (`sigma`), two letters `i`, `j`, and a verified collision
+// depth `k` at which their `firstLetterMap` orbits agree
+// (`sigma[i-iterate][0] == sigma[j-iterate][0]` after `k` iterations,
+// checked exactly in C++ before recording). Instantiates
+// `RavelGenerated.first_letter_orbit_collision_forces_coincidence`
+// (lean/first_letter_orbit_coincidence.lean) -- covers mixed
+// in-run/out-of-run and cross-run pairs the same-chain lemma cannot.
+struct FirstLetterOrbitCertificate {
+    long long d = 0;
+    std::vector<std::vector<long long>> images;  // d images, all nonempty
+    long long i = 0;
+    long long j = 0;
+    long long k = 0;   // verified collision depth
+    std::string description;
+};
+
 using Payload = std::variant<MatrixFamily, MatrixInstance, EraseIndexMap,
                              SparseSupportCertificate, TriangularityCertificate,
                              DeterminantIdentity, LemmaApplication, IntegerEigenvectorNoWitness,
                              PeriodRotationCertificate, ConstantFirstLetterCertificate,
                              ConstantLastLetterCertificate, ZeroRunSameChainCertificate,
+                             FirstLetterOrbitCertificate,
                              ProofObligation, TextObservation>;
 
 struct Node {
@@ -613,6 +632,7 @@ inline std::string payload_name(const Payload& payload) {
         else if constexpr (std::is_same_v<T, ConstantFirstLetterCertificate>) return "lean.constant_first_letter_certificate";
         else if constexpr (std::is_same_v<T, ConstantLastLetterCertificate>) return "lean.constant_last_letter_certificate";
         else if constexpr (std::is_same_v<T, ZeroRunSameChainCertificate>) return "lean.zero_run_same_chain_certificate";
+        else if constexpr (std::is_same_v<T, FirstLetterOrbitCertificate>) return "lean.first_letter_orbit_certificate";
         else if constexpr (std::is_same_v<T, ProofObligation>) return "proof.obligation";
         else return value.operation;
     }, payload);
@@ -661,6 +681,9 @@ inline std::string payload_detail(const Payload& payload) {
         } else if constexpr (std::is_same_v<T, ZeroRunSameChainCertificate>) {
             out << "R=" << value.run_length << " offsets(" << value.s1_offset << "," << value.s2_offset
                 << ") " << value.description << " -- instantiates same_chain_forces_coincidence";
+        } else if constexpr (std::is_same_v<T, FirstLetterOrbitCertificate>) {
+            out << "d=" << value.d << " i=" << value.i << " j=" << value.j << " k=" << value.k
+                << " " << value.description << " -- instantiates first_letter_orbit_collision_forces_coincidence";
         } else if constexpr (std::is_same_v<T, ProofObligation>) {
             out << value.obligation_id << ": " << value.proposition;
             if (!value.blocked_by.empty()) out << " [blocked by " << value.blocked_by << ']';

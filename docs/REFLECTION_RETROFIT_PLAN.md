@@ -110,12 +110,30 @@ Not yet covered: a letter inside a run paired with one outside it
 prefix_coincidence` at the depth the run ends, not just chain-to-chain
 synchronization), or letters in different runs entirely.
 
-**Immediate next-in-queue, in priority order**: (1) finish Findings
-39/41's remaining cases (in-run vs out-of-run, cross-run pairs); (2)
-Finding 30 -- Sturm-based Pisot classification, a genuinely different,
-harder shape (no short algebraic/graph identity to lean on); (3)
-property (F) / the zero-expansion graph (Findings 18-21), the hardest
-category, deliberately last per the original phased plan.
+**2026-08-07 update, item (1) done -- via a cleaner reduction, not
+case-by-case composition.** Found that tracking only the FIRST LETTER
+of each iterated image (`firstLetterMap(a) := (sigma a).headI`)
+reduces "do two letters eventually coincide" ENTIRELY to orbit
+collision in a finite functional graph, covering mixed in-run/
+out-of-run and cross-run pairs in one theorem
+(`first_letter_orbit_collision_forces_coincidence`,
+`lean/first_letter_orbit_coincidence.lean`) instead of needing a
+separate case for each structural situation. Cross-validated against
+the real `check_strong_coincidence` search (not just internally
+consistent). Genuinely closes Finding 39/41's underlying mechanism,
+with two honestly-scoped remaining gaps: the theorem is conditional on
+orbit collision happening (true structurally for this family, not yet
+proved as a Lean existence theorem) and doesn't derive the exact
+`R+1` depth formula as a general identity (the C++ certificate finds
+A collision depth by search, matching `R+1` on the case checked).
+
+**Immediate next-in-queue, in priority order**: (1) Finding 30 --
+Sturm-based Pisot classification, a genuinely different, harder shape
+(no short algebraic/graph identity to lean on); (2) close Finding
+39/41's two remaining gaps (orbit-collision existence, exact depth
+formula) if there's appetite -- diminishing marginal value versus (1)
+or (3); (3) property (F) / the zero-expansion graph (Findings 18-21),
+the hardest category, deliberately last per the original phased plan.
 
 ## What "done" actually requires, per finding
 
