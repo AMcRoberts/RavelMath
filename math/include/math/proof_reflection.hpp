@@ -262,9 +262,37 @@ struct IntegerEigenvectorNoWitness {
     std::string charpoly_description;    // human-readable, for the trace report
 };
 
+// Records that a specific nonnegative integer matrix M (n x n,
+// row-major flat) instantiates the GENERAL, already-checked Lean
+// lemma `RavelGenerated.period_coloring_rotates_eigenvalue`
+// (lean/period_rotation_forces_equal_modulus.lean): its support graph
+// carries an explicit integer coloring `coloring` (length n) such
+// that M[i][j] != 0 forces coloring[i] = coloring[j] + 1 (mod p) --
+// verified exactly in C++ before this node is recorded, and
+// re-verified by the emitted Lean corollary itself (via `omega` on
+// the concrete finite case split), not merely asserted. `p` is the
+// jump-size gcd this project calls `g` (Findings 25/26/35); p >= 2 is
+// exactly the condition under which the rotated eigenvalue lam*zeta⁻¹
+// (for any p-th root of unity zeta != 1) is guaranteed to differ from
+// lam while sharing its modulus -- the fact that rules out a unique
+// dominant (Pisot) eigenvalue. v, lam, and zeta stay universally
+// quantified in the emitted corollary; only M, p, and the coloring
+// are concrete.
+struct PeriodRotationCertificate {
+    long long n = 0;
+    long long p = 0;                      // period divisor (g)
+    std::vector<long long> matrix_flat;   // n*n, row-major
+    std::vector<long long> coloring;      // length n, integer levels
+    std::vector<long long> k_flat;        // n*n, row-major; k[i][j] with
+                                           // coloring[i] = coloring[j] + 1 + k[i][j]*p
+                                           // wherever matrix_flat[i][j] != 0 (0 filler elsewhere)
+    std::string description;              // human-readable, for the trace report
+};
+
 using Payload = std::variant<MatrixFamily, MatrixInstance, EraseIndexMap,
                              SparseSupportCertificate, TriangularityCertificate,
                              DeterminantIdentity, LemmaApplication, IntegerEigenvectorNoWitness,
+                             PeriodRotationCertificate,
                              ProofObligation, TextObservation>;
 
 struct Node {
@@ -535,6 +563,7 @@ inline std::string payload_name(const Payload& payload) {
         else if constexpr (std::is_same_v<T, DeterminantIdentity>) return "matrix.determinant_identity";
         else if constexpr (std::is_same_v<T, LemmaApplication>) return "lean.lemma_application";
         else if constexpr (std::is_same_v<T, IntegerEigenvectorNoWitness>) return "lean.integer_eigenvector_no_witness";
+        else if constexpr (std::is_same_v<T, PeriodRotationCertificate>) return "lean.period_rotation_certificate";
         else if constexpr (std::is_same_v<T, ProofObligation>) return "proof.obligation";
         else return value.operation;
     }, payload);
@@ -571,6 +600,9 @@ inline std::string payload_detail(const Payload& payload) {
         } else if constexpr (std::is_same_v<T, IntegerEigenvectorNoWitness>) {
             out << "n=" << value.n << " M=" << value.charpoly_description
                 << " -- instantiates irrational_eigenvalue_has_no_integer_eigenvector";
+        } else if constexpr (std::is_same_v<T, PeriodRotationCertificate>) {
+            out << "n=" << value.n << " p=" << value.p << " " << value.description
+                << " -- instantiates period_coloring_rotates_eigenvalue";
         } else if constexpr (std::is_same_v<T, ProofObligation>) {
             out << value.obligation_id << ": " << value.proposition;
             if (!value.blocked_by.empty()) out << " [blocked by " << value.blocked_by << ']';

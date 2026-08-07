@@ -83,6 +83,126 @@ inline std::string render_barge_diamond_instances(const mathlib::reflection::Tra
     return out.str();
 }
 
+// The second general lemma this renderer's per-instance corollaries
+// cite -- hand-derived and kernel-checked once
+// (lean/period_rotation_forces_equal_modulus.lean), reproduced here
+// verbatim, not re-derived. `M` is kept as an integer matrix (only
+// cast to ℂ inside the eigenvector sum) precisely so that per
+// instance, the coloring hypothesis reduces to decidable integer
+// arithmetic.
+inline const char* period_rotation_general_lemma_lean() {
+    return
+        "/-- THE CORE ALGEBRAIC FACT behind Finding 35 (`g>1` forces the incidence\n"
+        "    matrix's Perron-Frobenius period to be `>=2`, contradicting Pisot's\n"
+        "    unique-dominant-eigenvalue requirement): a period-`p` integer coloring of\n"
+        "    `M`'s support graph rotates any eigenvalue `lam` to `lam * zeta⁻¹` for\n"
+        "    every `p`-th root of unity `zeta`. Reproduced from the independently\n"
+        "    kernel-checked `lean/period_rotation_forces_equal_modulus.lean` (not\n"
+        "    re-derived here). -/\n"
+        "theorem period_coloring_rotates_eigenvalue\n"
+        "    {n : ℕ} (M : Matrix (Fin n) (Fin n) ℤ) (c : Fin n → ℤ) (p : ℕ) (k : Fin n → Fin n → ℤ)\n"
+        "    (v : Fin n → ℂ) (lam : ℂ) (hEig : (fun i => ∑ j, (M i j : ℂ) * v j) = fun i => lam * v i)\n"
+        "    (hColor : ∀ i j, M i j ≠ 0 → c i = c j + 1 + k i j * (p : ℤ))\n"
+        "    (zeta : ℂ) (hzne : zeta ≠ 0) (hzeta : zeta ^ p = 1) :\n"
+        "    (fun i => ∑ j, (M i j : ℂ) * (zeta ^ (c j) * v j))\n"
+        "      = fun i => (lam * zeta⁻¹) * (zeta ^ (c i) * v i) := by\n"
+        "  funext i\n"
+        "  have step : ∀ j : Fin n, (M i j : ℂ) * zeta ^ (c j) = (M i j : ℂ) * (zeta ^ (c i) * zeta⁻¹) := by\n"
+        "    intro j\n"
+        "    by_cases h : M i j = 0\n"
+        "    · simp [h]\n"
+        "    · have hk := hColor i j h\n"
+        "      have hzp : zeta ^ (p : ℤ) = 1 := by\n"
+        "        rw [zpow_natCast]; exact hzeta\n"
+        "      have hkp : zeta ^ (k i j * (p : ℤ)) = 1 := by\n"
+        "        rw [mul_comm, _root_.zpow_mul, hzp, _root_.one_zpow]\n"
+        "      have : zeta ^ (c i) = zeta ^ (c j + 1) := by\n"
+        "        rw [hk, zpow_add₀ hzne, hkp, mul_one]\n"
+        "      rw [this, zpow_add₀ hzne, zpow_one]\n"
+        "      field_simp\n"
+        "  have hEigi : (∑ j, (M i j : ℂ) * v j) = lam * v i := by\n"
+        "    have h := congrFun hEig i\n"
+        "    simpa using h\n"
+        "  calc\n"
+        "    (∑ j, (M i j : ℂ) * (zeta ^ (c j) * v j))\n"
+        "        = ∑ j, ((M i j : ℂ) * zeta ^ (c j)) * v j := by\n"
+        "          apply Finset.sum_congr rfl; intro j _; ring\n"
+        "    _ = ∑ j, ((M i j : ℂ) * (zeta ^ (c i) * zeta⁻¹)) * v j := by\n"
+        "          apply Finset.sum_congr rfl; intro j _; rw [step j]\n"
+        "    _ = zeta ^ (c i) * zeta⁻¹ * ∑ j, (M i j : ℂ) * v j := by\n"
+        "          rw [Finset.mul_sum]; apply Finset.sum_congr rfl; intro j _; ring\n"
+        "    _ = zeta ^ (c i) * zeta⁻¹ * (lam * v i) := by rw [hEigi]\n"
+        "    _ = (lam * zeta⁻¹) * (zeta ^ (c i) * v i) := by ring\n\n"
+        "/-- A period-`p` rotated eigenvalue (`p >= 2`, `zeta ≠ 1`) is DISTINCT from\n"
+        "    the original but has the SAME modulus -- rules out a unique dominant\n"
+        "    (Pisot) eigenvalue whenever such a rotation exists. Reproduced from\n"
+        "    `lean/period_rotation_forces_equal_modulus.lean`. -/\n"
+        "theorem rotated_eigenvalue_has_same_modulus\n"
+        "    (lam zeta : ℂ) (p : ℕ) (hp : p ≠ 0) (hzeta : zeta ^ p = 1) (hzne1 : zeta ≠ 1) (hlam : lam ≠ 0) :\n"
+        "    lam * zeta⁻¹ ≠ lam ∧ ‖lam * zeta⁻¹‖ = ‖lam‖ := by\n"
+        "  have hzne : zeta ≠ 0 := by\n"
+        "    rintro rfl\n"
+        "    exact absurd hzeta (by simp [zero_pow hp])\n"
+        "  have habs1 : ‖zeta‖ = 1 := by\n"
+        "    have h1 : ‖zeta‖ ^ p = (1:ℝ) ^ p := by\n"
+        "      rw [← norm_pow, hzeta, one_pow]; simp\n"
+        "    exact (pow_left_inj₀ (norm_nonneg _) zero_le_one hp).1 h1\n"
+        "  refine ⟨?_, ?_⟩\n"
+        "  · intro heq\n"
+        "    apply hzne1\n"
+        "    have hlz : lam * zeta⁻¹ = lam * 1 := by rw [heq, mul_one]\n"
+        "    have hz1 : zeta⁻¹ = 1 := mul_left_cancel₀ hlam hlz\n"
+        "    exact inv_eq_one.mp hz1\n"
+        "  · rw [norm_mul, norm_inv, habs1, inv_one, mul_one]\n\n";
+}
+
+// Renders `c : Fin n → ℤ` as an explicit Lean vector literal.
+inline std::string render_lean_int_vector(const std::vector<long long>& v) {
+    std::ostringstream out;
+    out << "(![";
+    for (std::size_t i = 0; i < v.size(); ++i) {
+        if (i > 0) out << ", ";
+        out << v[i];
+    }
+    out << "] : Fin " << v.size() << " → ℤ)";
+    return out.str();
+}
+
+// Mechanically emits one Lean corollary PER `PeriodRotationCertificate`
+// node found in the trace. The coloring hypothesis is discharged
+// entirely by the renderer's own emitted tactic (finite case split +
+// `omega`, both decidable over the concrete integer data) -- no
+// hand-authored per-instance proof term.
+inline std::string render_period_rotation_instances(const mathlib::reflection::Trace& trace) {
+    std::ostringstream out;
+    long long counter = 0;
+    auto nodes = trace.find<mathlib::reflection::PeriodRotationCertificate>();
+    if (nodes.empty()) return {};
+    out << period_rotation_general_lemma_lean();
+    for (const auto& [id, node] : nodes) {
+        (void)id;
+        std::string name = "period_rotation_instance_" + std::to_string(counter++);
+        std::string matrix_lean = render_lean_int_matrix(node->matrix_flat, node->n);
+        std::string color_lean = render_lean_int_vector(node->coloring);
+        std::string k_lean = render_lean_int_matrix(node->k_flat, node->n);
+        std::string M_typed = "(" + matrix_lean + " : Matrix (Fin " + std::to_string(node->n) +
+                               ") (Fin " + std::to_string(node->n) + ") ℤ)";
+        std::string K_typed = "(" + k_lean + " : Matrix (Fin " + std::to_string(node->n) +
+                               ") (Fin " + std::to_string(node->n) + ") ℤ)";
+        out << "/-- Mechanically emitted: instantiates the general lemma above for\n";
+        out << "    this substitution's own incidence matrix and coloring (" << node->description << "). -/\n";
+        out << "theorem " << name << " (v : Fin " << node->n << " → ℂ) (lam : ℂ)\n";
+        out << "    (hEig : (fun i => ∑ j, (" << M_typed << " i j : ℂ) * v j) = fun i => lam * v i)\n";
+        out << "    (zeta : ℂ) (hzne : zeta ≠ 0) (hzeta : zeta ^ " << node->p << " = 1) :\n";
+        out << "    (fun i => ∑ j, (" << M_typed << " i j : ℂ) * (zeta ^ (" << color_lean << " j) * v j))\n";
+        out << "      = fun i => (lam * zeta⁻¹) * (zeta ^ (" << color_lean << " i) * v i) :=\n";
+        out << "  period_coloring_rotates_eigenvalue " << M_typed << " " << color_lean << " "
+            << node->p << " " << K_typed << " v lam hEig\n";
+        out << "    (by decide) zeta hzne hzeta\n\n";
+    }
+    return out.str();
+}
+
 inline std::string render_reflective_lean_module(const mathlib::reflection::Trace& trace) {
     if (trace.empty()) throw std::runtime_error("cannot render proof module without provenance");
     std::ostringstream out;
@@ -119,6 +239,7 @@ inline std::string render_reflective_lean_module(const mathlib::reflection::Trac
     }
 
     out << render_barge_diamond_instances(trace);
+    out << render_period_rotation_instances(trace);
 
     out << "/- Semantic proof graph for: " << trace.theorem_id() << "\n";
     for (std::size_t i = 0; i < trace.nodes().size(); ++i) {
