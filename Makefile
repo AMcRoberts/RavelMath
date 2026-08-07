@@ -151,6 +151,8 @@ lean-check: nbonacci_charmpoly_proof_probe
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/last_letter_orbit_batch.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/property_f_zero_walk.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/property_f_zero_walk_citation.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/periodic_point_repetition.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/leftmost_loop_batch.lean)
 	@if rg -n '^[[:space:]]*sorry([[:space:]]|$$)' \
 		lean/free_involution_perron_core.lean \
 		lean/return_contact_lift.lean \
@@ -187,6 +189,8 @@ lean-check: nbonacci_charmpoly_proof_probe
 		lean/generated/last_letter_orbit_batch.lean \
 		lean/generated/property_f_zero_walk.lean \
 		lean/generated/property_f_zero_walk_citation.lean \
+		lean/periodic_point_repetition.lean \
+		lean/generated/leftmost_loop_batch.lean \
 		lean/generated/period_rotation_batch.lean; then \
 		echo "ERROR: enrolled Lean file contains sorry"; exit 1; \
 	else \

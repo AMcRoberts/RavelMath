@@ -364,12 +364,25 @@ struct LastLetterOrbitCertificate {
     std::string description;
 };
 
+// Finding 27's leftmost-loop corollary: junction `start` lies on its
+// own leftmost-branch cycle of length `loop_length`. Instantiates
+// `RavelGenerated.periodic_point_iterate_mul`
+// (lean/periodic_point_repetition.lean) to certify, for `m = 0..max_m`,
+// that gap `m * loop_length` coincides at exactly `K = m * loop_length`.
+struct LeftmostLoopCertificate {
+    long long start = 0;
+    long long loop_length = 0;
+    long long max_m = 0;
+    std::string description;
+};
+
 using Payload = std::variant<MatrixFamily, MatrixInstance, EraseIndexMap,
                              SparseSupportCertificate, TriangularityCertificate,
                              DeterminantIdentity, LemmaApplication, IntegerEigenvectorNoWitness,
                              PeriodRotationCertificate, ConstantFirstLetterCertificate,
                              ConstantLastLetterCertificate, ZeroRunSameChainCertificate,
                              FirstLetterOrbitCertificate, LastLetterOrbitCertificate,
+                             LeftmostLoopCertificate,
                              ProofObligation, TextObservation>;
 
 struct Node {
@@ -646,6 +659,7 @@ inline std::string payload_name(const Payload& payload) {
         else if constexpr (std::is_same_v<T, ZeroRunSameChainCertificate>) return "lean.zero_run_same_chain_certificate";
         else if constexpr (std::is_same_v<T, FirstLetterOrbitCertificate>) return "lean.first_letter_orbit_certificate";
         else if constexpr (std::is_same_v<T, LastLetterOrbitCertificate>) return "lean.last_letter_orbit_certificate";
+        else if constexpr (std::is_same_v<T, LeftmostLoopCertificate>) return "lean.leftmost_loop_certificate";
         else if constexpr (std::is_same_v<T, ProofObligation>) return "proof.obligation";
         else return value.operation;
     }, payload);
@@ -700,6 +714,9 @@ inline std::string payload_detail(const Payload& payload) {
         } else if constexpr (std::is_same_v<T, LastLetterOrbitCertificate>) {
             out << "d=" << value.d << " i=" << value.i << " j=" << value.j << " k=" << value.k
                 << " " << value.description << " -- instantiates last_letter_orbit_collision_forces_coincidence";
+        } else if constexpr (std::is_same_v<T, LeftmostLoopCertificate>) {
+            out << "start=" << value.start << " L=" << value.loop_length << " max_m=" << value.max_m
+                << " " << value.description << " -- instantiates periodic_point_iterate_mul";
         } else if constexpr (std::is_same_v<T, ProofObligation>) {
             out << value.obligation_id << ": " << value.proposition;
             if (!value.blocked_by.empty()) out << " [blocked by " << value.blocked_by << ']';
