@@ -70,18 +70,22 @@ corollary PER PAIR of a substitution's images. 6 real instances
 (Finding 5's AR-partial family) kernel-check clean. See Finding 17's
 2026-08-07 addendum.
 
-**Immediate next-in-queue, in priority order**: (1) Finding 38 -- the
-SUFFIX-half dual of Finding 17, structurally symmetric to the work
-just done (model `suffix_set1`/the suffix accumulator the same way);
-(2) Findings 39/41 (the zero-run depth bound) -- a genuinely harder
-Lean target, since the claim is an exact DEPTH FORMULA (not just "some
-match exists"), likely needs an induction over the zero-run structure
-itself, not just the prefix/suffix matching machinery Finding 17/38
-share; (3) Finding 30 -- Sturm-based Pisot classification, a
-genuinely different, harder shape (no short algebraic/graph identity
-to lean on); (4) property (F) / the zero-expansion graph (Findings
-18-21), the hardest category, deliberately last per the original
-phased plan.
+**2026-08-07 update, item (1) done.** Finding 38 (the SUFFIX-half dual
+of Finding 17) retrofitted the same session, same day: modeled
+`abelianize`/`sufSeq`/`suffixPairs`/`hasCoincidenceSuffix`, proved by
+induction, kernel-checked first try. 12 real instances (Finding 37's
+`ex1`, `ex3`) clean. Both halves of `pair_has_coincidence` -- prefix
+and suffix -- are now faithfully modeled in Lean.
+
+**Immediate next-in-queue, in priority order**: (1) Findings 39/41
+(the zero-run depth bound) -- a genuinely harder Lean target, since
+the claim is an exact DEPTH FORMULA (not just "some match exists"),
+likely needs an induction over the zero-run structure itself layered
+on top of the prefix/suffix machinery Finding 17/38 just built; (2)
+Finding 30 -- Sturm-based Pisot classification, a genuinely different,
+harder shape (no short algebraic/graph identity to lean on); (3)
+property (F) / the zero-expansion graph (Findings 18-21), the hardest
+category, deliberately last per the original phased plan.
 
 ## What "done" actually requires, per finding
 

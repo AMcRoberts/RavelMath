@@ -53,6 +53,8 @@
 #include <string>
 #include <vector>
 
+#include "math/proof_reflection.hpp"
+
 namespace ravel::proof {
 
 struct ConstantLastLetterCoincidenceCertificate {
@@ -84,6 +86,15 @@ inline ConstantLastLetterCoincidenceCertificate check_constant_last_letter_force
         : "images do not all share a last letter -- this theorem does not "
           "predict depth-1 resolution (coincidence may still hold, at higher "
           "depth or via the prefix half, by a different route)";
+
+    if (out.has_constant_last_letter) {
+        mathlib::reflection::ConstantLastLetterCertificate node;
+        node.d = static_cast<long long>(d);
+        node.constant_letter = c0;
+        node.images.assign(images.begin(), images.end());
+        node.description = "d=" + std::to_string(d) + " letters, constant last letter " + std::to_string(c0);
+        mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, node);
+    }
     return out;
 }
 

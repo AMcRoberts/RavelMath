@@ -379,6 +379,72 @@ inline std::string render_constant_first_letter_instances(const mathlib::reflect
     return out.str();
 }
 
+// The exact dual of `constant_first_letter_general_lemma_lean` --
+// Finding 38, hand-derived and kernel-checked once
+// (lean/constant_last_letter_forces_suffix_coincidence.lean), models
+// the SUFFIX half of `pair_has_coincidence`'s own loop directly.
+inline const char* constant_last_letter_general_lemma_lean() {
+    return
+        "def abelianize {d : ℕ} : List (Fin d) → (Fin d → ℤ)\n"
+        "  | [] => fun _ => 0\n"
+        "  | (a :: rest) => fun j => abelianize rest j + if j = a then 1 else 0\n\n"
+        "def sufSeq {d : ℕ} : List (Fin d) → List (Fin d → ℤ)\n"
+        "  | [] => []\n"
+        "  | (_ :: rest) => abelianize rest :: sufSeq rest\n\n"
+        "def suffixPairs {d : ℕ} (w : List (Fin d)) : List (Fin d × (Fin d → ℤ)) :=\n"
+        "  w.zip (sufSeq w)\n\n"
+        "def hasCoincidenceSuffix {d : ℕ} (w1 w2 : List (Fin d)) : Prop :=\n"
+        "  ∃ p, p ∈ suffixPairs w1 ∧ p ∈ suffixPairs w2\n\n"
+        "theorem mem_suffixPairs_append_singleton {d : ℕ} (w : List (Fin d)) (c : Fin d) :\n"
+        "    (c, fun _ => (0 : ℤ)) ∈ suffixPairs (w ++ [c]) := by\n"
+        "  induction w with\n"
+        "  | nil => simp [suffixPairs, sufSeq, abelianize]\n"
+        "  | cons a w' ih =>\n"
+        "      simp only [List.cons_append, suffixPairs, sufSeq, List.zip_cons_cons, List.mem_cons]\n"
+        "      exact Or.inr ih\n\n"
+        "/-- Finding 38: if `w1` and `w2` both END with the same letter `c`, the pair\n"
+        "    `(c, zeroVector)` is recorded in BOTH lists' `suffixPairs`. Reproduced from\n"
+        "    the independently kernel-checked\n"
+        "    `lean/constant_last_letter_forces_suffix_coincidence.lean` (not re-derived\n"
+        "    here). -/\n"
+        "theorem constant_last_letter_forces_suffix_coincidence\n"
+        "    {d : ℕ} (c : Fin d) (w1' w2' : List (Fin d)) :\n"
+        "    hasCoincidenceSuffix (w1' ++ [c]) (w2' ++ [c]) :=\n"
+        "  ⟨(c, fun _ => 0), mem_suffixPairs_append_singleton w1' c, mem_suffixPairs_append_singleton w2' c⟩\n\n";
+}
+
+// Mechanically emits one Lean corollary of `constant_last_letter_
+// forces_suffix_coincidence` PER PAIR of images in each
+// `ConstantLastLetterCertificate` node.
+inline std::string render_constant_last_letter_instances(const mathlib::reflection::Trace& trace) {
+    std::ostringstream out;
+    long long counter = 0;
+    auto nodes = trace.find<mathlib::reflection::ConstantLastLetterCertificate>();
+    if (nodes.empty()) return {};
+    out << constant_last_letter_general_lemma_lean();
+    for (const auto& [id, node] : nodes) {
+        (void)id;
+        for (std::size_t i = 0; i < node->images.size(); ++i) {
+            for (std::size_t j = i + 1; j < node->images.size(); ++j) {
+                std::string name = "constant_last_letter_instance_" + std::to_string(counter++);
+                std::string w1 = render_lean_fin_list(node->images[i]);
+                std::string w2 = render_lean_fin_list(node->images[j]);
+                std::vector<long long> head1(node->images[i].begin(), node->images[i].end() - 1);
+                std::vector<long long> head2(node->images[j].begin(), node->images[j].end() - 1);
+                out << "/-- Mechanically emitted: instantiates the general lemma above for\n";
+                out << "    this substitution's own images " << i << " and " << j
+                    << " (" << node->description << "). -/\n";
+                out << "theorem " << name << " :\n";
+                out << "    @hasCoincidenceSuffix " << node->d << " " << w1 << " " << w2 << " :=\n";
+                out << "  constant_last_letter_forces_suffix_coincidence "
+                    << "(" << node->constant_letter << " : Fin " << node->d << ") "
+                    << render_lean_fin_list(head1) << " " << render_lean_fin_list(head2) << "\n\n";
+            }
+        }
+    }
+    return out.str();
+}
+
 inline std::string render_reflective_lean_module(const mathlib::reflection::Trace& trace) {
     if (trace.empty()) throw std::runtime_error("cannot render proof module without provenance");
     std::ostringstream out;
@@ -418,6 +484,7 @@ inline std::string render_reflective_lean_module(const mathlib::reflection::Trac
     out << render_period_rotation_instances(trace);
     out << render_colored_walk_congruence_instances(trace);
     out << render_constant_first_letter_instances(trace);
+    out << render_constant_last_letter_instances(trace);
 
     out << "/- Semantic proof graph for: " << trace.theorem_id() << "\n";
     for (std::size_t i = 0; i < trace.nodes().size(); ++i) {
