@@ -36,6 +36,17 @@ inline std::set<ANode<3>> class_ii_d_cont_face_candidates() {
 }
 
 inline std::set<ANode<3>> class_ii_d_cont_set() {
+    // This is exactly the nine-state table `dContNode : DContKind ->
+    // ClassIINode` in the already kernel-checked
+    // `lean/class_ii_affine_shells.lean`, which proves
+    // `dContNode_in_preContact`: every one of these nine states is a
+    // genuine member of the sixteen-state pre-contact catalogue.
+    mathlib::reflection::LemmaApplication d_cont_citation;
+    d_cont_citation.theorem_name = "dContNode_in_preContact";
+    d_cont_citation.conclusion = "every one of the nine D_cont states is a genuine member of "
+        "the sixteen-state pre-contact catalogue";
+    mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, d_cont_citation);
+
     return {
         {0, {0,  0,  1}, 0},
         {0, {0,  1,  0}, 0},
@@ -195,6 +206,19 @@ class_ii_pre_contact_backward_category_ranges() {
 // The two states absent from class_ii_contact_set are precisely the
 // rank-one Red exclusions.
 inline std::set<ANode<3>> class_ii_pre_contact_set() {
+    // This is exactly the sixteen-state table `preContactNode :
+    // PreContactKind -> ClassIINode` in the already kernel-checked
+    // `lean/class_ii_affine_shells.lean`, which proves
+    // `preContactNode_partition`: every one of these sixteen states is
+    // EITHER one of the fourteen contact states OR one of the two Red
+    // exclusions -- exactly this function's own comment above, now a
+    // checkable citation, not just a comment.
+    mathlib::reflection::LemmaApplication pre_contact_citation;
+    pre_contact_citation.theorem_name = "preContactNode_partition";
+    pre_contact_citation.conclusion = "every one of the sixteen pre-contact states is either "
+        "one of the fourteen contact states or one of the two Red exclusions";
+    mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, pre_contact_citation);
+
     return {
         {0, {-1,  1,  1}, 1},
         {0, { 0,  0,  0}, 1},

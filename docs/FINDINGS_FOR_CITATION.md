@@ -994,8 +994,14 @@ connected; the same pattern (find a C++ table that matches a Lean
 `Kind`/`Node` pair exactly, cite the theorem already proved about it)
 likely applies to `class_ii_pre_contact_set()` (16 states, matches
 `PreContactKind`/`preContactNode`) and `class_ii_d_cont_set()` (9
-states, matches `DContKind`/`dContNode`) too -- not yet done, a
-mechanical next step in the same style.
+states, matches `DContKind`/`dContNode`) too -- **done, same session**:
+both now record their respective citations
+(`dContNode_in_preContact`, `preContactNode_partition`), kernel-check
+with zero errors and zero `sorry`
+(`lean/generated/class_ii_precontact_dcont_citation.lean`,
+`tests/class_ii_precontact_dcont_citation_test.cpp`). Four of Findings
+1-16's foundational tables (contact, pre-contact, D_cont, interior
+shell) now cite their already-proven Lean facts.
 
 ## Finding 10 — Item A's AR-partial: A1's nilpotent-cofactor divisibility is symbolically IMPOSSIBLE for every a>=2, not just numerically absent
 

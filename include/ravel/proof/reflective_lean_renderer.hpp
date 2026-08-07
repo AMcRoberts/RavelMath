@@ -1134,6 +1134,110 @@ inline const char* contact_valid_lemma_lean() {
         "    hc hbc (class_ii_perron_gap_lt_one a beta ha hbeta hcubic)\n\n";
 }
 
+// True iff the trace cites `dContNode_in_preContact` or
+// `preContactNode_partition` (lean/class_ii_affine_shells.lean).
+inline bool has_d_cont_citation(const mathlib::reflection::Trace& trace) {
+    for (const auto& [id, lemma] : trace.find<mathlib::reflection::LemmaApplication>()) {
+        (void)id;
+        if (lemma->theorem_name == "dContNode_in_preContact") return true;
+    }
+    return false;
+}
+inline bool has_pre_contact_citation(const mathlib::reflection::Trace& trace) {
+    for (const auto& [id, lemma] : trace.find<mathlib::reflection::LemmaApplication>()) {
+        (void)id;
+        if (lemma->theorem_name == "preContactNode_partition") return true;
+    }
+    return false;
+}
+
+// A self-contained excerpt of `lean/class_ii_affine_shells.lean`
+// covering `DContKind`/`dContNode`, `PreContactKind`/`preContactNode`,
+// `ContactKind`/`contactNode`, `ContactRedExcludedKind`/
+// `contactRedExcludedNode`, and the two partition theorems --
+// reproduced, not re-derived.
+inline const char* pre_contact_lemma_lean() {
+    return
+        "structure ClassIINodeD where\n"
+        "  left : Int\n"
+        "  x0 : Int\n"
+        "  x1 : Int\n"
+        "  x2 : Int\n"
+        "  right : Int\n"
+        "  deriving DecidableEq\n\n"
+        "inductive DContKindD\n"
+        "  | d00 | d01 | d02 | d03 | d04 | d05 | d06 | d07 | d08\n"
+        "  deriving DecidableEq, Fintype\n\n"
+        "def dContNodeD : DContKindD → ClassIINodeD\n"
+        "  | .d00 => ⟨0, 0,  0,  1, 0⟩\n"
+        "  | .d01 => ⟨0, 0,  1,  0, 0⟩\n"
+        "  | .d02 => ⟨0, 0,  0,  0, 1⟩\n"
+        "  | .d03 => ⟨0, 0,  0,  0, 2⟩\n"
+        "  | .d04 => ⟨1, 1, -1,  0, 0⟩\n"
+        "  | .d05 => ⟨1, 0,  0,  1, 1⟩\n"
+        "  | .d06 => ⟨1, 0,  0,  0, 2⟩\n"
+        "  | .d07 => ⟨2, 1,  0, -1, 0⟩\n"
+        "  | .d08 => ⟨2, 0,  1, -1, 1⟩\n\n"
+        "inductive PreContactKindD\n"
+        "  | p00 | p01 | p02 | p03 | p04 | p05 | p06 | p07\n"
+        "  | p08 | p09 | p10 | p11 | p12 | p13 | p14 | p15\n"
+        "  deriving DecidableEq, Fintype\n\n"
+        "def preContactNodeD : PreContactKindD → ClassIINodeD\n"
+        "  | .p00 => ⟨0, -1,  1,  1, 1⟩\n"
+        "  | .p01 => ⟨0,  0,  0,  0, 1⟩\n"
+        "  | .p02 => ⟨0,  0,  0,  0, 2⟩\n"
+        "  | .p03 => ⟨0,  0,  0,  1, 0⟩\n"
+        "  | .p04 => ⟨0,  0,  0,  1, 1⟩\n"
+        "  | .p05 => ⟨0,  0,  1,  0, 0⟩\n"
+        "  | .p06 => ⟨0,  1, -1,  0, 0⟩\n"
+        "  | .p07 => ⟨1,  0,  0,  0, 2⟩\n"
+        "  | .p08 => ⟨1,  0,  0,  1, 1⟩\n"
+        "  | .p09 => ⟨1,  1, -1,  0, 0⟩\n"
+        "  | .p10 => ⟨1,  1, -1,  0, 2⟩\n"
+        "  | .p11 => ⟨1,  1,  0, -1, 0⟩\n"
+        "  | .p12 => ⟨2,  0,  1, -1, 0⟩\n"
+        "  | .p13 => ⟨2,  0,  1, -1, 1⟩\n"
+        "  | .p14 => ⟨2,  0,  1,  0, 0⟩\n"
+        "  | .p15 => ⟨2,  1,  0, -1, 0⟩\n\n"
+        "theorem dContNode_in_preContact (kind : DContKindD) :\n"
+        "    ∃ pre : PreContactKindD, dContNodeD kind = preContactNodeD pre := by\n"
+        "  cases kind <;> native_decide\n\n"
+        "inductive ContactKindD\n"
+        "  | c00 | c01 | c02 | c03 | c04 | c05 | c06\n"
+        "  | c07 | c08 | c09 | c10 | c11 | c12 | c13\n"
+        "  deriving DecidableEq, Fintype\n\n"
+        "def contactNodeD : ContactKindD → ClassIINodeD\n"
+        "  | .c00 => ⟨0, -1,  1,  1, 1⟩\n"
+        "  | .c01 => ⟨0,  0,  0,  0, 1⟩\n"
+        "  | .c02 => ⟨0,  0,  0,  0, 2⟩\n"
+        "  | .c03 => ⟨0,  0,  0,  1, 0⟩\n"
+        "  | .c04 => ⟨0,  0,  0,  1, 1⟩\n"
+        "  | .c05 => ⟨0,  0,  1,  0, 0⟩\n"
+        "  | .c06 => ⟨0,  1, -1,  0, 0⟩\n"
+        "  | .c07 => ⟨1,  0,  0,  0, 2⟩\n"
+        "  | .c08 => ⟨1,  1, -1,  0, 0⟩\n"
+        "  | .c09 => ⟨1,  1, -1,  0, 2⟩\n"
+        "  | .c10 => ⟨1,  1,  0, -1, 0⟩\n"
+        "  | .c11 => ⟨2,  0,  1, -1, 0⟩\n"
+        "  | .c12 => ⟨2,  0,  1,  0, 0⟩\n"
+        "  | .c13 => ⟨2,  1,  0, -1, 0⟩\n\n"
+        "inductive ContactRedExcludedKindD\n"
+        "  | e00 | e01\n"
+        "  deriving DecidableEq, Fintype\n\n"
+        "def contactRedExcludedNodeD : ContactRedExcludedKindD → ClassIINodeD\n"
+        "  | .e00 => ⟨1, 0, 0,  1, 1⟩\n"
+        "  | .e01 => ⟨2, 0, 1, -1, 1⟩\n\n"
+        "/-- The pre-contact catalogue is exactly the disjoint union of the fourteen\n"
+        "    contact states and the two displayed Red exclusions. Reproduced from the\n"
+        "    independently kernel-checked `lean/class_ii_affine_shells.lean` (not\n"
+        "    re-derived here). -/\n"
+        "theorem preContactNode_partition (kind : PreContactKindD) :\n"
+        "    (∃ contact : ContactKindD, preContactNodeD kind = contactNodeD contact) ∨\n"
+        "    (∃ excluded : ContactRedExcludedKindD,\n"
+        "      preContactNodeD kind = contactRedExcludedNodeD excluded) := by\n"
+        "  cases kind <;> native_decide\n\n";
+}
+
 inline std::string render_reflective_lean_module(const mathlib::reflection::Trace& trace) {
     if (trace.empty()) throw std::runtime_error("cannot render proof module without provenance");
     std::ostringstream out;
@@ -1147,6 +1251,7 @@ inline std::string render_reflective_lean_module(const mathlib::reflection::Trac
     if (has_zero_walk_citation(trace)) out << zero_walk_lemma_lean();
     if (has_shell_propagation_citation(trace)) out << shell_propagation_lemma_lean();
     if (has_contact_valid_citation(trace)) out << contact_valid_lemma_lean();
+    if (has_d_cont_citation(trace) || has_pre_contact_citation(trace)) out << pre_contact_lemma_lean();
 
     if (has_r_matrix_proof(trace)) {
         out << "/-- Symbolic family reflected by `mathlib::nbonacci_r_matrix`. -/\n";
