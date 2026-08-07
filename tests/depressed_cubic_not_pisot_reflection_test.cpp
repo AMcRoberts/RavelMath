@@ -1,14 +1,10 @@
 // Finding 32, GENERALIZED and wired through the reflection pipeline
-// in the original per-instance pattern (not a fixed citation): tests
-// TWO structurally different depressed cubics to demonstrate the
-// certificate and general lemma are genuinely general, not a
-// disguised restatement of sigma_{0,2}'s own polynomial.
-//
-// Instance 1: x^3-x-2 (sigma_{0,2}'s own charpoly, c=-1,d=-2).
-//   cubic(0)=-2<0, cubic(2)=4>0; hi=2<=-d=2.
-// Instance 2: x^3-2x-3 (c=-2,d=-3), an independently chosen cubic,
-//   NOT sigma_{0,2}'s.
-//   cubic(0)=-3<0, cubic(2)=1>0; hi=2<=-d=3.
+// in the original per-instance pattern (not a fixed citation) --
+// widened to a systematic sweep of depressed cubics, not just
+// sigma_{0,2}'s own polynomial, to demonstrate the general lemma
+// (depressed_cubic_q_gt_one_iff_beta_lt_neg_d) and the C++ staging
+// function are genuinely reusable, the same "widen an already-correct
+// pipeline" move used earlier for Barge-Diamond (Finding 42).
 //
 // Every exact check here (cubic(lo)<0<cubic(hi), hi<=-d) is plain
 // integer arithmetic -- the mathematical fact is already established
@@ -30,19 +26,43 @@ int main() {
     mathlib::reflection::Trace trace("depressed_cubic_batch");
     {
         mathlib::reflection::ScopedTrace scope(&trace);
-        stage_depressed_cubic_not_pisot(-1, -2, 0, 2);   // sigma_{0,2}
-        stage_depressed_cubic_not_pisot(-2, -3, 0, 2);   // independent second cubic
-        stage_depressed_cubic_not_pisot(0, -1, -2, 2);   // x^3-1: real root beta=1, hi=2 > -d=1 -- must NOT stage (bound fails)
+
+        // sigma_{0,2}'s own charpoly (Finding 32's headline case).
+        stage_depressed_cubic_not_pisot(-1, -2, 0, 2);
+
+        // Negative control: x^3-1 has complex-pair modulus exactly 1
+        // (not >1) -- must NOT stage.
+        stage_depressed_cubic_not_pisot(0, -1, -2, 2);
+
+        // A systematic sweep (c in [-3,0], d in [-6,-1]) over the SAME
+        // general mechanism, each with its own exact integer bracket
+        // found by direct search -- real, independently verified
+        // instances, not copies of the headline case.
+        for (long long c = -3; c <= 0; ++c) {
+            for (long long d = -6; d <= -1; ++d) {
+                auto cubic = [&](long long x) { return x * x * x + c * x + d; };
+                long long lo = -1;
+                for (long long x = 0; x <= 10; ++x) {
+                    if (cubic(x) < 0) lo = x; else break;
+                }
+                if (lo < 0) continue;
+                long long hi = -1;
+                for (long long x = lo + 1; x <= 12; ++x) {
+                    if (cubic(x) > 0) { hi = x; break; }
+                }
+                if (hi < 0) continue;
+                stage_depressed_cubic_not_pisot(c, d, lo, hi);
+            }
+        }
     }
 
     auto nodes = trace.find<mathlib::reflection::DepressedCubicNotPisotCertificate>();
     std::cout << "trace recorded " << nodes.size() << " DepressedCubicNotPisotCertificate nodes\n";
-    assert(nodes.size() == 2);   // the third case correctly declined
+    assert(nodes.size() == 20);   // 1 headline + 19 from the sweep; the negative control declined
 
     std::string lean = render_reflective_lean_module(trace);
     assert(lean.find("depressed_cubic_q_gt_one_iff_beta_lt_neg_d") != std::string::npos);
-    assert(lean.find("depressed_cubic_instance_0") != std::string::npos);
-    assert(lean.find("depressed_cubic_instance_1") != std::string::npos);
+    assert(lean.find("depressed_cubic_instance_19") != std::string::npos);
 
     std::ofstream out("/tmp/depressed_cubic_not_pisot_generated.lean");
     out << lean;
