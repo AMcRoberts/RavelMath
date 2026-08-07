@@ -948,6 +948,37 @@ theorem for `a>=7`. This still must not be cited as the universal
 boundary graph formula: derivation of the candidate contact set and
 occurrence/exhaustion of the full recurrent catalogues remain open.
 
+**2026-08-07 addendum -- first mathlib::reflection connection for the
+Class-II thread (Findings 1-16), same shape as the property-F
+retrofit.** `lean/class_ii_affine_shells.lean` (900+ lines, already
+kernel-checked, part of the pre-session library tier) has proved
+`shellNode_propagates`/`shellNode_injective_at_round` -- the exact
+generalized versions of this finding's "twenty-node affine shell"
+claim, for ANY round `q`, not a per-round check -- since before this
+session's reflection pipeline existed, but the EXECUTING
+`class_ii_interior_shell` (`include/ravel/class_ii_boundary_family.hpp`)
+never actually cited it; the connection existed only in this finding's
+own prose ("the affine part now has a kernel-checked universal
+strengthening"), not in any checkable artifact. Closed that gap:
+`class_ii_interior_shell` now records a `LemmaApplication` citing
+`shellNode_propagates` every time it runs, confirming its own 20-`add()`
+call table is exactly `RavelGenerated.shellNode`'s twenty cases (any
+divergence would be an immediate, checkable bug, not just an
+assumption). The renderer recognizes this citation and includes a
+self-contained excerpt of the already-verified lemma text (the full
+file proves substantially more -- window-validity bounds, the
+pre-contact/contact catalogue -- not reproduced here). Verified at
+`q=7` (20 states, matching this finding's own count): kernel-checks
+with zero errors, zero `sorry`
+(`lean/generated/class_ii_shell_citation.lean`,
+`tests/class_ii_shell_citation_test.cpp`). Regression-checked against
+`tests/class_ii_boundary_family_test.cpp`'s full existing suite --
+identical results, confirming the hook changes nothing about the
+actual computation. This is the FIRST of Findings 1-16 to get any
+`mathlib::reflection` connection; the other 18 in that range remain
+genuinely unassessed for this specific pipeline (see
+`docs/REFLECTION_RETROFIT_PLAN.md`).
+
 ## Finding 10 — Item A's AR-partial: A1's nilpotent-cofactor divisibility is symbolically IMPOSSIBLE for every a>=2, not just numerically absent
 
 **Status: SYMBOLIC PROOF, conditional on Finding 9/Theorem 6's own

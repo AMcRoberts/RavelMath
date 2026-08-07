@@ -915,6 +915,113 @@ inline std::string render_leftmost_loop_instances(const mathlib::reflection::Tra
     return out.str();
 }
 
+// True iff the trace shows `class_ii_interior_shell` relied on
+// `shellNode_propagates`/`shellNode_injective_at_round`
+// (lean/class_ii_affine_shells.lean, part of the OLDER Class-II
+// contact-boundary thread, Findings 1-16, hand-derived and
+// kernel-checked well before the mechanical reflection pipeline
+// existed for the coincidence/Pisot thread). Same "cite an
+// already-verified fact" pattern as `has_zero_walk_citation`.
+inline bool has_shell_propagation_citation(const mathlib::reflection::Trace& trace) {
+    for (const auto& [id, lemma] : trace.find<mathlib::reflection::LemmaApplication>()) {
+        (void)id;
+        if (lemma->theorem_name == "shellNode_propagates") return true;
+    }
+    return false;
+}
+
+// A self-contained excerpt of `lean/class_ii_affine_shells.lean`
+// (ClassIINode, ShellKind, shellNode, shellSourceKind, shellHop,
+// composeHop, and the three theorems `class_ii_interior_shell` relies
+// on) -- reproduced, not re-derived; the full file already kernel-checks
+// independently and covers substantially more (window-validity bounds,
+// the pre-contact/contact catalogue, etc.) than this excerpt states.
+inline const char* shell_propagation_lemma_lean() {
+    return
+        "structure ClassIINode where\n"
+        "  left : Int\n"
+        "  x0 : Int\n"
+        "  x1 : Int\n"
+        "  x2 : Int\n"
+        "  right : Int\n"
+        "  deriving DecidableEq\n\n"
+        "inductive ShellKind\n"
+        "  | n00 | n01 | n02 | n03 | n04 | n05 | n06 | n07 | n08 | n09\n"
+        "  | n10 | n11 | n12 | n13 | n14 | n15 | n16 | n17 | n18 | n19\n"
+        "  deriving DecidableEq, Fintype\n\n"
+        "/-- The same twenty affine formulas as\n"
+        "    `ravel::class_ii_interior_shell`, with an integer round parameter. -/\n"
+        "def shellNode : ShellKind → Int → ClassIINode\n"
+        "  | .n00, q => ⟨0, -q,       q,       0, 0⟩\n"
+        "  | .n01, q => ⟨0, -q,       q,       0, 1⟩\n"
+        "  | .n02, q => ⟨0, -(q - 1), q - 1,  -1, 0⟩\n"
+        "  | .n03, q => ⟨0, -(q - 1), q,       0, 0⟩\n"
+        "  | .n04, q => ⟨0, -(q - 1), q,       0, 1⟩\n"
+        "  | .n05, q => ⟨0, -(q - 2), q - 1,  -1, 0⟩\n"
+        "  | .n06, q => ⟨0, q - 2,   -(q - 1), 1, 0⟩\n"
+        "  | .n07, q => ⟨0, q - 2,   -(q - 1), 1, 1⟩\n"
+        "  | .n08, q => ⟨0, q - 1,   -q,        0, 0⟩\n"
+        "  | .n09, q => ⟨0, q - 1,   -(q - 1),  1, 0⟩\n"
+        "  | .n10, q => ⟨0, q - 1,   -(q - 1),  1, 1⟩\n"
+        "  | .n11, q => ⟨0, q,       -q,        0, 0⟩\n"
+        "  | .n12, q => ⟨1, -(q - 1), q - 1,   -1, 0⟩\n"
+        "  | .n13, q => ⟨1, -(q - 2), q - 1,   -1, 0⟩\n"
+        "  | .n14, q => ⟨1, q - 1,   -q,         0, 0⟩\n"
+        "  | .n15, q => ⟨1, q,       -q,         0, 0⟩\n"
+        "  | .n16, q => ⟨2, -(q - 1), q - 1,   -1, 0⟩\n"
+        "  | .n17, q => ⟨2, -(q - 1), q,       -1, 0⟩\n"
+        "  | .n18, q => ⟨2, q - 2,   -(q - 1),  0, 0⟩\n"
+        "  | .n19, q => ⟨2, q - 1,   -(q - 1),  0, 0⟩\n\n"
+        "/-- A predecessor choice for each interior-shell state. -/\n"
+        "def shellSourceKind : ShellKind → ShellKind\n"
+        "  | .n00 => .n00 | .n01 => .n00 | .n02 => .n00 | .n03 => .n00\n"
+        "  | .n04 => .n03 | .n05 => .n01 | .n06 => .n06 | .n07 => .n08\n"
+        "  | .n08 => .n08 | .n09 => .n09 | .n10 => .n11 | .n11 => .n11\n"
+        "  | .n12 => .n12 | .n13 => .n12 | .n14 => .n14 | .n15 => .n15\n"
+        "  | .n16 => .n16 | .n17 => .n17 | .n18 => .n18 | .n19 => .n19\n\n"
+        "/-- Seven distinct signed-hop values occur in this twenty-entry table. -/\n"
+        "def shellHop : ShellKind → ClassIINode\n"
+        "  | .n00 => ⟨0, -1,  1,  0, 0⟩\n"
+        "  | .n01 => ⟨0, -1,  1,  0, 1⟩\n"
+        "  | .n02 => ⟨0,  0,  0, -1, 0⟩\n"
+        "  | .n03 => ⟨0,  0,  1,  0, 0⟩\n"
+        "  | .n04 => ⟨0, -1,  1,  0, 1⟩\n"
+        "  | .n05 => ⟨1,  1,  0, -1, 0⟩\n"
+        "  | .n06 => ⟨0,  1, -1,  0, 0⟩\n"
+        "  | .n07 => ⟨0,  0,  0,  1, 1⟩\n"
+        "  | .n08 => ⟨0,  1, -1,  0, 0⟩\n"
+        "  | .n09 => ⟨0,  1, -1,  0, 0⟩\n"
+        "  | .n10 => ⟨0,  0,  0,  1, 1⟩\n"
+        "  | .n11 => ⟨0,  1, -1,  0, 0⟩\n"
+        "  | .n12 => ⟨0, -1,  1,  0, 0⟩\n"
+        "  | .n13 => ⟨0,  0,  1,  0, 0⟩\n"
+        "  | .n14 => ⟨0,  1, -1,  0, 0⟩\n"
+        "  | .n15 => ⟨0,  1, -1,  0, 0⟩\n"
+        "  | .n16 => ⟨0, -1,  1,  0, 0⟩\n"
+        "  | .n17 => ⟨0, -1,  1,  0, 0⟩\n"
+        "  | .n18 => ⟨0,  1, -1,  0, 0⟩\n"
+        "  | .n19 => ⟨0,  1, -1,  0, 0⟩\n\n"
+        "def composeHop (source hop : ClassIINode) : ClassIINode :=\n"
+        "  ⟨source.left, source.x0 + hop.x0, source.x1 + hop.x1,\n"
+        "    source.x2 + hop.x2, hop.right⟩\n\n"
+        "/-- Universal affine corona-candidate propagation: the displayed state in\n"
+        "    round `q` is exactly its predecessor in round `q-1` plus its fixed contact\n"
+        "    hop -- no finite parameter sweep. Reproduced from the independently\n"
+        "    kernel-checked `lean/class_ii_affine_shells.lean` (not re-derived here). -/\n"
+        "theorem shellNode_propagates (kind : ShellKind) (q : Int) :\n"
+        "    composeHop (shellNode (shellSourceKind kind) (q - 1))\n"
+        "      (shellHop kind) = shellNode kind q := by\n"
+        "  cases kind <;>\n"
+        "    simp [composeHop, shellNode, shellSourceKind, shellHop,\n"
+        "      ClassIINode.mk.injEq] <;> omega\n\n"
+        "/-- No two entries in one interior shell coincide once `q >= 4`. -/\n"
+        "theorem shellNode_injective_at_round {q : Int} (hq : 4 ≤ q) :\n"
+        "    Function.Injective (fun kind => shellNode kind q) := by\n"
+        "  intro u v h\n"
+        "  cases u <;> cases v <;>\n"
+        "    simp [shellNode, ClassIINode.mk.injEq] at h ⊢ <;> omega\n\n";
+}
+
 inline std::string render_reflective_lean_module(const mathlib::reflection::Trace& trace) {
     if (trace.empty()) throw std::runtime_error("cannot render proof module without provenance");
     std::ostringstream out;
@@ -926,6 +1033,7 @@ inline std::string render_reflective_lean_module(const mathlib::reflection::Trac
     out << "open Matrix\n\n";
 
     if (has_zero_walk_citation(trace)) out << zero_walk_lemma_lean();
+    if (has_shell_propagation_citation(trace)) out << shell_propagation_lemma_lean();
 
     if (has_r_matrix_proof(trace)) {
         out << "/-- Symbolic family reflected by `mathlib::nbonacci_r_matrix`. -/\n";
