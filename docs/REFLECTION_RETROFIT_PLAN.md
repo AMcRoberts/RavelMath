@@ -10,6 +10,24 @@ This document is the honest scoping AM asked for before committing to
 the retrofit -- what exists, what "done" would actually require, and
 a phased plan, not a guess at how long it takes.
 
+**2026-08-07, CORRECTION — the "citation" pattern was wrong, caught
+and fixed.** For a stretch of this session (property F's `zeroWalk`
+connection, six Class-II table connections, an early version of
+Finding 32), the retrofit drifted into a shortcut: record a
+`LemmaApplication` naming a theorem, have the renderer paste a fixed
+block of pre-written Lean text keyed by that name alone. AM caught
+this directly: **"EVERY pattern needs to use the ORIGINAL pattern, not
+the citation pattern."** The original pattern (Findings 35/26/17/38/
+39/41/27) threads CONCRETE data from the executing C++ into a typed
+payload and renders a corollary that is actually checked against that
+data. The citation shortcut broke that: a name match can silently
+drift out of sync with what the C++ actually computed; a
+`decide`-checked corollary over the C++'s own concrete output cannot.
+Fixed for the Class-II thread and Finding 32 (see their own addenda in
+`FINDINGS_FOR_CITATION.md`) -- property F's `zeroWalk` connection is
+NOT yet fixed and should be treated as still using the wrong pattern
+until it is.
+
 ## Current state (measured, not estimated)
 
 - **38** hand-verified `.lean` files at `lean/*.lean` (the general,

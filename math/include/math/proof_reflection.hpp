@@ -391,6 +391,34 @@ struct DepressedCubicNotPisotCertificate {
     std::string description;
 };
 
+// Finding 9 (Class-II thread), generalized: the interior-shell table
+// at a CONCRETE round `q` -- carries `q` so the renderer instantiates
+// `shellNode_propagates`/`shellNode_injective_at_round`
+// (lean/class_ii_affine_shells.lean) at that exact round via
+// `decide` (concrete integer arithmetic, no reals needed), one
+// corollary per round actually constructed -- not a static citation.
+struct ClassIIShellRoundCertificate {
+    long long q = 0;
+    std::string description;
+};
+
+// One node: (left, x0, x1, x2, right) -- matches ClassIINode's fields.
+struct ClassIINodeData {
+    long long left = 0, x0 = 0, x1 = 0, x2 = 0, right = 0;
+};
+
+// A fixed-size finite table `class_ii_boundary_family.hpp` actually
+// constructed (D_cont, pre-contact, or contact), carrying the EXACT
+// concrete nodes -- not just a name. The renderer decides membership
+// of THESE nodes in the appropriate `lean/class_ii_affine_shells.lean`
+// Kind's range, so a divergence between what C++ built and the Lean
+// table would make the kernel check legitimately fail, not silently
+// query an unrelated pre-written fact.
+struct ClassIIFixedTableCertificate {
+    std::string table;   // "d_cont", "pre_contact", or "contact"
+    std::vector<ClassIINodeData> nodes;
+};
+
 using Payload = std::variant<MatrixFamily, MatrixInstance, EraseIndexMap,
                              SparseSupportCertificate, TriangularityCertificate,
                              DeterminantIdentity, LemmaApplication, IntegerEigenvectorNoWitness,
@@ -398,6 +426,7 @@ using Payload = std::variant<MatrixFamily, MatrixInstance, EraseIndexMap,
                              ConstantLastLetterCertificate, ZeroRunSameChainCertificate,
                              FirstLetterOrbitCertificate, LastLetterOrbitCertificate,
                              LeftmostLoopCertificate, DepressedCubicNotPisotCertificate,
+                             ClassIIShellRoundCertificate, ClassIIFixedTableCertificate,
                              ProofObligation, TextObservation>;
 
 struct Node {
@@ -676,6 +705,8 @@ inline std::string payload_name(const Payload& payload) {
         else if constexpr (std::is_same_v<T, LastLetterOrbitCertificate>) return "lean.last_letter_orbit_certificate";
         else if constexpr (std::is_same_v<T, LeftmostLoopCertificate>) return "lean.leftmost_loop_certificate";
         else if constexpr (std::is_same_v<T, DepressedCubicNotPisotCertificate>) return "lean.depressed_cubic_not_pisot_certificate";
+        else if constexpr (std::is_same_v<T, ClassIIShellRoundCertificate>) return "lean.class_ii_shell_round_certificate";
+        else if constexpr (std::is_same_v<T, ClassIIFixedTableCertificate>) return "lean.class_ii_fixed_table_certificate";
         else if constexpr (std::is_same_v<T, ProofObligation>) return "proof.obligation";
         else return value.operation;
     }, payload);
@@ -736,6 +767,11 @@ inline std::string payload_detail(const Payload& payload) {
         } else if constexpr (std::is_same_v<T, DepressedCubicNotPisotCertificate>) {
             out << "c=" << value.c << " d=" << value.d << " bracket=(" << value.lo << "," << value.hi
                 << ") " << value.description << " -- instantiates depressed_cubic_q_gt_one_iff_beta_lt_neg_d";
+        } else if constexpr (std::is_same_v<T, ClassIIShellRoundCertificate>) {
+            out << "q=" << value.q << " " << value.description
+                << " -- instantiates shellNode_propagates/shellNode_injective_at_round";
+        } else if constexpr (std::is_same_v<T, ClassIIFixedTableCertificate>) {
+            out << value.table << " table, " << value.nodes.size() << " concrete nodes";
         } else if constexpr (std::is_same_v<T, ProofObligation>) {
             out << value.obligation_id << ": " << value.proposition;
             if (!value.blocked_by.empty()) out << " [blocked by " << value.blocked_by << ']';

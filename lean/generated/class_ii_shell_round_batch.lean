@@ -98,10 +98,33 @@ theorem shellNode_injective_at_round {q : Int} (hq : 4 ≤ q) :
   cases u <;> cases v <;>
     simp [shellNode, ClassIINode.mk.injEq] at h ⊢ <;> omega
 
+/-- Mechanically emitted: instantiates the general lemma above at the
+    concrete round interior-shell round q=7. -/
+theorem class_ii_shell_round_instance_0 :
+    ∀ kind : ShellKind, composeHop (shellNode (shellSourceKind kind) (6 : Int)) (shellHop kind) = shellNode kind (7 : Int) := by
+  decide
+
+/-- Mechanically emitted: injectivity at the same concrete round. -/
+theorem class_ii_shell_round_injective_instance_1 :
+    Function.Injective (fun kind : ShellKind => shellNode kind (7 : Int)) := by
+  decide
+
+/-- Mechanically emitted: instantiates the general lemma above at the
+    concrete round interior-shell round q=10. -/
+theorem class_ii_shell_round_instance_2 :
+    ∀ kind : ShellKind, composeHop (shellNode (shellSourceKind kind) (9 : Int)) (shellHop kind) = shellNode kind (10 : Int) := by
+  decide
+
+/-- Mechanically emitted: injectivity at the same concrete round. -/
+theorem class_ii_shell_round_injective_instance_3 :
+    Function.Injective (fun kind : ShellKind => shellNode kind (10 : Int)) := by
+  decide
+
 /- Semantic proof graph for: class_ii_shell_batch
-  [0] lean.lemma_application :: shellNode_propagates proves the interior-shell 20-state table at round 7 is exactly RavelGenerated.shellNode, pairwise distinct within the round (shellNode_injective_at_round) and equal to the previous round's state plus a fixed contact hop (shellNode_propagates), for any round -- not a per-round coincidence
+  [0] lean.class_ii_shell_round_certificate :: q=7 interior-shell round q=7 -- instantiates shellNode_propagates/shellNode_injective_at_round
+  [1] lean.class_ii_shell_round_certificate :: q=10 interior-shell round q=10 -- instantiates shellNode_propagates/shellNode_injective_at_round
 -/
 
-def reflectedNodeCount : Nat := 1
+def reflectedNodeCount : Nat := 2
 
 end RavelGenerated

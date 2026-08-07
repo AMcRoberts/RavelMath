@@ -948,83 +948,62 @@ theorem for `a>=7`. This still must not be cited as the universal
 boundary graph formula: derivation of the candidate contact set and
 occurrence/exhaustion of the full recurrent catalogues remain open.
 
-**2026-08-07 addendum -- first mathlib::reflection connection for the
-Class-II thread (Findings 1-16), same shape as the property-F
-retrofit.** `lean/class_ii_affine_shells.lean` (900+ lines, already
-kernel-checked, part of the pre-session library tier) has proved
-`shellNode_propagates`/`shellNode_injective_at_round` -- the exact
-generalized versions of this finding's "twenty-node affine shell"
-claim, for ANY round `q`, not a per-round check -- since before this
-session's reflection pipeline existed, but the EXECUTING
+**2026-08-07 addendum -- first `mathlib::reflection` connections for
+the Class-II thread (Findings 1-16), in the project's ORIGINAL
+per-instance pattern.** An earlier pass through this addendum used a
+"citation" shortcut -- record a `LemmaApplication` naming a theorem,
+have the renderer paste a fixed block of Lean text keyed by that name
+alone. That was corrected directly: every payload below now threads
+CONCRETE data from the executing C++ into the reflection trace, and
+the renderer emits a corollary that is actually CHECKED against that
+concrete data (via `decide`), not merely associated with it by a
+string match. A name-only citation could silently drift out of sync
+with the C++ it claims to describe; a `decide`-checked corollary over
+the C++'s own concrete output cannot.
+
 `class_ii_interior_shell` (`include/ravel/class_ii_boundary_family.hpp`)
-never actually cited it; the connection existed only in this finding's
-own prose ("the affine part now has a kernel-checked universal
-strengthening"), not in any checkable artifact. Closed that gap:
-`class_ii_interior_shell` now records a `LemmaApplication` citing
-`shellNode_propagates` every time it runs, confirming its own 20-`add()`
-call table is exactly `RavelGenerated.shellNode`'s twenty cases (any
-divergence would be an immediate, checkable bug, not just an
-assumption). The renderer recognizes this citation and includes a
-self-contained excerpt of the already-verified lemma text (the full
-file proves substantially more -- window-validity bounds, the
-pre-contact/contact catalogue -- not reproduced here). Verified at
-`q=7` (20 states, matching this finding's own count): kernel-checks
-with zero errors, zero `sorry`
-(`lean/generated/class_ii_shell_citation.lean`,
-`tests/class_ii_shell_citation_test.cpp`). Regression-checked against
+now records the CONCRETE round `q` each call actually builds
+(`ClassIIShellRoundCertificate`). The renderer instantiates
+`shellNode_propagates` and `shellNode_injective_at_round`
+(`lean/class_ii_affine_shells.lean`, 900+ lines, already kernel-checked,
+part of the pre-session library tier) AT that exact `q`, for all
+twenty `ShellKind` cases simultaneously, discharged by `decide` on
+concrete integers -- not cited abstractly. Run at `q=7` and `q=10`
+(two different rounds, demonstrating genuine per-instance rendering,
+not one fixed block): kernel-checks with zero errors, zero `sorry`
+(`lean/generated/class_ii_shell_round_batch.lean`,
+`tests/class_ii_shell_citation_test.cpp`).
+
+`class_ii_contact_set`, `class_ii_pre_contact_set`, `class_ii_d_cont_set`,
+and `class_ii_d_cont_face_candidates` (the last an ANALYTIC geometric
+construction -- an integer intersection-dimension search over a
+bounded box, not a hardcoded table) each now thread their ACTUAL
+concrete node lists into a shared `ClassIIFixedTableCertificate`
+payload. The renderer emits one `decide`-checked corollary per table:
+"every one of THESE EXACT nodes C++ just built is in the Lean table's
+range" -- a real membership check against the concrete output, not a
+citation of an abstract ∀-statement by name. All four (14 + 16 + 9 +
+33 = 72 nodes total) kernel-check together with zero errors, zero
+`sorry`, in under 5 seconds
+(`lean/generated/class_ii_fixed_tables_batch.lean`,
+`tests/class_ii_fixed_tables_reflection_test.cpp`).
+
+Two window-validity facts (`class_ii_contactNode_valid`,
+`class_ii_dCont_face_candidate_valid_iff`, `class_ii_rawContact_
+x0_bounded`) were REMOVED from this retrofit rather than kept as
+citations: they are parametrized by a concrete Class-II parameter `a`
+and its actual Perron root, and none of the parameter-free functions
+above have an `a` to supply honestly. A genuine per-instance version
+needs a concrete `a` and an exact integer bracket for the Perron
+root -- the same pattern Finding 32's `depressed_cubic_not_pisot_
+certificate.hpp` already demonstrates -- not yet built for the
+Class-II cubic specifically. Regression-checked against
 `tests/class_ii_boundary_family_test.cpp`'s full existing suite --
-identical results, confirming the hook changes nothing about the
-actual computation. This is the FIRST of Findings 1-16 to get any
-`mathlib::reflection` connection; the other 17 in that range remain
-genuinely unassessed for this specific pipeline (see
-`docs/REFLECTION_RETROFIT_PLAN.md`).
-
-**Second Class-II citation, same session**: `class_ii_contact_set()`
-matches `contactNode`'s fourteen-state table exactly (verified
-entry-by-entry, not assumed), and the Lean file's
-`class_ii_contactNode_valid` is a STRONGER fact than the shell
-propagation citation -- window validity for ANY `a >= 2` and its
-actual Class-II Perron root (from the Class-II cubic
-`beta^3=a*beta^2+(a+1)*beta+1`), not a structural/combinatorial check.
-`class_ii_contact_set` now records this citation every time it runs;
-kernel-checks with zero errors, zero `sorry`
-(`lean/generated/class_ii_contact_citation.lean`,
-`tests/class_ii_contact_citation_test.cpp`). Two of Findings 1-16 now
-connected; the same pattern (find a C++ table that matches a Lean
-`Kind`/`Node` pair exactly, cite the theorem already proved about it)
-likely applies to `class_ii_pre_contact_set()` (16 states, matches
-`PreContactKind`/`preContactNode`) and `class_ii_d_cont_set()` (9
-states, matches `DContKind`/`dContNode`) too -- **done, same session**:
-both now record their respective citations
-(`dContNode_in_preContact`, `preContactNode_partition`), kernel-check
-with zero errors and zero `sorry`
-(`lean/generated/class_ii_precontact_dcont_citation.lean`,
-`tests/class_ii_precontact_dcont_citation_test.cpp`). Four of Findings
-1-16's foundational tables (contact, pre-contact, D_cont, interior
-shell) now cite their already-proven Lean facts.
-
-**A fifth, stronger citation, same session**:
-`class_ii_d_cont_face_candidates()` is an ANALYTIC geometric
-construction (integer intersection-dimension check over a bounded box)
--- not a hardcoded table like the previous four -- verified
-entry-by-entry (all 33 candidates, not just the count) to produce
-exactly `dContFaceCandidateNode`'s table. Cites
-`class_ii_dCont_face_candidate_valid_iff`: for ANY `a>=2` and its
-actual Perron root, a candidate lies in the restricted stepped
-hyperplane IFF it is one of the nine flagged candidates -- an iff, the
-strongest fact cited in this thread so far. Kernel-checks with zero
-errors, zero `sorry`
-(`lean/generated/class_ii_face_candidate_citation.lean`,
-`tests/class_ii_face_candidate_citation_test.cpp`).
-
-**A sixth citation, same function, same session**: the SAME
-`class_ii_d_cont_face_candidates()` search loop's range (`x0` swept
-over exactly `[-2,2]`) is not a heuristic choice -- it is exactly the
-bound `class_ii_rawContact_x0_bounded` proves necessary and sufficient
-(once the Perron gap exceeds 1/2, restricted-window membership with
-`x1,x2` already bounded forces `x0` into `[-2,2]`, for ANY `a>=2`).
-Both citations now fire from the same function call. Kernel-checks
-with zero errors, zero `sorry` (same generated file, updated test).
+identical results throughout, confirming none of this changed the
+actual computation. Five of Findings 1-16's foundational tables
+(interior shell, contact, pre-contact, D_cont, face candidates) are
+now genuinely connected; the other 14 in that range remain
+unassessed for this pipeline (see `docs/REFLECTION_RETROFIT_PLAN.md`).
 
 ## Finding 10 — Item A's AR-partial: A1's nilpotent-cofactor divisibility is symbolically IMPOSSIBLE for every a>=2, not just numerically absent
 
