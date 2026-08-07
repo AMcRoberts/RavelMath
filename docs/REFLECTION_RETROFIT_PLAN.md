@@ -30,6 +30,39 @@ a phased plan, not a guess at how long it takes.
 The gap between "3 call sites" and "178 proof headers" is the real
 size of this project.
 
+**2026-08-07 update (measured again, not estimated):** 5 call sites
+now (`barge_diamond_certificate.hpp`, `period_rotation_certificate.hpp`,
+plus the original 3), covering 2 fully-retrofitted findings (35, 26 --
+26 via pure reuse of 35's own trace data, zero new C++) beyond
+Finding 42 itself, plus widened instance coverage on Finding 42's own
+pattern (2 more real substitutions, `sigma_{1,1}` and supergolden, zero
+new Lean risk). Total distinct kernel-checked general lemmas: 5
+(`irrational_eigenvalue_has_no_integer_eigenvector`,
+`period_coloring_rotates_eigenvalue`,
+`rotated_eigenvalue_has_same_modulus`, `colored_walk_congruence`,
+`colored_walk_lengths_agree_mod`). Still **3 of 45** findings fully
+retrofitted (42, 35, 26) -- the honest scale of what remains has not
+changed, only the demonstrated rate and the confirmation that shared
+trace data can back MULTIPLE independent Lean corollaries (Finding
+26's whole retrofit cost zero new C++).
+
+**Immediate next-in-queue, in priority order** (for whoever picks this
+back up, session or not): (1) Finding 30 -- Sturm-based Pisot
+classification, a genuinely different, harder shape (no short
+algebraic/graph identity to lean on); (2) extend `barge_diamond_
+certificate.hpp`'s degree scope from 2-3 to a real quartic
+irreducibility check (rational-root theorem is necessary but not
+sufficient at degree 4 -- needs an explicit search over integer
+`(x^2+px+q)(x^2+rx+s)` factorizations), which would unlock Finding
+37's 8 alphabet-4 non-unit Pisot instances for the SAME already-built
+pipeline, no new Lean lemma required, only a stronger C++
+irreducibility check; (3) the coincidence-depth family (Findings 17,
+38, 39, 41), which needs modeling `pair_has_coincidence`'s own
+abelianized-prefix-set semantics as a Lean predicate before any lemma
+can be stated honestly -- the real blocker there is that modeling
+step, not the underlying combinatorial facts (which are individually
+simple).
+
 ## What "done" actually requires, per finding
 
 For a finding to go through the reflection pipeline honestly (not
