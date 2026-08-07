@@ -1575,6 +1575,30 @@ the field and predates this project by decades; the SPECIFIC,
 formally proved, depth-exact statement here does not appear to be
 written down explicitly anywhere consulted.
 
+**2026-08-07 addendum — retrofitted through the reflection pipeline: the
+first coincidence-family finding to go through it, and the first
+finding whose general lemma is combinatorics on lists rather than
+linear algebra.** Modeled the PREFIX half of `pair_has_coincidence`'s
+own loop directly in Lean -- `runningSeq` (the `running` accumulator),
+`prefixPairs` (the recorded (letter, vector) pairs), `hasCoincidencePrefix`
+(the existential match) -- rather than re-deriving an abstract
+restatement, then proved the theorem exactly as the informal proof
+above describes: for `w1 = c :: w1'`, `w2 = c :: w2'`, the pair
+`(c, zeroVector)` sits at the head of both lists' `prefixPairs`,
+unconditionally. See `lean/constant_first_letter_forces_prefix_
+coincidence.lean` (hand-derived, kernel-checked once, first try). New
+reflection payload (`ConstantFirstLetterCertificate`), extended
+`check_constant_factor_forces_depth1` to record it, new renderer
+(`render_constant_first_letter_instances`) emitting one corollary PER
+PAIR of a substitution's own images (not one corollary per
+substitution) -- run on Finding 5's AR-partial family (`a=1,2`), 6
+instances (`C(3,2)` pairs each), all kernel-check with zero errors and
+zero `sorry` (`lean/generated/constant_first_letter_batch.lean`,
+`tests/constant_first_letter_reflection_test.cpp`); the `a=0`
+non-constant-factor control correctly records nothing. The SUFFIX half
+(needed for Finding 38's dual case) is not yet modeled -- a
+structurally symmetric follow-up, not a new proof idea.
+
 ## Finding 18 — property (F) closed off from the constant-factor lens, with a proven (not just unsuccessful) reason
 
 **Status: PROVED negative result. `include/ravel/proof/constant_factor_gives_nothing_for_property_f.hpp`, cross-checked against the real computed prefix automaton for the whole a=0..5 family.**

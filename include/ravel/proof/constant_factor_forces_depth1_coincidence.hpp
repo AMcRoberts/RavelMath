@@ -51,6 +51,8 @@
 #include <string>
 #include <vector>
 
+#include "math/proof_reflection.hpp"
+
 namespace ravel::proof {
 
 struct ConstantFactorCoincidenceCertificate {
@@ -91,6 +93,15 @@ inline ConstantFactorCoincidenceCertificate check_constant_factor_forces_depth1(
         : "images do not all share a first letter -- this theorem does not "
           "predict depth-1 resolution (coincidence may still hold, at higher "
           "depth, by a different route)";
+
+    if (out.has_constant_factor) {
+        mathlib::reflection::ConstantFirstLetterCertificate node;
+        node.d = static_cast<long long>(d);
+        node.constant_letter = c0;
+        node.images.assign(images.begin(), images.end());
+        node.description = "d=" + std::to_string(d) + " letters, constant first letter " + std::to_string(c0);
+        mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, node);
+    }
     return out;
 }
 
