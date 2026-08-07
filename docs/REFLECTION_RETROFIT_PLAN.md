@@ -77,15 +77,32 @@ induction, kernel-checked first try. 12 real instances (Finding 37's
 `ex1`, `ex3`) clean. Both halves of `pair_has_coincidence` -- prefix
 and suffix -- are now faithfully modeled in Lean.
 
-**Immediate next-in-queue, in priority order**: (1) Findings 39/41
-(the zero-run depth bound) -- a genuinely harder Lean target, since
-the claim is an exact DEPTH FORMULA (not just "some match exists"),
-likely needs an induction over the zero-run structure itself layered
-on top of the prefix/suffix machinery Finding 17/38 just built; (2)
-Finding 30 -- Sturm-based Pisot classification, a genuinely different,
-harder shape (no short algebraic/graph identity to lean on); (3)
-property (F) / the zero-expansion graph (Findings 18-21), the hardest
-category, deliberately last per the original phased plan.
+**2026-08-07 update -- foundation laid for Findings 39/41, theorem
+itself not yet closed.** Assessed the actual gap honestly before
+attempting the full theorem: `check_strong_coincidence`'s own depth-K
+search applies the substitution to each letter-word K times and checks
+`pair_has_coincidence` at each depth, so a faithful Finding 39/41
+formalization needs ITERATED substitution application modeled first --
+not just the single-step prefix/suffix machinery Findings 17/38 built.
+Built and kernel-checked that infrastructure on its own
+(`lean/substitution_iteration_infrastructure.lean`): `applyOnce`/`applyN`
+(iterated `List.flatMap`), `applyOnce_append` (distributes over
+concatenation), and the key mechanism Finding 39/41's own proof names
+explicitly -- `applyN_singleton_chain`, proving a chain of pass-through
+letters (`sigma s = [next s]`) propagates a singleton word forward
+exactly `k` steps under `k` iterations. This is real, reusable,
+kernel-checked progress, but honestly NOT the theorem itself yet --
+composing this with the constant-first-letter machinery at the
+specific depth a zero-run ends is the remaining work, deliberately not
+rushed to avoid a shaky or incomplete claim.
+
+**Immediate next-in-queue, in priority order**: (1) finish Findings
+39/41 by composing `applyN_singleton_chain` with `constant_first_letter_
+forces_prefix_coincidence` at the run-end depth; (2) Finding 30 --
+Sturm-based Pisot classification, a genuinely different, harder shape
+(no short algebraic/graph identity to lean on); (3) property (F) / the
+zero-expansion graph (Findings 18-21), the hardest category,
+deliberately last per the original phased plan.
 
 ## What "done" actually requires, per finding
 
