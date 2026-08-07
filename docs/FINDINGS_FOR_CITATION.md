@@ -2665,3 +2665,47 @@ and turned out non-Pisot). Finding a genuine multi-junction Pisot
 substitution and re-running Finding 34's permanence check on it is the
 natural, correctly-motivated next step, not extending the g>1 work
 further.
+
+## Finding 36 — the coincidence machinery run on an actual, certified, genuinely multi-junction Pisot substitution: strong coincidence holds, immediately and permanently, on every pair
+
+**Status: the first real-world confirmation of this thread's whole
+apparatus (Findings 25-27, 34-35). Every multi-junction example used
+before this was, per Finding 35, provably non-Pisot; this is the
+correction.**
+
+Found the right candidate close at hand: `sigma_{1,1}`
+(`sigma(0)=[0,1,2], sigma(1)=[0,2], sigma(2)=[0]`), already certified
+Pisot in this project's much earlier work (Finding 5/6.5's AR-partial
+family), re-verified fresh here (`pisot_classify_3x3`:
+`beta~2.14789904`; `is_primitive`: true) and genuinely multi-junction
+-- letters 0 AND 1 both have image length >=2, unlike every prior
+multi-junction test case. Confirmed `g=1` (matching Finding 35's
+theorem exactly: a real Pisot substitution can never have `g>1`).
+
+**Ran all three pairwise coincidence checks** (0,1), (0,2), (1,2) --
+correctly handling letter 2's forced run-in (image length 1, landing
+on junction 0 after 1 step) via the same origin/dist bookkeeping used
+throughout Findings 25-27. Every pair shows a coincidence witness
+starting almost immediately (`K=1`) and PERMANENTLY at every single
+subsequent depth checked (`K=1..14`, exhaustive, not sampled) -- not
+just the cross-junction pair tested first, all three.
+
+This is a clean, decisive confirmation: for a real Pisot substitution,
+strong coincidence isn't a delicate, hard-won property requiring deep
+search -- it holds almost immediately and then never stops holding, at
+least on this example. It directly validates the redirection from
+Finding 35: the "interesting" open combinatorics (gcd-obstruction,
+its converse, the permanence phenomenon) was never actually blocking
+real strong-coincidence questions -- once restricted to genuine Pisot
+substitutions, the phenomenon this thread predicted (permanence) shows
+up immediately, strongly, and on every letter pair, not just some.
+
+See `tests/sigma11_genuine_pisot_coincidence_test.cpp`.
+
+**SCOPE, stated honestly**: one example, `beta~2.148`. Not a general
+theorem that EVERY genuine multi-junction Pisot substitution behaves
+this cleanly -- but it is the first piece of direct evidence that the
+answer, for real substitutions, is likely "yes, easily," reframing
+this entire session's coincidence-closure work as having correctly
+identified a real phenomenon, just needing the right (Pisot-certified)
+examples to see it clearly.
