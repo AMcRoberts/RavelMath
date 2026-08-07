@@ -203,6 +203,101 @@ inline std::string render_period_rotation_instances(const mathlib::reflection::T
     return out.str();
 }
 
+// A THIRD general lemma, extracted from the SAME family as the
+// previous two -- hand-derived and kernel-checked once, in the same
+// file (`lean/period_rotation_forces_equal_modulus.lean`). This is
+// the shared mechanism underlying both `period_coloring_rotates_
+// eigenvalue` above and Finding 26's own `d + dist(terminal) = 0
+// (mod g)` invariant (`coincidence_gcd_obstruction_theorem.hpp`):
+// given the SAME kind of coloring, any two walks between the same
+// pair of vertices have lengths differing by a multiple of `p`. Its
+// per-instance corollaries reuse the EXACT SAME `PeriodRotationCertificate`
+// trace nodes `render_period_rotation_instances` already renders --
+// no new C++ certificate, no new trace payload, purely a second
+// mechanical reading of data already computed once. This is the
+// "convert a shared piece of code into a more general lemma" pattern
+// applied literally.
+inline const char* colored_walk_congruence_general_lemma_lean() {
+    return
+        "/-- THE SHARED GRAPH FACT underlying both Finding 35 and Finding 26: if a\n"
+        "    directed graph `E` on `Fin n` carries an integer coloring `c` that steps by\n"
+        "    exactly `1` modulo `p` along every edge, then walking `L` edges from any\n"
+        "    start vertex changes the coloring by exactly `L` modulo `p`. Reproduced from\n"
+        "    the independently kernel-checked\n"
+        "    `lean/period_rotation_forces_equal_modulus.lean` (not re-derived here). -/\n"
+        "theorem colored_walk_congruence\n"
+        "    {n : ℕ} (E : Fin n → Fin n → Prop) (c : Fin n → ℤ) (p : ℕ) (k : Fin n → Fin n → ℤ)\n"
+        "    (hColor : ∀ i j, E i j → c j = c i + 1 + k i j * (p : ℤ))\n"
+        "    (w : ℕ → Fin n) (L : ℕ) (hwalk : ∀ i, i < L → E (w i) (w (i + 1))) :\n"
+        "    ∃ m : ℤ, c (w L) = c (w 0) + (L : ℤ) + m * (p : ℤ) := by\n"
+        "  induction L with\n"
+        "  | zero => exact ⟨0, by simp⟩\n"
+        "  | succ L ih =>\n"
+        "    obtain ⟨m, hm⟩ := ih (fun i hi => hwalk i (Nat.lt_succ_of_lt hi))\n"
+        "    have hstep := hColor (w L) (w (L + 1)) (hwalk L (Nat.lt_succ_self L))\n"
+        "    refine ⟨m + k (w L) (w (L + 1)), ?_⟩\n"
+        "    rw [hstep, hm]\n"
+        "    simp only [Nat.cast_add, Nat.cast_one]\n"
+        "    ring\n\n"
+        "/-- Finding 26's own conclusion, in general graph form: TWO walks between the\n"
+        "    SAME pair of vertices must have lengths differing by a multiple of `p`.\n"
+        "    Reproduced from `lean/period_rotation_forces_equal_modulus.lean`. -/\n"
+        "theorem colored_walk_lengths_agree_mod\n"
+        "    {n : ℕ} (E : Fin n → Fin n → Prop) (c : Fin n → ℤ) (p : ℕ) (k : Fin n → Fin n → ℤ)\n"
+        "    (hColor : ∀ i j, E i j → c j = c i + 1 + k i j * (p : ℤ))\n"
+        "    (w1 w2 : ℕ → Fin n) (L1 L2 : ℕ)\n"
+        "    (hwalk1 : ∀ i, i < L1 → E (w1 i) (w1 (i + 1)))\n"
+        "    (hwalk2 : ∀ i, i < L2 → E (w2 i) (w2 (i + 1)))\n"
+        "    (hstart : w1 0 = w2 0) (hend : w1 L1 = w2 L2) :\n"
+        "    ∃ m : ℤ, (L1 : ℤ) - (L2 : ℤ) = m * (p : ℤ) := by\n"
+        "  obtain ⟨m1, hm1⟩ := colored_walk_congruence E c p k hColor w1 L1 hwalk1\n"
+        "  obtain ⟨m2, hm2⟩ := colored_walk_congruence E c p k hColor w2 L2 hwalk2\n"
+        "  rw [hstart, hend] at hm1\n"
+        "  refine ⟨m2 - m1, ?_⟩\n"
+        "  linear_combination hm2 - hm1\n\n";
+}
+
+// Mechanically emits one Lean corollary of `colored_walk_lengths_
+// agree_mod` PER `PeriodRotationCertificate` node -- the SAME nodes
+// `render_period_rotation_instances` reads, read a second time for a
+// different consequence of the identical concrete data.
+inline std::string render_colored_walk_congruence_instances(const mathlib::reflection::Trace& trace) {
+    std::ostringstream out;
+    long long counter = 0;
+    auto nodes = trace.find<mathlib::reflection::PeriodRotationCertificate>();
+    if (nodes.empty()) return {};
+    out << colored_walk_congruence_general_lemma_lean();
+    for (const auto& [id, node] : nodes) {
+        (void)id;
+        std::string name = "walk_congruence_instance_" + std::to_string(counter++);
+        std::string matrix_lean = render_lean_int_matrix(node->matrix_flat, node->n);
+        std::string color_lean = render_lean_int_vector(node->coloring);
+        std::string k_lean = render_lean_int_matrix(node->k_flat, node->n);
+        std::string M_typed = "(" + matrix_lean + " : Matrix (Fin " + std::to_string(node->n) +
+                               ") (Fin " + std::to_string(node->n) + ") ℤ)";
+        std::string K_typed = "(" + k_lean + " : Matrix (Fin " + std::to_string(node->n) +
+                               ") (Fin " + std::to_string(node->n) + ") ℤ)";
+        // E i j means "walk edge FROM i TO j" (parent -> child): since
+        // matrix_flat[i][j] != 0 means i is the CHILD of j (i appears
+        // in letter j's image -- the opposite direction), E and the k
+        // witness both need their indices swapped relative to the raw
+        // matrix/coloring data.
+        std::string E_expr = "(fun i j => " + M_typed + " j i ≠ 0)";
+        std::string K_expr = "(fun i j => " + K_typed + " j i)";
+        out << "/-- Mechanically emitted: Finding 26's own conclusion for this\n";
+        out << "    substitution's full-alphabet graph and coloring (" << node->description << "). -/\n";
+        out << "theorem " << name << " (w1 w2 : ℕ → Fin " << node->n << ") (L1 L2 : ℕ)\n";
+        out << "    (hwalk1 : ∀ i, i < L1 → " << E_expr << " (w1 i) (w1 (i + 1)))\n";
+        out << "    (hwalk2 : ∀ i, i < L2 → " << E_expr << " (w2 i) (w2 (i + 1)))\n";
+        out << "    (hstart : w1 0 = w2 0) (hend : w1 L1 = w2 L2) :\n";
+        out << "    ∃ m : ℤ, (L1 : ℤ) - (L2 : ℤ) = m * " << node->p << " :=\n";
+        out << "  colored_walk_lengths_agree_mod " << E_expr << " " << color_lean << " " << node->p
+            << " " << K_expr << "\n";
+        out << "    (by decide) w1 w2 L1 L2 hwalk1 hwalk2 hstart hend\n\n";
+    }
+    return out.str();
+}
+
 inline std::string render_reflective_lean_module(const mathlib::reflection::Trace& trace) {
     if (trace.empty()) throw std::runtime_error("cannot render proof module without provenance");
     std::ostringstream out;
@@ -240,6 +335,7 @@ inline std::string render_reflective_lean_module(const mathlib::reflection::Trac
 
     out << render_barge_diamond_instances(trace);
     out << render_period_rotation_instances(trace);
+    out << render_colored_walk_congruence_instances(trace);
 
     out << "/- Semantic proof graph for: " << trace.theorem_id() << "\n";
     for (std::size_t i = 0; i < trace.nodes().size(); ++i) {
