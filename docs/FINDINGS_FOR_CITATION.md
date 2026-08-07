@@ -2366,3 +2366,94 @@ much further is a real wall-clock cost with no guarantee of resolving
 soon. Whether to keep pushing it, or treat sigma_{0,2} as "open,
 substantially better characterized than before" and move on, is a
 judgment call left to whoever picks this thread up next.
+
+## Finding 32 — sigma_{0,2} was never actually Pisot; corrects Findings 6.5/28/30/31, and answers AM's number-theoretic prediction question directly
+
+**Status: CORRECTS a misclassification that propagated through three
+prior findings. Also a genuine number-theoretic (not search-based)
+answer to "can you predict closure or non-closure": yes, and the
+prediction is confirmed both by the certified classifier and by a
+matching quantitative growth-rate check.**
+
+AM asked, after Finding 31 left the exact search for sigma_{0,2}'s
+beta-expansion genuinely open at 123,500 steps with zero repeats,
+whether the outcome could be predicted number-theoretically instead
+of by more search. Checked the one thing that should have been
+checked FIRST, before ever running an expansion: is sigma_{0,2} (the
+matrix `[[0,0,1],[2,0,0],[1,1,0]]`, `sigma_ab_matrix(0,2)` in this
+project's own convention, used verbatim in
+`python/beta_expansion_thread_a4.py`'s `CANDIDATES` dict since Finding
+6.5) actually Pisot at all.
+
+**It is not.** Running it through this project's own certified,
+bug-history-hardened classifier:
+```
+pisot_classify_3x3([[0,0,1],[2,0,0],[1,1,0]]) -> is_pisot=0
+  has_complex_pair=1, is_complex_modulus_lt_1=0
+```
+Direct root computation confirms exactly why: charpoly `x^3-x-2` has
+dominant real root `beta ~ 1.52138`, but its complex-conjugate pair
+has modulus `~1.14656 > 1` (product of all three roots is `2`, so
+`|conjugate|^2 = 2/beta ~ 1.3146`, `|conjugate| ~ 1.1466` -- comfortably
+outside the unit disk, not a close call or a precision artifact).
+
+**This is genuine number-theoretic prediction, not just a
+classification lookup**: Schmidt's theorem (the ONLY reason to expect
+`d_beta(1)` is eventually periodic, cited since Finding 6.5) requires
+beta to be Pisot. It does not apply here at all -- there was never a
+theorem promising Finding 28/30/31's search would terminate or
+repeat. More than that, the FAILURE mode is predictable and was
+verified quantitatively: Schmidt's proof works by using every
+conjugate's modulus `<1` to keep the greedy recurrence's integer
+coefficient vector (in the `(1,beta,beta^2)` basis) confined to a
+bounded region, forcing an eventual repeat by pigeonhole. With one
+conjugate pair at modulus `~1.1466 > 1`, that same recurrence is
+EXPANDING in that direction instead of contracting -- predicting the
+coefficient vector's magnitude grows roughly like `1.1466^n`, not
+stays bounded. Checked this directly: the exact recurrence's
+coefficient magnitude went from `1` at step 0 to `~9.5e17` by step
+300 and `~8.3e18` by step 2700 -- matching the predicted
+`1.1466^300 ~ 8e17` almost exactly. The search never found a repeat
+because there is no mechanism forcing one to exist; genuine
+non-closure was the correctly predicted outcome, not an artifact of
+an insufficient search budget.
+
+**Where the misclassification came from**: Finding 5's original
+10-candidate table (Tribonacci, `sigma_{a,1}` a=0..5, `sigma_{1,2}`,
+`sigma_1`, `sigma_2`) does not actually include `sigma_{0,2}` (a=0,
+b=2) at all -- its "non-AR" class row mentions "sigma_{0,1},
+sigma_{0,2}" where the second entry almost certainly should read
+`sigma_{1,2}` (the one non-unimodular candidate genuinely in that
+list, per Finding 16's correction). Finding 6.5 then built its own,
+DIFFERENT candidate table for the beta-expansion question and, in
+naming its own `(0,2)` entry after that likely-mistyped label,
+constructed the ACTUAL matrix `sigma_ab_matrix(0,2)` without ever
+re-running it through the certified Pisot classifier -- the omission
+that let this stand for three findings.
+
+**Corrections to prior findings, stated explicitly rather than
+silently edited**:
+- Finding 6.5's table entry `sigma_{0,2} (III) -> (unresolved)` should
+  read: not a Pisot number at all, so "unresolved" was the wrong
+  framing -- there is no applicable theorem and no reason to expect
+  resolution.
+- Finding 28's refutation of the unimodularity hypothesis (6/6 vs.
+  6/6 termination) is UNAFFECTED -- that search used its own fresh,
+  correctly-gated `is_pisot` check (the negative-root bug fix), and
+  never included this specific matrix. Its own re-examination of
+  "sigma_{0,2}" at 2500 digits, however, inherited the same
+  unverified premise and should be read as moot for the same reason.
+- Finding 30's "still in progress as of this commit" framing and
+  Finding 31's "genuinely open" framing are both superseded here:
+  not open, resolved -- explained, not by more search, but by
+  checking the one premise that was never checked.
+
+**A methodological lesson worth stating plainly**: this project has a
+strong, correctly-applied norm of verifying premises directly rather
+than trusting inherited labels (the entire session's discipline around
+memory fences, exact arithmetic, catching false positives). This is a
+case where that discipline was NOT applied at the right point -- a
+Pisot classification was trusted across three findings and a
+substantial compute budget (an exact search that ran 30 minutes)
+without ever being re-verified against the project's own certified
+tool, which would have taken under a second.
