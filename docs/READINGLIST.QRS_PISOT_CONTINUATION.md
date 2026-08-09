@@ -203,6 +203,15 @@ false obstruction. The projected run now reports `boundary=PASS result=PASS`.
 The legacy materialized mode remains a compatibility/cache path and may still
 report the older direct-family `NO_UPPER_FAMILY` diagnostic.
 
+For every adjacent transport at dimension `n >= 5`, the driver now derives the
+explicit twisted predicted-core extension first. The check records the
+previous-alphabet shadow, orientation-sheet correction, path cocycle, and
+substitution-length bounds; a raw shadow comparison is rejected if this twist
+does not close. The n=5→6 and n=6→7 runs both report `proved=YES` (62 and 102
+substituted edges respectively). The backward-closure membership table was
+also changed to a structural hash set, retaining sorted output while reducing
+tree-allocation overhead for larger exploratory frontiers.
+
 This reframes the parallel question: stop searching Pisot numbers below 2
 for a fourth generator via this construction. The two remaining routes are
 (a) `beta >= 2`, where a digit value of `2` opens a third prefix `[0,0]`

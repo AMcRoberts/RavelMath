@@ -2057,6 +2057,20 @@ bool run_adjacent_competitor_transport_projected() {
 
 template <std::size_t D>
 bool run_adjacent_competitor_transport(CoronaExecutionMode mode) {
+    // Once the dimension crosses five, the previous-alphabet shadow is not
+    // an induced copy of the predicted core.  Derive the orientation-sheet
+    // correction before attempting either transport path; a raw shadow
+    // comparison is not an admissible substitute for the twisted extension.
+    if constexpr (D >= 5) {
+        const auto twist = ravel::proof::derive_twisted_predicted_core_extension(D);
+        std::printf(
+            "ADJ_TWIST n=%zu->%zu proved=%s substituted=%zu max_path=%zu "
+            "cocycle=%s\n",
+            D, D + 1, twist.proved ? "YES" : "NO",
+            twist.path_substituted_edges, twist.maximum_substitution_length,
+            twist.cocycle_compatible ? "YES" : "NO");
+        if (!twist.proved) return false;
+    }
     return mode == CoronaExecutionMode::legacy_materialized
         ? run_adjacent_competitor_transport_legacy<D>()
         : run_adjacent_competitor_transport_projected<D>();

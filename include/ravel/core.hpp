@@ -63,6 +63,10 @@ struct ANode {
     long long i;
     std::array<long long, d> x;
     long long j;
+
+    bool operator==(const ANode& other) const {
+        return i == other.i && x == other.x && j == other.j;
+    }
 };
 
 template <std::size_t d>

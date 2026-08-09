@@ -862,6 +862,22 @@ struct BackwardEdgeWitness {
     std::size_t second_prefix_position = 0;
 };
 
+// Backward closure is often the first large allocation in a contact-boundary
+// run.  Its membership operation is hash-based in spirit; keeping it in a
+// tree makes the theta5 frontier pay a logarithmic lookup plus a node-heavy
+// red-black allocation for every predecessor.  Use a compact structural hash
+// while retaining a sorted vector at the API boundary below.
+template <std::size_t d>
+struct ANodeHash {
+    std::size_t operator()(const ANode<d>& node) const noexcept {
+        std::size_t h = static_cast<std::size_t>(node.i) * 131071u +
+                        static_cast<std::size_t>(node.j) * 17u;
+        for (const auto value : node.x)
+            h = h * 31u + static_cast<std::size_t>(value);
+        return h;
+    }
+};
+
 // Labelled form of backward_edges used by affine-family certificates.
 // Positions are the two prefix cut locations in the corresponding
 // substitution images; projection to `predecessor` agrees with
@@ -911,7 +927,7 @@ template <std::size_t d>
 std::vector<ANode<d>> backward_closure(const Substitution<d>& subst,
                                      const std::vector<ANode<d>>& seed_nodes,
                                      std::size_t max_nodes = 500) {
-    std::set<ANode<d>> visited;
+    std::unordered_set<ANode<d>, ANodeHash<d>> visited;
     for (const auto& n : seed_nodes) visited.insert(n);
     std::vector<ANode<d>> frontier(seed_nodes.begin(), seed_nodes.end());
     while (!frontier.empty()) {
@@ -923,7 +939,14 @@ std::vector<ANode<d>> backward_closure(const Substitution<d>& subst,
                         // Mirror graph_closure.py's loud-stop policy:
                         // paper claims 14 for sigma1; if we blow past 500
                         // the closure is wrong, not just "needs more".
-                        return std::vector<ANode<d>>(visited.begin(), visited.end());
+                        std::vector<ANode<d>> result(visited.begin(), visited.end());
+                        std::sort(result.begin(), result.end(), [](const auto& lhs,
+                                                                   const auto& rhs) {
+                            if (lhs.i != rhs.i) return lhs.i < rhs.i;
+                            if (lhs.x != rhs.x) return lhs.x < rhs.x;
+                            return lhs.j < rhs.j;
+                        });
+                        return result;
                     }
                     next_frontier.push_back(pred);
                 }
@@ -931,7 +954,13 @@ std::vector<ANode<d>> backward_closure(const Substitution<d>& subst,
         }
         frontier = std::move(next_frontier);
     }
-    return std::vector<ANode<d>>(visited.begin(), visited.end());
+    std::vector<ANode<d>> result(visited.begin(), visited.end());
+    std::sort(result.begin(), result.end(), [](const auto& lhs, const auto& rhs) {
+        if (lhs.i != rhs.i) return lhs.i < rhs.i;
+        if (lhs.x != rhs.x) return lhs.x < rhs.x;
+        return lhs.j < rhs.j;
+    });
+    return result;
 }
 
 // Red together with its ranked exclusion witness.  pruning_ranks[0]
