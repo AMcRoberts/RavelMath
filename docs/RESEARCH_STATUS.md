@@ -98,6 +98,11 @@ carry alphabet size `m` and the degree-`d` beta-inverse reduction.
 The return-to-zero block quotient is also explicit: exactly `(d-1)m+1`
 channels, each of length at most `d`, with words `[k,m,...,m]`. This is the
 finite forest on which the remaining reachability/rank proof should operate.
+Root diagnostics explain the scaling: the weakest secondary modulus rises
+from `0.8508` at `(4,6)` to `0.9094` at `(6,2)`, while the degree and channel
+count increase the coefficient-state branching. This matches the observed
+large-but-harmless transient clouds and gives a concrete target for the rank
+bound.
 
 ## Verified engineering boundary
 

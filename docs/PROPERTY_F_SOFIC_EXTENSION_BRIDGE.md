@@ -137,6 +137,27 @@ The bridge test now replays every one of those channels against the concrete
 prefix automaton, including the terminal-image exception; this is an exact
 implementation cross-check for the block projection.
 
+## Why the long cases are long
+
+The observed size is explained by three multiplicative effects, not by a new
+recurrent holonomy: the block alphabet has `(d-1)m+1` channels, each state
+lives in a `d`-coordinate power basis, and the secondary bound is inflated by
+`1/(1-rho)` when the weakest conjugate modulus `rho` approaches one. For
+reference, the exact root/bound diagnostics are:
+
+| instance | `rho` | `1/(1-rho)` | observed result |
+|---|---:|---:|---:|
+| `(4,6)` | 0.8508 | 6.70 | 33,837 nodes, closed |
+| `(5,3)` | 0.8757 | 8.04 | 792,212 nodes, closed |
+| `(6,1)` | 0.9062 | 10.66 | 188,545 nodes, closed |
+| `(6,2)` | 0.9094 | 11.04 | >2,000,000 nodes, inconclusive |
+
+This predicts “large but harmless” transient growth: increasing `d` widens
+the coefficient state space and weakens contraction, while increasing `m`
+widens the carry alphabet. The current data show no nonzero recurrent signal;
+the missing proof is a reachability rank on the block forest, not a search for
+an additional cycle generator.
+
 An opt-in extended regression pushes beyond that rectangle
 (`generalized_multinacci_property_f_transport_extended_test`). It closes
 `(5,1)`, `(5,2)`, `(5,3)`, and `(6,1)` at 8,307, 67,007, 792,212, and
