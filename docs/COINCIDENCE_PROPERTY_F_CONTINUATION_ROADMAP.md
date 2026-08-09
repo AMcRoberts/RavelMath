@@ -331,3 +331,6 @@ The incidence matrix is independently reconstructed from the serialized image
 lists in Lean and compared elementwise with the matrix consumed by the path
 weight recurrence. This closes the remaining input-consistency gap at the
 kernel boundary.
+The edge validator also requires both serialized endpoints to be actual
+branching junctions, so deterministic letters cannot enter the junction graph
+silently through malformed metadata.
