@@ -55,6 +55,10 @@ int main() {
         // never later than the prefix-only closure if both profiles are valid.
         assert(prefix.pair_resolution_depths[i] >= direct.pair_resolution_depths[i]);
     }
+    const auto closure_full = check_strong_coincidence_closure<d>(
+        images, matrix, 20, 1'000'000);
+    assert(closure_full.holds && !closure_full.inconclusive);
+    assert(closure_full.pair_resolution_depths == direct.pair_resolution_depths);
 
     mathlib::reflection::Trace trace("coincidence_closure_prefix_reflection");
     {
@@ -62,14 +66,24 @@ int main() {
         assert(stage_strong_coincidence_prefix_closure<d>(
                    images, 20, 1'000'000, "sigma_0_1 prefix closure") ==
                StrongCoincidencePrefixClosureStageResult::staged);
+        assert(stage_strong_coincidence_closure<d>(
+                   images, 20, 1'000'000, "sigma_0_1 full closure") ==
+               StrongCoincidenceClosureStageResult::staged);
     }
     const auto staged = trace.find<
         mathlib::reflection::StrongCoincidencePrefixClosureCertificate>();
     assert(staged.size() == 1);
     assert(staged.front().second->pair_resolution_depths ==
            prefix.pair_resolution_depths);
+    const auto full_staged = trace.find<
+        mathlib::reflection::StrongCoincidenceClosureCertificate>();
+    assert(full_staged.size() == 1);
+    assert(full_staged.front().second->pair_resolution_depths ==
+           direct.pair_resolution_depths);
     const std::string rendered = render_reflective_lean_module(trace);
     assert(rendered.find("strong_coincidence_prefix_closure_0_summary") !=
+           std::string::npos);
+    assert(rendered.find("strong_coincidence_closure_0_summary") !=
            std::string::npos);
     if (const char* path = std::getenv("RAVEL_PREFIX_CLOSURE_LEAN_OUT")) {
         std::ofstream out(path);
@@ -85,6 +99,9 @@ int main() {
         disjoint, disjoint_matrix, 8, 1000);
     assert(!bounded.holds && bounded.inconclusive);
     assert(bounded.pair_resolution_depths == std::vector<long long>{-1});
+    const auto disjoint_full = check_strong_coincidence_closure<2>(
+        disjoint, disjoint_matrix, 8, 1000);
+    assert(!disjoint_full.holds && disjoint_full.inconclusive);
 
     bool overflow_rejected = false;
     try {

@@ -159,6 +159,14 @@ rejects invalid shapes, inconclusive cutoffs, and arithmetic overflow, and
 records the exact pair profile only after closure succeeds. Its generated
 finite Lean summary kernel-checks independently; it is explicitly a prefix
 certificate and does not get promoted to a full strong-coincidence claim.
+
+The same closure is now paired with the reversed substitution, using
+`rev(σ^k(b)) = rev(σ)^k(b)` to turn its prefix outcomes into suffix outcomes.
+`check_strong_coincidence_closure` merges the two exact per-pair profiles and
+therefore gives a finite full strong-coincidence verdict for the
+deterministic-chain class. Its typed reflection certificate and generated
+Lean summary are separate from the prefix certificate; a cutoff in both
+halves remains inconclusive.
 The staging operation now reconstructs every exported source/target/digit
 triple in the supplied `QBetaRing` and rejects any edge whose exact identity
 `gamma' = beta⁻¹ (gamma + delta)` fails. Fibonacci includes a tampering

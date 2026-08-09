@@ -45,6 +45,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <array>
 #include <cstddef>
 #include <map>
@@ -239,6 +240,27 @@ struct PrefixClosureCoincidenceResult {
     std::vector<long long> pair_resolution_depths;
 };
 
+// Full finite strong-coincidence result obtained by running the exact
+// closure on both sigma and its letterwise-reversed substitution.  A prefix
+// coincidence for rev(sigma) is a suffix coincidence for sigma, because
+// rev(sigma^k(b)) = rev(sigma)^k(b).  Thus this combines both halves without
+// materializing either exponentially growing word family.
+struct ClosureStrongCoincidenceResult {
+    bool holds = false;
+    bool inconclusive = false;
+    long long depth_reached = 0;
+    long long unresolved_pairs = 0;
+    std::vector<long long> pair_resolution_depths;
+};
+
+template <std::size_t d>
+inline std::array<std::vector<long long>, d> reverse_substitution_images(
+    const std::array<std::vector<long long>, d>& images) {
+    auto reversed = images;
+    for (auto& image : reversed) std::reverse(image.begin(), image.end());
+    return reversed;
+}
+
 template <std::size_t d>
 inline PrefixClosureCoincidenceResult check_prefix_coincidence_closure(
     const std::array<std::vector<long long>, d>& images,
@@ -330,6 +352,33 @@ inline PrefixClosureCoincidenceResult check_prefix_coincidence_closure(
     }
     result.inconclusive = true;
     result.unresolved_pairs = static_cast<long long>(active.size());
+    return result;
+}
+
+template <std::size_t d>
+inline ClosureStrongCoincidenceResult check_strong_coincidence_closure(
+    const std::array<std::vector<long long>, d>& images,
+    const std::array<std::array<long long, d>, d>& matrix,
+    long long max_depth = 20,
+    std::size_t outcome_budget = 1'000'000) {
+    const auto prefix = check_prefix_coincidence_closure<d>(
+        images, matrix, max_depth, outcome_budget);
+    const auto suffix = check_prefix_coincidence_closure<d>(
+        reverse_substitution_images<d>(images), matrix, max_depth, outcome_budget);
+    ClosureStrongCoincidenceResult result;
+    result.pair_resolution_depths.resize(prefix.pair_resolution_depths.size(), -1);
+    for (std::size_t i = 0; i < result.pair_resolution_depths.size(); ++i) {
+        const long long p = prefix.pair_resolution_depths[i];
+        const long long s = suffix.pair_resolution_depths[i];
+        if (p > 0 && s > 0) result.pair_resolution_depths[i] = std::min(p, s);
+        else if (p > 0) result.pair_resolution_depths[i] = p;
+        else if (s > 0) result.pair_resolution_depths[i] = s;
+    }
+    result.depth_reached = std::max(prefix.depth_reached, suffix.depth_reached);
+    for (long long depth : result.pair_resolution_depths)
+        if (depth < 0) ++result.unresolved_pairs;
+    result.holds = result.unresolved_pairs == 0;
+    result.inconclusive = !result.holds;
     return result;
 }
 
