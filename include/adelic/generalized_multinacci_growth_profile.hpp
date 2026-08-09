@@ -25,6 +25,7 @@ struct GeneralizedMultinacciGrowthProfile {
     double beta = 0.0;
     double secondary_modulus = 0.0;
     double inverse_secondary_gap = 0.0;
+    double secondary_carry_radius = 0.0;
 };
 
 inline GeneralizedMultinacciGrowthProfile
@@ -49,6 +50,7 @@ derive_generalized_multinacci_growth_profile(std::size_t dimension,
         }
         secondary = std::max(secondary, std::abs(root));
     }
+    const double gap_factor = 1.0 / (1.0 - secondary);
     return GeneralizedMultinacciGrowthProfile{
         dimension,
         multiplicity,
@@ -56,7 +58,8 @@ derive_generalized_multinacci_growth_profile(std::size_t dimension,
         (dimension - 1) * multiplicity + 1,
         ravel::generalized_multinacci_beta(dimension, multiplicity),
         secondary,
-        1.0 / (1.0 - secondary),
+        gap_factor,
+        static_cast<double>(multiplicity) * secondary * gap_factor,
     };
 }
 

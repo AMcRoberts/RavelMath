@@ -195,3 +195,8 @@ For the profile-only rows above this is scale evidence, not a Property-F
 closure claim. The factors rise to 13.52 at `(6,3)`, 16.55 at `(7,2)`, and
 18.93 at `(8,1)`, so an unstructured exact BFS would likely exceed the 10 GB
 working envelope; the rank/cardinality proof is the correct next step there.
+The profile also exposes the forward-contraction carry-radius proxy
+`m*rho/(1-rho)`: it is the radius outside which multiplication by `beta` in
+the secondary embeddings dominates one carried digit. This separates the
+contraction threshold from the subsequent count of admissible coefficient
+vectors.
