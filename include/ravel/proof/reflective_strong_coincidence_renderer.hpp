@@ -52,6 +52,38 @@ inline std::string render_strong_coincidence_run_instances(
     return out.str();
 }
 
+inline std::string render_strong_coincidence_prefix_closure_instances(
+    const mathlib::reflection::Trace& trace) {
+    std::ostringstream out;
+    long long counter = 0;
+    for (const auto& [id, node] :
+         trace.find<mathlib::reflection::StrongCoincidencePrefixClosureCertificate>()) {
+        (void)id;
+        const std::string stem = "strong_coincidence_prefix_closure_" +
+                                 std::to_string(counter++);
+        out << "/-- Concrete finite prefix-closure run; suffix resolution is not claimed. -/\n";
+        out << "def " << stem << "_resolution_depths : List Int := [";
+        for (std::size_t i = 0; i < node->pair_resolution_depths.size(); ++i) {
+            if (i) out << ", ";
+            out << node->pair_resolution_depths[i];
+        }
+        out << "]\n";
+        out << "def " << stem << "_matrix : List Int := [";
+        for (std::size_t i = 0; i < node->matrix.size(); ++i) {
+            if (i) out << ", ";
+            out << node->matrix[i];
+        }
+        out << "]\n";
+        out << "theorem " << stem << "_summary :\n"
+            << "    " << stem << "_resolution_depths.length = "
+            << node->pair_resolution_depths.size() << " ∧\n"
+            << "    " << stem << "_matrix.length = " << node->matrix.size() << " ∧\n"
+            << "    " << node->depth_reached << " ≤ " << node->max_depth << " ∧\n"
+            << "    " << (node->holds ? "True" : "False") << " := by decide\n\n";
+    }
+    return out.str();
+}
+
 inline std::string render_strong_coincidence_pair_witness_instances(
     const mathlib::reflection::Trace& trace) {
     std::ostringstream out;

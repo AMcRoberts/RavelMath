@@ -2,10 +2,13 @@
 
 #include <array>
 #include <cstddef>
+#include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "adelic/coincidence_and_property_f.hpp"
+#include "ravel/proof/coincidence_closure.hpp"
 #include "ravel/proof/strong_coincidence_pair_witness.hpp"
 #include "math/proof_reflection.hpp"
 
@@ -17,6 +20,61 @@ enum class StrongCoincidenceStageResult {
     inconclusive,
     failed,
 };
+
+enum class StrongCoincidencePrefixClosureStageResult {
+    staged,
+    reflection_disabled,
+    inconclusive,
+    unsupported,
+};
+
+// Stage a closed prefix-half landmark closure.  This is an independent
+// finite route: it never emits a full strong-coincidence claim, and refuses
+// to serialize a cutoff or an unsupported deterministic-chain shape.
+template <std::size_t d>
+inline StrongCoincidencePrefixClosureStageResult stage_strong_coincidence_prefix_closure(
+    const std::array<std::vector<long long>, d>& images,
+    long long max_depth = 20,
+    std::size_t outcome_budget = 1'000'000,
+    std::string description = {}) {
+    std::array<std::array<long long, d>, d> matrix{};
+    for (std::size_t column = 0; column < d; ++column)
+        for (long long letter : images[column]) {
+            if (letter < 0 || static_cast<std::size_t>(letter) >= d)
+                return StrongCoincidencePrefixClosureStageResult::unsupported;
+            ++matrix[static_cast<std::size_t>(letter)][column];
+        }
+    PrefixClosureCoincidenceResult result;
+    try {
+        result = check_prefix_coincidence_closure<d>(images, matrix, max_depth,
+                                                     outcome_budget);
+    } catch (const std::invalid_argument&) {
+        return StrongCoincidencePrefixClosureStageResult::unsupported;
+    } catch (const std::overflow_error&) {
+        return StrongCoincidencePrefixClosureStageResult::inconclusive;
+    }
+    if (!result.holds || result.inconclusive)
+        return StrongCoincidencePrefixClosureStageResult::inconclusive;
+    if (!mathlib::reflection::enabled())
+        return StrongCoincidencePrefixClosureStageResult::reflection_disabled;
+
+    mathlib::reflection::StrongCoincidencePrefixClosureCertificate node;
+    node.images.assign(images.begin(), images.end());
+    node.pair_resolution_depths = result.pair_resolution_depths;
+    node.depth_reached = result.depth_reached;
+    node.max_depth = max_depth;
+    node.outcome_budget = static_cast<long long>(outcome_budget);
+    node.unresolved_pairs = result.unresolved_pairs;
+    node.holds = result.holds;
+    node.inconclusive = result.inconclusive;
+    node.description = std::move(description);
+    node.matrix.reserve(d * d);
+    for (const auto& row : matrix)
+        for (long long value : row) node.matrix.push_back(value);
+    mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication,
+                                std::move(node));
+    return StrongCoincidencePrefixClosureStageResult::staged;
+}
 
 // Runs the actual checker and records its bounded result.  No theorem claim
 // is emitted here: the payload preserves the concrete substitution and the

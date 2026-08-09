@@ -152,6 +152,13 @@ inconclusive. Matrix powers, landmark additions, and products now use checked
 integer arithmetic and reject overflow. This is a prefix-half classifier,
 not yet the full suffix-inclusive theorem, but it removes exponential word
 materialization from the next strong-coincidence search path.
+
+The prefix closure now also has a typed reflection certificate and renderer.
+The staging operation derives the incidence matrix from the supplied images,
+rejects invalid shapes, inconclusive cutoffs, and arithmetic overflow, and
+records the exact pair profile only after closure succeeds. Its generated
+finite Lean summary kernel-checks independently; it is explicitly a prefix
+certificate and does not get promoted to a full strong-coincidence claim.
 The staging operation now reconstructs every exported source/target/digit
 triple in the supplied `QBetaRing` and rejects any edge whose exact identity
 `gamma' = beta⁻¹ (gamma + delta)` fails. Fibonacci includes a tampering

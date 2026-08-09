@@ -4,13 +4,18 @@
 
 #include <array>
 #include <cassert>
+#include <cstdlib>
+#include <fstream>
 #include <iostream>
 #include <limits>
 #include <stdexcept>
+#include <string>
 #include <vector>
 
 #include "adelic/coincidence_and_property_f.hpp"
 #include "ravel/proof/coincidence_closure.hpp"
+#include "ravel/proof/reflective_lean_renderer.hpp"
+#include "ravel/proof/strong_coincidence_certificate.hpp"
 
 using namespace ravel::proof;
 
@@ -49,6 +54,26 @@ int main() {
         // The full checker may resolve earlier through a suffix witness, but
         // never later than the prefix-only closure if both profiles are valid.
         assert(prefix.pair_resolution_depths[i] >= direct.pair_resolution_depths[i]);
+    }
+
+    mathlib::reflection::Trace trace("coincidence_closure_prefix_reflection");
+    {
+        mathlib::reflection::ScopedTrace scope(&trace);
+        assert(stage_strong_coincidence_prefix_closure<d>(
+                   images, 20, 1'000'000, "sigma_0_1 prefix closure") ==
+               StrongCoincidencePrefixClosureStageResult::staged);
+    }
+    const auto staged = trace.find<
+        mathlib::reflection::StrongCoincidencePrefixClosureCertificate>();
+    assert(staged.size() == 1);
+    assert(staged.front().second->pair_resolution_depths ==
+           prefix.pair_resolution_depths);
+    const std::string rendered = render_reflective_lean_module(trace);
+    assert(rendered.find("strong_coincidence_prefix_closure_0_summary") !=
+           std::string::npos);
+    if (const char* path = std::getenv("RAVEL_PREFIX_CLOSURE_LEAN_OUT")) {
+        std::ofstream out(path);
+        out << rendered;
     }
 
     // The closure remains honest at a finite cutoff: a pair with disjoint

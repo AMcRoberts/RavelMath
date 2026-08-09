@@ -4767,6 +4767,7 @@ inline std::string render_reflective_lean_module(const mathlib::reflection::Trac
     out << render_property_f_graph_instances(trace);
     out << render_property_f_violation_instances(trace);
     out << render_strong_coincidence_run_instances(trace);
+    out << render_strong_coincidence_prefix_closure_instances(trace);
     out << render_strong_coincidence_pair_witness_instances(trace);
     out << render_class_ii_six_vertex_graduation_instances(trace);
     out << render_class_ii_terminal_sextet_instances(trace);

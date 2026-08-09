@@ -335,6 +335,23 @@ struct StrongCoincidenceRunCertificate {
     std::string description;
 };
 
+// A bounded prefix-half coincidence closure run.  This is distinct from the
+// materialized-word run above: it records the exact finite closure inputs and
+// outcome profile, while remaining explicit that unresolved pairs may still
+// have a suffix coincidence.
+struct StrongCoincidencePrefixClosureCertificate {
+    std::vector<std::vector<long long>> images;
+    std::vector<long long> matrix;
+    std::vector<long long> pair_resolution_depths;
+    long long depth_reached = 0;
+    long long max_depth = 0;
+    long long outcome_budget = 0;
+    long long unresolved_pairs = 0;
+    bool holds = false;
+    bool inconclusive = false;
+    std::string description;
+};
+
 struct StrongCoincidencePairWitnessCertificate {
     long long first_letter = 0;
     long long second_letter = 0;
@@ -997,6 +1014,7 @@ using Payload = std::variant<MatrixFamily, MatrixInstance, EraseIndexMap,
                              DeterminantIdentity, LemmaApplication, IntegerEigenvectorNoWitness,
                              PeriodRotationCertificate, ConstantFirstLetterCertificate,
                              ConstantLastLetterCertificate, StrongCoincidenceRunCertificate,
+                             StrongCoincidencePrefixClosureCertificate,
                              StrongCoincidencePairWitnessCertificate,
                              ZeroRunSameChainCertificate,
                              FirstLetterOrbitCertificate, LastLetterOrbitCertificate,
@@ -1310,6 +1328,7 @@ inline std::string payload_name(const Payload& payload) {
         else if constexpr (std::is_same_v<T, ConstantFirstLetterCertificate>) return "lean.constant_first_letter_certificate";
         else if constexpr (std::is_same_v<T, ConstantLastLetterCertificate>) return "lean.constant_last_letter_certificate";
         else if constexpr (std::is_same_v<T, StrongCoincidenceRunCertificate>) return "lean.strong_coincidence_run_certificate";
+        else if constexpr (std::is_same_v<T, StrongCoincidencePrefixClosureCertificate>) return "lean.strong_coincidence_prefix_closure_certificate";
         else if constexpr (std::is_same_v<T, StrongCoincidencePairWitnessCertificate>) return "lean.strong_coincidence_pair_witness_certificate";
         else if constexpr (std::is_same_v<T, ZeroRunSameChainCertificate>) return "lean.zero_run_same_chain_certificate";
         else if constexpr (std::is_same_v<T, FirstLetterOrbitCertificate>) return "lean.first_letter_orbit_certificate";
@@ -1449,6 +1468,12 @@ inline std::string payload_detail(const Payload& payload) {
         } else if constexpr (std::is_same_v<T, StrongCoincidenceRunCertificate>) {
             out << value.description << " -- depth=" << value.depth_reached
                 << " unresolved=" << value.unresolved_pairs
+                << " holds=" << (value.holds ? "true" : "false")
+                << " inconclusive=" << (value.inconclusive ? "true" : "false");
+        } else if constexpr (std::is_same_v<T, StrongCoincidencePrefixClosureCertificate>) {
+            out << value.description << " -- prefix-closure depth=" << value.depth_reached
+                << " unresolved=" << value.unresolved_pairs
+                << " outcomes=" << value.outcome_budget
                 << " holds=" << (value.holds ? "true" : "false")
                 << " inconclusive=" << (value.inconclusive ? "true" : "false");
         } else if constexpr (std::is_same_v<T, StrongCoincidencePairWitnessCertificate>) {
