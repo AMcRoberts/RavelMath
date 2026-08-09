@@ -536,9 +536,10 @@ struct NewtonSegment {
 
 // Independent first-order shape check.  Dedekind's (e,f) pairs are
 // certifiable only when Z[beta] is p-maximal; the Newton polygon still gives
-// an independent local-slope diagnostic.  A mismatch is an explicit signal
-// that a higher-order/Montes lift is needed before local-field data can be
-// promoted to a theorem.
+// an independent local-slope diagnostic.  A mismatch means the first-order
+// slopes do not yet identify the prime factors: residual-polynomial
+// factorization and, when necessary, higher-order/Montes data are required
+// before local-field data can be promoted to a theorem.
 struct PAdicShapeDiagnostic {
     long long p = 0;
     bool dedekind_order_maximal = false;
@@ -599,10 +600,10 @@ inline std::vector<NewtonSegment> newton_polygon(const ZpPoly& f) {
 }
 
 // Compare the Newton-polygon segment shapes with the factorization reported
-// by Dedekind's criterion.  This deliberately does not reinterpret a
-// non-maximal order: it returns the discrepancy so callers can route the
-// case to a higher-order lift rather than silently treating an index defect
-// as a prime-ideal factorization.
+// by Dedekind's criterion.  This deliberately does not reinterpret either
+// shape: it returns the discrepancy so callers can route the case to residual
+// factorization or higher-order lifting rather than silently treating a
+// first-order slope decomposition as a prime-ideal factorization.
 inline PAdicShapeDiagnostic compare_first_order_padic_shapes(
     const mathlib::PolyZ& charpoly, long long p, long long precision = 30) {
     if (p < 2) throw std::invalid_argument("compare_first_order_padic_shapes: p must be >= 2");
