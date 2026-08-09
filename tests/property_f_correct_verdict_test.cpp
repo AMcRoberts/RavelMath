@@ -42,6 +42,10 @@ int main() {
         std::cout << "Fibonacci: holds=" << propf.holds << " nodes=" << propf.nodes_explored << "\n";
         assert(propf.holds);
         assert(propf.nodes_explored == 8);
+        assert(propf.zero_nodes == 2);
+        assert(propf.nonzero_nodes == 6);
+        assert(propf.strongly_connected_components == 8);
+        assert(propf.nonzero_cycle_components == 0);
     }
 
     // rnd13: the project's largest closure. Must still HOLD, at
@@ -65,6 +69,9 @@ int main() {
         std::cout << "rnd13: holds=" << propf.holds << " nodes=" << propf.nodes_explored << "\n";
         assert(propf.holds);
         assert(propf.nodes_explored == 33185);
+        assert(propf.zero_nodes == 4);
+        assert(propf.nonzero_nodes == 33181);
+        assert(propf.nonzero_cycle_components == 0);
     }
 
     // x^2-2x-2: simplest known non-unit Pisot substitution. Must HOLD

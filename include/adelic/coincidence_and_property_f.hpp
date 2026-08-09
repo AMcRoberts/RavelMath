@@ -318,9 +318,16 @@ StrongCoincidenceResult check_strong_coincidence(
 // ===================================================================
 
 struct PropertyFResult {
-    bool holds;             // true iff no nontrivial cycle touches a zero-translation node
-    bool inconclusive;      // true iff the node budget was exhausted before the closure finished
-    long long nodes_explored;
+    bool holds = false;             // true iff the closed graph has no cycle containing a nonzero node
+    bool inconclusive = false;      // true iff the node budget was exhausted before the closure finished
+    long long nodes_explored = 0;
+    // Concrete finite-run evidence retained for later reflection.  These
+    // fields describe the graph actually constructed by this invocation;
+    // they are not claims about the infinite translation set Gamma.
+    long long zero_nodes = 0;
+    long long nonzero_nodes = 0;
+    long long strongly_connected_components = 0;
+    long long nonzero_cycle_components = 0;
 };
 
 // Canonical string key for a QElem (its Rat coefficients are always
@@ -987,7 +994,13 @@ PropertyFResult check_property_f(
 
     if (budget_exceeded) {
         if (out_zero_nodes_beyond_frontier) *out_zero_nodes_beyond_frontier = zero_nodes_beyond_frontier;
-        return {false, true, static_cast<long long>(node_gamma.size())};
+        PropertyFResult out;
+        out.holds = false;
+        out.inconclusive = true;
+        out.nodes_explored = static_cast<long long>(node_gamma.size());
+        out.zero_nodes = static_cast<long long>(std::count(is_zero_node.begin(), is_zero_node.end(), true));
+        out.nonzero_nodes = out.nodes_explored - out.zero_nodes;
+        return out;
     }
 
     // Tarjan's SCC algorithm over the (now-closed, finite) graph.
@@ -1120,16 +1133,26 @@ PropertyFResult check_property_f(
     // run, not a name match -- not yet built. Do not re-add a citation
     // here without that real data.
 
+    long long nonzero_cycle_components = 0;
+    bool has_nonzero_cycle = false;
     for (long long s = 0; s < scc_count; ++s) {
         bool is_cycle = scc_size[static_cast<std::size_t>(s)] > 1 || scc_has_self_loop[static_cast<std::size_t>(s)];
         if (!is_cycle) continue;
         if (scc_has_nonzero[static_cast<std::size_t>(s)]) {
-            if (out_zero_nodes_beyond_frontier) *out_zero_nodes_beyond_frontier = zero_nodes_beyond_frontier;
-            return {false, false, n};  // genuine violation: a cycle that is not entirely zero-nodes
+            ++nonzero_cycle_components;
+            has_nonzero_cycle = true;
         }
     }
     if (out_zero_nodes_beyond_frontier) *out_zero_nodes_beyond_frontier = zero_nodes_beyond_frontier;
-    return {true, false, n};
+    PropertyFResult out;
+    out.holds = !has_nonzero_cycle;
+    out.inconclusive = false;
+    out.nodes_explored = n;
+    out.zero_nodes = static_cast<long long>(std::count(is_zero_node.begin(), is_zero_node.end(), true));
+    out.nonzero_nodes = n - out.zero_nodes;
+    out.strongly_connected_components = scc_count;
+    out.nonzero_cycle_components = nonzero_cycle_components;
+    return out;
 }
 
 }  // namespace adelic

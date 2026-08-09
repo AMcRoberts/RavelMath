@@ -29,16 +29,16 @@ engineering thread:
 `docs/PROPERTY_F_UNCONDITIONAL_KERNEL_CHECKED_2026-08-06.md` and
 `docs/DIRECTION_AND_OPEN_THREADS.md` before trusting this as current)
 
-- **Geometric property (F) is now unconditionally established**, not
-  case-checked: `RavelGenerated.zeroWalk_eq_zero_iff`
+- The earlier “property (F) is now unconditionally established”
+  headline is withdrawn. `RavelGenerated.zeroWalk_eq_zero_iff`
   (`lean/generated/property_f_zero_walk.lean`, kernel-checked, zero
-  `sorry`) proves the real-analysis core showing
-  `adelic::check_property_f`'s `DOES_NOT_TILE_PROPERTY_F` path is
-  unreachable for any Pisot substitution, given the standing
-  Minervino–Thuswaldner model correspondence this project has relied
-  on throughout. This means: **property (F) can never be the
-  obstruction** to the Pisot conjecture in this framework anymore —
-  the entire open question reduces to strong coincidence.
+  `sorry`) proves the real-analysis lemma that a nonnegative walk from
+  zero cannot return to zero after a nonempty prefix. It is the
+  load-bearing lemma that rules out mixed zero/nonzero SCCs; it does
+  **not** rule out cycles consisting entirely of nonzero nodes, which
+  are the paper's actual obstruction (Lemma 9.8). The corrected
+  `adelic::check_property_f` therefore remains a meaningful finite
+  check, conditional on its certified closure and bounds.
 - The 13 confirmed unimodular `ρ_nc ≠ λ(G_B)` mismatches (σ₁, σ₂, +11
   random) all separately satisfy the classical Pisot conjecture
   (strong coincidence holds, property (F) holds) — that discrepancy is
@@ -107,4 +107,9 @@ risks producing more of the exact citation-pattern debt that was just
 caught and removed once already (property F's `zeroWalk` connection).
 Finish the retrofit's emitter patterns first; resume this thread with
 those patterns already load-bearing rather than retrofitting again
-later.
+later. The first post-retrofit property-(F) task is now concrete:
+retain and reflect the per-run finite graph evidence (node classes,
+SCC count, and nonzero-cycle count) instead of citing the zero-walk
+lemma by name. `PropertyFResult` now exposes those counters, and the
+historical Fibonacci/rnd13/x²−2x−2 regression covers them. This is
+evidence for a particular closed run, not an unconditional theorem.
