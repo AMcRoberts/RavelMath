@@ -3,6 +3,9 @@
 #include <array>
 #include <algorithm>
 #include <cstddef>
+#include <optional>
+#include <limits>
+#include <stdexcept>
 #include <set>
 #include <vector>
 
@@ -101,6 +104,85 @@ struct WeightedLandmarkContribution {
 };
 
 using WeightedLandmarkTrace = std::vector<WeightedLandmarkContribution>;
+
+template <std::size_t d>
+using LandmarkVector = std::array<long long, d>;
+
+inline long long checked_landmark_add(long long a, long long b) {
+    long long value = 0;
+    if (__builtin_add_overflow(a, b, &value))
+        throw std::overflow_error("weighted landmark sum overflow");
+    return value;
+}
+
+inline long long checked_landmark_mul(long long a, long long b) {
+    long long value = 0;
+    if (__builtin_mul_overflow(a, b, &value))
+        throw std::overflow_error("weighted landmark matrix product overflow");
+    return value;
+}
+
+template <std::size_t d>
+inline LandmarkVector<d> weighted_landmark_sum(
+    const WeightedLandmarkTrace& trace,
+    const std::array<std::array<long long, d>, d>& matrix) {
+    LandmarkVector<d> total{};
+    for (const auto& contribution : trace) {
+        LandmarkVector<d> value{};
+        for (std::size_t i = 0; i < d && i < contribution.sibling_prefix.size(); ++i)
+            value[i] = contribution.sibling_prefix[i];
+        for (long long power = 0; power < contribution.matrix_power; ++power) {
+            LandmarkVector<d> next{};
+            for (std::size_t row = 0; row < d; ++row)
+                for (std::size_t column = 0; column < d; ++column)
+                    next[row] = checked_landmark_add(
+                        next[row], checked_landmark_mul(matrix[row][column], value[column]));
+            value = next;
+        }
+        for (std::size_t i = 0; i < d; ++i)
+            total[i] = checked_landmark_add(total[i], value[i]);
+    }
+    return total;
+}
+
+template <std::size_t d>
+struct WeightedLandmarkCollision {
+    WeightedLandmarkTrace first;
+    WeightedLandmarkTrace second;
+    LandmarkVector<d> value{};
+};
+
+template <std::size_t d>
+inline std::optional<WeightedLandmarkCollision<d>> find_weighted_landmark_collision(
+    const std::set<WeightedLandmarkTrace>& first_traces,
+    const std::set<WeightedLandmarkTrace>& second_traces,
+    const std::array<std::array<long long, d>, d>& matrix) {
+    for (const auto& first : first_traces) {
+        const auto first_value = weighted_landmark_sum<d>(first, matrix);
+        for (const auto& second : second_traces) {
+            if (first_value == weighted_landmark_sum<d>(second, matrix))
+                return WeightedLandmarkCollision<d>{first, second, first_value};
+        }
+    }
+    return std::nullopt;
+}
+
+template <std::size_t d>
+inline std::optional<WeightedLandmarkCollision<d>> find_nontrivial_weighted_landmark_collision(
+    const std::set<WeightedLandmarkTrace>& first_traces,
+    const std::set<WeightedLandmarkTrace>& second_traces,
+    const std::array<std::array<long long, d>, d>& matrix) {
+    for (const auto& first : first_traces) {
+        const auto first_value = weighted_landmark_sum<d>(first, matrix);
+        for (const auto& second : second_traces) {
+            if (first == second) continue;
+            const auto second_value = weighted_landmark_sum<d>(second, matrix);
+            if (first_value == second_value)
+                return WeightedLandmarkCollision<d>{first, second, first_value};
+        }
+    }
+    return std::nullopt;
+}
 
 inline void enumerate_branching_traces(
     long long depth, long long state, const BranchingSkeleton& skeleton,

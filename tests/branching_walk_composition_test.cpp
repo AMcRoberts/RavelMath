@@ -1,6 +1,8 @@
 #include <array>
 #include <cassert>
 #include <iostream>
+#include <limits>
+#include <stdexcept>
 #include <set>
 #include <vector>
 
@@ -44,5 +46,37 @@ int main() {
             }
         }
     }
+    const std::array<std::array<long long, 4>, 4> matrix = {{
+        {{0, 1, 1, 1}},
+        {{1, 0, 0, 0}},
+        {{1, 0, 0, 0}},
+        {{0, 1, 0, 0}}}};
+    const auto traces0 = enumerate_weighted_landmark_traces_from_letter(0, 6, images, skeleton);
+    const auto traces1 = enumerate_weighted_landmark_traces_from_letter(1, 6, images, skeleton);
+    const auto collision = find_weighted_landmark_collision<4>(traces0, traces1, matrix);
+    assert(collision.has_value());
+    std::cout << "weighted landmark collision value=" << collision->value[0] << ","
+              << collision->value[1] << "," << collision->value[2] << ","
+              << collision->value[3] << "\n";
+    WeightedLandmarkTrace synthetic_a{{3, 1, 0, 1, {1, 0, 0, 0}}};
+    WeightedLandmarkTrace synthetic_b{{3, 1, 0, 2, {0, 1, 0, 0}}};
+    std::set<WeightedLandmarkTrace> synthetic_left{synthetic_a};
+    std::set<WeightedLandmarkTrace> synthetic_right{synthetic_b};
+    const std::array<std::array<long long, 4>, 4> collision_matrix = {{
+        {{1, 1, 0, 0}}, {{0, 0, 0, 0}}, {{0, 0, 0, 0}}, {{0, 0, 0, 0}}}};
+    const auto nontrivial = find_nontrivial_weighted_landmark_collision<4>(
+        synthetic_left, synthetic_right, collision_matrix);
+    assert(nontrivial.has_value());
+    bool overflow_rejected = false;
+    try {
+        const WeightedLandmarkTrace overflowing{{2, 1, 0, 1,
+            {std::numeric_limits<long long>::max(), 0, 0, 0}}};
+        auto overflow_matrix = collision_matrix;
+        overflow_matrix[0][0] = 2;
+        (void)weighted_landmark_sum<4>(overflowing, overflow_matrix);
+    } catch (const std::overflow_error&) {
+        overflow_rejected = true;
+    }
+    assert(overflow_rejected);
     std::cout << "branching_walk_composition: multi-junction model matches brute force\n";
 }
