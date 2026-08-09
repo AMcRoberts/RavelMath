@@ -304,3 +304,9 @@ Each path now also exports the exact per-edge weighted landmark vectors that
 the C++ closure computed. Lean's generated `sc_sumVectors` theorem checks that
 their finite sum is the recorded common landmark vector, giving the first
 kernel-checked recurrence content beyond path shape.
+The next bridge derives those same per-edge vectors in Lean from the serialized
+incidence matrix: a compact row-major matrix/vector arithmetic interpreter
+implements matrix powers and applies the power dictated by each edge's
+remaining depth. A `sc_pathWeights` theorem now checks the entire structural
+path against the recorded weighted vectors, so the certificate no longer needs
+to treat the C++-computed edge weights as primitive data.
