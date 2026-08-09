@@ -689,7 +689,29 @@ ContactBoundaryReport compute_contact_boundary(
         // A_prev as the connector set too.  That happens to reach the
         // same fixed point on the audited Class-II cases, but produces
         // many unnecessary candidates and obscures the layer induction.
-        auto corona_nodes = c_corona<d>(subst, A_prev, pmC);
+        bool corona_projection_capped = false;
+        std::set<SNode<d>> corona_nodes;
+        if (limits.corona_cap == 0) {
+            corona_nodes = c_corona<d>(subst, A_prev, pmC);
+        } else {
+            std::size_t accepted = 0;
+            corona_nodes = c_corona_projected<d>(
+                subst, A_prev, pmC,
+                [&](const SNode<d>&) {
+                    if (accepted >= limits.corona_cap) {
+                        corona_projection_capped = true;
+                        return false;
+                    }
+                    ++accepted;
+                    return true;
+                });
+        }
+        if (corona_projection_capped) {
+            gb = A_prev;
+            corona_capped_hit = true;
+            rep.max_a_size_reached = limits.corona_cap + 1;
+            break;
+        }
         std::vector<std::tuple<SNode<d>, SNode<d>,
                                std::vector<long long>,
                                std::vector<long long>>> edges;

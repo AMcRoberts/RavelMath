@@ -186,7 +186,9 @@ so no contact-boundary theorem is claimed for it yet. The reproducible bounded
 probe now records the first useful layer: with `search_bound=1` and explicit
 caps it reaches `d_cont=84` and a partial 882-node boundary before both the
 closure and corona caps fire; `search_bound=0` gives 28 candidates but no
-boundary.
+boundary. The capped corona path now streams candidates before insertion;
+the same probe completes in about 1.4 seconds with peak RSS about 18 MB,
+instead of materializing the multi-gigabyte uncapped intermediate layer.
 
 This reframes the parallel question: stop searching Pisot numbers below 2
 for a fourth generator via this construction. The two remaining routes are
