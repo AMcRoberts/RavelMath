@@ -200,6 +200,16 @@ void test_nonmaximal_order_is_not_trusted() {
           "non-maximal quartic: shape diagnostic exposes first-order mismatch");
     CHECK(shape.newton_shapes.size() == 2 && shape.dedekind_shapes.size() == 2,
           "non-maximal quartic: shape diagnostic records both decompositions");
+    bool higher_order_boundary = false;
+    try {
+        (void)adelic::ore_padic_factorization(
+            adelic::zp_poly_from_polyz(R.charpoly(), 2, 30), 30);
+    } catch (const std::runtime_error& ex) {
+        higher_order_boundary =
+            std::string(ex.what()).find("higher-order/Montes lift required") != std::string::npos;
+    }
+    CHECK(higher_order_boundary,
+          "non-maximal quartic: Ore path reports explicit higher-order boundary");
 }
 
 // verdict_label() should give a non-empty string for every enum value.

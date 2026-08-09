@@ -1558,13 +1558,20 @@ inline std::vector<OreFactor> ore_padic_factorization(const ZpPoly& f, long long
         long long a = 0;
         FpPoly f_p = reduce_z_to_fp(charpoly, p);
         auto factors = factor_fp(f_p);
+        bool matched_first_order_factor = false;
         for (const auto& fac : factors) {
             if (fac.mult == seg.e && static_cast<long long>(fac.g.c.size()) - 1 == seg.f) {
+                matched_first_order_factor = true;
                 if (seg.f == 1) {
                     a = ((-fac.g.c[0]) % p + p) % p;
                 }
                 break;
             }
+        }
+        if (!matched_first_order_factor) {
+            throw std::runtime_error(
+                "ore_padic_factorization: Newton segment has no matching "
+                "first-order Dedekind factor; higher-order/Montes lift required");
         }
         of.a = a;
         // Use ORE'S ALGORITHM (not the cofactor approach).  The

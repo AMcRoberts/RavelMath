@@ -430,3 +430,7 @@ representative quartic at p=2 reports Newton `(1,1)+(1,3)` versus Dedekind
 `(1,1)+(3,1)`, while the worked example and `rnd13` pass with matching,
 maximal-order shapes. This is a diagnostic boundary for the eventual
 higher-order/Montes transport, not a substitute for that transport.
+The Ore entry point now enforces the same boundary: if a Newton segment has
+no matching first-order Dedekind factor, it stops with an explicit
+`higher-order/Montes lift required` diagnostic rather than emitting an
+ambiguous local polynomial.
