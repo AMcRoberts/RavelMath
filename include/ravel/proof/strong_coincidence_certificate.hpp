@@ -41,6 +41,12 @@ inline StrongCoincidenceStageResult stage_strong_coincidence_run(
                 max_depth, max_word_len);
             if (!witness) return StrongCoincidenceStageResult::failed;
             node.pair_depths.push_back(witness->depth);
+            if (!stage_strong_coincidence_pair_witness(
+                    images, static_cast<long long>(i), static_cast<long long>(j),
+                    max_depth, max_word_len,
+                    "strong coincidence pair (" + std::to_string(i) + "," +
+                    std::to_string(j) + ")"))
+                return StrongCoincidenceStageResult::failed;
         }
     }
     node.depth_reached = result.depth_reached;

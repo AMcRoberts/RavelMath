@@ -41,8 +41,6 @@ int main() {
         assert(ravel::proof::stage_strong_coincidence_run(images, 20, 5'000'000,
                                                           "Fibonacci strong coincidence" )
                == ravel::proof::StrongCoincidenceStageResult::staged);
-        assert(ravel::proof::stage_strong_coincidence_pair_witness(
-                   images, 0, 1, 20, 5'000'000, "Fibonacci pair (0,1)") );
     }
     {
         auto tampered = graph;
