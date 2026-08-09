@@ -300,3 +300,7 @@ indices, junction continuity, jump-budget consumption, and terminal-chain
 cutoffs. Full certificates serialize a separate reversed-edge table for
 suffix witnesses, so the suffix route is not accidentally checked against the
 original orientation.
+Each path now also exports the exact per-edge weighted landmark vectors that
+the C++ closure computed. Lean's generated `sc_sumVectors` theorem checks that
+their finite sum is the recorded common landmark vector, giving the first
+kernel-checked recurrence content beyond path shape.

@@ -162,7 +162,9 @@ inline StrongCoincidencePrefixClosureStageResult stage_strong_coincidence_prefix
         result.pair_first_junctions.size() != result.pair_resolution_depths.size() ||
         result.pair_second_junctions.size() != result.pair_resolution_depths.size() ||
         result.pair_first_remaining_depths.size() != result.pair_resolution_depths.size() ||
-        result.pair_second_remaining_depths.size() != result.pair_resolution_depths.size())
+        result.pair_second_remaining_depths.size() != result.pair_resolution_depths.size() ||
+        result.pair_first_weighted_vectors.size() != result.pair_resolution_depths.size() ||
+        result.pair_second_weighted_vectors.size() != result.pair_resolution_depths.size())
         return StrongCoincidencePrefixClosureStageResult::witness_rejected;
     const auto pair_index = [](std::size_t i, std::size_t j) {
         return (i * (2 * d - i - 1)) / 2 + (j - i - 1);
@@ -194,6 +196,8 @@ inline StrongCoincidencePrefixClosureStageResult stage_strong_coincidence_prefix
     node.pair_second_junctions = result.pair_second_junctions;
     node.pair_first_remaining_depths = result.pair_first_remaining_depths;
     node.pair_second_remaining_depths = result.pair_second_remaining_depths;
+    node.pair_first_weighted_vectors = result.pair_first_weighted_vectors;
+    node.pair_second_weighted_vectors = result.pair_second_weighted_vectors;
     node.pair_first_positions.resize(result.pair_resolution_depths.size());
     node.pair_second_positions.resize(result.pair_resolution_depths.size());
     for (std::size_t i = 0; i < d; ++i)
@@ -258,7 +262,9 @@ inline StrongCoincidenceClosureStageResult stage_strong_coincidence_closure(
         result.pair_first_junctions.size() != result.pair_resolution_depths.size() ||
         result.pair_second_junctions.size() != result.pair_resolution_depths.size() ||
         result.pair_first_remaining_depths.size() != result.pair_resolution_depths.size() ||
-        result.pair_second_remaining_depths.size() != result.pair_resolution_depths.size())
+        result.pair_second_remaining_depths.size() != result.pair_resolution_depths.size() ||
+        result.pair_first_weighted_vectors.size() != result.pair_resolution_depths.size() ||
+        result.pair_second_weighted_vectors.size() != result.pair_resolution_depths.size())
         return StrongCoincidenceClosureStageResult::witness_rejected;
     const auto pair_index = [](std::size_t i, std::size_t j) {
         return (i * (2 * d - i - 1)) / 2 + (j - i - 1);
@@ -293,6 +299,8 @@ inline StrongCoincidenceClosureStageResult stage_strong_coincidence_closure(
     node.pair_second_junctions = result.pair_second_junctions;
     node.pair_first_remaining_depths = result.pair_first_remaining_depths;
     node.pair_second_remaining_depths = result.pair_second_remaining_depths;
+    node.pair_first_weighted_vectors = result.pair_first_weighted_vectors;
+    node.pair_second_weighted_vectors = result.pair_second_weighted_vectors;
     node.pair_first_positions.resize(result.pair_resolution_depths.size());
     node.pair_second_positions.resize(result.pair_resolution_depths.size());
     for (std::size_t i = 0; i < d; ++i)

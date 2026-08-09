@@ -28,7 +28,14 @@ inline const char* strong_coincidence_path_semantics_lean() {
         "            sc_checkPath edges rest edge.to_junction (remaining - edge.jump_size) terminal\n"
         "          else\n"
         "            rest = [] ∧ remaining > 0 ∧\n"
-        "              edge.chain[(remaining - 1).toNat]? = some terminal\n\n";
+        "              edge.chain[(remaining - 1).toNat]? = some terminal\n\n"
+        "def sc_vecAdd : List Int → List Int → List Int\n"
+        "  | [], ys => ys\n"
+        "  | xs, [] => xs\n"
+        "  | x :: xs, y :: ys => (x + y) :: sc_vecAdd xs ys\n\n"
+        "def sc_sumVectors : List (List Int) → List Int\n"
+        "  | [] => []\n"
+        "  | v :: rest => sc_vecAdd v (sc_sumVectors rest)\n\n";
 }
 
 inline void render_closure_path_lists(
@@ -61,6 +68,54 @@ inline void render_closure_int_list(std::ostringstream& out, const std::string& 
         out << values[i];
     }
     out << "]\n";
+}
+
+inline void render_closure_weighted_vectors(
+    std::ostringstream& out, const std::string& name,
+    const std::vector<std::vector<std::vector<long long>>>& values) {
+    out << "def " << name << " : List (List (List Int)) := [";
+    for (std::size_t i = 0; i < values.size(); ++i) {
+        if (i) out << ", ";
+        out << "[";
+        for (std::size_t j = 0; j < values[i].size(); ++j) {
+            if (j) out << ", ";
+            out << "[";
+            for (std::size_t k = 0; k < values[i][j].size(); ++k) {
+                if (k) out << ", ";
+                out << values[i][j][k];
+            }
+            out << "]";
+        }
+        out << "]";
+    }
+    out << "]\n";
+}
+
+inline void render_closure_weight_checks(
+    std::ostringstream& out, const std::string& stem,
+    const std::vector<std::vector<long long>>& targets,
+    const std::vector<std::vector<std::vector<long long>>>& weighted,
+    const std::vector<std::vector<long long>>& paths) {
+    for (std::size_t i = 0; i < weighted.size(); ++i) {
+        if (i >= targets.size() || i >= paths.size() || paths[i].empty()) continue;
+        out << "theorem " << stem << "_weight_check_" << i << " :\n"
+            << "    sc_sumVectors [";
+        for (std::size_t j = 0; j < weighted[i].size(); ++j) {
+            if (j) out << ", ";
+            out << "[";
+            for (std::size_t k = 0; k < weighted[i][j].size(); ++k) {
+                if (k) out << ", ";
+                out << weighted[i][j][k];
+            }
+            out << "]";
+        }
+        out << "] = [";
+        for (std::size_t k = 0; k < targets[i].size(); ++k) {
+            if (k) out << ", ";
+            out << targets[i][k];
+        }
+        out << "] := by decide\n\n";
+    }
 }
 
 inline void render_closure_path_checks(
@@ -205,6 +260,10 @@ inline std::string render_strong_coincidence_prefix_closure_instances(
         out << "]\n";
         render_closure_path_lists(out, stem, node->pair_first_paths,
                                   node->pair_second_paths);
+        render_closure_weighted_vectors(out, stem + "_first_weighted_vectors",
+                                        node->pair_first_weighted_vectors);
+        render_closure_weighted_vectors(out, stem + "_second_weighted_vectors",
+                                        node->pair_second_weighted_vectors);
         render_closure_int_list(out, stem + "_first_junctions", node->pair_first_junctions);
         render_closure_int_list(out, stem + "_second_junctions", node->pair_second_junctions);
         render_closure_int_list(out, stem + "_first_remaining_depths",
@@ -217,6 +276,12 @@ inline std::string render_strong_coincidence_prefix_closure_instances(
         render_closure_path_checks(out, stem, "second", node->pair_terminal_letters,
                                    node->pair_second_paths, node->pair_second_junctions,
                                    node->pair_second_remaining_depths);
+        render_closure_weight_checks(out, stem + "_first", node->pair_vectors,
+                                     node->pair_first_weighted_vectors,
+                                     node->pair_first_paths);
+        render_closure_weight_checks(out, stem + "_second", node->pair_vectors,
+                                     node->pair_second_weighted_vectors,
+                                     node->pair_second_paths);
         out << "def " << stem << "_first_positions : List Int := [";
         for (std::size_t i = 0; i < node->pair_first_positions.size(); ++i) {
             if (i) out << ", ";
@@ -245,6 +310,10 @@ inline std::string render_strong_coincidence_prefix_closure_instances(
             << "    " << stem << "_vectors.length = " << node->pair_vectors.size() << " ∧\n"
             << "    " << stem << "_first_paths.length = " << node->pair_first_paths.size() << " ∧\n"
             << "    " << stem << "_second_paths.length = " << node->pair_second_paths.size() << " ∧\n"
+            << "    " << stem << "_first_weighted_vectors.length = "
+            << node->pair_first_weighted_vectors.size() << " ∧\n"
+            << "    " << stem << "_second_weighted_vectors.length = "
+            << node->pair_second_weighted_vectors.size() << " ∧\n"
             << "    " << stem << "_first_junctions.length = "
             << node->pair_first_junctions.size() << " ∧\n"
             << "    " << stem << "_second_junctions.length = "
@@ -311,6 +380,10 @@ inline std::string render_strong_coincidence_closure_instances(
         out << "]\n";
         render_closure_path_lists(out, stem, node->pair_first_paths,
                                   node->pair_second_paths);
+        render_closure_weighted_vectors(out, stem + "_first_weighted_vectors",
+                                        node->pair_first_weighted_vectors);
+        render_closure_weighted_vectors(out, stem + "_second_weighted_vectors",
+                                        node->pair_second_weighted_vectors);
         render_closure_int_list(out, stem + "_first_junctions", node->pair_first_junctions);
         render_closure_int_list(out, stem + "_second_junctions", node->pair_second_junctions);
         render_closure_int_list(out, stem + "_first_remaining_depths",
@@ -323,6 +396,12 @@ inline std::string render_strong_coincidence_closure_instances(
         render_closure_path_checks(out, stem, "second", node->pair_terminal_letters,
                                    node->pair_second_paths, node->pair_second_junctions,
                                    node->pair_second_remaining_depths, &node->pair_from_suffix);
+        render_closure_weight_checks(out, stem + "_first", node->pair_vectors,
+                                     node->pair_first_weighted_vectors,
+                                     node->pair_first_paths);
+        render_closure_weight_checks(out, stem + "_second", node->pair_vectors,
+                                     node->pair_second_weighted_vectors,
+                                     node->pair_second_paths);
         out << "def " << stem << "_from_suffix : List Bool := [";
         for (std::size_t i = 0; i < node->pair_from_suffix.size(); ++i) {
             if (i) out << ", ";
@@ -359,6 +438,10 @@ inline std::string render_strong_coincidence_closure_instances(
             << "    " << stem << "_vectors.length = " << node->pair_vectors.size() << " ∧\n"
             << "    " << stem << "_first_paths.length = " << node->pair_first_paths.size() << " ∧\n"
             << "    " << stem << "_second_paths.length = " << node->pair_second_paths.size() << " ∧\n"
+            << "    " << stem << "_first_weighted_vectors.length = "
+            << node->pair_first_weighted_vectors.size() << " ∧\n"
+            << "    " << stem << "_second_weighted_vectors.length = "
+            << node->pair_second_weighted_vectors.size() << " ∧\n"
             << "    " << stem << "_first_junctions.length = "
             << node->pair_first_junctions.size() << " ∧\n"
             << "    " << stem << "_second_junctions.length = "

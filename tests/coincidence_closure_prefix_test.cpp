@@ -85,6 +85,7 @@ int main() {
     assert(staged.front().second->pair_second_paths.size() == 3);
     assert(staged.front().second->pair_first_junctions.size() == 3);
     assert(staged.front().second->pair_second_remaining_depths.size() == 3);
+    assert(staged.front().second->pair_first_weighted_vectors.size() == 3);
     const auto full_staged = trace.find<
         mathlib::reflection::StrongCoincidenceClosureCertificate>();
     assert(full_staged.size() == 1);
@@ -99,6 +100,7 @@ int main() {
     assert(full_staged.front().second->pair_second_paths.size() == 3);
     assert(full_staged.front().second->pair_first_junctions.size() == 3);
     assert(full_staged.front().second->pair_second_remaining_depths.size() == 3);
+    assert(full_staged.front().second->pair_second_weighted_vectors.size() == 3);
     const std::string rendered = render_reflective_lean_module(trace);
     assert(rendered.find("strong_coincidence_prefix_closure_0_summary") !=
            std::string::npos);
@@ -115,6 +117,8 @@ int main() {
     assert(rendered.find("strong_coincidence_closure_0_edges") !=
            std::string::npos);
     assert(rendered.find("strong_coincidence_closure_0_first_path_check") !=
+           std::string::npos);
+    assert(rendered.find("strong_coincidence_closure_0_first_weight_check") !=
            std::string::npos);
     if (const char* path = std::getenv("RAVEL_PREFIX_CLOSURE_LEAN_OUT")) {
         std::ofstream out(path);

@@ -202,6 +202,13 @@ public:
     // witness to a flat word-level occurrence check.
     bool find_path(long long junction, long long remaining_depth, long long terminal,
                    const ExactVec<d>& target, Path& path) {
+        std::vector<ExactVec<d>> ignored_weights;
+        return find_path(junction, remaining_depth, terminal, target, path, ignored_weights);
+    }
+
+    bool find_path(long long junction, long long remaining_depth, long long terminal,
+                   const ExactVec<d>& target, Path& path,
+                   std::vector<ExactVec<d>>& weights) {
         if (!reachable(junction, remaining_depth).count({terminal, target})) return false;
         if (remaining_depth <= 0)
             return terminal == junction && target == ExactVec<d>{};
@@ -214,11 +221,15 @@ public:
                 if (!reachable(edge.to_junction, remaining_depth - edge.jump_size)
                          .count({terminal, residual})) continue;
                 Path suffix;
+                std::vector<ExactVec<d>> suffix_weights;
                 if (find_path(edge.to_junction, remaining_depth - edge.jump_size,
-                              terminal, residual, suffix)) {
+                              terminal, residual, suffix, suffix_weights)) {
                     path.clear();
                     path.push_back(static_cast<long long>(index));
                     path.insert(path.end(), suffix.begin(), suffix.end());
+                    weights.clear();
+                    weights.push_back(weighted);
+                    weights.insert(weights.end(), suffix_weights.begin(), suffix_weights.end());
                     return true;
                 }
             } else {
@@ -226,6 +237,7 @@ public:
                     edge.chain[static_cast<std::size_t>(remaining_depth - 1)];
                 if (terminal_at_cutoff == terminal && weighted == target) {
                     path = {static_cast<long long>(index)};
+                    weights = {weighted};
                     return true;
                 }
             }
@@ -311,6 +323,8 @@ struct PrefixClosureCoincidenceResult {
     std::vector<long long> pair_second_junctions;
     std::vector<long long> pair_first_remaining_depths;
     std::vector<long long> pair_second_remaining_depths;
+    std::vector<std::vector<std::vector<long long>>> pair_first_weighted_vectors;
+    std::vector<std::vector<std::vector<long long>>> pair_second_weighted_vectors;
 };
 
 // Full finite strong-coincidence result obtained by running the exact
@@ -333,6 +347,8 @@ struct ClosureStrongCoincidenceResult {
     std::vector<long long> pair_second_junctions;
     std::vector<long long> pair_first_remaining_depths;
     std::vector<long long> pair_second_remaining_depths;
+    std::vector<std::vector<std::vector<long long>>> pair_first_weighted_vectors;
+    std::vector<std::vector<std::vector<long long>>> pair_second_weighted_vectors;
 };
 
 template <std::size_t d>
@@ -379,6 +395,8 @@ inline PrefixClosureCoincidenceResult check_prefix_coincidence_closure(
     result.pair_second_junctions.assign(pairs.size(), -1);
     result.pair_first_remaining_depths.assign(pairs.size(), 0);
     result.pair_second_remaining_depths.assign(pairs.size(), 0);
+    result.pair_first_weighted_vectors.resize(pairs.size());
+    result.pair_second_weighted_vectors.resize(pairs.size());
     if (pairs.empty()) {
         result.holds = true;
         return result;
@@ -417,7 +435,8 @@ inline PrefixClosureCoincidenceResult check_prefix_coincidence_closure(
 
     auto path_from_start = [&](long long start, long long depth, long long terminal,
                                const ExactVec<d>& target, typename CoincidenceClosure<d>::Path& path,
-                               long long& junction_out, long long& remaining_out) {
+                               long long& junction_out, long long& remaining_out,
+                               std::vector<std::vector<long long>>& weighted_out) {
         long long letter = start;
         long long remaining = depth;
         while (remaining > 0 && images[static_cast<std::size_t>(letter)].size() == 1) {
@@ -429,7 +448,14 @@ inline PrefixClosureCoincidenceResult check_prefix_coincidence_closure(
         if (images[static_cast<std::size_t>(letter)].size() < 2) return false;
         junction_out = letter;
         remaining_out = remaining;
-        return closure.find_path(letter, remaining, terminal, target, path);
+        std::vector<ExactVec<d>> weighted;
+        const bool found = closure.find_path(letter, remaining, terminal, target, path, weighted);
+        if (found) {
+            weighted_out.clear();
+            for (const auto& vector : weighted)
+                weighted_out.emplace_back(vector.begin(), vector.end());
+        }
+        return found;
     };
 
     for (long long depth = 1; depth <= max_depth; ++depth) {
@@ -471,11 +497,13 @@ inline PrefixClosureCoincidenceResult check_prefix_coincidence_closure(
                 if (!path_from_start(active[i].first, depth, witness.first, target,
                                      result.pair_first_paths[active_slots[i]],
                                      result.pair_first_junctions[active_slots[i]],
-                                     result.pair_first_remaining_depths[active_slots[i]]) ||
+                                     result.pair_first_remaining_depths[active_slots[i]],
+                                     result.pair_first_weighted_vectors[active_slots[i]]) ||
                     !path_from_start(active[i].second, depth, witness.first, target,
                                      result.pair_second_paths[active_slots[i]],
                                      result.pair_second_junctions[active_slots[i]],
-                                     result.pair_second_remaining_depths[active_slots[i]]))
+                                     result.pair_second_remaining_depths[active_slots[i]],
+                                     result.pair_second_weighted_vectors[active_slots[i]]))
                     throw std::logic_error(
                         "check_prefix_coincidence_closure: reachable witness has no reconstructed path");
             } else {
@@ -517,6 +545,8 @@ inline ClosureStrongCoincidenceResult check_strong_coincidence_closure(
     result.pair_second_junctions.assign(result.pair_resolution_depths.size(), -1);
     result.pair_first_remaining_depths.assign(result.pair_resolution_depths.size(), 0);
     result.pair_second_remaining_depths.assign(result.pair_resolution_depths.size(), 0);
+    result.pair_first_weighted_vectors.resize(result.pair_resolution_depths.size());
+    result.pair_second_weighted_vectors.resize(result.pair_resolution_depths.size());
     for (std::size_t i = 0; i < result.pair_resolution_depths.size(); ++i) {
         const long long p = prefix.pair_resolution_depths[i];
         const long long s = suffix.pair_resolution_depths[i];
@@ -535,6 +565,8 @@ inline ClosureStrongCoincidenceResult check_strong_coincidence_closure(
             result.pair_second_junctions[i] = source.pair_second_junctions[i];
             result.pair_first_remaining_depths[i] = source.pair_first_remaining_depths[i];
             result.pair_second_remaining_depths[i] = source.pair_second_remaining_depths[i];
+            result.pair_first_weighted_vectors[i] = source.pair_first_weighted_vectors[i];
+            result.pair_second_weighted_vectors[i] = source.pair_second_weighted_vectors[i];
         }
     }
     result.depth_reached = std::max(prefix.depth_reached, suffix.depth_reached);
