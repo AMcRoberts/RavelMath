@@ -90,7 +90,7 @@ void inspect_forest(const std::string& name, std::vector<long long> low_first,
     assert(cycles.proved && cycles.positive_cycle_found && cycles.negative_cycle_found);
     assert(cycles.positive_roles.size() == cycles.positive_defects.size() + 1);
     assert(cycles.negative_roles.size() == cycles.negative_defects.size() + 1);
-    assert(schema.proved && schema.canonical_shape);
+    assert(schema.proved && schema.canonical_shape && schema.digit_driver_prefix_rule);
     assert(transport.proved);
     assert(scheme.proved && scheme.arbitrary_integer_displacement);
     std::cout << name << ": alphabet=" << forest.alphabet_size

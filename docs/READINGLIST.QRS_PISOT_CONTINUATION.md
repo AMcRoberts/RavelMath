@@ -919,3 +919,6 @@ The unit-cycle schema is now explicit for every tested `n >= 3`: the two role
 paths are `0→2→1→0` and `0→2n→n→0`, with defects `0,0,+1` and `0,0,-1`.
 The family proof should derive this shape directly from the canonical parent
 prefixes.
+The exact greedy drivers in the tested sample all begin `1,0,>=1`; the
+schema operation checks this prefix condition independently before accepting
+the canonical role paths.

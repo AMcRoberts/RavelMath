@@ -254,6 +254,7 @@ struct ParentRoleUnitCycleReport {
 
 struct CanonicalUnitCycleSchemaReport {
     bool proved{};
+    bool digit_driver_prefix_rule{};
     bool canonical_shape{};
     std::size_t alphabet_size{};
     std::vector<std::size_t> positive_roles;
@@ -275,6 +276,8 @@ inline CanonicalUnitCycleSchemaReport derive_canonical_unit_cycle_schema(
         out.obstruction = "canonical unit-cycle schema requires alphabet size >= 3";
         return out;
     }
+    out.digit_driver_prefix_rule = catalogue.digits.size() >= 3 &&
+        catalogue.digits[0] == 1 && catalogue.digits[1] == 0 && catalogue.digits[2] > 0;
     const auto role = [&](std::size_t left, std::size_t right) {
         return left * catalogue.alphabet_size + right;
     };
@@ -290,7 +293,7 @@ inline CanonicalUnitCycleSchemaReport derive_canonical_unit_cycle_schema(
         out.canonical_shape &= direct.count({out.positive_roles[k], out.positive_roles[k + 1], positive_defects[k]}) != 0;
     for (std::size_t k = 0; k < negative_defects.size(); ++k)
         out.canonical_shape &= direct.count({out.negative_roles[k], out.negative_roles[k + 1], negative_defects[k]}) != 0;
-    out.proved = out.canonical_shape;
+    out.proved = out.digit_driver_prefix_rule && out.canonical_shape;
     if (!out.proved) out.obstruction = "canonical unit-cycle role schema not realized";
     return out;
 }
