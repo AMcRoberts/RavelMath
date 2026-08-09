@@ -151,7 +151,9 @@ finite summary is accepted by the actual Lean/Mathlib environment. The
 remaining work is to connect richer boundary matrices to a kernel-level
 certificate rather than only their exact finite summary. `make lean-check`
 now regenerates this artifact before checking the enrolled Lean files, so the
-finite summary is not a stale hand-maintained snapshot.
+finite summary is not a stale hand-maintained snapshot. Its characteristic,
+cyclotomic flag, and three pair-sector flags are serialized from the live
+certificate rather than duplicated constants.
 
 ## Parallel question kept in the wings
 
