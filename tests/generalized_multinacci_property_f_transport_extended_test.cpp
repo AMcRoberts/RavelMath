@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "adelic/property_f_transport_certificate.hpp"
+#include "adelic/generalized_multinacci_affine_transport.hpp"
 #include "adelic/prefix_automaton.hpp"
 #include "math/linalg_qbeta.hpp"
 #include "ravel/generalized_multinacci.hpp"
@@ -31,6 +32,8 @@ adelic::PropertyFTransportCertificate run_case(std::size_t m, long long budget) 
     mathlib::QBetaRing ring(ravel::generalized_multinacci_polynomial(d, m));
     const auto eigen = mathlib::left_eigenvector_via_qbeta_reduced_factor(dense, ring);
     const auto automaton = adelic::build_prefix_automaton<d>(images, eigen.v, ring);
+    if (!adelic::verify_generalized_multinacci_affine_transport(automaton, m))
+        throw std::runtime_error("extended affine transport law failed");
     return adelic::derive_property_f_transport_certificate<d>(
         automaton, budget, nullptr, false);
 }

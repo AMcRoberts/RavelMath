@@ -91,6 +91,10 @@ search reaches 500,009 nodes at depth 14 with zero partial nonzero
 back-edges, but remains explicitly inconclusive. This is the first evidence
 that the high-dimensional growth is large-but-harmless transient transport;
 it is not yet a proof of the missing uniform bound.
+The exact digit/transition identity is now checked by
+`generalized_multinacci_affine_transport.hpp`: `delta(0^k)=k*beta` and
+`gamma' = beta^(-1)gamma+k`. This isolates the future rank problem into the
+carry alphabet size `m` and the degree-`d` beta-inverse reduction.
 
 ## Verified engineering boundary
 

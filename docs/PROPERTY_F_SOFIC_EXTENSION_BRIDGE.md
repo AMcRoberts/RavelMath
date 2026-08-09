@@ -122,6 +122,13 @@ contract on a nontrivial rectangle and gives a concrete growth law to attack:
 for fixed `m`, transport size grows with `d`, while for fixed `d=4` it grows
 rapidly but remains finite and cycle-safe.
 
+The exact affine reduction is now a reusable certificate in
+`generalized_multinacci_affine_transport.hpp`: every prefix digit is
+`delta(0^k)=k*beta`, so every Property-F step is
+`gamma' = beta^(-1)*gamma + k`, with `0 <= k <= m`. Thus `m` changes the
+carry alphabet, while `d` changes the reduction relation for `beta^(-1)`;
+this separates the two parameter directions for the eventual rank proof.
+
 An opt-in extended regression pushes beyond that rectangle
 (`generalized_multinacci_property_f_transport_extended_test`). It closes
 `(5,1)`, `(5,2)`, `(5,3)`, and `(6,1)` at 8,307, 67,007, 792,212, and
