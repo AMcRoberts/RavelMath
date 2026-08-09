@@ -327,3 +327,7 @@ The closure metadata is also explicit in the Lean payload now: unresolved-pair
 count, outcome budget, aggregate `holds`, and `inconclusive` status are emitted
 and checked in the finite summary. A bounded positive result therefore cannot
 be mistaken for an unqualified infinite theorem at the artifact boundary.
+The incidence matrix is independently reconstructed from the serialized image
+lists in Lean and compared elementwise with the matrix consumed by the path
+weight recurrence. This closes the remaining input-consistency gap at the
+kernel boundary.

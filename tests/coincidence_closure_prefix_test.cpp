@@ -124,6 +124,8 @@ int main() {
            std::string::npos);
     assert(rendered.find("strong_coincidence_closure_0_inconclusive") !=
            std::string::npos);
+    assert(rendered.find("strong_coincidence_closure_0_matrix_matches_images") !=
+           std::string::npos);
     assert(rendered.find("strong_coincidence_closure_0_first_path_check") !=
            std::string::npos);
     assert(rendered.find("strong_coincidence_closure_0_first_weight_check") !=

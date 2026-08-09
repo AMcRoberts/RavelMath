@@ -97,6 +97,18 @@ inline const char* strong_coincidence_path_semantics_lean() {
         "  | 0 => []\n"
         "  | t + 1 => sc_landmarkAux images source child t ++\n"
         "      [sc_countPrefix (sc_imageAt images source) child t]\n\n"
+        "def sc_incidenceRow (images : List (List Nat)) (dimension row col : Nat) : List Int :=\n"
+        "  match col with\n"
+        "  | 0 => []\n"
+        "  | t + 1 => sc_incidenceRow images dimension row t ++\n"
+        "      [sc_countPrefix (sc_imageAt images t) (sc_imageAt images t).length row]\n\n"
+        "def sc_incidenceAux (images : List (List Nat)) (dimension rowCount : Nat) : List Int :=\n"
+        "  match rowCount with\n"
+        "  | 0 => []\n"
+        "  | t + 1 => sc_incidenceAux images dimension t ++\n"
+        "      sc_incidenceRow images dimension t dimension\n\n"
+        "def sc_incidence (images : List (List Nat)) (dimension : Nat) : List Int :=\n"
+        "  sc_incidenceAux images dimension dimension\n\n"
         "def sc_chainTail (images : List (List Nat)) (letter steps : Nat) : List Nat :=\n"
         "  match steps with\n"
         "  | 0 => []\n"
@@ -385,6 +397,13 @@ inline void render_closure_edge_validity_check(std::ostringstream& out,
         << stem << (suffix ? "_suffix" : "") << "_edges = true := by decide\n\n";
 }
 
+inline void render_closure_matrix_check(std::ostringstream& out, const std::string& stem,
+                                        std::size_t dimension) {
+    out << "theorem " << stem << "_matrix_matches_images :\n"
+        << "    " << stem << "_matrix = sc_incidence " << stem << "_images "
+        << dimension << " := by decide\n\n";
+}
+
 inline std::string render_strong_coincidence_run_instances(
     const mathlib::reflection::Trace& trace) {
     std::ostringstream out;
@@ -521,6 +540,7 @@ inline std::string render_strong_coincidence_prefix_closure_instances(
             out << node->matrix[i];
         }
         out << "]\n";
+        render_closure_matrix_check(out, stem, node->images.size());
         render_closure_derived_weight_checks(
             out, stem + "_first", stem, stem, node->pair_first_weighted_vectors,
             node->pair_first_paths, node->pair_first_junctions,
@@ -677,6 +697,7 @@ inline std::string render_strong_coincidence_closure_instances(
             out << node->matrix[i];
         }
         out << "]\n";
+        render_closure_matrix_check(out, stem, node->images.size());
         render_closure_derived_weight_checks(
             out, stem + "_first", stem, stem, node->pair_first_weighted_vectors,
             node->pair_first_paths, node->pair_first_junctions,
