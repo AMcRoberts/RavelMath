@@ -907,7 +907,7 @@ inline ZpPoly qp_local_mul_poly(const QpLocalField& K, const ZpPoly& a, const Zp
 }
 
 // Addition in K_p.
-inline ZpPoly qp_local_add_poly(const QpLocalField& K, const ZpPoly& a, const ZpPoly& b) {
+inline ZpPoly qp_local_add_poly(const QpLocalField& /*K*/, const ZpPoly& a, const ZpPoly& b) {
     return zp_poly_add(a, b);
 }
 
@@ -1413,7 +1413,7 @@ inline ZpPoly ore_construct_e1_f1(const ZpPoly& f_a, long long a, long long p, l
 //
 // We solve the cubic via Newton iteration: c_{k+1} = c_k - g(c_k) /
 // g'(c_k) where g(c) = c^3 + 6c^2 + 9c - 2, g'(c) = 3c^2 + 12c + 9.
-inline ZpPoly ore_construct_e2_f1_worked_example(const ZpPoly& f_a, long long p, long long precision) {
+inline ZpPoly ore_construct_e2_f1_worked_example(const ZpPoly& /*f_a*/, long long p, long long precision) {
     // The cubic g(c) = c^3 + 6c^2 + 9c - 2 (mod p^precision).
     // Build as a ZpPoly.
     ZpPoly g = zp_poly_zero(p, precision);
@@ -1477,7 +1477,6 @@ inline OreLocalPoly local_polynomial_ore(const mathlib::PolyZ& charpoly,
     result.e = e;
     result.f = f;
     result.L = e * f;
-    long long L = result.L;
     ZpPoly f_zp = zp_poly_from_polyz(charpoly, p, precision);
     // Step 1: translate.  f_a(x) = f(x + a).
     ZpInt a_zp = zp_from_int_full(p, a, precision);
