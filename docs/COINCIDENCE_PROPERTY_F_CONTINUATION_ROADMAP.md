@@ -193,7 +193,10 @@ index-2 basis. The attempted generic second-round criterion is not yet trusted
 for this ramified maximal order, so `-21580` is the current certified order
 boundary; the factorization still has to be transported into that closed order.
 That basis-aware prime-ideal step remains the next order-theory target rather
-than an assumption hidden in the classifier.
+than an assumption hidden in the classifier. An independent decomposition
+check reports the same `(e,f)=(1,1),(3,1)` shape as the original Dedekind
+data; the Newton polygon's `(1,1)+(1,3)` is only a first-order slope shape and
+must not be read as a replacement factorization.
 As an independent corroboration (not a replacement for the exact in-repo
 checks), SymPy's implementation of Zassenhaus Round 2 returns the same
 index-2 basis and discriminant `-21580` for this polynomial.

@@ -187,10 +187,9 @@ void test_nonmaximal_order_is_not_trusted() {
                  mathlib::str(round.disc_before).c_str(), mathlib::str(round.disc_after).c_str(),
                  round.needs_another_round ? 1 : 0);
     bool round_basis_closed = true;
-    adelic::GeneralOrder first_enlarged_order;
     try {
         auto O = adelic::monogenic_structure_constants({1, -7, 5, -5, 2});
-        first_enlarged_order = adelic::structure_constants_from_basis_change(O, round.basis, 2);
+        (void)adelic::structure_constants_from_basis_change(O, round.basis, 2);
     } catch (const std::runtime_error&) {
         round_basis_closed = false;
     }
