@@ -13,6 +13,7 @@ struct BranchingJump {
     long long child_index = 0;
     long long consumed_steps = 1;
     long long target_branch = -1; // -1 means the deterministic tail never branches
+    std::vector<long long> sibling_prefix;
 };
 
 struct BranchingSkeleton {
@@ -52,7 +53,11 @@ inline BranchingSkeleton build_branching_skeleton(
             }
             if (state_index[static_cast<std::size_t>(current)] >= 0)
                 target = state_index[static_cast<std::size_t>(current)];
-            out.jumps[state].push_back({from, static_cast<long long>(child), consumed, target});
+            std::vector<long long> prefix(d, 0);
+            for (std::size_t i = 0; i < child; ++i)
+                ++prefix[static_cast<std::size_t>(images[static_cast<std::size_t>(from)][i])];
+            out.jumps[state].push_back({from, static_cast<long long>(child), consumed, target,
+                                        std::move(prefix)});
         }
     }
     return out;
@@ -74,6 +79,29 @@ struct BranchingLandmarkEvent {
 
 using BranchingLandmarkTrace = std::vector<BranchingLandmarkEvent>;
 
+struct WeightedLandmarkContribution {
+    long long depth = 0;
+    long long matrix_power = 0;
+    long long from_letter = 0;
+    long long child_index = 0;
+    std::vector<long long> sibling_prefix;
+    friend bool operator==(const WeightedLandmarkContribution& a,
+                           const WeightedLandmarkContribution& b) {
+        return a.depth == b.depth && a.matrix_power == b.matrix_power &&
+               a.from_letter == b.from_letter && a.child_index == b.child_index &&
+               a.sibling_prefix == b.sibling_prefix;
+    }
+    friend bool operator<(const WeightedLandmarkContribution& a,
+                          const WeightedLandmarkContribution& b) {
+        if (a.depth != b.depth) return a.depth < b.depth;
+        if (a.from_letter != b.from_letter) return a.from_letter < b.from_letter;
+        if (a.child_index != b.child_index) return a.child_index < b.child_index;
+        return a.sibling_prefix < b.sibling_prefix;
+    }
+};
+
+using WeightedLandmarkTrace = std::vector<WeightedLandmarkContribution>;
+
 inline void enumerate_branching_traces(
     long long depth, long long state, const BranchingSkeleton& skeleton,
     BranchingLandmarkTrace current, std::set<BranchingLandmarkTrace>& out) {
@@ -89,6 +117,25 @@ inline void enumerate_branching_traces(
         } else {
             enumerate_branching_traces(depth - jump.consumed_steps,
                                        jump.target_branch, skeleton, std::move(next), out);
+        }
+    }
+}
+
+inline void enumerate_weighted_landmark_traces(
+    long long depth, long long state, const BranchingSkeleton& skeleton,
+    WeightedLandmarkTrace current, std::set<WeightedLandmarkTrace>& out) {
+    if (depth <= 0) { out.insert(std::move(current)); return; }
+    for (const auto& jump : skeleton.jumps[static_cast<std::size_t>(state)]) {
+        auto next = current;
+        if (jump.child_index > 0)
+            next.push_back({depth, depth - 1, jump.from_letter, jump.child_index,
+                            jump.sibling_prefix});
+        if (jump.consumed_steps > depth || jump.target_branch < 0) {
+            out.insert(std::move(next));
+        } else {
+            enumerate_weighted_landmark_traces(depth - jump.consumed_steps,
+                                               jump.target_branch, skeleton,
+                                               std::move(next), out);
         }
     }
 }
@@ -116,6 +163,32 @@ inline std::set<BranchingLandmarkTrace> enumerate_branching_traces_from_letter(
     enumerate_branching_traces(remaining,
                                static_cast<long long>(it - skeleton.branching_letters.begin()),
                                skeleton, {}, out);
+    return out;
+}
+
+template <std::size_t d>
+inline std::set<WeightedLandmarkTrace> enumerate_weighted_landmark_traces_from_letter(
+    long long start_letter, long long depth,
+    const std::array<std::vector<long long>, d>& images,
+    const BranchingSkeleton& skeleton) {
+    std::set<WeightedLandmarkTrace> out;
+    long long current = start_letter;
+    long long remaining = depth;
+    std::set<long long> seen;
+    while (remaining > 0 && images[static_cast<std::size_t>(current)].size() == 1) {
+        if (!seen.insert(current).second) { out.insert(WeightedLandmarkTrace{}); return out; }
+        current = images[static_cast<std::size_t>(current)][0];
+        --remaining;
+    }
+    if (remaining <= 0 || skeleton.branching_letters.empty()) {
+        out.insert(WeightedLandmarkTrace{});
+        return out;
+    }
+    const auto it = std::find(skeleton.branching_letters.begin(), skeleton.branching_letters.end(), current);
+    if (it == skeleton.branching_letters.end()) { out.insert(WeightedLandmarkTrace{}); return out; }
+    enumerate_weighted_landmark_traces(remaining,
+                                       static_cast<long long>(it - skeleton.branching_letters.begin()),
+                                       skeleton, {}, out);
     return out;
 }
 
