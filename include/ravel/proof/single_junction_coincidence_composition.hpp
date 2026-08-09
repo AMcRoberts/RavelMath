@@ -64,11 +64,12 @@
 //
 // STATUS: this closes the walk-realizability question for the
 // single-junction class completely and exactly (an algorithm, not
-// merely a bound). It does NOT extend as stated to substitutions with
-// more than one junction letter (multiple letters with image length
-// >= 2) -- there, jumps from DIFFERENT junctions interleave and the
-// clean single-sequence composition picture breaks down. That
-// multi-junction case is the next open extension.
+// merely a bound). It intentionally does NOT pretend to be the
+// multi-junction engine: when multiple letters have image length >= 2,
+// jumps from different junctions interleave and the clean single-sequence
+// composition picture breaks down. The general multi-junction closure now
+// lives in coincidence_closure.hpp; this header remains the small,
+// independently auditable single-junction composition model.
 
 #pragma once
 
