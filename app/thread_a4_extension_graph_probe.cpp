@@ -69,6 +69,14 @@ Sigma tribonacci() {
     return {{0, 1}, {0, 2}, {0}};
 }
 
+Sigma n_bonacci(std::size_t n) {
+    Sigma sigma(n);
+    for (std::size_t i = 0; i + 1 < n; ++i)
+        sigma[i] = {0, static_cast<std::int8_t>(i + 1)};
+    sigma[n - 1] = {0};
+    return sigma;
+}
+
 Sigma sigma1_3l() { return {{0, 0, 1}, {0, 2}, {0}}; }
 Sigma sigma2_3l() { return {{0, 0, 1}, {0, 0, 2}, {0}}; }
 
@@ -292,6 +300,9 @@ void report(const char* name, const Sigma& sigma, std::size_t max_n = 20,
 
 int main() {
     report("Tribonacci (AR-exact)", tribonacci());
+    report("Tetrabonacci (AR-exact, 4-letter)", n_bonacci(4));
+    report("Pentanacci (AR-exact, 5-letter)", n_bonacci(5));
+    report("Hexanacci (AR-exact, 6-letter)", n_bonacci(6));
     report("sigma_{1,1} (AR-partial)", sigma_ab(1, 1));
     report("sigma_{2,1} (AR-partial)", sigma_ab(2, 1));
     report("sigma_1 (AR-partial)", sigma1_3l());

@@ -518,3 +518,14 @@ The tabulation driver handles 3-letter substitutions directly. For
 4-letter we may need to template `compute_gb_sym_quotient<d>` on
 alphabet size — the existing construction in
 `gb_bp_matrix_equality.cpp` is already d-templated.
+
+**Progress (2026-08-09):** `app/thread_a4_extension_graph_probe.cpp` now
+also runs the direct extension-graph pass for Tetrabonacci, Pentanacci,
+and Hexanacci. On 500k+ symbol prefixes through factor length 20, all four
+n-bonacci cases (`n=3..6`) show the exact AR signature
+`p(k)=(n-1)k+1`: one left-special and one right-special factor, each with
+full alphabet valence, and zero bilateral sum at every checked length.
+This closes the first finite-data slice of the 4-letter A5 target and
+supports treating the AR-exact profile as dimension-stable. It does not
+replace the requested β-substitution and wider random survey, nor an
+all-length theorem.

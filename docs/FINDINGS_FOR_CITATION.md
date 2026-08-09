@@ -1483,6 +1483,20 @@ not committed; a real pass would need the same boundary-artifact
 discipline (larger orbit, longer range) Finding 6.7 itself required
 before being trusted.
 
+## Finding 14.1 — AR-exact extension graphs persist across alphabet sizes 3 through 6
+
+**Status: EXACT FINITE CERTIFICATE (2026-08-09).**
+
+The extension-graph probe now includes the n-bonacci substitutions for
+`n=3,4,5,6` (Tribonacci through Hexanacci), using 500k+ symbol orbit
+prefixes and direct factor enumeration through length 20. Every case has
+`p(k)=(n-1)k+1`, exactly one left-special and one right-special factor at
+each checked length, both with full `n`-letter valence, and bilateral sum
+zero. This is the same AR-exact local signature at all four dimensions,
+including newly recorded 4-, 5-, and 6-letter extension data. The result
+is finite evidence only; an all-length proof and its connection to the
+stepped-hyperplane seam decomposition remain open.
+
 ## Finding 15 — round 2's same_letter_H requirement, and the general shape of every future one, closed by a single verified closed form
 
 **Status: PROVED for every real `a>=7` and, for the recurring
