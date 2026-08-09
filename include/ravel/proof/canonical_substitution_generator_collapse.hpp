@@ -39,6 +39,7 @@
 #include "math/qbeta.hpp"
 #include "math/sturm.hpp"
 #include "ravel/canonical_beta_substitution.hpp"
+#include "ravel/proof/canonical_parent_role_catalogue.hpp"
 
 namespace ravel::proof {
 
@@ -60,53 +61,22 @@ inline GeneratorCollapseCertificate derive_canonical_substitution_generator_coll
     using namespace mathlib;
     GeneratorCollapseCertificate out;
 
-    auto ge = exact_greedy_beta_expansion_of_one(R, beta_I, 128);
-    if (!ge.terminated && ge.period_len == 0) {
-        out.obstruction = "greedy expansion neither terminated nor cycled within the step budget";
+    auto catalogue = derive_canonical_parent_role_catalogue(R, beta_I);
+    if (!catalogue.proved) {
+        out.obstruction = catalogue.obstruction;
         return out;
     }
-    out.digits = ge.digits;
-    std::vector<std::vector<long long>> sigma;
-    if (ge.terminated) {
-        sigma = canonical_beta_substitution_from_digits(out.digits);
-    } else if (ge.purely_periodic) {
-        sigma = canonical_beta_substitution_from_digits(out.digits);
-    } else {
-        std::vector<long long> preperiod(out.digits.begin(), out.digits.begin() + (long long)ge.preperiod_len);
-        std::vector<long long> period(out.digits.begin() + (long long)ge.preperiod_len, out.digits.end());
-        sigma = canonical_beta_substitution_eventually_periodic(preperiod, period);
-    }
-    const std::size_t n = sigma.size();
+    out.digits = catalogue.digits;
+    const std::size_t n = catalogue.alphabet_size;
     out.alphabet_size = n;
-
-    std::vector<std::vector<std::pair<long long,std::vector<long long>>>> parents(n);
-    std::set<std::vector<long long>> prefixes;
-    long long max_prefix_len = 0;
-    for (std::size_t c = 0; c < n; ++c) {
-        const auto& img = sigma[c];
-        for (std::size_t k = 0; k < img.size(); ++k) {
-            auto inner = (std::size_t)img[k];
-            std::vector<long long> pre(img.begin(), img.begin() + (long long)k);
-            parents[inner].push_back({(long long)c, pre});
-            prefixes.insert(pre);
-            if ((long long)pre.size() > max_prefix_len) max_prefix_len = (long long)pre.size();
-        }
-    }
-    out.distinct_prefixes = prefixes.size();
-    out.max_prefix_length = max_prefix_len;
-
-    auto role = [&](long long i, long long j) { return (std::size_t)(i * (long long)n + j); };
+    out.distinct_prefixes = catalogue.prefixes.size();
+    out.max_prefix_length = catalogue.max_prefix_length;
     std::map<long long, std::vector<std::vector<long long>>> G;
-    for (long long d = -max_prefix_len; d <= max_prefix_len; ++d)
+    for (long long d = -catalogue.max_prefix_length; d <= catalogue.max_prefix_length; ++d)
         G[d] = std::vector<std::vector<long long>>(n * n, std::vector<long long>(n * n, 0));
 
-    std::set<long long> defects;
-    for (long long i = 0; i < (long long)n; ++i) for (long long j = 0; j < (long long)n; ++j)
-        for (const auto& [pc, pp] : parents[(std::size_t)i]) for (const auto& [qc, qp] : parents[(std::size_t)j]) {
-            long long defect = (long long)qp.size() - (long long)pp.size();
-            defects.insert(defect);
-            G[defect][role(i, j)][role(pc, qc)]++;
-        }
+    const auto& defects = catalogue.defects;
+    for (const auto& edge : catalogue.edges) G[edge.defect][edge.source_role][edge.target_role]++;
     out.raw_defect_classes = defects.size();
 
     // For each edge with |defect|>=2, ask the FULL question, not just
@@ -121,7 +91,7 @@ inline GeneratorCollapseCertificate derive_canonical_substitution_generator_coll
     // irreducible witnesses remain unreachable under this stronger
     // test) before trusting it -- see the diary entry this accompanies.
     std::vector<std::vector<std::pair<std::size_t,long long>>> unit_edges(n * n);
-    for (long long d = -max_prefix_len; d <= max_prefix_len; ++d) {
+    for (long long d = -catalogue.max_prefix_length; d <= catalogue.max_prefix_length; ++d) {
         if (d < -1 || d > 1) continue;
         for (std::size_t s = 0; s < n * n; ++s) for (std::size_t t = 0; t < n * n; ++t)
             if (G[d][s][t] > 0) unit_edges[s].push_back({t, d});
@@ -132,7 +102,7 @@ inline GeneratorCollapseCertificate derive_canonical_substitution_generator_coll
         visited.insert({src, 0});
         q.push({src, 0});
         int steps = 0;
-        const long long net_bound = 2 * max_prefix_len + 2;
+        const long long net_bound = 2 * catalogue.max_prefix_length + 2;
         const int step_bound = 4 * static_cast<int>(n) + 4;
         while (!q.empty() && steps < step_bound) {
             std::size_t level_size = q.size();

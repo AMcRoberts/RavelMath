@@ -9,6 +9,7 @@
 #include <string>
 #include "math/qbeta.hpp"
 #include "math/sturm.hpp"
+#include "ravel/proof/canonical_parent_role_catalogue.hpp"
 #include "ravel/proof/general_generator_theorem.hpp"
 
 using namespace mathlib;
@@ -25,11 +26,24 @@ void run(const std::string& name, std::vector<long long> low_first, std::size_t 
     auto R = ring_from_low_first(low_first);
     auto beta_I = isolate_beta(R);
     auto c = ravel::proof::derive_general_generator_theorem(R, beta_I);
+    auto forest = ravel::proof::derive_canonical_parent_role_catalogue(R, beta_I);
     std::cout << name << ": digits.size=" << c.digits.size()
               << " raw=" << c.raw_defect_classes << " primitive=" << c.primitive_generator_count
               << " proved=" << c.proved << "\n";
     assert(c.proved);
     assert(c.primitive_generator_count == expected_primitive);
+    assert(forest.proved);
+    assert(forest.role_count == forest.alphabet_size * forest.alphabet_size);
+    std::size_t parent_occurrences = 0;
+    for (const auto& ps : forest.parents) parent_occurrences += ps.size();
+    std::size_t expected_edges = 0;
+    for (const auto& ps : forest.parents)
+        for (const auto& qs : forest.parents) expected_edges += ps.size() * qs.size();
+    assert(parent_occurrences > 0);
+    assert(forest.edges.size() == expected_edges);
+    std::size_t defect_edges = 0;
+    for (const auto& [_, count] : forest.edge_count_by_defect) defect_edges += count;
+    assert(defect_edges == forest.edges.size());
 }
 
 int main() {
