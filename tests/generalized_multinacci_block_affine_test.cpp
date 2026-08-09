@@ -28,17 +28,19 @@ int main() {
     mathlib::QElem gamma(4);
     for (std::size_t i = 0; i < 4; ++i)
         gamma.coeffs_[i] = mathlib::Rat(static_cast<long long>(i + 1));
-    const auto& channel = schema.channels.front();
-    auto exact = gamma;
-    for (const auto carry : channel.carry_word) {
-        exact = ring.mul(inverse.inverse, ring.add(exact, ring.from_int(carry)));
+    for (std::size_t map_index = 0; map_index < maps.size(); ++map_index) {
+        auto exact = gamma;
+        for (const auto carry : schema.channels[map_index].carry_word)
+            exact = ring.add(ring.mul(inverse.inverse, exact),
+                             ring.from_int(carry));
+        auto integer_image = adelic::multiply(maps[map_index].linear,
+            adelic::IntegerVector{1, 2, 3, 4});
+        for (std::size_t i = 0; i < 4; ++i)
+            integer_image[i] += maps[map_index].offset[i];
+        for (std::size_t i = 0; i < 4; ++i) {
+            assert(mathlib::cmp(exact.coeffs_[i], mathlib::Rat(integer_image[i])) == 0);
+        }
     }
-    auto integer_image = adelic::multiply(maps.front().linear,
-        adelic::IntegerVector{1, 2, 3, 4});
-    for (std::size_t i = 0; i < 4; ++i)
-        integer_image[i] += maps.front().offset[i];
-    for (std::size_t i = 0; i < 4; ++i)
-        assert(mathlib::cmp(exact.coeffs_[i], mathlib::Rat(integer_image[i])) == 0);
     std::cout << "(4,6) endpoint maps=" << maps.size()
               << " dimension=" << maps.front().linear.size() << "\n"
               << "generalized multinacci block affine PASS\n";
