@@ -8,17 +8,42 @@ namespace RavelGenerated
 
 open Matrix
 
+theorem word_fold_intertwiner
+    {Γ α : Type*} [Preorder α] [Monoid α]
+    (mul_left_mono : ∀ a : α, ∀ {b c : α}, b ≤ c → a * b ≤ a * c)
+    (mul_right_mono : ∀ c : α, ∀ {a b : α}, a ≤ b → a * c ≤ b * c)
+    (MC MK : Γ → α) (P : α)
+    (h : ∀ g, MC g * P ≤ P * MK g) :
+    ∀ w : List Γ,
+      w.foldr (fun g z => MC g * z) 1 * P ≤
+      P * w.foldr (fun g z => MK g * z) 1 := by
+  intro w
+  induction w with
+  | nil => simp
+  | cons g w ih =>
+      simp only [List.foldr]
+      calc
+        (MC g * w.foldr (fun g z => MC g * z) 1) * P
+            = MC g * (w.foldr (fun g z => MC g * z) 1 * P) := by simp [mul_assoc]
+        _ ≤ MC g * (P * w.foldr (fun g z => MK g * z) 1) := mul_left_mono _ ih
+        _ = (MC g * P) * w.foldr (fun g z => MK g * z) 1 := by simp [mul_assoc]
+        _ ≤ (P * MK g) * w.foldr (fun g z => MK g * z) 1 :=
+              mul_right_mono _ (h g)
+        _ = P * (MK g * w.foldr (fun g z => MK g * z) 1) := by simp [mul_assoc]
+
 inductive QRGenerator
   | q
   | r
   deriving DecidableEq, Repr
 
+-- evalQRWord is the QRGenerator specialization of the general Γ-polymorphic
+-- word-fold evaluator, defined directly as that specialization.
 def evalQRWord {α : Type} [Monoid α]
-    (Q R : α) : List QRGenerator → α
-  | [] => 1
-  | QRGenerator.q :: w => Q * evalQRWord Q R w
-  | QRGenerator.r :: w => R * evalQRWord Q R w
+    (Q R : α) : List QRGenerator → α :=
+  List.foldr (fun g z => (fun g : QRGenerator => match g with | .q => Q | .r => R) g * z) 1
 
+-- A genuine corollary of `word_fold_intertwiner` (Γ := QRGenerator) -- no
+-- independent induction is authored here.
 theorem qr_word_intertwiner
     {α : Type} [Preorder α] [Monoid α]
     (mul_left_mono : ∀ a : α, ∀ {b c : α}, b ≤ c → a * b ≤ a * c)
@@ -28,38 +53,11 @@ theorem qr_word_intertwiner
     (hR : RC * P ≤ P * RK) :
     ∀ w,
       evalQRWord QC RC w * P ≤
-        P * evalQRWord QK RK w := by
-  intro w
-  induction w with
-  | nil => simp [evalQRWord]
-  | cons g w ih =>
-      cases g with
-      | q =>
-          calc
-            evalQRWord QC RC (QRGenerator.q :: w) * P
-                = QC * (evalQRWord QC RC w * P) := by
-                    simp [evalQRWord, mul_assoc]
-            _ ≤ QC * (P * evalQRWord QK RK w) :=
-                  mul_left_mono QC ih
-            _ = (QC * P) * evalQRWord QK RK w := by
-                  simp [mul_assoc]
-            _ ≤ (P * QK) * evalQRWord QK RK w :=
-                  mul_right_mono (evalQRWord QK RK w) hQ
-            _ = P * evalQRWord QK RK (QRGenerator.q :: w) := by
-                  simp [evalQRWord, mul_assoc]
-      | r =>
-          calc
-            evalQRWord QC RC (QRGenerator.r :: w) * P
-                = RC * (evalQRWord QC RC w * P) := by
-                    simp [evalQRWord, mul_assoc]
-            _ ≤ RC * (P * evalQRWord QK RK w) :=
-                  mul_left_mono RC ih
-            _ = (RC * P) * evalQRWord QK RK w := by
-                  simp [mul_assoc]
-            _ ≤ (P * RK) * evalQRWord QK RK w :=
-                  mul_right_mono (evalQRWord QK RK w) hR
-            _ = P * evalQRWord QK RK (QRGenerator.r :: w) := by
-                  simp [evalQRWord, mul_assoc]
+        P * evalQRWord QK RK w :=
+  word_fold_intertwiner mul_left_mono mul_right_mono
+    (fun g : QRGenerator => match g with | .q => QC | .r => RC)
+    (fun g : QRGenerator => match g with | .q => QK | .r => RK)
+    P (fun g : QRGenerator => by cases g with | q => exact hQ | r => exact hR)
 
 def evalQRPolynomial {α : Type} [Semiring α]
     (Q R : α) : List (List QRGenerator) → α
