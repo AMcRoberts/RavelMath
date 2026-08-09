@@ -113,3 +113,9 @@ SCC count, and nonzero-cycle count) instead of citing the zero-walk
 lemma by name. `PropertyFResult` now exposes those counters, and the
 historical Fibonacci/rnd13/x²−2x−2 regression covers them. This is
 evidence for a particular closed run, not an unconditional theorem.
+The next increment now exports the actual bounded adjacency and canonical
+Q(beta) node keys through `PropertyFGraph`; the Fibonacci graph topology is
+rendered and kernel-checked as a finite Lean artifact. The Lean bridge still
+checks topology/partition data rather than pretending string keys prove
+algebraic equality; a future increment can replace those opaque keys with a
+typed Q(beta) representation.

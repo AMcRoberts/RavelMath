@@ -4601,6 +4601,44 @@ inline std::string render_property_f_finite_run_instances(const mathlib::reflect
     return out.str();
 }
 
+inline std::string render_property_f_graph_instances(const mathlib::reflection::Trace& trace) {
+    std::ostringstream out;
+    long long counter = 0;
+    auto nodes = trace.find<mathlib::reflection::PropertyFGraphCertificate>();
+    for (const auto& [id, node] : nodes) {
+        (void)id;
+        const std::string stem = "property_f_graph_" + std::to_string(counter++);
+        std::vector<std::pair<long long, long long>> edges;
+        std::vector<long long> zero_indices;
+        for (std::size_t i = 0; i < node->successors.size(); ++i) {
+            if (node->zero_nodes[i]) zero_indices.push_back(static_cast<long long>(i));
+            for (const long long successor : node->successors[i])
+                edges.emplace_back(static_cast<long long>(i), successor);
+        }
+        out << "/-- Finite topology exported by the actual property-(F) checker.\n"
+               "    The gamma keys remain in the C++ certificate; this Lean corollary checks\n"
+               "    only the serialized finite graph shape and zero-node partition. -/\n";
+        out << "def " << stem << "_edges : List (Nat × Nat) := [";
+        for (std::size_t i = 0; i < edges.size(); ++i) {
+            if (i) out << ", ";
+            out << "(" << edges[i].first << ", " << edges[i].second << ")";
+        }
+        out << "]\n";
+        out << "def " << stem << "_zero_nodes : List Nat := [";
+        for (std::size_t i = 0; i < zero_indices.size(); ++i) {
+            if (i) out << ", ";
+            out << zero_indices[i];
+        }
+        out << "]\n";
+        out << "theorem " << stem << "_shape :\n";
+        out << "    (" << stem << "_edges.length = " << edges.size() << ") ∧\n";
+        out << "    (" << stem << "_zero_nodes.length = " << zero_indices.size() << ") ∧\n";
+        out << "    (" << node->gamma_keys.size() << " = " << node->letters.size() << ") := by\n";
+        out << "  decide\n\n";
+    }
+    return out.str();
+}
+
 inline std::string render_reflective_lean_module(const mathlib::reflection::Trace& trace) {
     if (trace.empty()) throw std::runtime_error("cannot render proof module without provenance");
     std::ostringstream out;
@@ -4625,6 +4663,7 @@ inline std::string render_reflective_lean_module(const mathlib::reflection::Trac
     out << render_pisot_root_ordering_instances(trace);
     out << render_sturm_chain_instances(trace);
     out << render_property_f_finite_run_instances(trace);
+    out << render_property_f_graph_instances(trace);
     out << render_class_ii_six_vertex_graduation_instances(trace);
     out << render_class_ii_terminal_sextet_instances(trace);
     out << render_class_ii_penultimate_pair_instances(trace);

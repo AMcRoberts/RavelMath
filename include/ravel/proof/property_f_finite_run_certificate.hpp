@@ -42,4 +42,40 @@ inline bool stage_property_f_finite_run(const adelic::PropertyFResult& result,
     return true;
 }
 
+inline bool stage_property_f_graph(const adelic::PropertyFResult& result,
+                                   const adelic::PropertyFGraph& graph,
+                                   std::string description = {}) {
+    if (result.inconclusive || graph.nodes.size() != static_cast<std::size_t>(result.nodes_explored)) return false;
+    if (result.zero_nodes + result.nonzero_nodes != result.nodes_explored) return false;
+    long long zero_count = 0;
+    for (std::size_t i = 0; i < graph.nodes.size(); ++i) {
+        const auto& node = graph.nodes[i];
+        if (node.zero) ++zero_count;
+        for (const long long successor : node.successors) {
+            if (successor < 0 || successor >= result.nodes_explored) {
+                throw std::invalid_argument("property-F graph has an out-of-range successor");
+            }
+        }
+    }
+    if (zero_count != result.zero_nodes) {
+        throw std::invalid_argument("property-F graph zero-node count disagrees with result");
+    }
+    if (!mathlib::reflection::enabled()) return false;
+    mathlib::reflection::PropertyFGraphCertificate node;
+    node.gamma_keys.reserve(graph.nodes.size());
+    node.letters.reserve(graph.nodes.size());
+    node.zero_nodes.reserve(graph.nodes.size());
+    node.successors.reserve(graph.nodes.size());
+    for (const auto& source : graph.nodes) {
+        node.gamma_keys.push_back(source.gamma_key);
+        node.letters.push_back(source.letter);
+        node.zero_nodes.push_back(source.zero);
+        node.successors.push_back(source.successors);
+    }
+    node.description = std::move(description);
+    mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication,
+                                std::move(node));
+    return true;
+}
+
 }  // namespace ravel::proof

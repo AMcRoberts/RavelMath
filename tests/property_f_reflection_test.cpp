@@ -1,4 +1,6 @@
 #include <cassert>
+#include <cstdlib>
+#include <fstream>
 #include <iostream>
 
 #include "adelic/coincidence_and_property_f.hpp"
@@ -25,13 +27,15 @@ int main() {
     auto eig = mathlib::right_eigenvector_via_qbeta(transpose(matrix), ring);
     assert(eig.ok);
     auto automaton = adelic::build_prefix_automaton<2>(images, eig.v, ring);
-    auto result = adelic::check_property_f<2>(automaton, 300000);
+    adelic::PropertyFGraph graph;
+    auto result = adelic::check_property_f<2>(automaton, 300000, nullptr, nullptr, nullptr, nullptr, &graph);
     assert(result.holds && !result.inconclusive);
 
     mathlib::reflection::Trace trace("property_f_reflection_test");
     {
         mathlib::reflection::ScopedTrace scope(&trace);
         assert(ravel::proof::stage_property_f_finite_run(result, "Fibonacci"));
+        assert(ravel::proof::stage_property_f_graph(result, graph, "Fibonacci"));
     }
     auto certificates = trace.find<mathlib::reflection::PropertyFFiniteRunCertificate>();
     assert(certificates.size() == 1);
@@ -39,5 +43,10 @@ int main() {
     const std::string lean = ravel::proof::render_reflective_lean_module(trace);
     assert(lean.find("property_f_finite_run_summary_0") != std::string::npos);
     assert(lean.find("2 + 6 = 8") != std::string::npos);
+    assert(lean.find("property_f_graph_0_edges") != std::string::npos);
+    if (const char* dump_path = std::getenv("RAVEL_PROPERTY_F_LEAN_OUT")) {
+        std::ofstream dump(dump_path);
+        dump << lean;
+    }
     std::cout << "property_f_reflection: typed finite-run summary emitted\n";
 }

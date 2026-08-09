@@ -330,6 +330,21 @@ struct PropertyFResult {
     long long nonzero_cycle_components = 0;
 };
 
+// Optional exact finite graph export for reflection and diagnostics.  The
+// `gamma_key` is the same canonical Q(beta) key used by the checker itself;
+// retaining it avoids narrowing exact algebraic values to floating point at
+// the reflection boundary.
+struct PropertyFGraphNode {
+    std::string gamma_key;
+    long long letter = 0;
+    bool zero = false;
+    std::vector<long long> successors;
+};
+
+struct PropertyFGraph {
+    std::vector<PropertyFGraphNode> nodes;
+};
+
 // Canonical string key for a QElem (its Rat coefficients are always
 // stored in reduced form by mini-gmp's mpq_t, so this is a faithful,
 // collision-free key).
@@ -805,7 +820,8 @@ PropertyFResult check_property_f(
     // node can ever have an edge into a zero-gamma node. Exposed here
     // so that claim can be checked against the real, trusted
     // computation rather than a re-implemented copy.
-    long long* out_zero_nodes_beyond_frontier = nullptr) {
+    long long* out_zero_nodes_beyond_frontier = nullptr,
+    PropertyFGraph* out_graph = nullptr) {
     const mathlib::QBetaRing& R = automaton.ring;
     mathlib::QElem beta = R.from_int(0);
     beta.coeff(1) = mathlib::Rat(1, 1);
@@ -990,6 +1006,18 @@ PropertyFResult check_property_f(
     // app/adelic_boundary_spectral_radius.cpp).
     if (out_adjacency != nullptr) {
         *out_adjacency = adj;
+    }
+    if (out_graph != nullptr) {
+        out_graph->nodes.clear();
+        out_graph->nodes.reserve(node_gamma.size());
+        for (std::size_t i = 0; i < node_gamma.size(); ++i) {
+            PropertyFGraphNode node;
+            node.gamma_key = qelem_key(node_gamma[i]);
+            node.letter = node_letter[i];
+            node.zero = is_zero_node[i];
+            node.successors = adj[i];
+            out_graph->nodes.push_back(std::move(node));
+        }
     }
 
     if (budget_exceeded) {
