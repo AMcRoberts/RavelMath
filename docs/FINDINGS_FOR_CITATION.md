@@ -285,9 +285,13 @@ now resolves through the same path. The classifier's earlier
 "only covers the single totally ramified prime factorization shape"
 caveat is no longer accurate. A fresh 4×4 non-unimodular Pisot
 survey (`app/sweep_nonunit_property_f.cpp`, 24 candidates, seed=11)
-now gives **24/24 ESTABLISHED, 0 INCONCLUSIVE, 0 FAILED, 0
-skipped**, deterministic across 5+ runs, ASan-clean — the 4
-previously-skipped multi-PRIME cases all ESTABLISH. The 39-/87-
+historically gave **24/24 ESTABLISHED** under the then-current
+Dedekind/local-field path, deterministic across 5+ runs and ASan-clean.
+The current trust-aware classifier no longer promotes cases whose defining
+order is not p-maximal; those historical results remain exploratory until
+their prime-ideal factorization is transported into the maximal order. The 4
+previously-skipped multi-PRIME cases still establish when their order data is
+certified. The 39-/87-
 candidate non-unimodular row's "11/87 differ by 10-40%" claim was
 re-audited (`app/reaudit_gb_dominant_scc.cpp`) with the dominant-SCC
 extractor and **confirmed, not just piloted**: 14/14 clean candidates
@@ -2147,8 +2151,10 @@ project's largest-ever closure), the worked example (archimedean-only
 control still correctly INCONCLUSIVE, matching its documented status),
 `x^2-2x-2` (47 nodes, holds), the whole Finding 5/16 AR-partial/non-AR
 family (identical node counts across all 7), the 24-candidate 3-letter
-non-unit sweep (24/24 ESTABLISHED, unchanged), and the 7-candidate
-4-letter non-unit sweep (7/7 ESTABLISHED, unchanged). **Nothing in
+non-unit sweep (unchanged exploratory graph results), and the 7-candidate
+4-letter non-unit sweep (unchanged finite graph results). The later
+order-trust guard is a separate certification layer: it can downgrade a
+non-maximal-order run without changing the underlying SCC computation. **Nothing in
 this project's history was ever a false positive — the old verdict
 logic just could never have caught a real failure if one existed.**
 Property (F) is now, for the first time, a genuinely meaningful,
