@@ -45,6 +45,7 @@ void run(const std::string& name, std::vector<long long> low_first, std::size_t 
     assert(composition.composable_pairs == composition.closed_pairs + composition.missing_pairs);
     assert(closure.proved);
     assert(closure.zero_net_witnesses_verified);
+    assert(closure.zero_net_witnesses.size() == closure.zero_net_pairs);
     assert(forest.role_count == forest.alphabet_size * forest.alphabet_size);
     std::size_t parent_occurrences = 0;
     for (const auto& ps : forest.parents) parent_occurrences += ps.size();

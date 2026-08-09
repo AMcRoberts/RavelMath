@@ -111,6 +111,13 @@ struct ParentRoleWordClosureReport {
     std::size_t zero_net_pairs{};
     std::size_t zero_net_missing_pairs{};
     std::size_t maximum_zero_net_word_length{};
+    struct ZeroNetWitness {
+        std::size_t source_role{};
+        std::size_t target_role{};
+        std::vector<std::size_t> roles;
+        std::vector<long long> defects;
+    };
+    std::vector<ZeroNetWitness> zero_net_witnesses;
     bool zero_net_role_graph_complete{};
     bool zero_net_witnesses_verified{};
 };
@@ -135,6 +142,8 @@ inline ParentRoleWordClosureReport derive_parent_role_word_closure(
     for (std::size_t source = 0; source < catalogue.role_count; ++source) {
         std::set<std::pair<std::size_t,long long>> seen;
         std::map<std::pair<std::size_t,long long>, std::size_t> depth_of;
+        struct Predecessor { std::pair<std::size_t,long long> state; long long defect; };
+        std::map<std::pair<std::size_t,long long>, Predecessor> predecessor;
         std::vector<std::pair<std::size_t,long long>> frontier;
         seen.insert({source, 0});
         depth_of[{source, 0}] = 0;
@@ -148,6 +157,7 @@ inline ParentRoleWordClosureReport derive_parent_role_word_closure(
                     const auto state = std::make_pair(target, new_net);
                     if (seen.insert(state).second) {
                         depth_of[state] = depth + 1;
+                        predecessor[state] = {{role, net}, label};
                         next.push_back(state);
                     }
                 }
@@ -160,6 +170,20 @@ inline ParentRoleWordClosureReport derive_parent_role_word_closure(
             if (net == 0) {
                 zero_targets.insert(target);
                 maximum_zero_length = std::max(maximum_zero_length, depth_of[{target, net}]);
+                ParentRoleWordClosureReport::ZeroNetWitness witness;
+                witness.source_role = source;
+                witness.target_role = target;
+                auto cursor = std::make_pair(target, net);
+                witness.roles.push_back(target);
+                while (cursor != std::make_pair(source, 0LL)) {
+                    const auto& prev = predecessor.at(cursor);
+                    witness.defects.push_back(prev.defect);
+                    witness.roles.push_back(prev.state.first);
+                    cursor = prev.state;
+                }
+                std::reverse(witness.roles.begin(), witness.roles.end());
+                std::reverse(witness.defects.begin(), witness.defects.end());
+                out.zero_net_witnesses.push_back(std::move(witness));
             }
         }
         zero_pairs += zero_targets.size();
@@ -169,8 +193,27 @@ inline ParentRoleWordClosureReport derive_parent_role_word_closure(
     const auto total_pairs = catalogue.role_count * catalogue.role_count;
     out.zero_net_missing_pairs = total_pairs > zero_pairs ? total_pairs - zero_pairs : 0;
     out.zero_net_role_graph_complete = (out.zero_net_missing_pairs == 0);
+    out.zero_net_witnesses_verified = (out.zero_net_witnesses.size() == out.zero_net_pairs);
+    for (const auto& witness : out.zero_net_witnesses) {
+        long long sum = 0;
+        if (witness.roles.size() != witness.defects.size() + 1 ||
+            witness.roles.front() != witness.source_role ||
+            witness.roles.back() != witness.target_role) {
+            out.zero_net_witnesses_verified = false;
+            continue;
+        }
+        for (std::size_t k = 0; k < witness.defects.size(); ++k) {
+            sum += witness.defects[k];
+            bool edge_exists = false;
+            for (const auto& edge : catalogue.edges)
+                if (edge.source_role == witness.roles[k] &&
+                    edge.target_role == witness.roles[k + 1] &&
+                    edge.defect == witness.defects[k]) { edge_exists = true; break; }
+            if (!edge_exists) out.zero_net_witnesses_verified = false;
+        }
+        if (sum != 0) out.zero_net_witnesses_verified = false;
+    }
     out.proved = true;
-    out.zero_net_witnesses_verified = out.zero_net_role_graph_complete;
     return out;
 }
 

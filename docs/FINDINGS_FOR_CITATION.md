@@ -3988,3 +3988,6 @@ the bounded search into a universal claim.
 The shortest-witness maxima in those finite certificates are 15, 11, 7, and
 18 words respectively, giving a concrete scale estimate for the kernel
 connectivity rather than only a yes/no reachability result.
+The catalogue retains each shortest role path and replays every edge and
+defect sum exactly; completeness is witness-checked rather than inferred from
+the count alone.
