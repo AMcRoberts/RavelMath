@@ -134,6 +134,11 @@ obstruction-localization principle says that new nonzero recurrence can only
 enter through newly added top-height/new-color channels. This is supported by
 the lift certificates and all current Property-F data, but awaits a rank
 decrease proof.
+The direct paired Property-F experiment now tests the hypothesis on 15 exact
+dimension lifts (`2->3` and `3->4` for all `m=1..6`, plus `4->5` for
+`m=1..3`). Every pair closes with zero nonzero SCCs and zero partial nonzero
+back-edges; the lifted channel increment is exactly `m` in every case. This
+is evidence for obstruction localization, not yet an induction theorem.
 Each channel is now compiled to an exact integer affine endpoint map on the
 `d`-coordinate coefficient lattice; all 19 `(4,6)` maps are replay-checked
 against `Q(beta)`, while the 42-point sweep checks the parameterized map shape.

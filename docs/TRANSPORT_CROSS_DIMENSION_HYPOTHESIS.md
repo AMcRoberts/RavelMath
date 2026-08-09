@@ -45,6 +45,10 @@ the sofic phase as a finite base and the affine endpoint maps as its cocycle.
 - Exact Property-F closure is established on the original 18-point rectangle
   and on the measured higher-dimensional anchors, including `(6,2)` at
   4,914,771 states. No closed case has a nonzero recurrent component.
+- The direct paired recurrence test covers 15 exact dimension lifts (`2->3`
+  and `3->4` for all `m=1..6`, plus `4->5` for `m=1..3`). Every base/lift
+  pair closes, has zero nonzero SCCs and zero partial nonzero back-edges, and
+  adds exactly the predicted number of channels.
 
 ## What would falsify it
 
