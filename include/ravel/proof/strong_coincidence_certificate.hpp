@@ -3,6 +3,7 @@
 #include <array>
 #include <cstddef>
 #include <stdexcept>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -26,7 +27,54 @@ enum class StrongCoincidencePrefixClosureStageResult {
     reflection_disabled,
     inconclusive,
     unsupported,
+    witness_rejected,
 };
+
+template <std::size_t d>
+inline bool validate_closure_pair_witness_against_words(
+    const std::array<std::vector<long long>, d>& images,
+    long long first_letter, long long second_letter, long long depth,
+    long long terminal_letter, const std::vector<long long>& target_vector,
+    bool from_suffix, long long max_word_len = 5'000'000) {
+    if (depth < 1 || terminal_letter < 0 || static_cast<std::size_t>(terminal_letter) >= d ||
+        target_vector.size() != d)
+        return false;
+    std::vector<long long> first = images[static_cast<std::size_t>(first_letter)];
+    std::vector<long long> second = images[static_cast<std::size_t>(second_letter)];
+    for (long long k = 1; k < depth; ++k) {
+        if (first.size() > static_cast<std::size_t>(max_word_len) ||
+            second.size() > static_cast<std::size_t>(max_word_len)) return false;
+        first = adelic::apply_substitution<d>(images, first);
+        second = adelic::apply_substitution<d>(images, second);
+    }
+    if (first.size() > static_cast<std::size_t>(max_word_len) ||
+        second.size() > static_cast<std::size_t>(max_word_len)) return false;
+
+    auto collect = [&](const std::vector<long long>& word) {
+        std::set<std::vector<long long>> states;
+        std::array<long long, d> total{};
+        for (long long letter : word) ++total[static_cast<std::size_t>(letter)];
+        std::array<long long, d> prefix{};
+        for (long long letter : word) {
+            if (letter == terminal_letter) {
+                std::vector<long long> state(d);
+                if (from_suffix) {
+                    for (std::size_t i = 0; i < d; ++i)
+                        state[i] = total[i] - prefix[i] -
+                            (static_cast<long long>(i) == letter ? 1 : 0);
+                } else {
+                    state.assign(prefix.begin(), prefix.end());
+                }
+                states.insert(std::move(state));
+            }
+            ++prefix[static_cast<std::size_t>(letter)];
+        }
+        return states;
+    };
+    const auto first_states = collect(first);
+    const auto second_states = collect(second);
+    return first_states.count(target_vector) != 0 && second_states.count(target_vector) != 0;
+}
 
 // Stage a closed prefix-half landmark closure.  This is an independent
 // finite route: it never emits a full strong-coincidence claim, and refuses
@@ -55,6 +103,19 @@ inline StrongCoincidencePrefixClosureStageResult stage_strong_coincidence_prefix
     }
     if (!result.holds || result.inconclusive)
         return StrongCoincidencePrefixClosureStageResult::inconclusive;
+    const auto pair_index = [](std::size_t i, std::size_t j) {
+        return (i * (2 * d - i - 1)) / 2 + (j - i - 1);
+    };
+    for (std::size_t i = 0; i < d; ++i)
+        for (std::size_t j = i + 1; j < d; ++j) {
+            const std::size_t index = pair_index(i, j);
+            if (index >= result.pair_resolution_depths.size() ||
+                !validate_closure_pair_witness_against_words<d>(
+                    images, static_cast<long long>(i), static_cast<long long>(j),
+                    result.pair_resolution_depths[index],
+                    result.pair_terminal_letters[index], result.pair_vectors[index], false))
+                return StrongCoincidencePrefixClosureStageResult::witness_rejected;
+        }
     if (!mathlib::reflection::enabled())
         return StrongCoincidencePrefixClosureStageResult::reflection_disabled;
 
@@ -83,6 +144,7 @@ enum class StrongCoincidenceClosureStageResult {
     reflection_disabled,
     inconclusive,
     unsupported,
+    witness_rejected,
 };
 
 template <std::size_t d>
@@ -109,6 +171,20 @@ inline StrongCoincidenceClosureStageResult stage_strong_coincidence_closure(
     }
     if (!result.holds || result.inconclusive)
         return StrongCoincidenceClosureStageResult::inconclusive;
+    const auto pair_index = [](std::size_t i, std::size_t j) {
+        return (i * (2 * d - i - 1)) / 2 + (j - i - 1);
+    };
+    for (std::size_t i = 0; i < d; ++i)
+        for (std::size_t j = i + 1; j < d; ++j) {
+            const std::size_t index = pair_index(i, j);
+            if (index >= result.pair_resolution_depths.size() ||
+                !validate_closure_pair_witness_against_words<d>(
+                    images, static_cast<long long>(i), static_cast<long long>(j),
+                    result.pair_resolution_depths[index],
+                    result.pair_terminal_letters[index], result.pair_vectors[index],
+                    result.pair_from_suffix[index]))
+                return StrongCoincidenceClosureStageResult::witness_rejected;
+        }
     if (!mathlib::reflection::enabled())
         return StrongCoincidenceClosureStageResult::reflection_disabled;
 

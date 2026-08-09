@@ -171,6 +171,12 @@ reversed-substitution classifier. The generated Lean summaries check the
 lengths of these state payloads alongside the depth and matrix data; this
 removes the last depth-only gap in the closure reflection boundary.
 
+Staging now independently materializes each resolved pair at its recorded
+depth and rejects the certificate unless the exported terminal/vector state
+occurs in both words (using prefix or suffix orientation as recorded). Thus
+the efficient closure remains the producer, but reflected closure artifacts
+are accepted only after an exact occurrence-level cross-check.
+
 The prefix closure now also has a typed reflection certificate and renderer.
 The staging operation derives the incidence matrix from the supplied images,
 rejects invalid shapes, inconclusive cutoffs, and arithmetic overflow, and
