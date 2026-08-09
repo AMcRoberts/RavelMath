@@ -73,6 +73,19 @@ The proposed parameterized bridge contract is recorded in
 `docs/PROPERTY_F_SOFIC_EXTENSION_BRIDGE.md`; it is the route for extending
 the companion transport solution through the full `(n,m)` parameter sheet.
 
+## Generalized-multinacci bridge rectangle (2026-08-09)
+
+The common sofic/adelic certificate has now been run on all 18 points
+`d in {2,3,4}`, `m=1..6`. Every point has strong coincidence, finite
+Property-F closure, zero nonzero-cycle components, and no partial nonzero
+back-edge. Property-F nodes by increasing `m` are `5,4,4,4,4,4` for `d=2`,
+`33,43,54,102,229,395` for `d=3`, and
+`350,912,2761,7386,16895,33837` for `d=4`; maximum observed depth is 17.
+The same test invokes the symbolic general-m scheduler, so these are paired
+instances rather than separate experiments. This is evidence for the bridge
+contract, not yet a uniform all-`d,m` theorem: the remaining task is to turn
+the finite transport growth pattern into a parameterized rank or adelic bound.
+
 ## Verified engineering boundary
 
 Historical complete-tree validation passed `make check` and `make lean-check` with the enrolled Lean files sorry-free. The compressed handoff does not currently contain a complete executable Lean/Mathlib build, so this package must not repeat that claim until `scripts/safe_lean_check.sh` succeeds under the matching restored artifacts.

@@ -99,3 +99,25 @@ edges replay as two prefix-automaton parent transitions, with five distinct
 exact paired displacement labels. The same transition check now passes across
 the first witness's radius-0/1/2 adjacent-ordering neighborhood: 1,215,
 1,322, and 1,348 contact edges respectively, with 5, 7, and 9 paired labels.
+
+## Generalized-multinacci sheet (2026-08-09)
+
+The first shared parameter sheet is now executable for every concrete point
+`(d,m)` with `d in {2,3,4}` and `1 <= m <= 6`. The test
+`generalized_multinacci_property_f_transport_test` runs the existing symbolic
+sofic scheduler certificate and the exact adelic Property-F transport on the
+same instance. All 18 points close strong coincidence and Property F; every
+recurrent component is zero-only, with no partial nonzero back-edge.
+
+| d | m range | Property-F nodes (m=1 .. 6) | max observed depth |
+|---|---|---|---:|
+| 2 | 1..6 | 5, 4, 4, 4, 4, 4 | 2 |
+| 3 | 1..6 | 33, 43, 54, 102, 229, 395 | 7 |
+| 4 | 1..6 | 350, 912, 2,761, 7,386, 16,895, 33,837 | 17 |
+
+The sofic side simultaneously certifies the uniform scheduler
+`(m+1)Q + sum_{r=1}^m 2(m+1-r)R^r` and return roof `<= m`. This does not
+yet prove the all-`d,m` adelic bound, but it establishes the intended common
+contract on a nontrivial rectangle and gives a concrete growth law to attack:
+for fixed `m`, transport size grows with `d`, while for fixed `d=4` it grows
+rapidly but remains finite and cycle-safe.
