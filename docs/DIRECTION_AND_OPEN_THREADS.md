@@ -286,8 +286,9 @@ guard was tightened, all 17 completed the exploratory finite pipeline; two
 reported non-maximal Dedekind-order diagnostics. The current classifier keeps
 those two as **INCONCLUSIVE** until a maximal-order factorization is available,
 leaving 15 trusted established cases, 2 inconclusive, 0 failed, and 0 skipped.
-The largest finite property-(F) graph had 841,057 nodes; peak observed RSS was
-about 0.61 GB, comfortably below the 10 GB machine limit.
+The largest finite property-(F) graph had 841,057 nodes; the corrected rerun's
+peak observed RSS was about 0.65 GB, comfortably below the 10 GB machine
+limit.
 
 **Wider substitution-length probe (2026-08-09).** A bounded `K_max=5`
 sample (target=8, seed=17, 1,000-pair/10,000-length certify and rho caps)

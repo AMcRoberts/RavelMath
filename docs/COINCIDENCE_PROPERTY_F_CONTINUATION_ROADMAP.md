@@ -171,9 +171,10 @@ and Hensel-lifting fixes: target 20 with the historical `K_max=3` and bounded
 certification budgets yielded 17 non-unit candidates. The exploratory graph
 closed for all 17, but two failed the maximal-order trust check; the current
 classifier therefore records 15 trusted established and 2 inconclusive cases.
-The largest finite property-(F) graph had 841,057 nodes and the observed peak
-RSS was about 0.61 GB under the 10 GB machine limit. The driver exposes these
-caps as command-line options for reproducible follow-up runs.
+The largest finite property-(F) graph had 841,057 nodes and the corrected
+rerun's observed peak RSS was about 0.65 GB under the 10 GB machine limit. The
+driver exposes these caps as command-line options for reproducible follow-up
+runs.
 
 The first `K_max=5` probe (target=8, seed=17) likewise illustrates why the
 finite budget must remain explicit: seven cases closed under the default
