@@ -190,4 +190,36 @@ inline bool stage_property_f_graph(const adelic::PropertyFResult& result,
     return true;
 }
 
+inline bool stage_property_f_violation(const adelic::PropertyFResult& result,
+                                       const adelic::PropertyFGraph& graph,
+                                       std::string description = {}) {
+    if (result.inconclusive || result.holds || result.violation_cycle_nodes.size() < 2 ||
+        result.violation_cycle_edges.size() + 1 != result.violation_cycle_nodes.size()) return false;
+    if (result.violation_cycle_nodes.front() != result.violation_cycle_nodes.back())
+        throw std::invalid_argument("property-F violation witness is not closed");
+    bool contains_nonzero = false;
+    for (std::size_t i = 0; i + 1 < result.violation_cycle_nodes.size(); ++i) {
+        const long long source = result.violation_cycle_nodes[i];
+        const long long target = result.violation_cycle_nodes[i + 1];
+        if (source < 0 || target < 0 || source >= static_cast<long long>(graph.nodes.size()) ||
+            target >= static_cast<long long>(graph.nodes.size()))
+            throw std::invalid_argument("property-F violation witness has an out-of-range node");
+        if (!graph.nodes[static_cast<std::size_t>(source)].zero) contains_nonzero = true;
+        if (result.violation_cycle_edges[i] != std::make_pair(source, target))
+            throw std::invalid_argument("property-F violation witness edge list is misaligned");
+        const auto& successors = graph.nodes[static_cast<std::size_t>(source)].successors;
+        if (std::find(successors.begin(), successors.end(), target) == successors.end())
+            throw std::invalid_argument("property-F violation witness uses a missing graph edge");
+    }
+    if (!contains_nonzero) throw std::invalid_argument("property-F violation witness is entirely zero");
+    if (!mathlib::reflection::enabled()) return false;
+    mathlib::reflection::PropertyFViolationCertificate node;
+    node.cycle_nodes = result.violation_cycle_nodes;
+    node.cycle_edges = result.violation_cycle_edges;
+    node.description = std::move(description);
+    mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication,
+                                std::move(node));
+    return true;
+}
+
 }  // namespace ravel::proof

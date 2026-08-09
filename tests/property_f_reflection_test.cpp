@@ -50,6 +50,19 @@ int main() {
         auto failed_result = result;
         failed_result.holds = false;
         assert(!ravel::proof::stage_property_f_graph(failed_result, graph, ring, "failed"));
+        auto violating_graph = graph;
+        violating_graph.nodes[2].successors.push_back(2);
+        failed_result.violation_cycle_nodes = {2, 2};
+        failed_result.violation_cycle_edges = {{2, 2}};
+        mathlib::reflection::Trace violation_trace("property_f_reflection_violation_test");
+        mathlib::reflection::ScopedTrace violation_scope(&violation_trace);
+        assert(ravel::proof::stage_property_f_violation(failed_result, violating_graph, "synthetic failure"));
+        const std::string violation_lean = ravel::proof::render_reflective_lean_module(violation_trace);
+        assert(violation_lean.find("property_f_violation_0_closed") != std::string::npos);
+        if (const char* violation_dump = std::getenv("RAVEL_PROPERTY_F_VIOLATION_LEAN_OUT")) {
+            std::ofstream dump_violation(violation_dump);
+            dump_violation << violation_lean;
+        }
     }
     {
         std::array<std::vector<long long>, 3> images3 = {

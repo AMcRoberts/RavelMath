@@ -165,6 +165,7 @@
 #include <functional>
 #include <map>
 #include <memory>
+#include <queue>
 #include <set>
 #include <stdexcept>
 #include <utility>
@@ -328,6 +329,10 @@ struct PropertyFResult {
     long long nonzero_nodes = 0;
     long long strongly_connected_components = 0;
     long long nonzero_cycle_components = 0;
+    // Populated only for a definitive failure: a closed directed cycle in
+    // the actual finite graph, with at least one nonzero-translation node.
+    std::vector<long long> violation_cycle_nodes;
+    std::vector<std::pair<long long, long long>> violation_cycle_edges;
 };
 
 // Optional exact finite graph export for reflection and diagnostics.  The
@@ -1204,12 +1209,57 @@ PropertyFResult check_property_f(
 
     long long nonzero_cycle_components = 0;
     bool has_nonzero_cycle = false;
+    std::vector<long long> witness_nodes;
+    std::vector<std::pair<long long, long long>> witness_edges;
     for (long long s = 0; s < scc_count; ++s) {
         bool is_cycle = scc_size[static_cast<std::size_t>(s)] > 1 || scc_has_self_loop[static_cast<std::size_t>(s)];
         if (!is_cycle) continue;
         if (scc_has_nonzero[static_cast<std::size_t>(s)]) {
             ++nonzero_cycle_components;
             has_nonzero_cycle = true;
+            if (witness_nodes.empty()) {
+                long long start = -1;
+                for (long long v = 0; v < n; ++v) {
+                    if (scc_of[static_cast<std::size_t>(v)] == s &&
+                        !is_zero_node[static_cast<std::size_t>(v)]) {
+                        start = v;
+                        break;
+                    }
+                }
+                if (start >= 0) {
+                    for (const long long first : adj[static_cast<std::size_t>(start)]) {
+                        if (scc_of[static_cast<std::size_t>(first)] != s) continue;
+                        std::vector<long long> prev(static_cast<std::size_t>(n), -1);
+                        prev[static_cast<std::size_t>(first)] = start;
+                        std::queue<long long> pending;
+                        pending.push(first);
+                        while (!pending.empty() && prev[static_cast<std::size_t>(start)] == -1) {
+                            const long long u = pending.front();
+                            pending.pop();
+                            for (const long long v : adj[static_cast<std::size_t>(u)]) {
+                                if (scc_of[static_cast<std::size_t>(v)] != s ||
+                                    prev[static_cast<std::size_t>(v)] != -1) continue;
+                                prev[static_cast<std::size_t>(v)] = u;
+                                pending.push(v);
+                            }
+                        }
+                        if (prev[static_cast<std::size_t>(start)] == -1) continue;
+                        std::vector<long long> back;
+                        long long cur = start;
+                        back.push_back(cur);
+                        while (cur != first) {
+                            cur = prev[static_cast<std::size_t>(cur)];
+                            back.push_back(cur);
+                        }
+                        std::reverse(back.begin(), back.end());
+                        witness_nodes.push_back(start);
+                        witness_nodes.insert(witness_nodes.end(), back.begin(), back.end());
+                        for (std::size_t i = 1; i < witness_nodes.size(); ++i)
+                            witness_edges.emplace_back(witness_nodes[i - 1], witness_nodes[i]);
+                        break;
+                    }
+                }
+            }
         }
     }
     if (out_graph != nullptr) out_graph->nonzero_cycle_components = nonzero_cycle_components;
@@ -1222,6 +1272,8 @@ PropertyFResult check_property_f(
     out.nonzero_nodes = n - out.zero_nodes;
     out.strongly_connected_components = scc_count;
     out.nonzero_cycle_components = nonzero_cycle_components;
+    out.violation_cycle_nodes = std::move(witness_nodes);
+    out.violation_cycle_edges = std::move(witness_edges);
     return out;
 }
 

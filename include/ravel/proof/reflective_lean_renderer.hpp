@@ -4772,6 +4772,37 @@ inline std::string render_property_f_graph_instances(const mathlib::reflection::
     return out.str();
 }
 
+inline std::string render_property_f_violation_instances(const mathlib::reflection::Trace& trace) {
+    std::ostringstream out;
+    long long counter = 0;
+    auto nodes = trace.find<mathlib::reflection::PropertyFViolationCertificate>();
+    for (const auto& [id, node] : nodes) {
+        (void)id;
+        const std::string stem = "property_f_violation_" + std::to_string(counter++);
+        out << "/-- A concrete finite cycle witness from a definitive failing run.\n"
+               "    This is a counterexample certificate, not a property-(F) theorem. -/\n";
+        out << "def " << stem << "_nodes : List Nat := [";
+        for (std::size_t i = 0; i < node->cycle_nodes.size(); ++i) {
+            if (i) out << ", ";
+            out << node->cycle_nodes[i];
+        }
+        out << "]\n";
+        out << "def " << stem << "_edges : List (Nat × Nat) := [";
+        for (std::size_t i = 0; i < node->cycle_edges.size(); ++i) {
+            if (i) out << ", ";
+            out << "(" << node->cycle_edges[i].first << ", "
+                << node->cycle_edges[i].second << ")";
+        }
+        out << "]\n";
+        out << "theorem " << stem << "_closed :\n"
+            << "    " << stem << "_nodes.length = " << node->cycle_nodes.size() << " ∧\n"
+            << "    " << stem << "_edges.length = " << node->cycle_edges.size() << " ∧\n"
+            << "    " << stem << "_nodes.head? = " << stem << "_nodes.getLast? := by\n"
+            << "  decide\n\n";
+    }
+    return out.str();
+}
+
 inline std::string render_reflective_lean_module(const mathlib::reflection::Trace& trace) {
     if (trace.empty()) throw std::runtime_error("cannot render proof module without provenance");
     std::ostringstream out;
@@ -4797,6 +4828,7 @@ inline std::string render_reflective_lean_module(const mathlib::reflection::Trac
     out << render_sturm_chain_instances(trace);
     out << render_property_f_finite_run_instances(trace);
     out << render_property_f_graph_instances(trace);
+    out << render_property_f_violation_instances(trace);
     out << render_class_ii_six_vertex_graduation_instances(trace);
     out << render_class_ii_terminal_sextet_instances(trace);
     out << render_class_ii_penultimate_pair_instances(trace);

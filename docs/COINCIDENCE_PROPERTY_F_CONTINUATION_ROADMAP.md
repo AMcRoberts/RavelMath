@@ -156,3 +156,8 @@ property-(F) cycle criterion for the exported run.
 The staging API now refuses inconclusive or failing runs on this proof path;
 definitive failures remain reserved for a future explicit cycle-witness
 certificate rather than being serialized as false theorems.
+That witness path is now present: a failing closed graph reconstructs an
+explicit directed cycle containing a nonzero node, validates every edge
+against the actual adjacency, and renders a separate Lean counterexample
+artifact. A synthetic self-loop exercises and kernel-checks the path; no
+historical case is being mislabeled as a failure.
