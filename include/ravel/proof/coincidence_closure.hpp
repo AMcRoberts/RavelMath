@@ -118,18 +118,30 @@ inline std::vector<JunctionEdge<d>> build_junction_graph(const std::array<std::v
     auto follow_to_junction = [&](long long letter) -> std::pair<std::vector<long long>, long long> {
         std::vector<long long> chain;
         long long steps = 0;
+        std::set<long long> seen;
         while (!is_junction(letter)) {
+            if (!seen.insert(letter).second)
+                throw std::invalid_argument(
+                    "build_junction_graph: deterministic non-junction cycle has no branching target");
             chain.push_back(letter);
-            if (images[static_cast<std::size_t>(letter)].size() != 1) {
-                throw std::runtime_error("build_junction_graph: a non-junction letter must have image length exactly 1");
-            }
+            if (images[static_cast<std::size_t>(letter)].empty())
+                throw std::invalid_argument(
+                    "build_junction_graph: empty non-junction image has no deterministic target");
+            if (images[static_cast<std::size_t>(letter)].size() != 1)
+                throw std::invalid_argument(
+                    "build_junction_graph: a non-junction letter must have image length exactly 1");
             letter = images[static_cast<std::size_t>(letter)][0];
             ++steps;
-            if (steps > 10000) throw std::runtime_error("build_junction_graph: chain never reaches a junction (not irreducible?)");
         }
         chain.push_back(letter);  // the junction itself, chain.back()
         return {chain, steps};
     };
+    bool has_junction = false;
+    for (std::size_t letter = 0; letter < d; ++letter)
+        has_junction = has_junction || is_junction(static_cast<long long>(letter));
+    if (!has_junction)
+        throw std::invalid_argument(
+            "build_junction_graph: substitution has no branching letter");
     std::vector<JunctionEdge<d>> edges;
     for (long long j = 0; j < static_cast<long long>(d); ++j) {
         if (!is_junction(j)) continue;

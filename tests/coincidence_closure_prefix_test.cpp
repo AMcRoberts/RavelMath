@@ -102,6 +102,24 @@ int main() {
     const auto disjoint_full = check_strong_coincidence_closure<2>(
         disjoint, disjoint_matrix, 8, 1000);
     assert(!disjoint_full.holds && disjoint_full.inconclusive);
+    const std::array<std::vector<long long>, 2> deterministic_cycle = {
+        std::vector<long long>{1}, std::vector<long long>{0}};
+    const std::array<std::array<long long, 2>, 2> cycle_matrix = {{{{0, 1}}, {{1, 0}}}};
+    bool cycle_rejected = false;
+    try {
+        (void)check_prefix_coincidence_closure<2>(
+            deterministic_cycle, cycle_matrix, 8, 1000);
+    } catch (const std::invalid_argument&) {
+        cycle_rejected = true;
+    }
+    assert(cycle_rejected);
+    mathlib::reflection::Trace rejected_trace("coincidence_closure_rejection");
+    {
+        mathlib::reflection::ScopedTrace scope(&rejected_trace);
+        assert(stage_strong_coincidence_closure<2>(
+                   deterministic_cycle, 8, 1000, "deterministic cycle") ==
+               StrongCoincidenceClosureStageResult::unsupported);
+    }
 
     // Genuine multi-junction Pisot regression (sigma_{1,1}); letter 2 has
     // a forced one-step run into junction 0, while 0 and 1 branch.

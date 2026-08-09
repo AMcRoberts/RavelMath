@@ -174,6 +174,13 @@ instance; in each case its exact pair-depth profile agrees with the direct
 checker. This makes the deterministic-chain closure route the active engine
 for the project's concrete Pisot corpus, while the general theorem remains
 open.
+
+The closure precondition is now exact rather than timeout-based: a
+deterministic non-branching cycle, an empty non-junction image, or a
+substitution with no branching letter is rejected as unsupported. There is
+no arbitrary 10,000-step traversal guard, so a primitive expanding input can
+be audited against the real finite-shape condition directly.
+
 The staging operation now reconstructs every exported source/target/digit
 triple in the supplied `QBetaRing` and rejects any edge whose exact identity
 `gamma' = beta⁻¹ (gamma + delta)` fails. Fibonacci includes a tampering
