@@ -92,6 +92,13 @@ exact run closes `(6,2)` at 4,914,771 nodes (9,802,230 boundary edges), in
 resource-bound partial search, not an obstruction. The high-dimensional
 growth is large-but-harmless finite transport, though still not a proof of the
 missing uniform bound.
+The next fixed-degree point `(5,5)` reaches 2,000,001 nodes and 8,710,307
+boundary edges at 6:29 with 1.67 GB peak RSS, and remains intentionally
+inconclusive. The new growth-profile test sweeps all 42 points through
+`d=8,m=6`, checking the exact channel count, coefficient dimension, and
+`rho<1`; its scale factors are 13.52 at `(6,3)`, 16.55 at `(7,2)`, and 18.93
+at `(8,1)`. These are profile-only rows, not closure claims, and identify the
+uniform reachable-vector rank bound as the next theorem-facing deliverable.
 The exact digit/transition identity is now checked by
 `generalized_multinacci_affine_transport.hpp`: `delta(0^k)=k*beta` and
 `gamma' = beta^(-1)gamma+k`. This isolates the future rank problem into the

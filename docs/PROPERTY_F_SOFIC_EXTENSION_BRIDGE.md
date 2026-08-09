@@ -150,8 +150,12 @@ reference, the exact root/bound diagnostics are:
 | `(4,6)` | 0.8508 | 6.70 | 33,837 nodes, closed |
 | `(5,3)` | 0.8757 | 8.04 | 792,212 nodes, closed |
 | `(5,4)` | 0.8958 | 9.59 | 1,201,687 nodes, closed |
+| `(5,5)` | 0.9118 | 11.34 | >2,000,000 nodes, inconclusive |
 | `(6,1)` | 0.9062 | 10.66 | 188,545 nodes, closed |
 | `(6,2)` | 0.9094 | 11.04 | 4,914,771 nodes, closed |
+| `(6,3)` | 0.9260 | 13.52 | profile only; exact BFS deferred |
+| `(7,2)` | 0.9396 | 16.55 | profile only; exact BFS deferred |
+| `(8,1)` | 0.9472 | 18.93 | profile only; exact BFS deferred |
 
 This predicts “large but harmless” transient growth: increasing `d` widens
 the coefficient state space and weakens contraction, while increasing `m`
@@ -172,3 +176,14 @@ peaking at 4.91 GB RSS. Thus the previously inconclusive 500,009-node probe
 was a resource-bound observation, not an obstruction: this instance is a
 mid-single-million, finite transport cloud. The large closed runs remain
 expensive transient transport, not evidence of a recurrent obstruction.
+
+The next fixed-degree point `(5,5)` reaches 2,000,001 nodes and 8,710,307
+boundary edges at 6:29, using 1.67 GB RSS, and is intentionally left
+inconclusive. The `generalized_multinacci_growth_profile_test` supplies the
+cheap structural continuation of the sheet: it sweeps all 42 points with
+`2 <= d <= 8` and `1 <= m <= 6`, checking the exact channel formula
+`(d-1)m+1`, coefficient dimension `d`, and the Pisot condition `rho < 1`.
+For the profile-only rows above this is scale evidence, not a Property-F
+closure claim. The factors rise to 13.52 at `(6,3)`, 16.55 at `(7,2)`, and
+18.93 at `(8,1)`, so an unstructured exact BFS would likely exceed the 10 GB
+working envelope; the rank/cardinality proof is the correct next step there.
