@@ -128,6 +128,7 @@ TilingClassification classify_tiling(
 
     TilingClassification out;
     out.name = name;
+    out.property_f_bound_trusted = true;
     out.strong_coincidence_closure_used = false;
     out.strong_coincidence_closure_attempted = false;
     out.strong_coincidence_closure_inconclusive = false;
@@ -219,7 +220,6 @@ TilingClassification classify_tiling(
             primes_dividing_det, charpoly);
         propf = adelic::check_property_f<d>(automaton, property_f_node_budget, combined_bound);
         property_f_bound_trusted = trusted;
-        propf.extra_bound_trusted = trusted;
         if (!trusted) {
             // Preserve the exploratory graph and node count, but do not
             // promote a run based on a non-maximal Dedekind order to a
