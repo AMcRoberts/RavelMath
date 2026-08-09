@@ -177,10 +177,11 @@ itself. This is a settled point; mentioned here for completeness.
   non-unimodular survey with the dominant-SCC extractor and compares
   the three λ values (whole-matrix, largest-SCC, dominant-SCC). A
   correctness audit found a stale 3×3 determinant filter and an
-  unassigned SCC-split flag; both are fixed, but the corrected pilot
-  produced no converged candidate under its bounded contact caps.
-  The historical row therefore remains provisional until a clean batch
-  is obtained from the corrected driver.
+  unassigned SCC-split flag; both are fixed, and the driver now builds
+  the graph sparsely. A guarded legacy-corona pilot produced 2 clean
+  candidates out of 4, with exact λ agreement and no SCC membership
+  splits. The historical row remains provisional until a substantially
+  larger corrected batch is obtained.
 
 **What's open (Item B research targets, in priority order)**:
 
@@ -368,9 +369,9 @@ with the dominant one being the 210-node one, NOT the 221-node
 largest). `extract_recurrent_core` is documented in its own
 header comment to give wrong answers for graphs of comparable
 size to Hexanacci's; the G_B re-audit driver
-(`app/reaudit_gb_dominant_scc.cpp`) is the check for this distinction,
-but its corrected run still needs a converged clean batch before it can
-be used as evidence.
+(`app/reaudit_gb_dominant_scc.cpp`) is the check for this distinction;
+the corrected 2/4 pilot is evidence that the path now runs, but not a
+replacement for the full historical re-audit.
 
 **ASan (AddressSanitizer)** — the safety net for the precision-
 vs-digits.size() invariant that was the source of the recent

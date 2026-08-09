@@ -197,15 +197,15 @@ point, and is the §C / Finding 2 case below.
 **Scope of the claim**: 11 data points, one alphabet size (4), one
 `|det|` (2), narrow entry range (0–3). Not evidence about unimodular
 Pisot in general, non-unimodular Pisot at other alphabet sizes, or
-non-unimodular Pisot with `|det| > 2`. The planned re-audit is not
-currently confirmed: an implementation audit found that the driver
-had been filtering 4×4 candidates with a stale hand-expanded 3×3
-determinant, and its SCC-split flag was never assigned. The corrected
-driver now uses a dimension-independent determinant and records the
-dominant/largest SCC size comparison, but a reproducible pilot with
-the corrected path produced no converged candidate under its bounded
-contact caps. Until a clean batch is rerun, this row remains
-provisional with respect to the largest-vs-dominant distinction.
+non-unimodular Pisot with `|det| > 2`. An implementation audit found
+that the driver had been filtering 4×4 candidates with a stale
+hand-expanded 3×3 determinant, and its SCC-split flag was never
+assigned. The corrected driver now uses a dimension-independent
+determinant, compares actual SCC memberships, and reconstructs the
+graph sparsely. A guarded legacy-corona pilot produced 2 clean
+candidates out of 4; both agreed exactly among whole, dominant-SCC,
+and largest-SCC λ values, with zero membership splits. This is useful
+partial evidence, not yet a re-audit of the historical 11/87 batch.
 
 **Literature connection**: consistent with Barge, Bruin, Jones &
 Sadun (2010) on non-unimodular Pisot substitutions failing to tile,
@@ -295,7 +295,8 @@ certified. The 39-/87-
 candidate non-unimodular row's "11/87 differ by 10-40%" claim remains
 a re-audit target: the earlier 14/14 statement was generated before
 the determinant and split-flag defects were corrected and cannot serve
-as evidence for the fixed implementation.
+as evidence for the fixed implementation. The corrected 2/4 pilot is
+not large enough to replace that target.
 
 **Why "not yet independently hand-verified" rather than a flat claim
 of proof**: this result comes from a from-scratch implementation of

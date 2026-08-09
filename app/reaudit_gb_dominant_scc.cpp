@@ -103,6 +103,7 @@
 #include <ctime>
 #include <dirent.h>
 #include <fcntl.h>
+#include <map>
 #include <optional>
 #include <random>
 #include <sstream>
@@ -783,6 +784,10 @@ int main(int argc, char** argv) {
             audit_limits.closure_cap = closure_cap;
             audit_limits.corona_cap = corona_cap;
             audit_limits.max_corona_rounds = max_corona_rounds;
+            // The audit consumes only the sparse graph and SCCs.  Avoid
+            // asking contact_boundary to allocate an O(|G_B|^2) matrix that
+            // would immediately be converted back into adjacency lists.
+            audit_limits.retain_boundary_matrix = false;
 
             // (A) Cache lookup before paying for the pipeline.  The
             // load returns a WeightedDigraph directly (either via
@@ -824,7 +829,7 @@ int main(int argc, char** argv) {
                     continue;
                 }
                 print_mem("after compute_contact_boundary_from_subst");
-                if (!rep.converged || rep.gb_matrix.empty()) {
+                if (!rep.converged || rep.boundary_nodes.empty()) {
                     std::printf("  did not converge or empty matrix; skipping "
                                 "(closure_stopped=%d corona_capped=%d "
                                 "pre_contact=%zu boundary=%zu max_A=%zu rounds=%d)\n\n",
@@ -834,28 +839,53 @@ int main(int argc, char** argv) {
                                 rep.max_a_size_reached, rep.convergence_rounds);
                     continue;
                 }
-                std::vector<std::vector<long long>> cached_gb =
-                    std::move(rep.gb_matrix);
-                gb_size = cached_gb.size();
-
-                if (!cfg.run_dir.empty() && !cfg.readonly_) {
-                    CacheKey ck = make_cache_key(inst.sigma, audit_limits,
-                                                /*search_bound=*/2, inst.beta);
-                    bool wrote = save_cache(cfg, ck, cached_gb);
-                    if (wrote) ++n_cache_writes;
-                    std::string cache_path_str =
-                        cache_path(cfg, cache_hash(ck));
-                    long long sz = wrote ? file_size_or_zero(cache_path_str) : 0;
-                    std::printf("    [cache %s] %s  (%.2f MB)\n",
-                                wrote ? "write" : "write-failed",
-                                cache_path_str.c_str(),
-                                sz / 1e6);
+                if (!rep.gb_matrix.empty()) {
+                    // Retain this compatibility path for callers that
+                    // deliberately re-enable dense storage (and for old
+                    // cache artifacts), but the normal audit path below is
+                    // graph-only.
+                    std::vector<std::vector<long long>> cached_gb =
+                        std::move(rep.gb_matrix);
+                    gb_size = cached_gb.size();
+                    g_audit = WeightedDigraph::from_dense(cached_gb);
+                    cached_gb.clear();
+                    cached_gb.shrink_to_fit();
+                    print_mem("after dense matrix freed");
+                } else {
+                    // Reconstruct exactly the same edge multiset from the
+                    // report's canonical boundary node list.  This is the
+                    // sparse counterpart of compute_contact_boundary's
+                    // dense G_B materialization: each exact parent pair
+                    // contributes one weighted edge, and parallel entries
+                    // are intentionally preserved because WeightedDigraph's
+                    // SCC/eigenvalue routines sum them by adjacency weight.
+                    const auto subst = make_substitution<4>(rule, inst.beta);
+                    std::vector<SNode<4>> nodes;
+                    nodes.reserve(rep.boundary_nodes.size());
+                    std::map<SNode<4>, std::size_t> index;
+                    for (const auto& t : rep.boundary_nodes) {
+                        SNode<4> n;
+                        n.i = std::get<0>(t);
+                        n.j = std::get<2>(t);
+                        const auto& x = std::get<1>(t);
+                        if (x.size() != 4) throw std::runtime_error(
+                            "re-audit boundary node has wrong dimension");
+                        for (std::size_t q = 0; q < 4; ++q) n.x[q] = x[q];
+                        index.emplace(n, nodes.size());
+                        nodes.push_back(n);
+                    }
+                    g_audit = WeightedDigraph(nodes.size());
+                    for (std::size_t s = 0; s < nodes.size(); ++s) {
+                        for (const auto& [dst, prefixes] :
+                             simple_forward_targets_exact<4>(subst, nodes[s])) {
+                            (void)prefixes;
+                            const auto it = index.find(dst);
+                            if (it != index.end()) g_audit.add_edge(s, it->second, 1);
+                        }
+                    }
+                    gb_size = g_audit.n;
+                    print_mem("after sparse boundary graph built");
                 }
-                // Lift dense matrix into a digraph in-place.
-                g_audit = WeightedDigraph::from_dense(cached_gb);
-                cached_gb.clear();
-                cached_gb.shrink_to_fit();
-                print_mem("after dense matrix freed");
             }
             std::printf("  |G_B|=%zu  -- computing eigenvalues\n",
                         g_audit.n);
@@ -875,7 +905,15 @@ int main(int argc, char** argv) {
                 std::tie(g_large, idx_large) = extract_recurrent_core(g_audit);
                 lambda_large = dominant_eigenvalue_estimate_sparse(g_large);
             }
-            scc_split = idx_dom.size() != idx_large.size();
+            // Equal cardinality is not enough: two distinct recurrent SCCs
+            // can have the same number of vertices.  Compare the actual
+            // membership sets (the extractors return source-vertex indices)
+            // after sorting, so the audit cannot silently miss a split.
+            auto dom_members = idx_dom;
+            auto large_members = idx_large;
+            std::sort(dom_members.begin(), dom_members.end());
+            std::sort(large_members.begin(), large_members.end());
+            scc_split = dom_members != large_members;
         }
         print_mem("end of heavy-mem block (rep, rule, g_audit freed)");
 
