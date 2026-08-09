@@ -915,3 +915,7 @@ The reusable scheme certificate packages the logical implication: complete
 zero-kernel coverage plus the two root cycles yields arbitrary integer
 displacement on that finite catalogue. The remaining family theorem is to
 prove those hypotheses uniformly.
+The unit-cycle schema is now explicit for every tested `n >= 3`: the two role
+paths are `0→2→1→0` and `0→2n→n→0`, with defects `0,0,+1` and `0,0,-1`.
+The family proof should derive this shape directly from the canonical parent
+prefixes.

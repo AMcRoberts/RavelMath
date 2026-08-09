@@ -252,6 +252,49 @@ struct ParentRoleUnitCycleReport {
     std::vector<long long> negative_defects;
 };
 
+struct CanonicalUnitCycleSchemaReport {
+    bool proved{};
+    bool canonical_shape{};
+    std::size_t alphabet_size{};
+    std::vector<std::size_t> positive_roles;
+    std::vector<std::size_t> negative_roles;
+    std::string obstruction;
+};
+
+// For the canonical Parry parent catalogue (alphabet size n >= 3), the two
+// unit cycles have a fixed role shape independent of the digit string:
+//   (0,0)->(0,2)->(0,1)->(0,0), defects 0,0,+1
+//   (0,0)->(2,0)->(1,0)->(0,0), defects 0,0,-1.
+// Checking this shape isolates the reusable combinatorial core behind the
+// empirical unit-cycle witnesses.
+inline CanonicalUnitCycleSchemaReport derive_canonical_unit_cycle_schema(
+    const CanonicalParentRoleCatalogue& catalogue) {
+    CanonicalUnitCycleSchemaReport out;
+    out.alphabet_size = catalogue.alphabet_size;
+    if (!catalogue.proved || catalogue.alphabet_size < 3) {
+        out.obstruction = "canonical unit-cycle schema requires alphabet size >= 3";
+        return out;
+    }
+    const auto role = [&](std::size_t left, std::size_t right) {
+        return left * catalogue.alphabet_size + right;
+    };
+    out.positive_roles = {role(0,0), role(0,2), role(0,1), role(0,0)};
+    out.negative_roles = {role(0,0), role(2,0), role(1,0), role(0,0)};
+    const std::vector<long long> positive_defects{0,0,1};
+    const std::vector<long long> negative_defects{0,0,-1};
+    std::set<std::tuple<std::size_t,std::size_t,long long>> direct;
+    for (const auto& edge : catalogue.edges)
+        direct.insert({edge.source_role, edge.target_role, edge.defect});
+    out.canonical_shape = true;
+    for (std::size_t k = 0; k < positive_defects.size(); ++k)
+        out.canonical_shape &= direct.count({out.positive_roles[k], out.positive_roles[k + 1], positive_defects[k]}) != 0;
+    for (std::size_t k = 0; k < negative_defects.size(); ++k)
+        out.canonical_shape &= direct.count({out.negative_roles[k], out.negative_roles[k + 1], negative_defects[k]}) != 0;
+    out.proved = out.canonical_shape;
+    if (!out.proved) out.obstruction = "canonical unit-cycle role schema not realized";
+    return out;
+}
+
 // Finds replayable +/-1 closed walks at one common role.  These are the
 // generators needed for an integer cocycle: once both exist, powers and
 // concatenations give arbitrary net displacement at the root, while the

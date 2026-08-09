@@ -4018,6 +4018,10 @@ zero-kernel coverage plus the two root unit cycles yields arbitrary integer
 displacement on that finite catalogue. This is a constructive per-catalogue
 Z-extension certificate, not a claim that the hypotheses hold uniformly for
 all Pisot substitutions.
+The role-schema checker confirms the same exact paths for every tested
+alphabet (n\ge3): `0 -> 2 -> 1 -> 0` with defects `0,0,+1`, and
+`0 -> 2n -> n -> 0` with defects `0,0,-1`. This is the first reusable
+finite combinatorial lemma behind the integer-extension scheme.
 At word cap 100, theta10 realizes the complete `-20..+20` window
 (850,176/850,176 states), again with all zero-net witnesses replay-checked.
 The reusable window profile at word cap 30 gives largest complete radii 5,
