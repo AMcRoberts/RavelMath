@@ -626,6 +626,47 @@ inline PAdicShapeDiagnostic compare_first_order_padic_shapes(
     return out;
 }
 
+struct NewtonResidualDiagnostic {
+    NewtonSegment segment{};
+    bool supported = false;  // currently exact for integral slopes (e=1)
+    FpPoly residual;
+    std::vector<FpFactor> factors;
+};
+
+// Compute the residual polynomial attached to a Newton segment with integral
+// slope.  For e=1, divide each on-segment coefficient by its exact p-adic
+// power and reduce the unit digit modulo p.  Factoring this residual is the
+// missing refinement between a segment's horizontal degree and the actual
+// residue-degree factors (the quartic's degree-3 slope residual is
+// (x+1)^3).  Fractional-slope residuals require a chosen residual field and
+// are intentionally left to the higher-order/Montes implementation.
+inline NewtonResidualDiagnostic newton_residual_diagnostic(
+        const ZpPoly& f, const NewtonSegment& segment) {
+    NewtonResidualDiagnostic out;
+    out.segment = segment;
+    out.residual.p = f.p;
+    out.residual.c = {0};
+    if (segment.e != 1 || segment.start_idx < 0 || segment.end_idx < segment.start_idx)
+        return out;
+    const long long v_start = zp_valuation(
+        f.coeffs[static_cast<std::size_t>(segment.start_idx)]);
+    for (long long i = segment.start_idx; i <= segment.end_idx; ++i) {
+        const auto& coeff = f.coeffs[static_cast<std::size_t>(i)];
+        const long long valuation = zp_valuation(coeff);
+        const long long expected = v_start - segment.slope_num * (i - segment.start_idx);
+        if (valuation != expected || valuation >= f.precision) continue;
+        if (static_cast<std::size_t>(i - segment.start_idx) >= out.residual.c.size())
+            out.residual.c.resize(static_cast<std::size_t>(i - segment.start_idx) + 1, 0);
+        out.residual.c[static_cast<std::size_t>(i - segment.start_idx)] =
+            coeff.digits[static_cast<std::size_t>(valuation)] % f.p;
+    }
+    while (out.residual.c.size() > 1 && out.residual.c.back() == 0)
+        out.residual.c.pop_back();
+    out.factors = factor_fp(out.residual);
+    out.supported = !out.residual.c.empty() && out.residual.c.back() != 0;
+    return out;
+}
+
 // ===================================================================
 // Newton iteration on the local polynomial (Approach A)
 // ===================================================================

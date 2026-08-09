@@ -203,6 +203,12 @@ void test_nonmaximal_order_is_not_trusted() {
         CHECK(segments[0].e == 1 && segments[0].f == 1 &&
                   segments[1].e == 1 && segments[1].f == 3,
               "non-maximal quartic: Newton (e,f) differs from non-maximal Dedekind data");
+        auto residual = adelic::newton_residual_diagnostic(
+            adelic::zp_poly_from_polyz(R.charpoly(), 2, 30), segments[1]);
+        CHECK(residual.supported && residual.factors.size() == 1 &&
+                  residual.factors[0].mult == 3 &&
+                  static_cast<long long>(residual.factors[0].g.c.size()) - 1 == 1,
+              "non-maximal quartic: slope residual refines degree-3 segment to (e,f)=(3,1)");
     }
     auto shape = adelic::compare_first_order_padic_shapes(R.charpoly(), 2, 30);
     CHECK(!shape.dedekind_order_maximal,

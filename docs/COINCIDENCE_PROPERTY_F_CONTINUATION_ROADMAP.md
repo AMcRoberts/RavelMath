@@ -197,6 +197,9 @@ than an assumption hidden in the classifier. An independent decomposition
 check reports the same `(e,f)=(1,1),(3,1)` shape as the original Dedekind
 data; the Newton polygon's `(1,1)+(1,3)` is only a first-order slope shape and
 must not be read as a replacement factorization.
+The new `newton_residual_diagnostic` makes that refinement explicit for
+integral-slope segments: the quartic's degree-3 segment has residual
+polynomial `(x+1)^3`, recovering the `(e,f)=(3,1)` factor shape directly.
 As an independent corroboration (not a replacement for the exact in-repo
 checks), SymPy's implementation of Zassenhaus Round 2 returns the same
 index-2 basis and discriminant `-21580` for this polynomial.
