@@ -869,6 +869,7 @@ PropertyFResult check_property_f(
     std::vector<bool> enqueued;
 
     long long zero_nodes_beyond_frontier = 0;
+    long long boundary_edges = 0;
     auto get_or_create = [&](const mathlib::QElem& gamma, long long letter) -> long long {
         std::string key = qelem_key(gamma) + "|" + std::to_string(letter);
         auto it = node_id.find(key);
@@ -938,6 +939,7 @@ PropertyFResult check_property_f(
                 }
                 edge_digits[static_cast<std::size_t>(u)].push_back(std::move(digit_coefficients));
                 bool within_bound = norm < bound_M && (!extra_bound || extra_bound(gamma_prime));
+                if (!within_bound) ++boundary_edges;
                 if (within_bound && !enqueued[static_cast<std::size_t>(v)]) {
                     enqueued[static_cast<std::size_t>(v)] = true;
                     queue.push_back(v);
@@ -1017,6 +1019,11 @@ PropertyFResult check_property_f(
         PropertyFResult out;
         out.holds = false;
         out.inconclusive = true;
+        out.closure_reached = false;
+        out.archimedean_bound_applied = true;
+        out.extra_bound_applied = static_cast<bool>(extra_bound);
+        out.node_budget = node_budget;
+        out.boundary_edges = boundary_edges;
         out.nodes_explored = static_cast<long long>(node_gamma.size());
         out.zero_nodes = static_cast<long long>(std::count(is_zero_node.begin(), is_zero_node.end(), true));
         out.nonzero_nodes = out.nodes_explored - out.zero_nodes;
@@ -1217,6 +1224,11 @@ PropertyFResult check_property_f(
     PropertyFResult out;
     out.holds = !has_nonzero_cycle;
     out.inconclusive = false;
+    out.closure_reached = true;
+    out.archimedean_bound_applied = true;
+    out.extra_bound_applied = static_cast<bool>(extra_bound);
+    out.node_budget = node_budget;
+    out.boundary_edges = boundary_edges;
     out.nodes_explored = n;
     out.zero_nodes = static_cast<long long>(std::count(is_zero_node.begin(), is_zero_node.end(), true));
     out.nonzero_nodes = n - out.zero_nodes;

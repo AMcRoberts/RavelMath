@@ -567,6 +567,11 @@ struct SturmChainCertificate {
 // the graph construction and its bounds remain the mathematical inputs, while
 // these counters preserve the exact result that the checker actually returned.
 struct PropertyFFiniteRunCertificate {
+    bool closure_reached = false;
+    bool archimedean_bound_applied = false;
+    bool extra_bound_applied = false;
+    long long node_budget = 0;
+    long long boundary_edges = 0;
     long long nodes_explored = 0;
     long long zero_nodes = 0;
     long long nonzero_nodes = 0;

@@ -17,6 +17,11 @@ namespace adelic {
 struct PropertyFResult {
     bool holds = false;
     bool inconclusive = false;
+    bool closure_reached = false;
+    bool archimedean_bound_applied = false;
+    bool extra_bound_applied = false;
+    long long node_budget = 0;
+    long long boundary_edges = 0;
     long long nodes_explored = 0;
     long long zero_nodes = 0;
     long long nonzero_nodes = 0;

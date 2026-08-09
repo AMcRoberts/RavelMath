@@ -38,6 +38,12 @@ inline mathlib::QElem property_f_parse_qelem(
 inline bool stage_property_f_finite_run(const adelic::PropertyFResult& result,
                                         std::string description = {}) {
     if (result.inconclusive) return false;
+    if (!result.closure_reached || !result.archimedean_bound_applied || result.node_budget <= 0) {
+        throw std::invalid_argument("property-F summary lacks a closed bounded search contract");
+    }
+    if (result.boundary_edges < 0) {
+        throw std::invalid_argument("property-F summary contains a negative boundary-edge count");
+    }
     if (result.nodes_explored < 0 || result.zero_nodes < 0 || result.nonzero_nodes < 0 ||
         result.strongly_connected_components < 0 || result.nonzero_cycle_components < 0) {
         throw std::invalid_argument("property-F summary contains a negative count");
@@ -52,6 +58,11 @@ inline bool stage_property_f_finite_run(const adelic::PropertyFResult& result,
 
     mathlib::reflection::PropertyFFiniteRunCertificate node;
     node.nodes_explored = result.nodes_explored;
+    node.closure_reached = result.closure_reached;
+    node.archimedean_bound_applied = result.archimedean_bound_applied;
+    node.extra_bound_applied = result.extra_bound_applied;
+    node.node_budget = result.node_budget;
+    node.boundary_edges = result.boundary_edges;
     node.zero_nodes = result.zero_nodes;
     node.nonzero_nodes = result.nonzero_nodes;
     node.strongly_connected_components = result.strongly_connected_components;

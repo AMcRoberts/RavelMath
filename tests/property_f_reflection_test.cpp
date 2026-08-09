@@ -54,6 +54,15 @@ int main() {
         auto failed_result = result;
         failed_result.holds = false;
         assert(!ravel::proof::stage_property_f_graph(failed_result, graph, ring, "failed"));
+        auto unclosed_result = result;
+        unclosed_result.closure_reached = false;
+        bool unclosed_rejected = false;
+        try {
+            (void)ravel::proof::stage_property_f_finite_run(unclosed_result, "unclosed");
+        } catch (const std::invalid_argument&) {
+            unclosed_rejected = true;
+        }
+        assert(unclosed_rejected);
         auto violating_graph = graph;
         violating_graph.nodes[2].successors.push_back(2);
         failed_result.violation_cycle_nodes = {2, 2};

@@ -4527,6 +4527,8 @@ inline std::string render_property_f_finite_run_instances(const mathlib::reflect
         out << "/-- Concrete summary from a closed `check_property_f` run: the\n"
                "    counters below are data, not an unconditional statement about Γ. -/\n";
         out << "theorem " << name << " :\n";
+        out << "    (" << (node->closure_reached ? "True" : "False") << ") ∧\n";
+        out << "    (" << (node->archimedean_bound_applied ? "True" : "False") << ") ∧\n";
         out << "    (" << node->nodes_explored << " = " << node->nodes_explored << ") ∧\n";
         out << "    (" << node->zero_nodes << " + " << node->nonzero_nodes << " = " << node->nodes_explored << ") ∧\n";
         out << "    (" << node->strongly_connected_components << " ≥ 0) ∧\n";
