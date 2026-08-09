@@ -107,6 +107,27 @@ void run_derived_terminating_case(const char* name,
     run_reduced_field_case<d>(name, source, ring.charpoly_, node_budget);
 }
 
+void run_derived_terminating_case_dynamic(const char* name,
+                                          const std::vector<long long>& low_first,
+                                          long long node_budget = 300000) {
+    const auto ring = ring_from_low_first(low_first);
+    const auto interval = mathlib::isolate_beta(ring);
+    const auto expansion = ravel::exact_greedy_beta_expansion_of_one(ring, interval);
+    if (!expansion.terminated)
+        throw std::runtime_error("derived probe expected a terminating expansion");
+    const auto source = ravel::canonical_beta_substitution_from_digits(expansion.digits);
+    switch (source.size()) {
+        case 2: run_reduced_field_case<2>(name, source, ring.charpoly_, node_budget); break;
+        case 3: run_reduced_field_case<3>(name, source, ring.charpoly_, node_budget); break;
+        case 4: run_reduced_field_case<4>(name, source, ring.charpoly_, node_budget); break;
+        case 5: run_reduced_field_case<5>(name, source, ring.charpoly_, node_budget); break;
+        case 6: run_reduced_field_case<6>(name, source, ring.charpoly_, node_budget); break;
+        case 7: run_reduced_field_case<7>(name, source, ring.charpoly_, node_budget); break;
+        case 8: run_reduced_field_case<8>(name, source, ring.charpoly_, node_budget); break;
+        default: throw std::runtime_error("derived probe: unsupported canonical alphabet size");
+    }
+}
+
 }  // namespace
 
 int main() {
@@ -118,4 +139,6 @@ int main() {
                               third_minpoly, 1000000);
     run_case<3>("eventually-periodic x^3-2x^2-x+1", {{0, 0, 1}, {2}, {0, 1}}, 300000);
     run_derived_terminating_case<4>("theta2 canonical x^4-x^3-1", {-1, 0, 0, -1}, 1000000);
+    run_derived_terminating_case_dynamic("theta5 canonical x^6-x^5-x^4+x^2-1",
+                                         {-1, -1, 0, 1, 0, -1}, 3000000);
 }

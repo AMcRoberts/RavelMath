@@ -850,3 +850,7 @@ cases.
 The same exact derived probe now includes the terminating `theta2`
 canonical lift (`x^4-x^3-1`): property (F) closes at 693 nodes and
 coincidence depth 3.
+The terminating `theta5` lift is now handled by dynamic alphabet dispatch;
+at 3,000,000 nodes it is still explicitly INCONCLUSIVE (3,000,002 nodes,
+2.90 GB peak RSS), identifying the next scaling target rather than a
+property-(F) counterexample.
