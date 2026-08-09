@@ -53,9 +53,12 @@ for _, modname in ipairs(test_files) do
     print("Suite: " .. modname)
     print("================================================================")
     local mod = require(modname)
-    local ok, err = pcall(mod.main, ravel)
+    local ok, result_or_err = pcall(mod.main, ravel)
     if not ok then
-        print(string.format("Suite %s failed to run: %s", modname, tostring(err)))
+        print(string.format("Suite %s failed to run: %s", modname, tostring(result_or_err)))
+        failed = failed + 1
+    elseif result_or_err == false then
+        print(string.format("Suite %s reported failed assertions.", modname))
         failed = failed + 1
     end
     print("")
