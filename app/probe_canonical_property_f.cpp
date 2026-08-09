@@ -85,6 +85,28 @@ void run_reduced_field_case(const char* name,
                 result.nodes_explored);
 }
 
+mathlib::QBetaRing ring_from_low_first(const std::vector<long long>& low_first) {
+    mathlib::PolyZ p;
+    p.ensure_size(low_first.size() + 1);
+    for (std::size_t i = 0; i < low_first.size(); ++i)
+        mathlib::set_si(p.coeff(low_first.size() - 1 - i), low_first[i]);
+    mathlib::set_si(p.coeff(low_first.size()), 1);
+    return mathlib::QBetaRing(p);
+}
+
+template <std::size_t d>
+void run_derived_terminating_case(const char* name,
+                                  const std::vector<long long>& low_first,
+                                  long long node_budget = 300000) {
+    const auto ring = ring_from_low_first(low_first);
+    const auto interval = mathlib::isolate_beta(ring);
+    const auto expansion = ravel::exact_greedy_beta_expansion_of_one(ring, interval);
+    if (!expansion.terminated)
+        throw std::runtime_error("derived probe expected a terminating expansion");
+    const auto source = ravel::canonical_beta_substitution_from_digits(expansion.digits);
+    run_reduced_field_case<d>(name, source, ring.charpoly_, node_budget);
+}
+
 }  // namespace
 
 int main() {
@@ -95,4 +117,5 @@ int main() {
                               {{0, 1}, {2}, {3}, {0, 4}, {5}, {6}, {0}},
                               third_minpoly, 1000000);
     run_case<3>("eventually-periodic x^3-2x^2-x+1", {{0, 0, 1}, {2}, {0, 1}}, 300000);
+    run_derived_terminating_case<4>("theta2 canonical x^4-x^3-1", {-1, 0, 0, -1}, 1000000);
 }

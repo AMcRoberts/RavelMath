@@ -3936,3 +3936,6 @@ closes property (F) at 93,408 nodes,
 with strong coincidence at depth 3. The unreduced full-incidence path still
 rejects the neutral roots, so the reduced-field route is now the required
 one for cyclotomic lifts rather than an optional diagnostic.
+The exact terminating canonical lift for `theta2` (`x^4-x^3-1`) also
+closes, at 693 nodes with coincidence depth 3, extending the finite
+property-(F) baseline beyond the three-letter examples.

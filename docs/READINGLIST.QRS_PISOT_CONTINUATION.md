@@ -847,3 +847,6 @@ neutral-root problem in the full incidence ring; the reusable
 closes property (F) at 93,408 nodes (coincidence depth 3). This turns the
 cyclotomic-sector issue into a reusable route for the next property-(F)
 cases.
+The same exact derived probe now includes the terminating `theta2`
+canonical lift (`x^4-x^3-1`): property (F) closes at 693 nodes and
+coincidence depth 3.
