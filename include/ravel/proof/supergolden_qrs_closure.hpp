@@ -11,6 +11,7 @@
 #include "ravel/canonical_beta_substitution.hpp"
 #include "ravel/contact_boundary.hpp"
 #include "ravel/supergolden_pisot_substitution.hpp"
+#include "ravel/proof/supergolden_three_generator_intertwiner.hpp"
 namespace ravel::proof {
 
 // Supergolden number: dominant root of x^3-x^2-1, the fourth-smallest
@@ -37,6 +38,10 @@ struct SupergoldenQRSClosureCertificate {
  bool incidence_polynomial_matches_minpoly_exactly{};
  bool every_boundary_edge_forced_into_qrs{};
  bool universal_parent_role_intertwiner_schema{};
+ bool contact_boundary_complete{};
+ bool simultaneous_three_generator_intertwiner{};
+ std::size_t boundary_states{};
+ long long boundary_edges{};
  bool no_fourth_generator{};
  bool proved{};
 };
@@ -101,8 +106,22 @@ inline SupergoldenQRSClosureCertificate derive_supergolden_qrs_closure(){
  c.defect_classes = defects.size();
  c.every_boundary_edge_forced_into_qrs = (prefixes==std::set<std::vector<long long>>{{},{0}} && defects.size()==3);
  c.universal_parent_role_intertwiner_schema = c.every_boundary_edge_forced_into_qrs;
- c.no_fourth_generator = c.every_boundary_edge_forced_into_qrs;
- c.proved = c.incidence_polynomial_matches_minpoly_exactly && c.total_parent_decompositions==4 && c.distinct_prefixes==2 && c.defect_classes==3 && c.universal_parent_role_intertwiner_schema;
+ // Do not infer the contact-boundary theorem from prefix counts alone. Run
+ // the exact boundary graph and all three generator inequalities, whose
+ // witness containment is checked independently in the dedicated
+ // supergolden intertwiner certificate.
+ const auto intertwiner = derive_supergolden_three_generator_intertwiner();
+ c.contact_boundary_complete = intertwiner.parent_catalogue_complete &&
+     intertwiner.every_boundary_edge_has_universal_witness &&
+     intertwiner.base_role_projection_exact;
+ c.simultaneous_three_generator_intertwiner =
+     intertwiner.simultaneous_three_generator_intertwiner &&
+     intertwiner.finite_positive_grammar_ready;
+ c.boundary_states = intertwiner.boundary_states;
+ c.boundary_edges = intertwiner.boundary_edges;
+ c.no_fourth_generator = c.every_boundary_edge_forced_into_qrs &&
+     c.contact_boundary_complete;
+ c.proved = c.incidence_polynomial_matches_minpoly_exactly && c.total_parent_decompositions==4 && c.distinct_prefixes==2 && c.defect_classes==3 && c.universal_parent_role_intertwiner_schema && c.contact_boundary_complete && c.simultaneous_three_generator_intertwiner;
  return c;
 }
 }

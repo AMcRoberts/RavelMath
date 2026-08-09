@@ -132,12 +132,17 @@ operation rather than a hand-copied substitution:
 - See `include/ravel/proof/supergolden_qrs_closure.hpp` and
   `tests/supergolden_qrs_test.cpp`.
 
-Not yet done: steps 7–12 (full contact-boundary enumeration, the smallest
-ordered-parent-role comparison object, the simultaneous generator
-inequalities, finite-positive-word/norm-weighted closure invocation, and
-Lean emission). Since there is no cyclotomic cofactor at the substitution
-level, step 11 (cyclotomic sector audit) is currently vacuous for the raw
-substitution; it may still matter once boundary/twisted objects are built.
+Steps 7–10 are now wired into the Q/R/S closure certificate rather than
+remaining a parallel test: the exact contact-boundary graph has 20 states and
+25 surviving edges, its smallest ordered-parent-role comparison object is the
+9-state universal catalogue, all three generator inequalities pass, and the
+finite-positive-grammar majorant is proved. The certificate now refuses to
+claim closure unless those independent boundary/intertwiner checks succeed.
+Remaining work is steps 11–12: cyclotomic-sector auditing for boundary/twisted
+objects and Lean emission/actual kernel acceptance. Since there is no
+cyclotomic cofactor at the substitution level, the raw substitution audit is
+currently vacuous, but the boundary/twisted sectors still require explicit
+checking.
 
 ## Parallel question kept in the wings
 

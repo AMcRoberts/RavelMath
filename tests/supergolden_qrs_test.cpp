@@ -12,6 +12,9 @@ int main(){
  assert(c.universal_role_states==9);
  assert(c.incidence_polynomial_matches_minpoly_exactly);
  assert(c.no_fourth_generator);
+ assert(c.contact_boundary_complete);
+ assert(c.simultaneous_three_generator_intertwiner);
+ assert(c.boundary_states > 0);
  std::cout<<"supergolden Q/R/S closure PASS parents="<<c.total_parent_decompositions
           <<" role_edges="<<c.universal_parent_pair_edges
           <<" classes="<<c.defect_class_edges[0]<<","<<c.defect_class_edges[1]<<","<<c.defect_class_edges[2]<<"\n";

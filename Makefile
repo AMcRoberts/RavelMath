@@ -3173,6 +3173,10 @@ supergolden_three_generator_intertwiner_test: math/out/libmath.a
 	mkdir -p out
 	$(CXX) $(CXXFLAGS) -Iinclude -Imath/include -Imath/include/mini-gmp tests/supergolden_three_generator_intertwiner_test.cpp -o out/supergolden_three_generator_intertwiner_test math/out/libmath.a
 
+supergolden_qrs_test: math/out/libmath.a
+	mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude -Imath/include -Imath/include/mini-gmp tests/supergolden_qrs_test.cpp -o out/supergolden_qrs_test math/out/libmath.a
+
 shift_branch_three_generator_continuation_test: math/out/libmath.a
 	mkdir -p out
 	$(CXX) $(CXXFLAGS) -Iinclude -Imath/include -Imath/include/mini-gmp tests/shift_branch_three_generator_continuation_test.cpp -o out/shift_branch_three_generator_continuation_test math/out/libmath.a
