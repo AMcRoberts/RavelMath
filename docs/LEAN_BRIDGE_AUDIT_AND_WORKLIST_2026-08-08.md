@@ -499,7 +499,7 @@ real correction, not a footnote. `cyclic_controller_pumping.lean`,
 `universal_dominance_phase_rank_transport.lean` all belong to the
 shell-rank/carry-bound proof route for the flagship universal n-bonacci
 boundary-dominance theorem (`rho(G_B(n))=rho(predicted_core(n))` for
-every `n>=3`) -- and the diary records that route as **explicitly
+every `n>=3`) -- and the research record marks that route as **explicitly
 refuted and abandoned** on 2026-08-05 ("universal maximum-shell exclusion
 refuted": an infinite triangular-wave counterfamily falsifies the route's
 own shell-two induction target; "Do not resume attempts to prove
@@ -562,9 +562,9 @@ and apply it per call site -- regenerated, kernel-checks clean.
 
 One file, `sign_flux_rank_playground_2026-08-04.lean`, was archived
 rather than fixed: zero C++ references anywhere (confirmed by content
-grep, not filename pattern alone), and per the diary it was built
+grep, not filename pattern alone), and the project record shows it was built
 specifically for the "sign-flux chamber rank" / "boundary-sensitive
-sparse flux rank" search -- the shell-rank/carry-bound approach diary
+sparse flux rank" search -- the shell-rank/carry-bound approach project record
 2026-08-05 records as explicitly refuted by a triangular-wave
 counterexample ("Do not resume attempts to prove universal acyclicity of
 maximum-shell first-return graphs"). Distinguished from the other

@@ -888,7 +888,7 @@ struct UniversalDominanceClosedRelationCertificate {
 // theorem (rho(G_B(n)) = rho(predicted_core(n)) for every n >= 3), via
 // the canonical Q/R (balanced/one-sided-defect parent-prefix) split, NOT
 // the earlier, explicitly abandoned shell-rank/carry-bound route (see
-// diary 2026-08-05 "universal maximum-shell exclusion refuted": a
+// research record 2026-08-05 "universal maximum-shell exclusion refuted": a
 // triangular-wave counterfamily refuted universal shell-two acyclicity;
 // "Do not resume"). ravel::proof::derive_condition_f_joint_pair_comparison
 // independently re-derives, from the canonical parent-role Q/R matrices,

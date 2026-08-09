@@ -1811,7 +1811,7 @@ inline const char* word_fold_intertwiner_lemma_lean() {
 // verbatim (not re-derived; that file already kernel-checks
 // independently) EXCEPT `qr_word_intertwiner`, which is now a corollary of
 // `word_fold_intertwiner` above rather than an independent re-proof. NOT
-// the earlier shell-rank/carry-bound route, which diary 2026-08-05 records
+// the earlier shell-rank/carry-bound route, which the 2026-08-05 research record
 // as explicitly refuted and abandoned.
 inline std::string condition_f_joint_qr_lemma_lean() {
     return

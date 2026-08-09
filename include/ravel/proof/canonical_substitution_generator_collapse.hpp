@@ -89,7 +89,7 @@ inline GeneratorCollapseCertificate derive_canonical_substitution_generator_coll
     // against known cases both ways (x^2-2x-2's known-reducible edges
     // are found reachable; x^3-2x^2-2's and x^3-2x^2-x+1's known-
     // irreducible witnesses remain unreachable under this stronger
-    // test) before trusting it -- see the diary entry this accompanies.
+    // test) before trusting it -- see the research note this accompanies.
     std::vector<std::vector<std::pair<std::size_t,long long>>> unit_edges(n * n);
     for (long long d = -catalogue.max_prefix_length; d <= catalogue.max_prefix_length; ++d) {
         if (d < -1 || d > 1) continue;

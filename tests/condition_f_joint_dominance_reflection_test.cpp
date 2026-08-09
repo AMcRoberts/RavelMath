@@ -5,7 +5,7 @@
 // derive_condition_f_joint_pair_comparison's own test
 // (condition_f_joint_pair_comparison_test.cpp) already checks D=2..128 but
 // never emitted any Lean. NOT the earlier shell-rank/carry-bound route,
-// which diary 2026-08-05 records as explicitly refuted ("universal
+// which the 2026-08-05 research record marks as explicitly refuted ("universal
 // maximum-shell exclusion refuted... Do not resume").
 
 #include <cassert>

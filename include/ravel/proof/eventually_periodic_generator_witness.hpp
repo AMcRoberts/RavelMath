@@ -20,7 +20,7 @@
 // x^3-2x^2-x+1, beta~2.24698, preperiod (2), period (0,1), substitution
 // 0->001, 1->2, 2->01 (wraps to state 1, the cycle start, not to 0).
 //
-// The abstract role-catalogue check (see the accompanying probe/diary
+// The abstract role-catalogue check (see the accompanying probe/research note
 // entry) found the closed-form digit-difference theorem
 // (generator_set_from_digit_differences.hpp) does NOT directly predict
 // this case correctly: that theorem assumed only letter 0 is flexible

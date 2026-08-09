@@ -26,8 +26,7 @@ Do not restart from raw n-bonacci enumeration. Read the items below in order and
 6. `docs/PROOF_SYSTEM_EXTENSION_GUIDE.md`
 7. `docs/THEOREM_STATUS.md`
 8. `docs/RESEARCH_STATUS.md`
-9. `CONTINUITY.md`
-10. `ROUND102_QUALITATIVE_PC_HANDOFF_2026-08-05.md`
+9. `ROUND102_QUALITATIVE_PC_HANDOFF_2026-08-05.md`
 
 The governing engineering rule remains:
 

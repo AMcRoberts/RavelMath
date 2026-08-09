@@ -4,7 +4,7 @@
 // case: Pisot numbers with a FINITE (terminating) greedy expansion of 1.
 // (Eventually-periodic expansions -- the "seam" -- have a genuinely
 // different, unsolved mechanism; see occurrence_length_sets.hpp and the
-// diary entries around 2026-08-06. Deliberately out of scope here.)
+// research notes around 2026-08-06. Deliberately out of scope here.)
 //
 // THEOREM. Let (t_0,...,t_{N-1}) be a Pisot number's terminating greedy
 // expansion of 1 (t_{N-1} > 0, the terminating condition), driving the

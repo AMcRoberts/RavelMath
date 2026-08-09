@@ -13,7 +13,7 @@ This is the explicit decision basis at the end of round 101. It is not a list of
 - `docs/PROOF_SYSTEM_EXTENSION_GUIDE.md` — procedure for implementing missing derivation operations.
 - `docs/THEOREM_STATUS.md` — distinction among mathematical closure, generated Lean, and kernel acceptance.
 - `docs/RESEARCH_STATUS.md` — broader theorem state and remaining bridges.
-- `CONTINUITY.md` — concise cross-session state.
+- `docs/RESEARCH_STATUS.md` — concise current project state.
 - `docs/READINGLIST.NBONACCI_SHOOT_THE_MOON.md` — original universal-n route, now retained as historical prerequisite.
 - `docs/READINGLIST.QRS_PISOT_CONTINUATION.md` — active PC bootstrap route after round 101.
 

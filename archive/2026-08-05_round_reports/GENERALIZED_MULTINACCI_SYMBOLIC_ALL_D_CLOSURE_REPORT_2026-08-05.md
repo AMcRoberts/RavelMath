@@ -48,7 +48,7 @@ second deletion-only filter and likewise performs no relabelling.
 Therefore, for every `D>=2` and `m>=1`, every concrete contact-boundary
 primitive graph is a deletion-only subgraph of the universal parent-role
 renewal suspension.  Its base-state map forgets displacement, and each private
-renewal state maps to the private state of its unique parent-prefix witness.
+renewal state maps to the corresponding state of its unique parent-prefix witness.
 Hence
 
     Q_B P <= P Q_U,

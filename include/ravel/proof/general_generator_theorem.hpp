@@ -55,7 +55,7 @@
 // `canonical_substitution_generator_collapse.hpp`'s BFS (validated in
 // both directions -- finds known decompositions, fails to find
 // decompositions for confirmed-irreducible witnesses -- before being
-// trusted; see the 2026-08-06 diary entries).
+// trusted; see the 2026-08-06 research notes).
 //
 // This IS the complete, unconditional "general theory that doesn't
 // break": it requires no case split in the mathematics (only in which

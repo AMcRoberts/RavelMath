@@ -2,7 +2,7 @@
 
 > **Correction, 2026-08-08.** The finite result below (n=6, resp. n=3..7) stands and is now the basis of a kernel-checked reflection wiring (`recurrent_family_exhaustion_reflection_test.cpp` / `predicted_core_scc_exhaustion_reflection_test.cpp`). Its stated dependency on an "all-n induction" / "universal carry-bound theorem" is moot: the universal n-bonacci dominance theorem closed via a different route (the canonical Q/R split) that never needed this hull/carry-bound machinery. See `NBONACCI_UNIVERSAL_DOMINANCE_CLOSED_2026-08-08.md`.
 
-The diary/provenance records a separate `1` versus `n+1` hop-distance dichotomy
+The research record/provenance records a separate `1` versus `n+1` hop-distance dichotomy
 from the older BP-core to literal `G_B` correspondence investigation.  It is
 not the previous-alphabet shadow distance theorem and is not imported here.
 

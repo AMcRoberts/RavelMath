@@ -15,17 +15,17 @@ current.
 Not the shell-rank / carry-bound route (`NBONACCI_ARITHMETIC_DOMINANCE_PROGRAM.md`,
 `NBONACCI_ARITHMETIC_DOMINANCE_THEOREM_N3_N7.md`,
 `PARAMETRIC_SHELL_RANK_TRANSPORT_2026-08-03.md`). That route was explicitly
-**refuted**: diary 2026-08-05, "universal maximum-shell exclusion refuted"
+**refuted**: research record 2026-08-05, "universal maximum-shell exclusion refuted"
 -- an infinite triangular-wave counterfamily (for every `M>=1, q>=1`,
 dimension `n = q*(4M)+1` admits a closed period-`4M` shell-`M` carry cycle)
 falsifies the shell-two induction target the whole route depended on. The
-diary's own instruction: "Do not resume attempts to prove universal
+project record's own instruction: "Do not resume attempts to prove universal
 acyclicity of maximum-shell first-return graphs."
 
 What actually closed the theorem is the **canonical Q/R split**
 (`docs/archive/2026-08-05_round_reports/CONDITION_F_CANONICAL_TWO_MATRIX_REPORT_2026-08-05.md`,
 `CONDITION_F_JOINT_QR_COMPARISON_REPORT_2026-08-05.md`), attributed in the
-diary to AM's root-cause insight (comparing this problem to the earlier
+research record to AM's root-cause insight (comparing this problem to the earlier
 universal-n kernel proof and looking for one base cause whose extensions
 appear as phase/holonomy/fibre/multiplicity/matrix-pair twists):
 
@@ -55,7 +55,7 @@ appear as phase/holonomy/fibre/multiplicity/matrix-pair twists):
 
 `lean/generated/condition_f_joint_qr_playground.lean` --
 `qr_word_intertwiner`, `qr_polynomial_intertwiner`,
-`jointQR_dimension_induction`, `universal_dominance_sandwich`. Diary
+`jointQR_dimension_induction`, `universal_dominance_sandwich`. The research record
 2026-08-05 records AM confirming this passed the Lean kernel with no
 messages at the time. **Independently reconfirmed in this environment,
 this session (2026-08-08):** `lake env lean` on that file exits 0, zero

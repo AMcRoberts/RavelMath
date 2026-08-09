@@ -78,7 +78,7 @@ The project should welcome four if the observable grammar forces it, but reject 
 3. Run the focused tests first, then the finite-positive-grammar and cyclotomic regressions.
 4. Use the local Lean/Mathlib environment, if available, to kernel-check generated artifacts and record exact hashes and versions.
 5. Do not silently convert a long-running boundary enumeration into an inferred result. Record partial computation and prove symbolic statements separately.
-6. Append the next result to `CONTINUITY.md`, `docs/THEOREM_STATUS.md`, and this active reading-list route.
+6. Append the next result to the project research-status record, `docs/THEOREM_STATUS.md`, and this active reading-list route.
 
 ## Authorship and evolution
 

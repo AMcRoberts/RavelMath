@@ -92,7 +92,7 @@ the dominant Perron root of the formula-defined grade-1 core
 
 This is the target of `docs/UNIVERSAL_NBONACCI_DOMINANCE_CAMPAIGN.md`,
 closed not by that document's own shell-rank/carry-bound route (explicitly
-refuted, diary 2026-08-05 "universal maximum-shell exclusion refuted": an
+refuted, research record 2026-08-05 "universal maximum-shell exclusion refuted": an
 infinite triangular-wave counterfamily falsifies universal shell-two
 acyclicity) but by the canonical Q/R parent-prefix split: every n-bonacci
 transport edge's prefix defect lies in `{-1,0,+1}`, forcing exactly two

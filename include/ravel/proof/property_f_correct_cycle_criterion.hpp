@@ -66,12 +66,12 @@
 // property_f_unconditional.hpp already proves NO mixed cycle can ever
 // occur (Perron-positivity), the existing check was verifying a
 // condition that is unconditionally true and therefore never actually
-// tests anything -- see the diary entry accompanying this header for
+// tests anything -- see the research note accompanying this header for
 // the full account of finding this by reading the primary source.
 //
 // THE CORRECT, TRACTABLE REFORMULATION (derived here, not from the
 // paper directly, though consistent with it -- see the accompanying
-// diary entry for the derivation): property (F) holds if and only if
+// research note for the derivation): property (F) holds if and only if
 // EVERY SIMPLE CYCLE in the small, purely combinatorial prefix
 // automaton has periodic translation value EXACTLY ZERO. Proof
 // sketch: (a) a nonzero periodic gamma on some simple cycle is
