@@ -4579,6 +4579,12 @@ inline std::string render_property_f_graph_instances(const mathlib::reflection::
             out << zero_indices[i];
         }
         out << "]\n";
+        out << "def " << stem << "_letters : List Nat := [";
+        for (std::size_t i = 0; i < node->letters.size(); ++i) {
+            if (i) out << ", ";
+            out << node->letters[i];
+        }
+        out << "]\n";
         out << "def " << stem << "_charpoly : List Int := [";
         for (std::size_t i = 0; i < node->characteristic_polynomial.size(); ++i) {
             if (i) out << ", ";
@@ -4630,6 +4636,7 @@ inline std::string render_property_f_graph_instances(const mathlib::reflection::
         out << "    (" << stem << "_edges.length = " << edges.size() << ") ∧\n";
         out << "    (" << stem << "_successors.length = " << node->successors.size() << ") ∧\n";
         out << "    (" << stem << "_zero_nodes.length = " << zero_indices.size() << ") ∧\n";
+        out << "    (" << stem << "_letters.length = " << node->letters.size() << ") ∧\n";
         out << "    (" << node->gamma_keys.size() << " = " << node->letters.size() << ") ∧\n";
         out << "    (" << node->gamma_keys.size() << " = " << node->gamma_coefficients.size() << ") ∧\n";
         out << "    (" << stem << "_charpoly.length > 0) ∧\n";
@@ -4643,6 +4650,9 @@ inline std::string render_property_f_graph_instances(const mathlib::reflection::
         out << "    (" << stem << "_scc_sizes.sum = " << scc_size_sum << ") ∧\n";
         out << "    (" << node->nonzero_cycle_components << " = 0) := by\n";
         out << "  decide\n\n";
+        out << "theorem " << stem << "_letters_in_range :\n"
+            << "    (" << stem << "_letters.all (fun x => x < " << node->letters.size()
+            << ")) = true := by decide\n\n";
 
         const std::size_t node_count = node->gamma_keys.size();
         const std::size_t scc_count = node->scc_sizes.size();

@@ -145,6 +145,9 @@ SCC labels are now checked against the component-size vector in both C++
 staging and Lean: every component receives a kernel-checked filtered-label
 count theorem. The finite SCC partition is therefore independently audited,
 not inferred from its total size alone.
+The graph node-letter map is now serialized too; staging rejects out-of-range
+letters and Lean proves every exported letter index lies in the finite node
+domain.
 
 **2026-08-08 finite-classifier increment.** `check_strong_coincidence` now
 returns a lexicographically indexed resolution profile for every unordered
