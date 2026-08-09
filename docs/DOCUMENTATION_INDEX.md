@@ -35,7 +35,7 @@ Operational references:
 - `RESEARCH_STATUS.md` — broader research state.
 - `CORONA_SURFACE_PROJECTION.md` — request-driven corona/D_cont projection, completeness contract, and legacy switch.
 - `LEAN_THEOREM_INVENTORY_2026-08-04.md` — generated live-tree index of Lean theorem and lemma declarations.
-- `bibliography/` — archived primary-source PDFs and extracted text for cited papers (currently: Minervino-Thuswaldner 2014, the source of `adelic/coincidence_and_property_f.hpp`'s construction). Read the primary source before trusting a paraphrase of it — this is why the property-(F) verdict bug (Finding 21) was found.
+- `bibliography/` — archived primary-source PDFs and extracted text for cited papers, including Minervino-Thuswaldner 2014 (the source of `adelic/coincidence_and_property_f.hpp`'s construction) and de Dios Pont–Gröchenig–Liehr–Shafkulovska–Taylor 2026 on totally positive Gabor frames. Read primary sources before trusting paraphrases.
 - `PROPERTY_F_UNCONDITIONAL_KERNEL_CHECKED_2026-08-06.md` — the Lean-kernel-checked core lemma behind the property-(F) fix; read alongside Findings 19-21 in `FINDINGS_FOR_CITATION.md`, not in isolation (the headline claim in the first of those three was withdrawn by the third).
 
 Other documents in `docs/` cover active or parked mathematical threads. Their stated status controls their use.
