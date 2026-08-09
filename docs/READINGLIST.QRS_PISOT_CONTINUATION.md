@@ -904,3 +904,6 @@ showing that the earlier missing states were a word-length artifact. The open
 question is now the asymptotic word-length bound, not a fixed theta10 defect.
 At cap 100 the same theta10 forest realizes `-20..+20` completely, providing
 the first two-scale data point for a linear displacement-window hypothesis.
+The extracted local cycles are uniform across the current families: role 0
+has replayable defect words `0,0,+1` and `0,0,-1`. Formalize these as the
+primitive integer-cocycle generators, then transport them through the kernel.

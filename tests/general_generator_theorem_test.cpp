@@ -79,8 +79,12 @@ void inspect_forest(const std::string& name, std::vector<long long> low_first,
     const auto closure = ravel::proof::derive_parent_role_word_closure(forest, word_cap, radius);
     const auto profile = ravel::proof::derive_parent_role_window_profile(
         forest, word_cap, std::max<std::size_t>(10, radius));
+    const auto cycles = ravel::proof::derive_parent_role_unit_cycles(forest, word_cap);
     assert(forest.proved && holonomy.proved && closure.proved);
     assert(profile.proved);
+    assert(cycles.proved && cycles.positive_cycle_found && cycles.negative_cycle_found);
+    assert(cycles.positive_roles.size() == cycles.positive_defects.size() + 1);
+    assert(cycles.negative_roles.size() == cycles.negative_defects.size() + 1);
     std::cout << name << ": alphabet=" << forest.alphabet_size
               << " roles=" << forest.role_count
               << " defects=" << forest.defects.size()
@@ -93,7 +97,14 @@ void inspect_forest(const std::string& name, std::vector<long long> low_first,
               << forest.role_count * forest.role_count * (2 * radius + 1) << "\n";
     std::cout << "  window_profile largest_complete_radius="
               << profile.largest_complete_radius << " missing@profile_max="
-              << profile.missing_by_radius.back() << "\n";
+              << profile.missing_by_radius.back()
+              << " unit_cycle_lengths=" << cycles.positive_defects.size()
+              << "/" << cycles.negative_defects.size()
+              << " unit_cycle_defects=";
+    for (const auto d : cycles.positive_defects) std::cout << d << ",";
+    std::cout << "/";
+    for (const auto d : cycles.negative_defects) std::cout << d << ",";
+    std::cout << "\n";
 }
 
 int main() {

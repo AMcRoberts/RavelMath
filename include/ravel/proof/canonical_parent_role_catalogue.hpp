@@ -240,6 +240,82 @@ struct ParentRoleWindowProfile {
     std::vector<std::size_t> missing_by_radius;
 };
 
+struct ParentRoleUnitCycleReport {
+    bool proved{};
+    std::size_t root_role{};
+    std::size_t max_word_length{};
+    bool positive_cycle_found{};
+    bool negative_cycle_found{};
+    std::vector<std::size_t> positive_roles;
+    std::vector<long long> positive_defects;
+    std::vector<std::size_t> negative_roles;
+    std::vector<long long> negative_defects;
+};
+
+// Finds replayable +/-1 closed walks at one common role.  These are the
+// generators needed for an integer cocycle: once both exist, powers and
+// concatenations give arbitrary net displacement at the root, while the
+// zero-net kernel transports the construction to other roles.
+inline ParentRoleUnitCycleReport derive_parent_role_unit_cycles(
+    const CanonicalParentRoleCatalogue& catalogue, std::size_t max_word_length,
+    std::size_t root_role = 0) {
+    ParentRoleUnitCycleReport out;
+    out.root_role = root_role;
+    out.max_word_length = max_word_length;
+    if (!catalogue.proved || root_role >= catalogue.role_count || max_word_length == 0) return out;
+    std::vector<std::vector<std::pair<std::size_t,long long>>> adj(catalogue.role_count);
+    for (const auto& edge : catalogue.edges)
+        adj[edge.source_role].push_back({edge.target_role, edge.defect});
+    const long long net_bound = catalogue.max_prefix_length *
+                                static_cast<long long>(max_word_length);
+    std::set<std::pair<std::size_t,long long>> seen;
+    std::map<std::pair<std::size_t,long long>,
+             std::pair<std::pair<std::size_t,long long>, long long>> predecessor;
+    std::vector<std::pair<std::size_t,long long>> frontier{{root_role, 0}};
+    seen.insert({root_role, 0});
+    auto reconstruct = [&](long long target_net) {
+        std::vector<std::size_t> roles{root_role};
+        std::vector<long long> defects;
+        auto cursor = std::make_pair(root_role, target_net);
+        while (cursor != std::make_pair(root_role, 0LL)) {
+            const auto& prev = predecessor.at(cursor);
+            defects.push_back(prev.second);
+            roles.push_back(prev.first.first);
+            cursor = prev.first;
+        }
+        std::reverse(roles.begin(), roles.end());
+        std::reverse(defects.begin(), defects.end());
+        return std::make_pair(std::move(roles), std::move(defects));
+    };
+    for (std::size_t depth = 0; depth < max_word_length &&
+         (!out.positive_cycle_found || !out.negative_cycle_found); ++depth) {
+        std::vector<std::pair<std::size_t,long long>> next;
+        for (const auto& [role, net] : frontier) for (const auto& [target, label] : adj[role]) {
+            const long long new_net = net + label;
+            if (new_net < -net_bound || new_net > net_bound) continue;
+            const auto state = std::make_pair(target, new_net);
+            if (!seen.insert(state).second) continue;
+            predecessor[state] = {{role, net}, label};
+            next.push_back(state);
+            if (target == root_role && new_net == 1 && !out.positive_cycle_found) {
+                auto witness = reconstruct(1);
+                out.positive_roles = std::move(witness.first);
+                out.positive_defects = std::move(witness.second);
+                out.positive_cycle_found = true;
+            }
+            if (target == root_role && new_net == -1 && !out.negative_cycle_found) {
+                auto witness = reconstruct(-1);
+                out.negative_roles = std::move(witness.first);
+                out.negative_defects = std::move(witness.second);
+                out.negative_cycle_found = true;
+            }
+        }
+        frontier.swap(next);
+    }
+    out.proved = true;
+    return out;
+}
+
 // Profiles the finite displacement window without extrapolating past the
 // supplied word cap.  Each entry is independently witness-replayed by the
 // underlying closure operation; the profile only summarizes those finite

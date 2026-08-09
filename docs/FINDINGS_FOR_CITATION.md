@@ -4004,6 +4004,11 @@ raising only theta10's word cap from 30 to 50 closes the full `-10..+10`
 window (435,456/435,456 states), with maximum shortest witness still 18.
 The finite data therefore supports growth with available word length, while
 leaving the asymptotic bound open.
+The cycle extractor finds the same local generators in every tested family:
+at role 0 there is a three-edge `0,0,+1` cycle and a three-edge `0,0,-1`
+cycle. Their concatenations are an explicit local source of arbitrary integer
+displacement; the remaining theorem work is transporting these cycles through
+the zero-net textile fibre.
 At word cap 100, theta10 realizes the complete `-20..+20` window
 (850,176/850,176 states), again with all zero-net witnesses replay-checked.
 The reusable window profile at word cap 30 gives largest complete radii 5,
