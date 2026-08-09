@@ -96,4 +96,6 @@ compatibility, not yet a full state simulation; the next obligation is to
 show that the contact edge map commutes with the adelic transport transition.
 The certificate now discharges that local transition check too: all 1,215
 edges replay as two prefix-automaton parent transitions, with five distinct
-exact paired displacement labels.
+exact paired displacement labels. The same transition check now passes across
+the first witness's radius-0/1/2 adjacent-ordering neighborhood: 1,215,
+1,322, and 1,348 contact edges respectively, with 5, 7, and 9 paired labels.

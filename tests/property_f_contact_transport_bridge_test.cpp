@@ -1,5 +1,6 @@
 #include <array>
 #include <cassert>
+#include <cstdint>
 #include <iostream>
 #include <vector>
 
@@ -9,10 +10,9 @@
 #include "math/poly_z.hpp"
 #include "math/qbeta.hpp"
 
-int main() {
-    constexpr std::size_t d = 3;
-    const std::array<std::vector<long long>, d> images = {
-        std::vector<long long>{0, 0, 1}, {2}, {0, 0}};
+template <std::size_t d>
+void run_case(const std::array<std::vector<long long>, d>& images,
+              const char* name) {
     std::vector<std::vector<long long>> matrix(d, std::vector<long long>(d, 0));
     for (std::size_t j = 0; j < d; ++j)
         for (const long long a : images[j]) ++matrix[a][j];
@@ -26,7 +26,13 @@ int main() {
     const auto eig = mathlib::left_eigenvector_via_qbeta_reduced_factor(matrix, ring);
     assert(eig.ok);
     const auto automaton = adelic::build_prefix_automaton<d>(images, eig.v, ring);
-    ravel::SubstitutionRule rule({{0, 0, 1}, {2}, {0, 0}});
+    std::vector<std::vector<std::int8_t>> sigma;
+    for (const auto& image : images) {
+        std::vector<std::int8_t> converted;
+        for (const long long a : image) converted.push_back(static_cast<std::int8_t>(a));
+        sigma.push_back(std::move(converted));
+    }
+    ravel::SubstitutionRule rule(std::move(sigma));
     ravel::ContactBoundaryLimits limits;
     limits.closure_cap = 40'000;
     limits.corona_cap = 200'000;
@@ -41,8 +47,15 @@ int main() {
     assert(bridge.boundary_edges > 0);
     assert(bridge.distinct_contact_prefixes > 0);
     assert(bridge.distinct_difference_labels > 0);
-    std::cout << "property_f_contact_transport_bridge: PASS boundary_edges="
+    std::cout << name << ": PASS boundary_edges="
               << bridge.boundary_edges << " contact_prefixes="
               << bridge.distinct_contact_prefixes << " difference_labels="
               << bridge.distinct_difference_labels << "\n";
+}
+
+int main() {
+    constexpr std::size_t d = 3;
+    run_case<d>({std::vector<long long>{0, 0, 1}, {2}, {0, 0}}, "first_anchor");
+    run_case<d>({std::vector<long long>{0, 1, 0}, {2}, {0, 0}}, "first_010");
+    run_case<d>({std::vector<long long>{1, 0, 0}, {2}, {0, 0}}, "first_100");
 }
