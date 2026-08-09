@@ -200,14 +200,14 @@ Pisot in general, non-unimodular Pisot at other alphabet sizes, or
 non-unimodular Pisot with `|det| > 2`. An implementation audit found
 that the driver had been filtering 4×4 candidates with a stale
 hand-expanded 3×3 determinant, and its SCC-split flag was never
-assigned. The corrected driver now uses a dimension-independent
-determinant, compares actual SCC memberships, and reconstructs the
-graph sparsely. A guarded legacy-corona run produced 10 clean candidates
-out of 15 determinant-qualified candidates; all ten agreed exactly among
-whole, dominant-SCC, and largest-SCC λ values, with zero membership
-splits. Five candidates hit explicit closure/corona caps and remain
-inconclusive. This is substantial corrected evidence, but it is still a
-fresh 4×4 sample rather than a re-audit of the historical 11/87 batch.
+assigned. The corrected driver uses a dimension-independent determinant,
+compares actual SCC memberships, and reconstructs the graph sparsely.
+The candidate generator's matching stale 3×3 determinant was also fixed.
+A fresh generator-corrected run produced 4 clean candidates out of 10
+determinant-qualified candidates; all four agreed exactly among whole,
+dominant-SCC, and largest-SCC λ values, with zero membership splits. Six
+explicit cap hits remain inconclusive. This is valid partial evidence,
+not yet a re-audit of the historical 11/87 batch.
 
 **Literature connection**: consistent with Barge, Bruin, Jones &
 Sadun (2010) on non-unimodular Pisot substitutions failing to tile,
@@ -297,8 +297,10 @@ certified. The 39-/87-
 candidate non-unimodular row's "11/87 differ by 10-40%" claim remains
 a re-audit target: the earlier 14/14 statement was generated before
 the determinant and split-flag defects were corrected and cannot serve
-as evidence for the fixed implementation. The corrected 10/15 run is not
-large enough to replace that target.
+as evidence for the fixed implementation. The previous 10/15 run is
+withdrawn because its generator filtered the wrong determinant; the fresh
+4/10 result is the first valid replacement but is not large enough to
+replace the historical target.
 
 **Why "not yet independently hand-verified" rather than a flat claim
 of proof**: this result comes from a from-scratch implementation of

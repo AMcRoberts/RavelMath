@@ -575,9 +575,11 @@ struct PisotGenerator {
             if (!cls.pisot) continue;
             auto sigma = matrix_to_subst(M);
             if (sigma.empty()) continue;
-            long long det = M[0][0]*(M[1][1]*M[2][2] - M[1][2]*M[2][1])
-                          - M[0][1]*(M[1][0]*M[2][2] - M[1][2]*M[2][0])
-                          + M[0][2]*(M[1][0]*M[2][1] - M[1][1]*M[2][0]);
+            // Filter the generated 4x4 matrix itself, not a stale 3x3
+            // principal minor.  Applying the old hand expansion here made
+            // the candidate population unrelated to the advertised
+            // non-unit condition even after the audit-loop filter was fixed.
+            const long long det = adelic::integer_determinant(M);
             if (std::llabs(det) != 2) continue;
             PisotInstance inst;
             inst.name = "reaudit_" + std::to_string(next_index + 1);
