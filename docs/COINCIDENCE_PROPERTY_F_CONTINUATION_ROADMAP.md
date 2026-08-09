@@ -154,6 +154,9 @@ to the same finite node set.
 The zero-state index list is now tied to the per-node zero predicate by a
 kernel-checked membership theorem for every state, eliminating a second
 unconnected representation of the zero/nonzero partition.
+The per-instance Q(β) step now consumes the serialized beta-inverse matrix
+through a typed rational lookup, rather than duplicating those entries as
+unrelated literals in the recurrence definition.
 
 **2026-08-08 finite-classifier increment.** `check_strong_coincidence` now
 returns a lexicographically indexed resolution profile for every unordered

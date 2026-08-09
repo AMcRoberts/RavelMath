@@ -4731,6 +4731,34 @@ inline std::string render_property_f_graph_instances(const mathlib::reflection::
                 value << " }";
                 return value.str();
             };
+            out << "def " << stem << "_beta_inverse_matrix : List (List (Int × Nat)) := [";
+            for (std::size_t row = 0; row < node->beta_inverse_matrix.size(); ++row) {
+                if (row) out << ", ";
+                out << "[";
+                for (std::size_t column = 0; column < node->beta_inverse_matrix[row].size(); ++column) {
+                    if (column) out << ", ";
+                    const auto& coefficient = node->beta_inverse_matrix[row][column];
+                    out << "(" << coefficient.numerator << ", " << coefficient.denominator << ")";
+                }
+                out << "]";
+            }
+            out << "]\n";
+            out << "def " << stem << "_beta_inverse_entry (row col : Nat) : ℚ :=\n"
+                << "  let p := (" << stem << "_beta_inverse_matrix.getD row []).getD col (0, 1)\n"
+                << "  (p.1 : ℚ) / p.2\n\n";
+            out << "def " << stem << "_q_step (g d : PropertyFQ" << degree << ") : PropertyFQ"
+                << degree << " :=\n  {";
+            for (long long row = 0; row < degree; ++row) {
+                if (row) out << "\n    ";
+                out << " c" << row << " := ";
+                for (long long column = 0; column < degree; ++column) {
+                    if (column) out << " + ";
+                    out << "((g.c" << column << " + d.c" << column << ") * "
+                        << stem << "_beta_inverse_entry " << row << " " << column << ")";
+                }
+                if (row + 1 < degree) out << ",";
+            }
+            out << " }\n\n";
             out << "def " << stem << "_q_nodes : List PropertyFQ" << degree << " := [";
             for (std::size_t i = 0; i < node->gamma_coefficients.size(); ++i) {
                 if (i) out << ", ";
@@ -4760,11 +4788,12 @@ inline std::string render_property_f_graph_instances(const mathlib::reflection::
                         target_gamma.size() != static_cast<std::size_t>(degree)) continue;
                     out << "theorem " << stem << "_edge_" << source << "_" << edge
                         << "_graph_recurrence :\n"
-                        << "    propertyFQ" << degree << "Step (" << stem << "_q_at "
+                        << "    " << stem << "_q_step (" << stem << "_q_at "
                         << source << ") " << q_literal(digit) << " = " << stem << "_q_at ((("
                         << stem << "_successors[" << source
                         << "]?).bind (fun row => row[" << edge << "]?)).getD 0) := by\n"
-                        << "  norm_num [propertyFQ" << degree << "Step, " << stem << "_q_at, "
+                        << "  norm_num [" << stem << "_q_step, " << stem << "_beta_inverse_entry, "
+                        << stem << "_beta_inverse_matrix, " << stem << "_q_at, "
                         << stem << "_q_nodes, " << stem << "_successors]\n\n";
                     out << "theorem " << stem << "_edge_" << source << "_" << edge << " :\n"
                         << "    propertyFQ" << degree << "Step " << q_literal(gamma) << " "
