@@ -106,8 +106,9 @@ int main() {
               "round 2's discriminant is unchanged, as it must be when nothing enlarges");
     }
     fprintf(stderr,
-        "  NOTE: this cubic is the fixed-point control; a genuine two-round quartic\n"
-        "  regression now lives in classify_adelic_test (disc -86320 -> -21580 -> -5395).\n");
+        "  NOTE: this cubic is the fixed-point control; the quartic regression\n"
+        "  confirms a closed first enlargement (-86320 -> -21580), while its\n"
+        "  generic subsequent-round criterion remains explicitly untrusted.\n");
 
     fprintf(stderr, "\n%d/%d checks passed\n", n_pass, n_pass + n_fail);
     return n_fail == 0 ? 0 : 1;

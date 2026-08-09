@@ -328,10 +328,11 @@ trace-form shortcut wouldn't even cover): exact agreement, `-2012 ->
 (`tests/general_order_radical_test.cpp`). Sixth: the one remaining gap
 in that chain -- deriving a new `GeneralOrder`'s own structure constants
 from an enlarged order's HNF basis -- is now closed
-(`structure_constants_from_basis_change`), letting a caller chain
-rounds to a fixed point rather than compute one round at a time. A genuine
-two-round quartic regression now exercises that path (`-86320 -> -21580 ->
--5395`); broader higher-degree stress testing remains open.
+(`structure_constants_from_basis_change`), letting a caller represent the
+first enlarged order without a defining polynomial. The representative
+quartic now has a verified closed first-round basis (`-86320 -> -21580`), but
+the generic subsequent-round criterion in a ramified maximal order remains
+open and is not used for certification.
 
 An earlier task dependency wrongly assumed Golod-Shafarevich
 verification needed class number/class group computation first;

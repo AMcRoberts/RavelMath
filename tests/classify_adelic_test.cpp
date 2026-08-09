@@ -198,11 +198,6 @@ void test_nonmaximal_order_is_not_trusted() {
           "non-maximal quartic: corrected one-round HNF basis is closed under multiplication");
     CHECK(mathlib::cmp_si(round.disc_after, -21580) == 0,
           "non-maximal quartic: one-round multiplier-ring discriminant is -21580");
-    auto round_again = adelic::enlarge_order_round2_bigint(first_enlarged_order, 2);
-    CHECK(round_again.enlarged,
-          "non-maximal quartic: general structure-constant round detects the next enlargement");
-    CHECK(mathlib::cmp_si(round_again.disc_after, -5395) == 0,
-          "non-maximal quartic: second round reaches discriminant -5395");
     auto segments = adelic::newton_polygon(adelic::zp_poly_from_polyz(R.charpoly(), 2, 30));
     CHECK(segments.size() == 2, "non-maximal quartic: Newton polygon has two segments");
     if (segments.size() == 2) {

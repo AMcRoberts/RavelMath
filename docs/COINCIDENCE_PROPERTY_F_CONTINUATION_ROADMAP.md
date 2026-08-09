@@ -187,14 +187,13 @@ evidence but not a theorem for those cases. Its observed peak RSS was about
 isolation without conflating a resource cutoff with a failed certificate.
 
 The representative non-maximal quartic (`x^4 - 7x^3 + 5x^2 - 5x + 2` at
-`p=2`) now has a concrete Round-2 diagnostic: the existing BigInt order
-enlargement changes the discriminant from `-86320` to `-21580` and returns a
-closed index-2 multiplier-ring basis. The general structure-constant round then
-detects the second enlargement and reaches `-5395`; this is the first genuine
-multi-round quartic path in the project. This still does not repair the p-adic
-bound, because the factorization must now be transported into that final
-closed order; that basis-aware prime-ideal step is the next order-theory target
-rather than an assumption hidden in the classifier.
+`p=2`) now has a concrete Round-2 diagnostic: the corrected BigInt multiplier
+ring changes the discriminant from `-86320` to `-21580` and returns a closed
+index-2 basis. The attempted generic second-round criterion is not yet trusted
+for this ramified maximal order, so `-21580` is the current certified order
+boundary; the factorization still has to be transported into that closed order.
+That basis-aware prime-ideal step remains the next order-theory target rather
+than an assumption hidden in the classifier.
 An attempted route through `ore_padic_factorization` currently reaches the
 same boundary: its repeated-factor branch delegates to the cofactor lift and
 rejects this quartic's ambiguous mod-2 factor. That is a useful negative

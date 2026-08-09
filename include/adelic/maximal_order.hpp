@@ -52,11 +52,10 @@
 // (computed fresh from its own structure constants, not carried
 // forward) agrees, and round 2 correctly finds it already 2-maximal.
 //
-// The chain is now exercised on both a single-round textbook fixed point and
-// a genuinely two-round quartic: x^4-7x^3+5x^2-5x+2 at p=2 reaches
-// -86320 -> -21580 -> -5395. This validates the general structure-constant
-// handoff in the first multi-round case currently in the project; it does not
-// claim that every possible higher-degree order has been stress-tested.
+// The chain is exercised on the single-round textbook fixed point. The
+// representative quartic now has a verified first multiplier-ring basis
+// (-86320 -> -21580); a generic subsequent round in the ramified maximal
+// order is deliberately not promoted until its closure criterion is settled.
 //
 // Algorithm (Cohen, "A Course in Computational Algebraic Number
 // Theory", §6.1, specialized to a monogenic starting order Z[beta]):
