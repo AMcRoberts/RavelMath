@@ -181,6 +181,13 @@ substitution with no branching letter is rejected as unsupported. There is
 no arbitrary 10,000-step traversal guard, so a primitive expanding input can
 be audited against the real finite-shape condition directly.
 
+A fixed-seed cross-check now compares the full closure against direct word
+materialization on 20 additional primitive three-letter substitutions; every
+accepted sample agrees on the complete per-pair resolution-depth profile, and
+none violates the closure shape precondition. This is regression evidence,
+not a probabilistic theorem, but it materially broadens confidence in the
+finite invariant.
+
 The staging operation now reconstructs every exported source/target/digit
 triple in the supplied `QBetaRing` and rejects any edge whose exact identity
 `gamma' = beta⁻¹ (gamma + delta)` fails. Fibonacci includes a tampering

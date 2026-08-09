@@ -4,6 +4,7 @@
 
 #include <array>
 #include <cassert>
+#include <cstdint>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
@@ -13,6 +14,7 @@
 #include <vector>
 
 #include "adelic/coincidence_and_property_f.hpp"
+#include "math/perron_frobenius.hpp"
 #include "ravel/proof/coincidence_closure.hpp"
 #include "ravel/proof/reflective_lean_renderer.hpp"
 #include "ravel/proof/strong_coincidence_certificate.hpp"
@@ -157,6 +159,44 @@ int main() {
         overflow_rejected = true;
     }
     assert(overflow_rejected);
+
+    // Seeded cross-check over primitive random substitutions.  This is not a
+    // probabilistic proof: every accepted sample is compared exactly, and
+    // the fixed seed makes failures reproducible.  It guards the multi-
+    // junction closure against overfitting the three named examples.
+    std::uint64_t seed = 0x9e3779b97f4a7c15ULL;
+    auto next = [&]() {
+        seed = seed * 6364136223846793005ULL + 1442695040888963407ULL;
+        return seed;
+    };
+    std::size_t checked = 0;
+    for (int attempt = 0; attempt < 500 && checked < 20; ++attempt) {
+        std::array<std::vector<long long>, 3> random_images;
+        for (auto& image : random_images) {
+            const std::size_t length = 1 + static_cast<std::size_t>(next() % 3);
+            for (std::size_t i = 0; i < length; ++i)
+                image.push_back(static_cast<long long>(next() % 3));
+        }
+        const auto random_matrix = incidence_matrix<3>(random_images);
+        std::vector<std::vector<long long>> matrix_rows(3, std::vector<long long>(3));
+        for (std::size_t i = 0; i < 3; ++i)
+            for (std::size_t j = 0; j < 3; ++j) matrix_rows[i][j] = random_matrix[i][j];
+        if (!mathlib::is_primitive(matrix_rows)) continue;
+        try {
+            const auto direct_random = adelic::check_strong_coincidence<3>(
+                random_images, 6, 100'000);
+            const auto closure_random = check_strong_coincidence_closure<3>(
+                random_images, random_matrix, 6, 100'000);
+            if (!direct_random.holds || !closure_random.holds) continue;
+            assert(closure_random.pair_resolution_depths ==
+                   direct_random.pair_resolution_depths);
+            ++checked;
+        } catch (const std::invalid_argument&) {
+            assert(false && "primitive sample violated the closure shape precondition");
+        }
+    }
+    assert(checked == 20);
+    std::cout << "random primitive cross-checks=" << checked << "\n";
 
     std::cout << "coincidence_closure_prefix: exact closure agrees with word search; "
                  "finite cutoff remains inconclusive\n";
