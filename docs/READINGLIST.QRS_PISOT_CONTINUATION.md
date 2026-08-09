@@ -922,3 +922,6 @@ prefixes.
 The exact greedy drivers in the tested sample all begin `1,0,>=1`; the
 schema operation checks this prefix condition independently before accepting
 the canonical role paths.
+The mixed regression supplies the necessary counterexample: the prefix rule
+is not universal even when the role schema survives. Keep it as an explanatory
+theta-family pattern, and prove the role relation directly.

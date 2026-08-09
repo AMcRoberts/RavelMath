@@ -29,6 +29,11 @@ void run(const std::string& name, std::vector<long long> low_first, std::size_t 
     auto c = ravel::proof::derive_general_generator_theorem(R, beta_I);
     auto forest = ravel::proof::derive_canonical_parent_role_catalogue(R, beta_I);
     auto holonomy = ravel::proof::derive_parent_role_holonomy(forest);
+    if (forest.alphabet_size >= 3) {
+        const auto schema = ravel::proof::derive_canonical_unit_cycle_schema(forest);
+        std::cout << " schema_driver_prefix=" << schema.digit_driver_prefix_rule
+                  << " schema_shape=" << schema.canonical_shape;
+    }
     auto regularity = ravel::proof::derive_parent_role_regularity(forest);
     auto composition = ravel::proof::derive_parent_role_composition(forest);
     auto closure = ravel::proof::derive_parent_role_word_closure(forest, 10, 2);

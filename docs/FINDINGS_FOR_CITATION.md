@@ -4026,6 +4026,10 @@ In the same sample, the exact greedy drivers all begin with the digit pattern
 `1,0,>=1`; the schema checker records this driver condition separately from
 the edge replay, identifying the small prefix rule that should underlie the
 uniform proof.
+The mixed regression corrects that interpretation: supergolden and several
+non-unit families realize the role schema with the prefix rule false, while
+some eventually-periodic families fail the schema itself. The prefix is a
+theta-sweep heuristic, not a theorem hypothesis.
 At word cap 100, theta10 realizes the complete `-20..+20` window
 (850,176/850,176 states), again with all zero-net witnesses replay-checked.
 The reusable window profile at word cap 30 gives largest complete radii 5,

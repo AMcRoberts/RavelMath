@@ -293,7 +293,9 @@ inline CanonicalUnitCycleSchemaReport derive_canonical_unit_cycle_schema(
         out.canonical_shape &= direct.count({out.positive_roles[k], out.positive_roles[k + 1], positive_defects[k]}) != 0;
     for (std::size_t k = 0; k < negative_defects.size(); ++k)
         out.canonical_shape &= direct.count({out.negative_roles[k], out.negative_roles[k + 1], negative_defects[k]}) != 0;
-    out.proved = out.digit_driver_prefix_rule && out.canonical_shape;
+    // The role schema is the reusable fact; the digit prefix is a separate
+    // explanatory heuristic and is intentionally not required here.
+    out.proved = out.canonical_shape;
     if (!out.proved) out.obstruction = "canonical unit-cycle role schema not realized";
     return out;
 }
