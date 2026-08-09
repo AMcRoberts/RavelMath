@@ -186,6 +186,15 @@ void test_nonmaximal_order_is_not_trusted() {
     std::fprintf(stderr, "  Round-2 disc_before=%s disc_after=%s needs_another_round=%d\n",
                  mathlib::str(round.disc_before).c_str(), mathlib::str(round.disc_after).c_str(),
                  round.needs_another_round ? 1 : 0);
+    bool round_basis_closed = true;
+    try {
+        auto O = adelic::monogenic_structure_constants({1, -7, 5, -5, 2});
+        (void)adelic::structure_constants_from_basis_change(O, round.basis, 2);
+    } catch (const std::runtime_error&) {
+        round_basis_closed = false;
+    }
+    CHECK(!round_basis_closed,
+          "non-maximal quartic: one-round HNF candidate is not yet a closed maximal-order basis");
     auto segments = adelic::newton_polygon(adelic::zp_poly_from_polyz(R.charpoly(), 2, 30));
     CHECK(segments.size() == 2, "non-maximal quartic: Newton polygon has two segments");
     if (segments.size() == 2) {
