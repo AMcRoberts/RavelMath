@@ -4018,10 +4018,10 @@ zero-kernel coverage plus the two root unit cycles yields arbitrary integer
 displacement on that finite catalogue. This is a constructive per-catalogue
 Z-extension certificate, not a claim that the hypotheses hold uniformly for
 all Pisot substitutions.
-The role-schema checker confirms the same exact paths for every tested
-alphabet (n\ge3): `0 -> 2 -> 1 -> 0` with defects `0,0,+1`, and
-`0 -> 2n -> n -> 0` with defects `0,0,-1`. This is the first reusable
-finite combinatorial lemma behind the integer-extension scheme.
+The role-schema checker confirms the same exact paths across the higher-theta
+sample: `0 -> 2 -> 1 -> 0` with defects `0,0,+1`, and
+`0 -> 2n -> n -> 0` with defects `0,0,-1`. This is a reusable finite
+combinatorial lemma for that subfamily, not the general role theorem.
 In the same sample, the exact greedy drivers all begin with the digit pattern
 `1,0,>=1`; the schema checker records this driver condition separately from
 the edge replay, identifying the small prefix rule that should underlie the
