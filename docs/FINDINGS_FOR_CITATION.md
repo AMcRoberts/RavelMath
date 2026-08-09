@@ -3916,3 +3916,21 @@ the full Strong Coincidence Conjecture, which only follows immediately
 at `d=2`). Rendered and kernel-checked with zero errors and zero
 `sorry` (`lean/generated/barge_diamond_wide_batch.lean`,
 `tests/barge_diamond_wide_batch_test.cpp`).
+
+## Finding 43 — Stage-2 property-(F) probe on canonical Q/R/S families
+
+**Status: EXACT FINITE COMPUTATIONS, with one explicit cyclotomic limitation
+(2026-08-09).**
+
+`app/probe_canonical_property_f.cpp` runs the independent prefix-automaton
+property-(F) checker on four canonical substitutions derived or preserved by
+the exact beta-expansion machinery. Supergolden (`x^3-x^2-1`) closes with
+strong coincidence at depth 2 and property (F) at 124 nodes; plastic
+(`x^3-x-1`) closes with coincidence depth 13 and property (F) at 205 nodes;
+the first eventually-periodic witness (`x^3-2x^2-x+1`) closes with depth 2
+and property (F) at 52 nodes. The third-smallest Pisot canonical lift is
+reported separately: its incidence polynomial has a `Phi_4` cyclotomic
+factor, and the current full-incidence `QBetaRing` property-(F) path rejects
+the neutral secondary roots (`secondary root modulus >= 1`) before graph
+construction. That is an implementation boundary, not a FAIL verdict; the
+minimal-field/cyclotomic-sector reduction remains the next needed operation.
