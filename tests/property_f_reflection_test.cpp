@@ -10,6 +10,7 @@
 #include "ravel/proof/property_f_finite_run_certificate.hpp"
 #include "ravel/proof/reflective_lean_renderer.hpp"
 #include "ravel/proof/strong_coincidence_certificate.hpp"
+#include "ravel/proof/strong_coincidence_pair_witness.hpp"
 
 namespace {
 std::vector<std::vector<long long>> transpose(const std::vector<std::vector<long long>>& m) {
@@ -40,6 +41,8 @@ int main() {
         assert(ravel::proof::stage_strong_coincidence_run(images, 20, 5'000'000,
                                                           "Fibonacci strong coincidence" )
                == ravel::proof::StrongCoincidenceStageResult::staged);
+        assert(ravel::proof::stage_strong_coincidence_pair_witness(
+                   images, 0, 1, 20, 5'000'000, "Fibonacci pair (0,1)") );
     }
     {
         auto tampered = graph;
@@ -109,6 +112,10 @@ int main() {
     assert(coincidence_runs.size() == 1);
     assert(coincidence_runs.front().second->holds);
     assert(!coincidence_runs.front().second->inconclusive);
+    const auto coincidence_witnesses =
+        trace.find<mathlib::reflection::StrongCoincidencePairWitnessCertificate>();
+    assert(coincidence_witnesses.size() == 1);
+    assert(coincidence_witnesses.front().second->prefix_match);
     const std::string lean = ravel::proof::render_reflective_lean_module(trace);
     assert(lean.find("property_f_finite_run_summary_0") != std::string::npos);
     assert(lean.find("2 + 6 = 8") != std::string::npos);
@@ -116,6 +123,7 @@ int main() {
     assert(lean.find("property_f_graph_0_gamma_0") != std::string::npos);
     assert(lean.find("property_f_graph_0_digit_0_0") != std::string::npos);
     assert(lean.find("strong_coincidence_run_0_summary") != std::string::npos);
+    assert(lean.find("strong_coincidence_pair_witness_0_checked") != std::string::npos);
     assert(lean.find("property_f_graph_0_charpoly") != std::string::npos);
     assert(lean.find("propertyFQ2Step") != std::string::npos);
     if (const char* dump_path = std::getenv("RAVEL_PROPERTY_F_LEAN_OUT")) {
