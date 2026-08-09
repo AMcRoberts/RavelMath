@@ -106,6 +106,11 @@ carry alphabet size `m` and the degree-`d` beta-inverse reduction.
 The return-to-zero block quotient is also explicit: exactly `(d-1)m+1`
 channels, each of length at most `d`, with words `[k,m,...,m]`. This is the
 finite forest on which the remaining reachability/rank proof should operate.
+Each channel is now compiled to an exact integer affine endpoint map on the
+`d`-coordinate coefficient lattice and replay-checked against `Q(beta)`.
+The endpoint-map layer makes the rank obligation explicit: bound the set of
+reachable coefficient vectors under this finite affine family, rather than
+enumerating the raw zero-expansion graph.
 Root diagnostics explain the scaling: the weakest secondary modulus rises
 from `0.8508` at `(4,6)` to `0.9094` at `(6,2)`, while the degree and channel
 count increase the coefficient-state branching. This matches the observed

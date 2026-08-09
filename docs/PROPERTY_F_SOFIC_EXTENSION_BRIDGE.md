@@ -136,6 +136,14 @@ finite block alphabet instead of the raw zero-expansion graph.
 The bridge test now replays every one of those channels against the concrete
 prefix automaton, including the terminal-image exception; this is an exact
 implementation cross-check for the block projection.
+The companion `generalized_multinacci_block_affine.hpp` now turns each block
+into an exact integer affine endpoint map on the `d`-coordinate coefficient
+lattice. Its linear part is the appropriate power of
+`beta^(-1) = beta^(d-1) - m(1+...+beta^(d-2))`, and its offset is the carried
+initial digit. The affine test replays these maps against exact `Q(beta)`
+arithmetic across the 42-point structural sweep. This is the concrete object
+for the remaining rank proof: bound the reachable coefficient vectors under
+these finitely many endpoint maps, rather than enumerate the raw graph.
 
 ## Why the long cases are long
 
