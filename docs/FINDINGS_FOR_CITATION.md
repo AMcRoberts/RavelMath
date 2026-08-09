@@ -3939,11 +3939,12 @@ one for cyclotomic lifts rather than an optional diagnostic.
 The exact terminating canonical lift for `theta2` (`x^4-x^3-1`) also
 closes, at 693 nodes with coincidence depth 3, extending the finite
 property-(F) baseline beyond the three-letter examples.
-The exact terminating `theta5` lift (`x^6-x^5-x^4+x^2-1`) is the first
-honest scale warning: at a 3,000,000-node budget it remains INCONCLUSIVE
-after exploring 3,000,002 nodes, with measured peak RSS 2.90 GB and no
-failure cycle. This is a budget boundary, not a negative result; the
-run used optional boundary-sink elision (the default reflected graph
-semantics are unchanged), and the bounded-state table is now the dominant
-cost. The dynamic derived probe handles its seven-state canonical alphabet
-without the earlier hard-coded-dimension crash.
+The exact terminating `theta5` lift (`x^6-x^5-x^4+x^2-1`) first exposed
+the scale boundary: a 3,000,000-node run was explicitly INCONCLUSIVE at
+2.90 GB RSS. With optional boundary-sink elision (the default reflected
+graph semantics are unchanged) and an 8,000,000-node budget, it now closes
+at 4,993,494 nodes: strong coincidence depth 5 and Property (F) HOLDS,
+with measured peak RSS 5.01 GB and elapsed time 5m30s. The dynamic derived
+probe handles its seven-state canonical alphabet without the earlier
+hard-coded-dimension crash. This is a finite certificate, not a theorem
+for all canonical Pisot substitutions.

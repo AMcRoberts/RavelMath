@@ -149,5 +149,5 @@ int main() {
     run_case<3>("eventually-periodic x^3-2x^2-x+1", {{0, 0, 1}, {2}, {0, 1}}, 300000);
     run_derived_terminating_case<4>("theta2 canonical x^4-x^3-1", {-1, 0, 0, -1}, 1000000);
     run_derived_terminating_case_dynamic("theta5 canonical x^6-x^5-x^4+x^2-1",
-                                         {-1, -1, 0, 1, 0, -1}, 3000000, false);
+                                         {-1, -1, 0, 1, 0, -1}, 8000000, false);
 }

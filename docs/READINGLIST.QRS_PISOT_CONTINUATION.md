@@ -850,8 +850,8 @@ cases.
 The same exact derived probe now includes the terminating `theta2`
 canonical lift (`x^4-x^3-1`): property (F) closes at 693 nodes and
 coincidence depth 3.
-The terminating `theta5` lift is now handled by dynamic alphabet dispatch;
-at 3,000,000 nodes it is still explicitly INCONCLUSIVE (3,000,002 nodes,
-2.90 GB peak RSS), even with optional boundary-sink elision. The bounded
-state table is the dominant cost, identifying the next scaling target rather
-than a property-(F) counterexample.
+The terminating `theta5` lift is now handled by dynamic alphabet dispatch.
+The earlier 3,000,000-node run was an explicit 2.90 GB INCONCLUSIVE cap;
+with optional boundary-sink elision and an 8,000,000-node budget it closes
+at 4,993,494 nodes (5.01 GB RSS, 5m30s), with coincidence depth 5 and
+Property (F) HOLDS. This remains finite evidence, not a universal theorem.
