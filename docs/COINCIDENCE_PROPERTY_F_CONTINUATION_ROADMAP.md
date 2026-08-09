@@ -198,6 +198,10 @@ same boundary: its repeated-factor branch delegates to the cofactor lift and
 rejects this quartic's ambiguous mod-2 factor. That is a useful negative
 diagnostic, not a reason to weaken the trust guard; the next implementation
 must perform a genuine repeated-factor p-adic/Montes lift.
+The regression now records the underlying shape mismatch explicitly: the
+non-maximal Dedekind data says `(1,1)+(3,1)`, whereas the Newton polygon says
+`(1,1)+(1,3)`. The latter is the local-field signal that survives the index
+correction and is the data a future lift must refine.
 
 **2026-08-08 finite-classifier increment.** `check_strong_coincidence` now
 returns a lexicographically indexed resolution profile for every unordered

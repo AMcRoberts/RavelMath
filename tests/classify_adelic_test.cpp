@@ -169,6 +169,9 @@ void test_nonmaximal_order_is_not_trusted() {
     auto fac = adelic::factor_prime_in_qbeta(R.charpoly(), 2);
     std::fprintf(stderr, "  diagnostic maximal=%d cross=%d\n", fac.maximal ? 1 : 0,
                  adelic::cross_check_dedekind_factorization(fac, R.charpoly(), 4) ? 1 : 0);
+    for (const auto& pi : fac.prime_ideals)
+        std::fprintf(stderr, "  Dedekind factor e=%lld f=%lld g=%s\n", pi.e, pi.f,
+                     mathlib::str(pi.g).c_str());
     auto [bound, trusted] = adelic::make_combined_padic_bound({2}, R.charpoly());
     CHECK(!trusted, "non-maximal quartic: p-adic bound is not trusted");
     CHECK(bound(R.from_int(0)), "non-maximal quartic: exploratory bound remains callable");
@@ -177,6 +180,13 @@ void test_nonmaximal_order_is_not_trusted() {
     std::fprintf(stderr, "  Round-2 disc_before=%s disc_after=%s needs_another_round=%d\n",
                  mathlib::str(round.disc_before).c_str(), mathlib::str(round.disc_after).c_str(),
                  round.needs_another_round ? 1 : 0);
+    auto segments = adelic::newton_polygon(adelic::zp_poly_from_polyz(R.charpoly(), 2, 30));
+    CHECK(segments.size() == 2, "non-maximal quartic: Newton polygon has two segments");
+    if (segments.size() == 2) {
+        CHECK(segments[0].e == 1 && segments[0].f == 1 &&
+                  segments[1].e == 1 && segments[1].f == 3,
+              "non-maximal quartic: Newton (e,f) differs from non-maximal Dedekind data");
+    }
 }
 
 // verdict_label() should give a non-empty string for every enum value.
