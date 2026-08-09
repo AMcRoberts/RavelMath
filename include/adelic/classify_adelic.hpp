@@ -113,7 +113,7 @@ TilingClassification classify_tiling(
     const mathlib::PolyZ& charpoly,
     const std::vector<std::vector<long long>>& M_transpose,
     const std::vector<long long>& primes_dividing_det,
-    long long property_f_node_budget = 300000) {
+    long long property_f_node_budget = 1'000'000) {
 
     TilingClassification out;
     out.name = name;

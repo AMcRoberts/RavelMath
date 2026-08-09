@@ -9,6 +9,7 @@
 // rnd13.
 
 #include <array>
+#include <algorithm>
 #include <cstdio>
 #include <vector>
 
@@ -39,6 +40,13 @@ void test_pair_has_coincidence_basics() {
     std::vector<long long> w3 = {0, 0};
     std::vector<long long> w4 = {1, 1};
     CHECK(!(pair_has_coincidence<2>(w3, w4)), "disjoint-alphabet words never coincide");
+
+    const std::array<std::vector<long long>, 2> disjoint_images = {w3, w4};
+    const auto bounded = check_strong_coincidence<2>(disjoint_images, 3, 100);
+    CHECK(bounded.inconclusive && bounded.unresolved_pairs == 1,
+          "finite classifier marks the unresolved pair as inconclusive");
+    CHECK(bounded.pair_resolution_depths == std::vector<long long>{-1},
+          "finite classifier preserves an explicit unresolved profile slot");
 }
 
 void test_worked_example() {
@@ -76,6 +84,12 @@ void test_worked_example() {
             coin.holds, coin.inconclusive, coin.depth_reached);
     CHECK(coin.holds, "worked example: strong coincidence HOLDS (matches paper's Sec 10.2)");
     CHECK(!coin.inconclusive, "worked example: strong coincidence resolved (not inconclusive)");
+    CHECK(coin.pair_resolution_depths.size() == 3,
+          "worked example: finite classifier reports all three pair slots");
+    CHECK(std::all_of(coin.pair_resolution_depths.begin(),
+                      coin.pair_resolution_depths.end(),
+                      [](long long depth) { return depth > 0; }),
+          "worked example: every pair has an explicit positive resolution depth");
 
     // Deliberate archimedean-only control. The shared classifier's
     // combined local-field bound closes this example (verified in
@@ -115,6 +129,8 @@ void test_fibonacci_sanity() {
 
     auto coin = check_strong_coincidence<d>(images);
     CHECK(coin.holds, "Fibonacci: strong coincidence holds");
+    CHECK(coin.pair_resolution_depths == std::vector<long long>{1},
+          "Fibonacci: pair profile records the depth-1 resolution");
 
     auto propf = check_property_f<d>(automaton, 5000);
     fprintf(stderr, "  property (F): holds=%d inconclusive=%d nodes=%lld\n",
@@ -122,7 +138,7 @@ void test_fibonacci_sanity() {
     CHECK(propf.holds, "Fibonacci: property (F) HOLDS (matches Rauzy 1982) -- "
                         "verified fixed (trivial-cycle bug, see docs/RESEARCH_STATUS.md)");
     CHECK(propf.nodes_explored == 8, "Fibonacci: closes at exactly 8 nodes "
-                                      "(budget-independent, checked 100..300000)");
+                                      "(budget-independent, checked 100..1000000)");
 
     CHECK(coin.holds && propf.holds,
           "Fibonacci: BOTH checks hold => TILES, matching the classical result");
@@ -159,6 +175,11 @@ void test_rnd13() {
             coin.holds, coin.inconclusive, coin.depth_reached);
     CHECK(coin.holds, "rnd13: strong coincidence HOLDS");
     CHECK(coin.depth_reached == 1, "rnd13: strong coincidence resolves at depth 1");
+    CHECK(coin.pair_resolution_depths.size() == 6 &&
+              std::all_of(coin.pair_resolution_depths.begin(),
+                          coin.pair_resolution_depths.end(),
+                          [](long long depth) { return depth == 1; }),
+          "rnd13: all six pair slots resolve at depth 1");
 
     auto padic_bound = make_totally_ramified_padic_bound(2, 4, R.charpoly());
     auto propf = check_property_f<d>(automaton, 100000, padic_bound);

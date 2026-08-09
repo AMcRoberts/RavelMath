@@ -68,7 +68,7 @@
 // entirely among zero-translation nodes is exactly the allowed
 // trivial case. Verified: Fibonacci now correctly reports
 // `holds=true` with a clean 8-node graph, matching Rauzy's classical
-// result, regardless of node budget (100 through 300000 all agree).
+// result, regardless of node budget (100 through 1,000,000 all agree).
 //
 // BUG 2 (fixed for one case, open for the general case): the
 // original archimedean-only magnitude bound never closes for
@@ -93,7 +93,7 @@
 // fully-ramified case QpTotallyRamified covers): the combined bound
 // closes the search at a stable 33185 nodes -- confirmed
 // budget-independent (identical node count at every budget from
-// 100000 up to 1000000) and precision-independent (identical at
+// 100000 up to 1,000,000) and precision-independent (identical at
 // p-adic working precision 15, 20, 30, 50, and 80) -- and reports
 // **property (F) HOLDS for rnd13**. Combined with strong coincidence
 // also holding (see above), this is the actual headline
@@ -255,6 +255,12 @@ struct StrongCoincidenceResult {
     bool inconclusive;        // true iff some pair did not resolve (depth or length cap hit)
     long long depth_reached;
     long long unresolved_pairs;  // count still unresolved at cutoff (0 if holds)
+    // Pair order is lexicographic: (0,1), (0,2), ..., (d-2,d-1).
+    // A value of -1 means that the pair remained unresolved at the finite
+    // cutoff.  Keeping this profile in the core result makes the finite
+    // classifier auditable instead of requiring a second independent search
+    // to recover per-pair depths.
+    std::vector<long long> pair_resolution_depths;
 };
 
 template <std::size_t d>
@@ -270,8 +276,12 @@ StrongCoincidenceResult check_strong_coincidence(
     }
     if (pairs.empty()) {
         // d = 1: no pairs to check, vacuously holds.
-        return {true, false, 0, 0};
+        return {true, false, 0, 0, {}};
     }
+
+    std::vector<long long> pair_resolution_depths(pairs.size(), -1);
+    std::vector<std::size_t> active_pair_slots(pairs.size());
+    for (std::size_t i = 0; i < active_pair_slots.size(); ++i) active_pair_slots[i] = i;
 
     std::array<std::vector<long long>, d> words;
     for (std::size_t b = 0; b < d; ++b) words[b] = images[b];  // sigma^1(b)
@@ -279,18 +289,29 @@ StrongCoincidenceResult check_strong_coincidence(
     long long depth = 1;
     for (;;) {
         std::vector<std::pair<long long, long long>> still_unresolved;
-        for (const auto& pr : pairs) {
+        std::vector<std::size_t> still_unresolved_slots;
+        for (std::size_t pair_index = 0; pair_index < pairs.size(); ++pair_index) {
+            const auto& pr = pairs[pair_index];
             if (!pair_has_coincidence<d>(words[static_cast<std::size_t>(pr.first)],
                                           words[static_cast<std::size_t>(pr.second)])) {
                 still_unresolved.push_back(pr);
+                still_unresolved_slots.push_back(active_pair_slots[pair_index]);
+            } else {
+                // `pairs` is compacted after every depth, so carry the
+                // original profile slot alongside each unresolved pair.
+                pair_resolution_depths[active_pair_slots[pair_index]] = depth;
             }
         }
+        // Preserve the original pair slot while compacting the active list;
+        // the parallel slot vector keeps the profile stable across depths.
         pairs = std::move(still_unresolved);
+        active_pair_slots = std::move(still_unresolved_slots);
         if (pairs.empty()) {
-            return {true, false, depth, 0};
+            return {true, false, depth, 0, std::move(pair_resolution_depths)};
         }
         if (depth >= max_depth) {
-            return {false, true, depth, static_cast<long long>(pairs.size())};
+            return {false, true, depth, static_cast<long long>(pairs.size()),
+                    std::move(pair_resolution_depths)};
         }
         long long maxlen = 0;
         for (const auto& w : words) {
@@ -304,7 +325,8 @@ StrongCoincidenceResult check_strong_coincidence(
             max_image_len = std::max<long long>(max_image_len, static_cast<long long>(im.size()));
         }
         if (max_image_len > 1 && maxlen > max_word_len / max_image_len) {
-            return {false, true, depth, static_cast<long long>(pairs.size())};
+            return {false, true, depth, static_cast<long long>(pairs.size()),
+                    std::move(pair_resolution_depths)};
         }
         std::array<std::vector<long long>, d> next;
         for (std::size_t b = 0; b < d; ++b) {
@@ -770,7 +792,7 @@ inline std::pair<bool, mathlib::Rat> certified_secondary_modulus_bound(
 template <std::size_t d>
 PropertyFResult check_property_f(
     const PrefixAutomaton<d>& automaton,
-    long long node_budget = 300000,
+    long long node_budget = 1'000'000,
     const std::function<bool(const mathlib::QElem&)>& extra_bound = nullptr,
     std::vector<std::vector<long long>>* out_adjacency = nullptr,
     const std::vector<std::vector<long long>>* incidence_matrix_for_certified_bound = nullptr,

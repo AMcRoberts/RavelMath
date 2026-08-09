@@ -129,6 +129,17 @@ the remaining step is to include the characteristic polynomial and a generic
 Lean Q(beta) recurrence checker.
 The exact characteristic polynomial is now exported too; only the generic
 recurrence checker remains on this sub-route.
+
+**2026-08-08 finite-classifier increment.** `check_strong_coincidence` now
+returns a lexicographically indexed resolution profile for every unordered
+letter pair: the exact first resolving depth, or `-1` when the bounded run
+hits its depth/word-length cutoff. The reflection staging path carries this
+profile into `StrongCoincidenceRunCertificate`, checks it against the exact
+per-pair word witness before recording anything, and renders the two profiles
+as equal finite Lean lists. This closes a trust-layer gap in the bounded
+classifier: the aggregate `holds` bit is no longer the only exported result,
+and a second search cannot silently disagree about which pair resolved when.
+It remains finite evidence, not an unconditional strong-coincidence theorem.
 The staging operation now reconstructs every exported source/target/digit
 triple in the supplied `QBetaRing` and rejects any edge whose exact identity
 `gamma' = beta⁻¹ (gamma + delta)` fails. Fibonacci includes a tampering

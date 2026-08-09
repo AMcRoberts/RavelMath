@@ -34,6 +34,7 @@ inline StrongCoincidenceStageResult stage_strong_coincidence_run(
 
     mathlib::reflection::StrongCoincidenceRunCertificate node;
     node.images.assign(images.begin(), images.end());
+    node.pair_resolution_depths = result.pair_resolution_depths;
     for (std::size_t i = 0; i < d; ++i) {
         for (std::size_t j = i + 1; j < d; ++j) {
             const auto witness = find_strong_coincidence_pair_witness(
@@ -41,6 +42,11 @@ inline StrongCoincidenceStageResult stage_strong_coincidence_run(
                 max_depth, max_word_len);
             if (!witness) return StrongCoincidenceStageResult::failed;
             node.pair_depths.push_back(witness->depth);
+            const std::size_t pair_index =
+                (i * (2 * d - i - 1)) / 2 + (j - i - 1);
+            if (pair_index >= result.pair_resolution_depths.size() ||
+                result.pair_resolution_depths[pair_index] != witness->depth)
+                return StrongCoincidenceStageResult::failed;
             if (!stage_strong_coincidence_pair_witness(
                     images, static_cast<long long>(i), static_cast<long long>(j),
                     max_depth, max_word_len,

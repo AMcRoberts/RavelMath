@@ -111,6 +111,9 @@ int main() {
     assert(coincidence_runs.front().second->holds);
     assert(!coincidence_runs.front().second->inconclusive);
     assert(coincidence_runs.front().second->pair_depths.size() == 1);
+    assert(coincidence_runs.front().second->pair_resolution_depths.size() == 1);
+    assert(coincidence_runs.front().second->pair_resolution_depths.front() ==
+           coincidence_runs.front().second->pair_depths.front());
     const auto coincidence_witnesses =
         trace.find<mathlib::reflection::StrongCoincidencePairWitnessCertificate>();
     assert(coincidence_witnesses.size() == 1);
@@ -122,6 +125,7 @@ int main() {
     assert(lean.find("property_f_graph_0_gamma_0") != std::string::npos);
     assert(lean.find("property_f_graph_0_digit_0_0") != std::string::npos);
     assert(lean.find("strong_coincidence_run_0_summary") != std::string::npos);
+    assert(lean.find("strong_coincidence_run_0_resolution_depths") != std::string::npos);
     assert(lean.find("strong_coincidence_pair_witness_0_checked") != std::string::npos);
     assert(lean.find("property_f_graph_0_charpoly") != std::string::npos);
     assert(lean.find("propertyFQ2Step") != std::string::npos);

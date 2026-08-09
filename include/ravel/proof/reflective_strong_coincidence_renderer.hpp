@@ -26,16 +26,26 @@ inline std::string render_strong_coincidence_run_instances(
             out << "]";
         }
         out << "]\n";
-        out << "def " << stem << "_pair_depths : List Nat := [";
+        out << "def " << stem << "_pair_depths : List Int := [";
         for (std::size_t i = 0; i < node->pair_depths.size(); ++i) {
             if (i) out << ", ";
             out << node->pair_depths[i];
+        }
+        out << "]\n";
+        out << "def " << stem << "_resolution_depths : List Int := [";
+        for (std::size_t i = 0; i < node->pair_resolution_depths.size(); ++i) {
+            if (i) out << ", ";
+            out << node->pair_resolution_depths[i];
         }
         out << "]\n";
         out << "theorem " << stem << "_summary :\n"
             << "    " << stem << "_images.length = " << node->images.size() << " ∧\n"
             << "    " << stem << "_pair_depths.length = "
             << node->pair_depths.size() << " ∧\n"
+            << "    " << stem << "_resolution_depths.length = "
+            << node->pair_resolution_depths.size() << " ∧\n"
+            << "    " << stem << "_resolution_depths = " << stem
+            << "_pair_depths ∧\n"
             << "    " << node->depth_reached << " ≤ " << node->max_depth << " ∧\n"
             << "    " << (node->holds ? "True" : "False") << " := by decide\n\n";
     }

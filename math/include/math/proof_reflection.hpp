@@ -322,6 +322,9 @@ struct ConstantLastLetterCertificate {
 // all substitutions; the search limits and aggregate result remain explicit.
 struct StrongCoincidenceRunCertificate {
     std::vector<std::vector<long long>> images;
+    // Lexicographic pair profile from the finite classifier.  Entries are
+    // exact resolution depths, or -1 for a pair unresolved at the cutoff.
+    std::vector<long long> pair_resolution_depths;
     std::vector<long long> pair_depths;
     long long depth_reached = 0;
     long long unresolved_pairs = 0;
