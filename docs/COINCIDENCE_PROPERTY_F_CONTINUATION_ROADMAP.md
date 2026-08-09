@@ -165,6 +165,12 @@ worked-example and `rnd13` shared-classifier tests assert those profiles
 directly, so production classification no longer discards the finite evidence
 needed to audit a strong-coincidence verdict.
 
+Closure certificates now also export the concrete common terminal letter and
+landmark vector for every resolved pair, plus a suffix-route bit for the full
+reversed-substitution classifier. The generated Lean summaries check the
+lengths of these state payloads alongside the depth and matrix data; this
+removes the last depth-only gap in the closure reflection boundary.
+
 The prefix closure now also has a typed reflection certificate and renderer.
 The staging operation derives the incidence matrix from the supplied images,
 rejects invalid shapes, inconclusive cutoffs, and arithmetic overflow, and

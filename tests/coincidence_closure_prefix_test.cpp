@@ -77,11 +77,16 @@ int main() {
     assert(staged.size() == 1);
     assert(staged.front().second->pair_resolution_depths ==
            prefix.pair_resolution_depths);
+    assert(staged.front().second->pair_terminal_letters.size() == 3);
+    assert(staged.front().second->pair_vectors.size() == 3);
     const auto full_staged = trace.find<
         mathlib::reflection::StrongCoincidenceClosureCertificate>();
     assert(full_staged.size() == 1);
     assert(full_staged.front().second->pair_resolution_depths ==
            direct.pair_resolution_depths);
+    assert(full_staged.front().second->pair_terminal_letters.size() == 3);
+    assert(full_staged.front().second->pair_vectors.size() == 3);
+    assert(full_staged.front().second->pair_from_suffix.size() == 3);
     const std::string rendered = render_reflective_lean_module(trace);
     assert(rendered.find("strong_coincidence_prefix_closure_0_summary") !=
            std::string::npos);

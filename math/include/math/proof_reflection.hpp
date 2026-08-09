@@ -343,6 +343,8 @@ struct StrongCoincidencePrefixClosureCertificate {
     std::vector<std::vector<long long>> images;
     std::vector<long long> matrix;
     std::vector<long long> pair_resolution_depths;
+    std::vector<long long> pair_terminal_letters;
+    std::vector<std::vector<long long>> pair_vectors;
     long long depth_reached = 0;
     long long max_depth = 0;
     long long outcome_budget = 0;
@@ -358,6 +360,9 @@ struct StrongCoincidenceClosureCertificate {
     std::vector<std::vector<long long>> images;
     std::vector<long long> matrix;
     std::vector<long long> pair_resolution_depths;
+    std::vector<long long> pair_terminal_letters;
+    std::vector<std::vector<long long>> pair_vectors;
+    std::vector<bool> pair_from_suffix;
     long long depth_reached = 0;
     long long max_depth = 0;
     long long outcome_budget = 0;

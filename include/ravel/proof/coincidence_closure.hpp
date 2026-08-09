@@ -250,6 +250,8 @@ struct PrefixClosureCoincidenceResult {
     long long depth_reached = 0;
     long long unresolved_pairs = 0;
     std::vector<long long> pair_resolution_depths;
+    std::vector<long long> pair_terminal_letters;
+    std::vector<std::vector<long long>> pair_vectors;
 };
 
 // Full finite strong-coincidence result obtained by running the exact
@@ -263,6 +265,9 @@ struct ClosureStrongCoincidenceResult {
     long long depth_reached = 0;
     long long unresolved_pairs = 0;
     std::vector<long long> pair_resolution_depths;
+    std::vector<long long> pair_terminal_letters;
+    std::vector<std::vector<long long>> pair_vectors;
+    std::vector<bool> pair_from_suffix;
 };
 
 template <std::size_t d>
@@ -285,6 +290,8 @@ inline PrefixClosureCoincidenceResult check_prefix_coincidence_closure(
             pairs.emplace_back(a, b);
     PrefixClosureCoincidenceResult result;
     result.pair_resolution_depths.assign(pairs.size(), -1);
+    result.pair_terminal_letters.assign(pairs.size(), -1);
+    result.pair_vectors.resize(pairs.size());
     if (pairs.empty()) {
         result.holds = true;
         return result;
@@ -349,6 +356,13 @@ inline PrefixClosureCoincidenceResult check_prefix_coincidence_closure(
             }
             if (coincides) {
                 result.pair_resolution_depths[active_slots[i]] = depth;
+                std::pair<long long, ExactVec<d>> witness{};
+                for (const auto& state : left) {
+                    if (right.count(state)) { witness = state; break; }
+                }
+                result.pair_terminal_letters[active_slots[i]] = witness.first;
+                result.pair_vectors[active_slots[i]].assign(
+                    witness.second.begin(), witness.second.end());
             } else {
                 still_active.push_back(active[i]);
                 still_slots.push_back(active_slots[i]);
@@ -379,12 +393,22 @@ inline ClosureStrongCoincidenceResult check_strong_coincidence_closure(
         reverse_substitution_images<d>(images), matrix, max_depth, outcome_budget);
     ClosureStrongCoincidenceResult result;
     result.pair_resolution_depths.resize(prefix.pair_resolution_depths.size(), -1);
+    result.pair_terminal_letters.resize(result.pair_resolution_depths.size(), -1);
+    result.pair_vectors.resize(result.pair_resolution_depths.size());
+    result.pair_from_suffix.resize(result.pair_resolution_depths.size(), false);
     for (std::size_t i = 0; i < result.pair_resolution_depths.size(); ++i) {
         const long long p = prefix.pair_resolution_depths[i];
         const long long s = suffix.pair_resolution_depths[i];
+        bool use_suffix = p <= 0 || (s > 0 && s < p);
         if (p > 0 && s > 0) result.pair_resolution_depths[i] = std::min(p, s);
         else if (p > 0) result.pair_resolution_depths[i] = p;
         else if (s > 0) result.pair_resolution_depths[i] = s;
+        if (result.pair_resolution_depths[i] > 0) {
+            const auto& source = use_suffix ? suffix : prefix;
+            result.pair_terminal_letters[i] = source.pair_terminal_letters[i];
+            result.pair_vectors[i] = source.pair_vectors[i];
+            result.pair_from_suffix[i] = use_suffix;
+        }
     }
     result.depth_reached = std::max(prefix.depth_reached, suffix.depth_reached);
     for (long long depth : result.pair_resolution_depths)

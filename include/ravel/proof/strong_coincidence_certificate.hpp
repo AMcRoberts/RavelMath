@@ -61,6 +61,8 @@ inline StrongCoincidencePrefixClosureStageResult stage_strong_coincidence_prefix
     mathlib::reflection::StrongCoincidencePrefixClosureCertificate node;
     node.images.assign(images.begin(), images.end());
     node.pair_resolution_depths = result.pair_resolution_depths;
+    node.pair_terminal_letters = result.pair_terminal_letters;
+    node.pair_vectors = result.pair_vectors;
     node.depth_reached = result.depth_reached;
     node.max_depth = max_depth;
     node.outcome_budget = static_cast<long long>(outcome_budget);
@@ -113,6 +115,9 @@ inline StrongCoincidenceClosureStageResult stage_strong_coincidence_closure(
     mathlib::reflection::StrongCoincidenceClosureCertificate node;
     node.images.assign(images.begin(), images.end());
     node.pair_resolution_depths = result.pair_resolution_depths;
+    node.pair_terminal_letters = result.pair_terminal_letters;
+    node.pair_vectors = result.pair_vectors;
+    node.pair_from_suffix = result.pair_from_suffix;
     node.depth_reached = result.depth_reached;
     node.max_depth = max_depth;
     node.outcome_budget = static_cast<long long>(outcome_budget);
