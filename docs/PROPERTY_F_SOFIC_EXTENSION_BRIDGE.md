@@ -122,6 +122,29 @@ contract on a nontrivial rectangle and gives a concrete growth law to attack:
 for fixed `m`, transport size grows with `d`, while for fixed `d=4` it grows
 rapidly but remains finite and cycle-safe.
 
+## Cross-dimension transport law
+
+The sofic and affine sides cross dimensions in different ways. The sofic
+primitive grammar is a dimension-free renewal suspension: `m` determines the
+prefix-phase scheduler, while changing `d` only deletes concrete parent or
+boundary edges from the universal `Q/R^k` schema. The affine transport has a
+graded tower instead. Its return blocks are indexed by `(height b, initial
+carry k)`, with `0 <= b < d-1` and `0 <= k < m`, plus one terminal block.
+
+- A `d -> d+1` lift preserves every old block, reinterprets the old terminal
+  as the new zero-carry block at height `d-1`, and adds exactly `m` channels.
+- An `m -> m+1` lift preserves every old block after relabelling each forced
+  tail `m` as `m+1`, then adds one new carry color at each of the `d-1`
+  nonterminal heights.
+
+`generalized_multinacci_cross_dimension_test` checks these laws on 42
+dimension lifts and 35 multiplicity lifts. This is the transport analogue of
+the sofic cross-dimension suspension: the two axes are height and carry color,
+not repeated copies of one fixed graph. The combinatorial lift does not by
+itself transfer Property-F closure, because the beta-inverse coefficient
+matrix changes with both parameters; it does transfer the finite return
+language and the exact obligations that any rank proof must satisfy.
+
 The exact affine reduction is now a reusable certificate in
 `generalized_multinacci_affine_transport.hpp`: every prefix digit is
 `delta(0^k)=k*beta`, so every Property-F step is

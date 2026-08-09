@@ -118,6 +118,15 @@ carry alphabet size `m` and the degree-`d` beta-inverse reduction.
 The return-to-zero block quotient is also explicit: exactly `(d-1)m+1`
 channels, each of length at most `d`, with words `[k,m,...,m]`. This is the
 finite forest on which the remaining reachability/rank proof should operate.
+The cross-dimension law is now explicit and differs from the sofic one. Sofic
+transport is a dimension-free renewal suspension with dimension-specific edge
+deletion. Affine transport is a graded height/color tower: `d -> d+1` keeps the
+old blocks, turns the old terminal into the new zero-carry height-
+`d-1` block, and adds `m` channels; `m -> m+1` relabels forced tails and adds
+one carry color at each nonterminal height. The cross-dimension test checks 42
+of the former lifts and 35 of the latter. This transfers the return language,
+not Property-F closure, because the beta-inverse matrix changes with the
+parameters.
 Each channel is now compiled to an exact integer affine endpoint map on the
 `d`-coordinate coefficient lattice; all 19 `(4,6)` maps are replay-checked
 against `Q(beta)`, while the 42-point sweep checks the parameterized map shape.
