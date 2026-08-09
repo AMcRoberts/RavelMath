@@ -141,6 +141,33 @@ int main() {
         out << rendered;
     }
 
+    // Render the genuine multi-junction sigma_{1,1} certificate as a separate
+    // artifact. This exercises edge reconstruction across two branching
+    // letters, including the forced one-step route through letter 2.
+    const std::array<std::vector<long long>, 3> sigma11_render = {
+        std::vector<long long>{0, 1, 2}, std::vector<long long>{0, 2},
+        std::vector<long long>{0}};
+    mathlib::reflection::Trace multi_trace("coincidence_closure_multi_junction");
+    {
+        mathlib::reflection::ScopedTrace scope(&multi_trace);
+        assert(stage_strong_coincidence_prefix_closure<3>(
+                   sigma11_render, 14, 1'000'000, "sigma_1_1 prefix closure") ==
+               StrongCoincidencePrefixClosureStageResult::staged);
+        assert(stage_strong_coincidence_closure<3>(
+                   sigma11_render, 14, 1'000'000, "sigma_1_1 full closure") ==
+               StrongCoincidenceClosureStageResult::staged);
+    }
+    const std::string multi_rendered =
+        render_reflective_lean_module(multi_trace);
+    assert(multi_rendered.find("strong_coincidence_prefix_closure_0_edges_valid") !=
+           std::string::npos);
+    assert(multi_rendered.find("strong_coincidence_closure_0_edges_valid") !=
+           std::string::npos);
+    if (const char* path = std::getenv("RAVEL_PREFIX_CLOSURE_MULTI_LEAN_OUT")) {
+        std::ofstream out(path);
+        out << multi_rendered;
+    }
+
     // The closure remains honest at a finite cutoff: a pair with disjoint
     // deterministic cycles is unresolved, not misclassified as a failure.
     const std::array<std::vector<long long>, 2> disjoint = {

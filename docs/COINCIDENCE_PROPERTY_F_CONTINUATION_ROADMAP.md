@@ -334,3 +334,6 @@ kernel boundary.
 The edge validator also requires both serialized endpoints to be actual
 branching junctions, so deterministic letters cannot enter the junction graph
 silently through malformed metadata.
+The regression now renders and kernel-checks the genuine two-junction
+`sigma_{1,1}` certificate as well as the single-junction control, exercising the
+forced-letter route and suffix orientation in the same artifact path.
