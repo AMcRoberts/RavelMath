@@ -202,10 +202,12 @@ that the driver had been filtering 4×4 candidates with a stale
 hand-expanded 3×3 determinant, and its SCC-split flag was never
 assigned. The corrected driver now uses a dimension-independent
 determinant, compares actual SCC memberships, and reconstructs the
-graph sparsely. A guarded legacy-corona pilot produced 2 clean
-candidates out of 4; both agreed exactly among whole, dominant-SCC,
-and largest-SCC λ values, with zero membership splits. This is useful
-partial evidence, not yet a re-audit of the historical 11/87 batch.
+graph sparsely. A guarded legacy-corona run produced 5 clean candidates
+out of 9 determinant-qualified candidates; all five agreed exactly among
+whole, dominant-SCC, and largest-SCC λ values, with zero membership
+splits. Four candidates hit explicit closure/corona caps and remain
+inconclusive. This is stronger partial evidence, not yet a re-audit of
+the historical 11/87 batch.
 
 **Literature connection**: consistent with Barge, Bruin, Jones &
 Sadun (2010) on non-unimodular Pisot substitutions failing to tile,
@@ -295,8 +297,8 @@ certified. The 39-/87-
 candidate non-unimodular row's "11/87 differ by 10-40%" claim remains
 a re-audit target: the earlier 14/14 statement was generated before
 the determinant and split-flag defects were corrected and cannot serve
-as evidence for the fixed implementation. The corrected 2/4 pilot is
-not large enough to replace that target.
+as evidence for the fixed implementation. The corrected 5/9 run is not
+large enough to replace that target.
 
 **Why "not yet independently hand-verified" rather than a flat claim
 of proof**: this result comes from a from-scratch implementation of

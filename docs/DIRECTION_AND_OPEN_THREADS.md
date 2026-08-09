@@ -178,10 +178,11 @@ itself. This is a settled point; mentioned here for completeness.
   the three λ values (whole-matrix, largest-SCC, dominant-SCC). A
   correctness audit found a stale 3×3 determinant filter and an
   unassigned SCC-split flag; both are fixed, and the driver now builds
-  the graph sparsely. A guarded legacy-corona pilot produced 2 clean
-  candidates out of 4, with exact λ agreement and no SCC membership
-  splits. The historical row remains provisional until a substantially
-  larger corrected batch is obtained.
+  the graph sparsely. A guarded legacy-corona run produced 5 clean
+  candidates out of 9 determinant-qualified candidates, with exact λ
+  agreement and no SCC membership splits; four explicit cap hits remain
+  inconclusive. The historical row remains provisional until a
+  substantially larger corrected batch is obtained.
 
 **What's open (Item B research targets, in priority order)**:
 
@@ -370,7 +371,7 @@ largest). `extract_recurrent_core` is documented in its own
 header comment to give wrong answers for graphs of comparable
 size to Hexanacci's; the G_B re-audit driver
 (`app/reaudit_gb_dominant_scc.cpp`) is the check for this distinction;
-the corrected 2/4 pilot is evidence that the path now runs, but not a
+the corrected 5/9 run is evidence that the path now runs, but not a
 replacement for the full historical re-audit.
 
 **ASan (AddressSanitizer)** — the safety net for the precision-
