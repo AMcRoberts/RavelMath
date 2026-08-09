@@ -9,13 +9,11 @@
 --
 -- This is a pure-Lua original -- no C++ `build_spectre_transition_
 -- table()` function exists or ever existed in this repository, and
--- `docs/THEOREM_STATUS.md` has no such phase. For G and S the values come
--- from a geometric match against the preserved specmap SVG. For
--- the other 7 hexes the values come from the closest-segment
--- matching against the txt-fallback enriched files (the SVGs are
--- not preserved in the reference folder); see the `source` field
--- in each record and the comment block in
--- scripts/build_spectre_transition_table.lua for details.
+-- `docs/THEOREM_STATUS.md` has no such phase. When a specmap SVG is
+-- available, values come from a geometric match; the checked-in reference
+-- folder currently contains only txt fallbacks, so its records are marked
+-- `closest-segment`. See the `source` field and the builder comments for
+-- the distinction.
 --
 -- Usage:
 --   local transitions = require("ravel.data.spectre_transitions")
