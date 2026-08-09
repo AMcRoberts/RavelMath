@@ -5,6 +5,7 @@
 
 #include "adelic/prefix_automaton.hpp"
 #include "adelic/generalized_multinacci_affine_transport.hpp"
+#include "adelic/generalized_multinacci_block_transport.hpp"
 #include "adelic/property_f_transport_certificate.hpp"
 #include "math/linalg_qbeta.hpp"
 #include "ravel/generalized_multinacci.hpp"
@@ -33,6 +34,8 @@ void check_case(std::size_t m) {
     const auto symbolic = ravel::proof::derive_generalized_multinacci_general_m(m);
     if (!symbolic.proved)
         throw std::runtime_error("general-m sofic scheduler certificate failed");
+    if (!adelic::derive_generalized_multinacci_block_transport(d, m).proved)
+        throw std::runtime_error("generalized multinacci block schema failed");
 
     mathlib::QBetaRing ring(ravel::generalized_multinacci_polynomial(d, m));
     const auto eigen = mathlib::left_eigenvector_via_qbeta_reduced_factor(dense, ring);

@@ -2314,7 +2314,8 @@ property_f_contact_transport_bridge_test: $(TEST_BIN_PROPERTY_F_CONTACT_TRANSPOR
 TEST_BIN_GENERALIZED_MULTINACCI_PROPERTY_F_TRANSPORT := $(BUILDDIR)/generalized_multinacci_property_f_transport_test
 $(TEST_BIN_GENERALIZED_MULTINACCI_PROPERTY_F_TRANSPORT): $(TESTDIR)/generalized_multinacci_property_f_transport_test.cpp \
 		$(INCDIR)/adelic/property_f_transport_certificate.hpp \
-		$(INCDIR)/adelic/generalized_multinacci_affine_transport.hpp | $(BUILDDIR) $(MATH_LIB)
+		$(INCDIR)/adelic/generalized_multinacci_affine_transport.hpp \
+		$(INCDIR)/adelic/generalized_multinacci_block_transport.hpp | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 generalized_multinacci_property_f_transport_test: $(TEST_BIN_GENERALIZED_MULTINACCI_PROPERTY_F_TRANSPORT)
 	./$(TEST_BIN_GENERALIZED_MULTINACCI_PROPERTY_F_TRANSPORT)
@@ -2322,7 +2323,8 @@ generalized_multinacci_property_f_transport_test: $(TEST_BIN_GENERALIZED_MULTINA
 TEST_BIN_GENERALIZED_MULTINACCI_PROPERTY_F_TRANSPORT_EXTENDED := $(BUILDDIR)/generalized_multinacci_property_f_transport_extended_test
 $(TEST_BIN_GENERALIZED_MULTINACCI_PROPERTY_F_TRANSPORT_EXTENDED): $(TESTDIR)/generalized_multinacci_property_f_transport_extended_test.cpp \
 		$(INCDIR)/adelic/property_f_transport_certificate.hpp \
-		$(INCDIR)/adelic/generalized_multinacci_affine_transport.hpp | $(BUILDDIR) $(MATH_LIB)
+		$(INCDIR)/adelic/generalized_multinacci_affine_transport.hpp \
+		$(INCDIR)/adelic/generalized_multinacci_block_transport.hpp | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 generalized_multinacci_property_f_transport_extended_test: $(TEST_BIN_GENERALIZED_MULTINACCI_PROPERTY_F_TRANSPORT_EXTENDED)
 	./$(TEST_BIN_GENERALIZED_MULTINACCI_PROPERTY_F_TRANSPORT_EXTENDED)

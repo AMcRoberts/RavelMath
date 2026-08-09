@@ -128,6 +128,11 @@ The exact affine reduction is now a reusable certificate in
 `gamma' = beta^(-1)*gamma + k`, with `0 <= k <= m`. Thus `m` changes the
 carry alphabet, while `d` changes the reduction relation for `beta^(-1)`;
 this separates the two parameter directions for the eventual rank proof.
+The return-to-zero block certificate now makes the next quotient explicit:
+there are exactly `(d-1)m+1` excursion channels, of lengths at most `d`;
+each word is `[k,m,...,m]`, with one initial `k<m` (plus the terminal
+`[0,m,...,m]` channel). Any future rank argument can therefore work on this
+finite block alphabet instead of the raw zero-expansion graph.
 
 An opt-in extended regression pushes beyond that rectangle
 (`generalized_multinacci_property_f_transport_extended_test`). It closes

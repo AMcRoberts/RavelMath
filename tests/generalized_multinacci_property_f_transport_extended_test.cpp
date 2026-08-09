@@ -5,6 +5,7 @@
 
 #include "adelic/property_f_transport_certificate.hpp"
 #include "adelic/generalized_multinacci_affine_transport.hpp"
+#include "adelic/generalized_multinacci_block_transport.hpp"
 #include "adelic/prefix_automaton.hpp"
 #include "math/linalg_qbeta.hpp"
 #include "ravel/generalized_multinacci.hpp"
@@ -28,6 +29,8 @@ adelic::PropertyFTransportCertificate run_case(std::size_t m, long long budget) 
         throw std::runtime_error("extended generalized multinacci coincidence failed");
     if (!ravel::proof::derive_generalized_multinacci_general_m(m).proved)
         throw std::runtime_error("extended general-m scheduler failed");
+    if (!adelic::derive_generalized_multinacci_block_transport(d, m).proved)
+        throw std::runtime_error("extended block schema failed");
 
     mathlib::QBetaRing ring(ravel::generalized_multinacci_polynomial(d, m));
     const auto eigen = mathlib::left_eigenvector_via_qbeta_reduced_factor(dense, ring);

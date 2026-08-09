@@ -95,6 +95,9 @@ The exact digit/transition identity is now checked by
 `generalized_multinacci_affine_transport.hpp`: `delta(0^k)=k*beta` and
 `gamma' = beta^(-1)gamma+k`. This isolates the future rank problem into the
 carry alphabet size `m` and the degree-`d` beta-inverse reduction.
+The return-to-zero block quotient is also explicit: exactly `(d-1)m+1`
+channels, each of length at most `d`, with words `[k,m,...,m]`. This is the
+finite forest on which the remaining reachability/rank proof should operate.
 
 ## Verified engineering boundary
 
