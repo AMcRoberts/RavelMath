@@ -3952,6 +3952,7 @@ for all canonical Pisot substitutions. The terminating `theta6` lift
 4 and Property (F) HOLDS; its isolated run used 0.64 GB RSS and 36.9
 seconds. The probe now has an environment switch for this case so it can
 be reproduced without rerunning the larger theta5 case.
+
 ## Finding 44 — Parent-role forest and finite holonomy diagnostic
 
 **Status: EXACT FINITE STRUCTURAL COMPUTATION (2026-08-09).**

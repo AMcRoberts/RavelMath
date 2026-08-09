@@ -858,6 +858,7 @@ Property (F) HOLDS. This remains finite evidence, not a universal theorem.
 The next terminating lift, `theta6` (`x^5-x^3-x^2-x-1`), closes at 743,931
 nodes (coincidence depth 4, 0.64 GB RSS, 36.9s); an environment-only mode
 reproduces it without rerunning theta5.
+
 ### 2026-08-09 — Forest-level cocycle extraction
 
 The next operation is no longer a larger tree search. The reusable
