@@ -160,6 +160,9 @@ unrelated literals in the recurrence definition.
 The reflected matrix payload also carries kernel-checked row and row-width
 theorems, preventing the rational lookup's defensive defaults from masking a
 dimension mismatch.
+The graph shape theorem now also ties the characteristic-polynomial length to
+the beta-inverse matrix dimension, making the degree used by the Q(β) state
+type explicit in the kernel artifact.
 
 **2026-08-08 finite-classifier increment.** `check_strong_coincidence` now
 returns a lexicographically indexed resolution profile for every unordered

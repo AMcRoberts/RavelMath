@@ -139,6 +139,7 @@ int main() {
     assert(lean.find("property_f_graph_0_beta_inverse_matrix") != std::string::npos);
     assert(lean.find("property_f_graph_0_q_step") != std::string::npos);
     assert(lean.find("property_f_graph_0_beta_inverse_matrix_shape") != std::string::npos);
+    assert(lean.find("property_f_graph_0_shape") != std::string::npos);
     if (const char* dump_path = std::getenv("RAVEL_PROPERTY_F_LEAN_OUT")) {
         std::ofstream dump(dump_path);
         dump << lean;

@@ -4640,6 +4640,8 @@ inline std::string render_property_f_graph_instances(const mathlib::reflection::
         out << "    (" << node->gamma_keys.size() << " = " << node->letters.size() << ") ∧\n";
         out << "    (" << node->gamma_keys.size() << " = " << node->gamma_coefficients.size() << ") ∧\n";
         out << "    (" << stem << "_charpoly.length > 0) ∧\n";
+        out << "    (" << stem << "_charpoly.length = "
+            << (node->beta_inverse_matrix.size() + 1) << ") ∧\n";
         out << "    (" << stem << "_scc_labels.length = " << node->scc_labels.size() << ") ∧\n";
         out << "    (" << stem << "_scc_sizes.length = " << node->scc_sizes.size() << ") ∧\n";
         out << "    (" << stem << "_nonzero_cycle_components = "
