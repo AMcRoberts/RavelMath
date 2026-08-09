@@ -129,6 +129,10 @@ the remaining step is to include the characteristic polynomial and a generic
 Lean Q(beta) recurrence checker.
 The exact characteristic polynomial is now exported too; only the generic
 recurrence checker remains on this sub-route.
+The graph export now also serializes the per-source successor rows and emits a
+kernel-checked topology theorem for every digit edge. Thus each Q(beta)
+recurrence corollary is tied to the actual graph target, rather than only to a
+target coefficient literal selected by the renderer.
 
 **2026-08-08 finite-classifier increment.** `check_strong_coincidence` now
 returns a lexicographically indexed resolution profile for every unordered

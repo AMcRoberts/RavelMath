@@ -4562,6 +4562,17 @@ inline std::string render_property_f_graph_instances(const mathlib::reflection::
             out << "(" << edges[i].first << ", " << edges[i].second << ")";
         }
         out << "]\n";
+        out << "def " << stem << "_successors : List (List Nat) := [";
+        for (std::size_t i = 0; i < node->successors.size(); ++i) {
+            if (i) out << ", ";
+            out << "[";
+            for (std::size_t j = 0; j < node->successors[i].size(); ++j) {
+                if (j) out << ", ";
+                out << node->successors[i][j];
+            }
+            out << "]";
+        }
+        out << "]\n";
         out << "def " << stem << "_zero_nodes : List Nat := [";
         for (std::size_t i = 0; i < zero_indices.size(); ++i) {
             if (i) out << ", ";
@@ -4610,6 +4621,7 @@ inline std::string render_property_f_graph_instances(const mathlib::reflection::
         }
         out << "theorem " << stem << "_shape :\n";
         out << "    (" << stem << "_edges.length = " << edges.size() << ") ∧\n";
+        out << "    (" << stem << "_successors.length = " << node->successors.size() << ") ∧\n";
         out << "    (" << stem << "_zero_nodes.length = " << zero_indices.size() << ") ∧\n";
         out << "    (" << node->gamma_keys.size() << " = " << node->letters.size() << ") ∧\n";
         out << "    (" << node->gamma_keys.size() << " = " << node->gamma_coefficients.size() << ") ∧\n";
@@ -4692,6 +4704,11 @@ inline std::string render_property_f_graph_instances(const mathlib::reflection::
             for (std::size_t source = 0; source < node->edge_digit_coefficients.size(); ++source) {
                 for (std::size_t edge = 0; edge < node->edge_digit_coefficients[source].size(); ++edge) {
                     const auto target = static_cast<std::size_t>(node->successors[source][edge]);
+                    out << "theorem " << stem << "_edge_" << source << "_" << edge
+                        << "_topology :\n"
+                        << "    (" << stem << "_successors[" << source
+                        << "]?).bind (fun row => row[" << edge << "]?) = some "
+                        << target << " := by decide\n\n";
                     const auto& gamma = node->gamma_coefficients[source];
                     const auto& digit = node->edge_digit_coefficients[source][edge];
                     const auto& target_gamma = node->gamma_coefficients[target];
