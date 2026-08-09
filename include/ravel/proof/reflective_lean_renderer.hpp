@@ -4650,6 +4650,9 @@ inline std::string render_property_f_graph_instances(const mathlib::reflection::
         out << "    (" << stem << "_scc_sizes.sum = " << scc_size_sum << ") ∧\n";
         out << "    (" << node->nonzero_cycle_components << " = 0) := by\n";
         out << "  decide\n\n";
+        out << "theorem " << stem << "_edges_in_range :\n"
+            << "    (" << stem << "_edges.all (fun e => e.1 < " << node->gamma_keys.size()
+            << " ∧ e.2 < " << node->gamma_keys.size() << ")) = true := by decide\n\n";
         out << "theorem " << stem << "_letters_in_range :\n"
             << "    (" << stem << "_letters.all (fun x => x < " << node->letters.size()
             << ")) = true := by decide\n\n";

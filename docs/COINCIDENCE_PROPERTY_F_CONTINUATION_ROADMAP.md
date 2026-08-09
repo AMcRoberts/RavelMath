@@ -148,6 +148,9 @@ not inferred from its total size alone.
 The graph node-letter map is now serialized too; staging rejects out-of-range
 letters and Lean proves every exported letter index lies in the finite node
 domain.
+The flattened edge list is independently checked for endpoint range as well,
+so both the row-wise successor relation and its compact edge view are bounded
+to the same finite node set.
 
 **2026-08-08 finite-classifier increment.** `check_strong_coincidence` now
 returns a lexicographically indexed resolution profile for every unordered
