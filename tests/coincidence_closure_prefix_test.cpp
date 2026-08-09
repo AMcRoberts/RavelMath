@@ -92,6 +92,10 @@ int main() {
            std::string::npos);
     assert(rendered.find("strong_coincidence_closure_0_summary") !=
            std::string::npos);
+    assert(rendered.find("strong_coincidence_prefix_closure_0_images") !=
+           std::string::npos);
+    assert(rendered.find("strong_coincidence_closure_0_images") !=
+           std::string::npos);
     if (const char* path = std::getenv("RAVEL_PREFIX_CLOSURE_LEAN_OUT")) {
         std::ofstream out(path);
         out << rendered;

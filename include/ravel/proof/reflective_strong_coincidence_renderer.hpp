@@ -62,6 +62,17 @@ inline std::string render_strong_coincidence_prefix_closure_instances(
         const std::string stem = "strong_coincidence_prefix_closure_" +
                                  std::to_string(counter++);
         out << "/-- Concrete finite prefix-closure run; suffix resolution is not claimed. -/\n";
+        out << "def " << stem << "_images : List (List Nat) := [";
+        for (std::size_t i = 0; i < node->images.size(); ++i) {
+            if (i) out << ", ";
+            out << "[";
+            for (std::size_t j = 0; j < node->images[i].size(); ++j) {
+                if (j) out << ", ";
+                out << node->images[i][j];
+            }
+            out << "]";
+        }
+        out << "]\n";
         out << "def " << stem << "_resolution_depths : List Int := [";
         for (std::size_t i = 0; i < node->pair_resolution_depths.size(); ++i) {
             if (i) out << ", ";
@@ -92,6 +103,7 @@ inline std::string render_strong_coincidence_prefix_closure_instances(
         }
         out << "]\n";
         out << "theorem " << stem << "_summary :\n"
+            << "    " << stem << "_images.length = " << node->images.size() << " ∧\n"
             << "    " << stem << "_resolution_depths.length = "
             << node->pair_resolution_depths.size() << " ∧\n"
             << "    " << stem << "_terminal_letters.length = "
@@ -113,6 +125,17 @@ inline std::string render_strong_coincidence_closure_instances(
         (void)id;
         const std::string stem = "strong_coincidence_closure_" + std::to_string(counter++);
         out << "/-- Concrete finite full strong-coincidence closure run. -/\n";
+        out << "def " << stem << "_images : List (List Nat) := [";
+        for (std::size_t i = 0; i < node->images.size(); ++i) {
+            if (i) out << ", ";
+            out << "[";
+            for (std::size_t j = 0; j < node->images[i].size(); ++j) {
+                if (j) out << ", ";
+                out << node->images[i][j];
+            }
+            out << "]";
+        }
+        out << "]\n";
         out << "def " << stem << "_resolution_depths : List Int := [";
         for (std::size_t i = 0; i < node->pair_resolution_depths.size(); ++i) {
             if (i) out << ", ";
@@ -149,6 +172,7 @@ inline std::string render_strong_coincidence_closure_instances(
         }
         out << "]\n";
         out << "theorem " << stem << "_summary :\n"
+            << "    " << stem << "_images.length = " << node->images.size() << " ∧\n"
             << "    " << stem << "_resolution_depths.length = "
             << node->pair_resolution_depths.size() << " ∧\n"
             << "    " << stem << "_terminal_letters.length = "

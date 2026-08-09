@@ -261,3 +261,11 @@ and whether a fallback was caused by an inconclusive budget/overflow or an
 unsupported substitution shape. The worked example and `rnd13` regression
 cases assert the completed supported state, so downstream reports can
 distinguish an exact closure verdict from the legacy bounded-word fallback.
+
+The reflected prefix/full closure artifacts now also serialize the concrete
+substitution images, rather than retaining them only in the in-memory typed
+payload. Their Lean summaries check the image-list cardinality alongside the
+pair profiles, terminal letters, landmark vectors, orientation flags, and
+incidence matrix. This keeps the source substitution visible at the kernel
+artifact boundary and prevents a summary from silently becoming detached from
+the input instance.
