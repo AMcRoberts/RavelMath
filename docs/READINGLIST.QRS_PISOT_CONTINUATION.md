@@ -876,6 +876,11 @@ The bounded quotient reaches every ordered role pair at zero net defect by
 length 10 in the current families; this suggests proving that the
 zero-holonomy kernel is the connected textile fibre before studying its
 integer quotient.
+The same finite audit now reaches complete zero-net connectivity for the
+higher theta7--theta10 forests by word length 30, including the 11-letter
+theta7 and 12-letter theta10 cases. This is the first evidence that the
+kernel pattern survives the larger alphabets where brute-force Property-(F)
+searches become expensive.
 The composition audit finds many two-step paths with no direct one-step
 representative at the summed defect, so the intended closure is genuinely by
 words in the relation. The next proof should formalize that word closure.

@@ -3980,3 +3980,8 @@ length 10, every tested family reaches every ordered pair of roles at net
 defect zero (16/16, 81/81, 625/625, or 2401/2401 depending on alphabet size).
 This is finite evidence for a connected zero-holonomy kernel, not an
 unbounded closure theorem.
+The higher-dimensional theta7, theta8, theta9, and theta10 forests also have
+one SCC, gcd-1 holonomy, and complete zero-net role connectivity by word
+length 30 (121^2, 64^2, 25^2, and 144^2 ordered pairs respectively). This
+extends the structural pattern beyond the small families without converting
+the bounded search into a universal claim.
