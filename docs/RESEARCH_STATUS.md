@@ -127,6 +127,13 @@ one carry color at each nonterminal height. The cross-dimension test checks 42
 of the former lifts and 35 of the latter. This transfers the return language,
 not Property-F closure, because the beta-inverse matrix changes with the
 parameters.
+The resulting strong hypothesis is recorded in
+`docs/TRANSPORT_CROSS_DIMENSION_HYPOTHESIS.md`: the sofic phase is the finite
+base, while transport is a graded height-by-carry-color cocycle. Its proposed
+obstruction-localization principle says that new nonzero recurrence can only
+enter through newly added top-height/new-color channels. This is supported by
+the lift certificates and all current Property-F data, but awaits a rank
+decrease proof.
 Each channel is now compiled to an exact integer affine endpoint map on the
 `d`-coordinate coefficient lattice; all 19 `(4,6)` maps are replay-checked
 against `Q(beta)`, while the 42-point sweep checks the parameterized map shape.
