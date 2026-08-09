@@ -167,6 +167,13 @@ therefore gives a finite full strong-coincidence verdict for the
 deterministic-chain class. Its typed reflection certificate and generated
 Lean summary are separate from the prefix certificate; a cutoff in both
 halves remains inconclusive.
+
+The closure regression now covers the non-AR control, the certified genuine
+multi-junction Pisot substitution `sigma_{1,1}`, and the non-unit `rnd13`
+instance; in each case its exact pair-depth profile agrees with the direct
+checker. This makes the deterministic-chain closure route the active engine
+for the project's concrete Pisot corpus, while the general theorem remains
+open.
 The staging operation now reconstructs every exported source/target/digit
 triple in the supplied `QBetaRing` and rejects any edge whose exact identity
 `gamma' = beta⁻¹ (gamma + delta)` fails. Fibonacci includes a tampering

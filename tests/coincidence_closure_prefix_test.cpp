@@ -103,6 +103,33 @@ int main() {
         disjoint, disjoint_matrix, 8, 1000);
     assert(!disjoint_full.holds && disjoint_full.inconclusive);
 
+    // Genuine multi-junction Pisot regression (sigma_{1,1}); letter 2 has
+    // a forced one-step run into junction 0, while 0 and 1 branch.
+    const std::array<std::vector<long long>, 3> sigma11 = {
+        std::vector<long long>{0, 1, 2}, std::vector<long long>{0, 2},
+        std::vector<long long>{0}};
+    const auto sigma11_matrix = incidence_matrix<3>(sigma11);
+    const auto sigma11_direct = adelic::check_strong_coincidence<3>(sigma11, 14, 1'000'000);
+    const auto sigma11_closure = check_strong_coincidence_closure<3>(
+        sigma11, sigma11_matrix, 14, 1'000'000);
+    assert(sigma11_direct.holds && sigma11_closure.holds);
+    assert(sigma11_closure.pair_resolution_depths ==
+           sigma11_direct.pair_resolution_depths);
+
+    // The non-unit rnd13 instance used by the finite Property-(F) classifier;
+    // every pair resolves at depth 1, so the closure stays tiny despite the
+    // larger alphabet and non-unimodular matrix.
+    const std::array<std::vector<long long>, 4> rnd13 = {
+        std::vector<long long>{0, 0, 1, 2, 3, 3},
+        std::vector<long long>{0, 0, 2, 3, 3},
+        std::vector<long long>{0, 0, 3, 3},
+        std::vector<long long>{0, 0, 0, 2, 3, 3}};
+    const auto rnd13_matrix = incidence_matrix<4>(rnd13);
+    const auto rnd13_closure = check_strong_coincidence_closure<4>(
+        rnd13, rnd13_matrix, 2, 1'000'000);
+    assert(rnd13_closure.holds);
+    assert(rnd13_closure.pair_resolution_depths == std::vector<long long>(6, 1));
+
     bool overflow_rejected = false;
     try {
         const std::array<std::array<long long, 2>, 2> large = {{{{2, 0}}, {{0, 1}}}};
