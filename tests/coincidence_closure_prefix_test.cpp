@@ -124,6 +124,8 @@ int main() {
            std::string::npos);
     assert(rendered.find("strong_coincidence_closure_0_first_derived_sum_check") !=
            std::string::npos);
+    assert(rendered.find("strong_coincidence_closure_0_derived_coincidence_check") !=
+           std::string::npos);
     if (const char* path = std::getenv("RAVEL_PREFIX_CLOSURE_LEAN_OUT")) {
         std::ofstream out(path);
         out << rendered;

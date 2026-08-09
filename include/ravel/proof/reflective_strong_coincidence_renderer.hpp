@@ -236,6 +236,45 @@ inline void render_closure_derived_sum_checks(
     }
 }
 
+inline void render_closure_derived_coincidence_checks(
+    std::ostringstream& out, const std::string& stem,
+    const std::string& edge_stem, const std::string& matrix_stem,
+    const std::vector<std::vector<long long>>& first_paths,
+    const std::vector<std::vector<long long>>& second_paths,
+    const std::vector<long long>& first_junctions,
+    const std::vector<long long>& second_junctions,
+    const std::vector<long long>& first_remaining_depths,
+    const std::vector<long long>& second_remaining_depths,
+    std::size_t dimension, const std::vector<bool>* from_suffix = nullptr) {
+    for (std::size_t i = 0; i < first_paths.size(); ++i) {
+        if (i >= second_paths.size() || i >= first_junctions.size() ||
+            i >= second_junctions.size() || i >= first_remaining_depths.size() ||
+            i >= second_remaining_depths.size() || first_paths[i].empty() ||
+            second_paths[i].empty() || first_junctions[i] < 0 ||
+            second_junctions[i] < 0 || first_remaining_depths[i] <= 0 ||
+            second_remaining_depths[i] <= 0) continue;
+        const bool suffix = from_suffix && i < from_suffix->size() && (*from_suffix)[i];
+        const std::string selected_edges = suffix ? edge_stem + "_suffix_edges" : edge_stem + "_edges";
+        auto path_term = [&](const std::vector<long long>& path, long long junction,
+                             long long remaining) {
+            std::ostringstream term;
+            term << "sc_sumVectors (sc_pathWeights " << selected_edges << " "
+                 << matrix_stem << "_matrix [";
+            for (std::size_t j = 0; j < path.size(); ++j) {
+                if (j) term << ", ";
+                term << path[j];
+            }
+            term << "] " << junction << " " << remaining << " " << dimension << ")";
+            return term.str();
+        };
+        out << "theorem " << stem << "_derived_coincidence_check_" << i << " :\n"
+            << "    " << path_term(first_paths[i], first_junctions[i],
+                                   first_remaining_depths[i])
+            << " = " << path_term(second_paths[i], second_junctions[i],
+                                   second_remaining_depths[i]) << " := by decide\n\n";
+    }
+}
+
 inline void render_closure_path_checks(
     std::ostringstream& out, const std::string& edge_stem, const std::string& side,
     const std::vector<long long>& terminals,
@@ -434,6 +473,11 @@ inline std::string render_strong_coincidence_prefix_closure_instances(
             out, stem + "_second", stem, stem, node->pair_vectors,
             node->pair_second_paths, node->pair_second_junctions,
             node->pair_second_remaining_depths, node->images.size());
+        render_closure_derived_coincidence_checks(
+            out, stem, stem, stem, node->pair_first_paths,
+            node->pair_second_paths, node->pair_first_junctions,
+            node->pair_second_junctions, node->pair_first_remaining_depths,
+            node->pair_second_remaining_depths, node->images.size());
         out << "theorem " << stem << "_summary :\n"
             << "    " << stem << "_images.length = " << node->images.size() << " ∧\n"
             << "    " << stem << "_edges.length = " << node->edges.size() << " ∧\n"
@@ -575,6 +619,11 @@ inline std::string render_strong_coincidence_closure_instances(
         render_closure_derived_sum_checks(
             out, stem + "_second", stem, stem, node->pair_vectors,
             node->pair_second_paths, node->pair_second_junctions,
+            node->pair_second_remaining_depths, node->images.size(), &node->pair_from_suffix);
+        render_closure_derived_coincidence_checks(
+            out, stem, stem, stem, node->pair_first_paths,
+            node->pair_second_paths, node->pair_first_junctions,
+            node->pair_second_junctions, node->pair_first_remaining_depths,
             node->pair_second_remaining_depths, node->images.size(), &node->pair_from_suffix);
         out << "theorem " << stem << "_summary :\n"
             << "    " << stem << "_images.length = " << node->images.size() << " ∧\n"

@@ -314,3 +314,7 @@ The companion `sc_sumVectors (sc_pathWeights ...)` theorem now derives the
 common landmark vector itself from the matrix and path semantics. The recorded
 edge vectors remain available for diagnostics, while the kernel-visible
 coincidence equation is independently reconstructed.
+Finally, each resolved pair now receives a direct theorem equating the two
+matrix-derived path sums. This removes even the recorded common vector from
+the logical dependency of the coincidence claim; the vector remains only as a
+cross-check and readable diagnostic payload.
