@@ -2820,6 +2820,23 @@ per-pair modulus certificate (a real extension, not attempted here)
 or picking a different high-degree family known to keep only one
 complex pair -- not investigated further this session.
 
+**2026-08-08 reflection addendum — the Sturm certificate route is now wired
+for one real classifier instance.** Added `SturmChainCertificate` to the typed
+reflection payload and `stage_sturm_chain_certificate` to the proof pipeline.
+The staging operation runs the real `pisot_classify_degree_n` classifier,
+reconstructs the ordinary Euclidean PRS over exact `Q`, checks every recurrence,
+derives and checks the terminal Bézout identity, verifies the classifier's exact
+isolating bracket has one root and regular endpoints, and records the complete
+chain/quotient/scale/bracket/sign data only after all checks pass. The renderer
+imports Mathlib's once-proven `CertifiedSturmChain` bridge and emits a concrete
+certificate plus root-count theorem from that payload. The plastic polynomial
+`x^3 - x - 1` is the first real instance: its four-term chain, two quotient
+recurrences, Bézout witness, classifier bracket, endpoint variations `2` and
+`1`, and root count `1` all kernel-check. This closes the C++/reflection/Lean
+connection for the real-root-isolation component; it does not overclaim that
+the Lean corollary independently reproves the classifier's separate
+complex-modulus squeeze.
+
 ## Finding 31 — sigma_{0,2}'s beta-expansion: exact search rules out precision, still doesn't resolve
 
 **Status: negative/inconclusive result, honestly reported. The exact

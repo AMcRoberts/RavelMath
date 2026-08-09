@@ -513,6 +513,41 @@ struct PisotRootOrderingCertificate {
     long long hi4_num = 0, hi4_den = 1;
 };
 
+// One canonical arbitrary-precision rational coefficient. Numerator and
+// positive denominator are decimal strings so exact classifier output is not
+// narrowed to a machine integer at the reflection boundary.
+struct ExactRationalCoefficient {
+    std::string numerator;
+    std::string denominator;
+};
+
+using ExactRationalPolynomial = std::vector<ExactRationalCoefficient>;
+
+// Finding 30: a complete exact-Q Sturm/PRS certificate for one polynomial
+// actually accepted by `pisot_classify_degree_n`. The chain, recurrence
+// quotients/scales, Bezout witnesses, classifier bracket, and endpoint
+// variations are all concrete data; Lean independently checks them before
+// applying `CertifiedSturmChain.count_roots_between`.
+struct SturmChainCertificate {
+    ExactRationalPolynomial polynomial;
+    std::vector<ExactRationalPolynomial> chain;
+    std::vector<ExactRationalPolynomial> quotients;
+    std::vector<ExactRationalCoefficient> positive_scales;
+    ExactRationalPolynomial bezout_u;
+    ExactRationalPolynomial bezout_v;
+    ExactRationalCoefficient bezout_constant;
+    ExactRationalCoefficient bracket_lo;
+    ExactRationalCoefficient bracket_hi;
+    long long variations_lo = 0;
+    long long variations_hi = 0;
+    std::vector<long long> signs_lo;
+    std::vector<long long> signs_hi;
+    long long root_count = 0;
+    bool classifier_is_pisot = false;
+    long long classifier_real_inside = 0;
+    std::string description;
+};
+
 // `class_ii_neighbor2_penultimate_promoted_states(a)`/`_survivor_
 // transfer(a)` at a CONCRETE `a` -- carries the CONCRETE 6 promoted
 // nodes and the 1 transferred node, so the renderer decides them
@@ -889,6 +924,7 @@ using Payload = std::variant<MatrixFamily, MatrixInstance, EraseIndexMap,
                              ClassIIShellRoundCertificate, ClassIIFixedTableCertificate,
                              ClassIITerminalShellCertificate, ClassIINeighborDSupportCertificate,
                              CayleyHamiltonCubicCertificate, PisotRootOrderingCertificate,
+                             SturmChainCertificate,
                              ClassIISixVertexGraduationCertificate, ClassIITerminalSextetCertificate,
                              ClassIIPenultimatePairCertificate, ClassIIInteriorTipCertificate,
                              ClassIIGlobalRoundPhaseCertificate, BothFixedAffineCertificate,
@@ -1202,6 +1238,7 @@ inline std::string payload_name(const Payload& payload) {
         else if constexpr (std::is_same_v<T, ClassIINeighborDSupportCertificate>) return "lean.class_ii_neighbor_d_support_certificate";
         else if constexpr (std::is_same_v<T, CayleyHamiltonCubicCertificate>) return "lean.cayley_hamilton_cubic_certificate";
         else if constexpr (std::is_same_v<T, PisotRootOrderingCertificate>) return "lean.pisot_root_ordering_certificate";
+        else if constexpr (std::is_same_v<T, SturmChainCertificate>) return "lean.sturm_chain_certificate";
         else if constexpr (std::is_same_v<T, ClassIISixVertexGraduationCertificate>) return "lean.class_ii_six_vertex_graduation_certificate";
         else if constexpr (std::is_same_v<T, ClassIITerminalSextetCertificate>) return "lean.class_ii_terminal_sextet_certificate";
         else if constexpr (std::is_same_v<T, ClassIIPenultimatePairCertificate>) return "lean.class_ii_penultimate_pair_certificate";
@@ -1311,6 +1348,11 @@ inline std::string payload_detail(const Payload& payload) {
             out << value.description << " -- M^3 = M + I, verified by exact integer arithmetic";
         } else if constexpr (std::is_same_v<T, PisotRootOrderingCertificate>) {
             out << "a=" << value.a << " -- instantiates pisot_root_strictly_between";
+        } else if constexpr (std::is_same_v<T, SturmChainCertificate>) {
+            out << value.description << " -- chain=" << value.chain.size()
+                << " V(lo)=" << value.variations_lo << " V(hi)=" << value.variations_hi
+                << " roots=" << value.root_count
+                << " classifier_pisot=" << (value.classifier_is_pisot ? "true" : "false");
         } else if constexpr (std::is_same_v<T, ClassIISixVertexGraduationCertificate>) {
             out << "a=" << value.a << " -- instantiates promotedNodes/transferredNode at q=" << (value.a - 1);
         } else if constexpr (std::is_same_v<T, ClassIITerminalSextetCertificate>) {

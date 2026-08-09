@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <cctype>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -4087,6 +4088,151 @@ inline std::string render_pisot_root_ordering_instances(const mathlib::reflectio
     return out.str();
 }
 
+inline bool valid_decimal_integer(const std::string& text) {
+    if (text.empty()) return false;
+    std::size_t i = text[0] == '-' ? 1 : 0;
+    if (i == text.size()) return false;
+    for (; i < text.size(); ++i) {
+        if (!std::isdigit(static_cast<unsigned char>(text[i]))) return false;
+    }
+    return true;
+}
+
+inline std::string render_exact_real(const mathlib::reflection::ExactRationalCoefficient& value) {
+    if (!valid_decimal_integer(value.numerator) || !valid_decimal_integer(value.denominator)
+        || value.denominator[0] == '-' || value.denominator == "0") {
+        throw std::runtime_error("invalid exact rational in Sturm certificate");
+    }
+    return "((" + value.numerator + " : ℝ) / (" + value.denominator + " : ℝ))";
+}
+
+inline std::string render_exact_polynomial(
+    const mathlib::reflection::ExactRationalPolynomial& polynomial) {
+    if (polynomial.empty()) throw std::runtime_error("empty polynomial data in Sturm certificate");
+    std::ostringstream out;
+    out << "(";
+    for (std::size_t i = 0; i < polynomial.size(); ++i) {
+        if (i != 0) out << " + ";
+        out << "Polynomial.C " << render_exact_real(polynomial[i]);
+        if (i != 0) out << " * Polynomial.X ^ " << i;
+    }
+    out << ")";
+    return out.str();
+}
+
+// Finding 30: render the concrete exact-Q data produced by the classifier
+// bridge. The general PRS-to-Sturm proof is imported from Mathlib and is not
+// duplicated here; every field below is checked against the payload's actual
+// coefficients before its root-count theorem is applied.
+inline std::string render_sturm_chain_instances(const mathlib::reflection::Trace& trace) {
+    std::ostringstream out;
+    long long counter = 0;
+    for (const auto& [id, node] : trace.find<mathlib::reflection::SturmChainCertificate>()) {
+        (void)id;
+        if (node->chain.size() < 2 || node->quotients.size() + 2 != node->chain.size()
+            || node->positive_scales.size() != node->quotients.size()
+            || node->signs_lo.size() != node->chain.size()
+            || node->signs_hi.size() != node->chain.size()
+            || !node->classifier_is_pisot || node->root_count != 1
+            || node->variations_lo - node->variations_hi != node->root_count) {
+            throw std::runtime_error("incomplete or inconsistent Sturm certificate payload");
+        }
+        const std::string prefix = "sturm_chain_instance_" + std::to_string(counter++);
+        out << "/-- Mechanically emitted from the exact classifier: " << node->description << ".\n";
+        out << "    This certifies its isolated real-root count; the classifier's separate\n";
+        out << "    complex-modulus checks remain computational certificate data. -/\n";
+        out << "noncomputable def " << prefix << "_p : Polynomial ℝ := "
+            << render_exact_polynomial(node->polynomial) << "\n\n";
+        for (std::size_t i = 0; i < node->chain.size(); ++i) {
+            out << "noncomputable def " << prefix << "_s" << i << " : Polynomial ℝ := "
+                << render_exact_polynomial(node->chain[i]) << "\n\n";
+        }
+        for (std::size_t i = 0; i < node->quotients.size(); ++i) {
+            out << "noncomputable def " << prefix << "_q" << i << " : Polynomial ℝ := "
+                << render_exact_polynomial(node->quotients[i]) << "\n\n";
+        }
+        out << "noncomputable def " << prefix << "_u : Polynomial ℝ := "
+            << render_exact_polynomial(node->bezout_u) << "\n\n";
+        out << "noncomputable def " << prefix << "_v : Polynomial ℝ := "
+            << render_exact_polynomial(node->bezout_v) << "\n\n";
+        out << "noncomputable def " << prefix << "_chain : List (Polynomial ℝ) := [";
+        for (std::size_t i = 0; i < node->chain.size(); ++i) {
+            if (i != 0) out << ", ";
+            out << prefix << "_s" << i;
+        }
+        out << "]\n\n";
+
+        out << "theorem " << prefix << "_certified :\n";
+        out << "    Polynomial.CertifiedSturmChain " << prefix << "_p " << prefix << "_chain := by\n";
+        out << "  refine {\n";
+        out << "    ne_nil := by simp [" << prefix << "_chain]\n";
+        out << "    length_ge_two := by simp [" << prefix << "_chain]\n";
+        out << "    second_mem := by simp [" << prefix << "_chain]\n";
+        out << "    head_eq_p := by simp [" << prefix << "_chain, " << prefix << "_p, " << prefix << "_s0]\n";
+        out << "    second_eq_derivative := by norm_num [" << prefix << "_chain, " << prefix << "_p, " << prefix << "_s1, map_natCast, map_intCast, Polynomial.C_eq_natCast, Polynomial.C_mul, Polynomial.C_add, Polynomial.C_mul_X_pow_eq_monomial] <;> ring_nf\n";
+        out << "    recurrence := ?_\n";
+        out << "    terminal_constant := ?_\n";
+        out << "    bezout := ?_ }\n";
+        out << "  · intro i hi\n";
+        out << "    simp [" << prefix << "_chain] at hi\n";
+        out << "    have hi' : i ≤ " << (node->quotients.size() - 1) << " := by omega\n";
+        out << "    interval_cases i\n";
+        for (std::size_t i = 0; i < node->quotients.size(); ++i) {
+            out << "    · refine ⟨" << render_exact_real(node->positive_scales[i]) << ", "
+                << prefix << "_q" << i << ", by norm_num, ?_⟩\n";
+            out << "      norm_num [" << prefix << "_chain, " << prefix << "_s" << i << ", "
+                << prefix << "_s" << (i + 1) << ", " << prefix << "_s" << (i + 2)
+                << ", " << prefix << "_q" << i << ", map_natCast, map_intCast, Polynomial.C_eq_natCast, Polynomial.C_mul, Polynomial.C_add, Polynomial.C_mul_X_pow_eq_monomial] <;> ring_nf\n";
+            out << "      ring_nf\n";
+        }
+        out << "  · refine ⟨" << render_exact_real(node->bezout_constant) << ", by norm_num, ?_⟩\n";
+        out << "    norm_num [" << prefix << "_chain, " << prefix << "_s" << (node->chain.size() - 1) << ", map_natCast, map_intCast]\n";
+        out << "  · refine ⟨" << prefix << "_u, " << prefix << "_v, "
+            << render_exact_real(node->bezout_constant) << ", by norm_num, ?_⟩\n";
+        out << "    norm_num [" << prefix << "_chain, " << prefix << "_u, " << prefix << "_v, "
+            << prefix << "_p, " << prefix << "_s1, map_natCast, map_intCast, Polynomial.C_eq_natCast, Polynomial.C_mul, Polynomial.C_add, Polynomial.C_mul_X_pow_eq_monomial] <;> ring_nf\n";
+        out << "    ring_nf\n\n";
+
+        out << "theorem " << prefix << "_root_count :\n";
+        out << "    ({x : ℝ | " << render_exact_real(node->bracket_lo) << " < x ∧ x ≤ "
+            << render_exact_real(node->bracket_hi) << " ∧ " << prefix << "_p.eval x = 0}.ncard : ℤ) = "
+            << node->root_count << " := by\n";
+        out << "  have hp : " << prefix << "_p ≠ 0 := by\n";
+        out << "    intro h\n";
+        out << "    have he := congrArg (fun q : Polynomial ℝ => q.eval "
+            << render_exact_real(node->bracket_lo) << ") h\n";
+        out << "    norm_num [" << prefix << "_p] at he\n";
+        out << "  have hcount := " << prefix << "_certified.count_roots_between hp "
+            << render_exact_real(node->bracket_lo) << " " << render_exact_real(node->bracket_hi)
+            << " (by norm_num)\n";
+        for (int side = 0; side < 2; ++side) {
+            const auto& signs = side == 0 ? node->signs_lo : node->signs_hi;
+            const std::string endpoint = side == 0 ? render_exact_real(node->bracket_lo)
+                                                   : render_exact_real(node->bracket_hi);
+            const std::string suffix = side == 0 ? "lo" : "hi";
+            for (std::size_t i = 0; i < signs.size(); ++i) {
+                out << "  have hsign_" << suffix << "_" << i << " : SignType.sign ("
+                    << prefix << "_s" << i << ".eval " << endpoint << ") = " << signs[i]
+                    << " := by norm_num [" << prefix << "_s" << i << "]\n";
+            }
+        }
+        out << "  have hlo : Polynomial.sturmVariations " << prefix << "_chain "
+            << render_exact_real(node->bracket_lo) << " = " << node->variations_lo << " := by\n";
+        out << "    simp only [Polynomial.sturmVariations, " << prefix << "_chain, List.map]\n";
+        for (std::size_t i = 0; i < node->chain.size(); ++i) out << "    rw [hsign_lo_" << i << "]\n";
+        out << "    decide\n";
+        out << "  have hhi : Polynomial.sturmVariations " << prefix << "_chain "
+            << render_exact_real(node->bracket_hi) << " = " << node->variations_hi << " := by\n";
+        out << "    simp only [Polynomial.sturmVariations, " << prefix << "_chain, List.map]\n";
+        for (std::size_t i = 0; i < node->chain.size(); ++i) out << "    rw [hsign_hi_" << i << "]\n";
+        out << "    decide\n";
+        out << "  rw [hlo, hhi] at hcount\n";
+        out << "  norm_num at hcount\n";
+        out << "  exact hcount.symm\n\n";
+    }
+    return out.str();
+}
+
 // A self-contained excerpt of `lean/class_ii_six_vertex_graduation.
 // lean` -- reproduced, not re-derived. `promotedNodes`/`transferredNode`
 // are GENERAL functions of q (not a fixed table), and `promotedNodes_
@@ -4436,7 +4582,11 @@ inline std::string render_both_fixed_affine_instances(const mathlib::reflection:
 inline std::string render_reflective_lean_module(const mathlib::reflection::Trace& trace) {
     if (trace.empty()) throw std::runtime_error("cannot render proof module without provenance");
     std::ostringstream out;
-    out << "import Mathlib\n\n";
+    out << "import Mathlib\n";
+    if (!trace.find<mathlib::reflection::SturmChainCertificate>().empty()) {
+        out << "import Mathlib.Analysis.Polynomial.SturmCertificate\n";
+    }
+    out << "\n";
     out << "/-! Generated from typed semantic nodes produced inside the exact math library.\n";
     out << "    Concrete observations are comments; only registered, structurally justified\n";
     out << "    lemma applications become theorem declarations. -/\n\n";
@@ -4451,6 +4601,7 @@ inline std::string render_reflective_lean_module(const mathlib::reflection::Trac
     out << render_class_ii_terminal_shell_instances(trace);
     out << render_cayley_hamilton_cubic_instances(trace);
     out << render_pisot_root_ordering_instances(trace);
+    out << render_sturm_chain_instances(trace);
     out << render_class_ii_six_vertex_graduation_instances(trace);
     out << render_class_ii_terminal_sextet_instances(trace);
     out << render_class_ii_penultimate_pair_instances(trace);

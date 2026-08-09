@@ -690,25 +690,19 @@ not grow into another chronological log.
 
 ### Tier 0 -- infrastructure already built, only the connecting proof is missing
 
-**Sturm-chain wiring for Finding 30.** `SturmSeq.count_roots_between`
-is proved, kernel-checked, zero `sorry` (also shipped as mathlib4
-#42558/#42559). `math/include/math/sturm.hpp` already has the full
-exact-rational Sturm-chain toolkit (`sturm_chain`, `sturm_root_count`,
-`isolate_real_root_rat`, `isolate_beta`) that `pisot_classify_poly`
-(`math/src/exact_pisot.c`) uses for Finding 30's degree-general Pisot
-classification. Nothing links the two yet -- zero Sturm-shaped payload
-exists in `math/include/math/proof_reflection.hpp`'s `Payload` variant.
-Three steps, in order:
-1. Prove the canonical PRS (principal remainder sequence) construction
-   satisfies the abstract `SturmSeq` structure -- this is the one
-   missing mathematical link; everything else here is wiring.
-2. Add a `SturmChainCertificate`-shaped payload carrying the actual
-   C++-computed chain/root-isolation data (not a name-only citation --
-   the original pattern, per this file's own corrected-shortcut
-   lesson above).
-3. Handler + renderer that instantiate the PRS proof against that
-   concrete data and emit a `decide`-checked corollary for a real
-   `pisot_classify_poly` run.
+**Sturm-chain wiring for Finding 30 — first real instance closed.**
+`SturmSeq.count_roots_between` is proved, kernel-checked, zero `sorry`
+(also shipped as mathlib4 #42558/#42559), and the upstream
+`CertifiedSturmChain` bridge supplies the canonical PRS-to-Sturm link.
+The Ravel side adds `SturmChainCertificate`, exact-Q staging, and a renderer
+that carries the actual chain, quotients, positive scales, Bézout witnesses,
+classifier bracket, endpoint signs, and variation counts. A plastic-polynomial
+`pisot_classify_degree_n` run (`x^3-x-1`) is staged, rendered, and kernel-checked
+end to end. The Lean result certifies the isolated real-root count; the
+classifier's separate complex-modulus squeeze remains explicitly computational
+certificate data, so this does not overstate the scope. The remaining work is
+broader instance coverage and, if desired, a Lean formalization of that
+complex-modulus component—not the missing reflection connection itself.
 
 This is the highest-leverage item on the board: it's the one finding
 this whole retrofit project has called "genuinely hard" since the

@@ -867,6 +867,7 @@ TESTS_DEFAULT := \
 	first_letter_orbit_finding41_test \
 	first_letter_orbit_reflection_test \
 	pisot_root_ordering_reflection_test \
+	sturm_chain_reflection_test \
 	leftmost_loop_reflection_test \
 	zero_run_same_chain_reflection_test \
 	class_ii_terminal_sextet_reflection_test \
@@ -2218,6 +2219,13 @@ $(TEST_BIN_PISOT_ROOT_ORDERING_REFLECTION_TEST): $(TESTDIR)/pisot_root_ordering_
 pisot_root_ordering_reflection_test: $(TEST_BIN_PISOT_ROOT_ORDERING_REFLECTION_TEST)
 	./$(TEST_BIN_PISOT_ROOT_ORDERING_REFLECTION_TEST)
 .PHONY: pisot_root_ordering_reflection_test
+
+TEST_BIN_STURM_CHAIN_REFLECTION_TEST := $(BUILDDIR)/sturm_chain_reflection_test
+$(TEST_BIN_STURM_CHAIN_REFLECTION_TEST): $(TESTDIR)/sturm_chain_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+sturm_chain_reflection_test: $(TEST_BIN_STURM_CHAIN_REFLECTION_TEST)
+	./$(TEST_BIN_STURM_CHAIN_REFLECTION_TEST)
+.PHONY: sturm_chain_reflection_test
 
 TEST_BIN_LEFTMOST_LOOP_REFLECTION_TEST := $(BUILDDIR)/leftmost_loop_reflection_test
 $(TEST_BIN_LEFTMOST_LOOP_REFLECTION_TEST): $(TESTDIR)/leftmost_loop_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
