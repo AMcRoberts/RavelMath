@@ -29,6 +29,7 @@ void run(const std::string& name, std::vector<long long> low_first, std::size_t 
     auto forest = ravel::proof::derive_canonical_parent_role_catalogue(R, beta_I);
     auto holonomy = ravel::proof::derive_parent_role_holonomy(forest);
     auto regularity = ravel::proof::derive_parent_role_regularity(forest);
+    auto composition = ravel::proof::derive_parent_role_composition(forest);
     std::cout << name << ": digits.size=" << c.digits.size()
               << " raw=" << c.raw_defect_classes << " primitive=" << c.primitive_generator_count
               << " proved=" << c.proved << "\n";
@@ -39,6 +40,8 @@ void run(const std::string& name, std::vector<long long> low_first, std::size_t 
     assert(holonomy.edge_count == forest.edges.size());
     assert(!holonomy.components.empty());
     assert(regularity.proved);
+    assert(composition.proved);
+    assert(composition.composable_pairs == composition.closed_pairs + composition.missing_pairs);
     assert(forest.role_count == forest.alphabet_size * forest.alphabet_size);
     std::size_t parent_occurrences = 0;
     for (const auto& ps : forest.parents) parent_occurrences += ps.size();
@@ -54,7 +57,8 @@ void run(const std::string& name, std::vector<long long> low_first, std::size_t 
               << " twisted_scc=" << holonomy.nontrivial_holonomy_components
               << " holonomy_gcd=" << holonomy.components.front().holonomy_gcd
               << " branching_labels=" << regularity.branching_source_labels
-              << " max_mult=" << regularity.max_occurrences_for_source_target_label;
+              << " max_mult=" << regularity.max_occurrences_for_source_target_label
+              << " composite_missing=" << composition.missing_pairs;
 }
 
 int main() {

@@ -3972,3 +3972,6 @@ The first regularity audit finds labelled branching in every tested family
 (and multiplicity above one in several non-unit examples), so the next theorem
 must use a sofic/textile relation rather than assume a plain deterministic
 group action.
+The composition audit also finds many composable two-step paths whose summed
+defect has no one-step edge, confirming that this is a finitely generated
+relation whose closure is by words, not a one-step finite group operation.

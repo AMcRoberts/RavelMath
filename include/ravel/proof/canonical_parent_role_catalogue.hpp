@@ -87,6 +87,52 @@ struct ParentRoleRegularityReport {
     std::size_t branching_source_labels{};
 };
 
+struct ParentRoleCompositionWitness {
+    std::size_t source_role{};
+    std::size_t middle_role{};
+    std::size_t target_role{};
+    long long first_defect{};
+    long long second_defect{};
+};
+
+struct ParentRoleCompositionReport {
+    bool proved{};
+    bool one_step_closed{};
+    std::size_t composable_pairs{};
+    std::size_t closed_pairs{};
+    std::size_t missing_pairs{};
+    ParentRoleCompositionWitness first_missing;
+};
+
+// Checks whether the one-step relation is already closed under composition.
+// Usually it is not: generator words are expected to create longer paths.
+// Recording the first missing composite makes that distinction explicit and
+// prevents mistaking a finite generating relation for a finite group law.
+inline ParentRoleCompositionReport derive_parent_role_composition(
+    const CanonicalParentRoleCatalogue& catalogue) {
+    ParentRoleCompositionReport out;
+    if (!catalogue.proved) return out;
+    std::set<std::tuple<std::size_t,std::size_t,long long>> direct;
+    for (const auto& edge : catalogue.edges)
+        direct.insert({edge.source_role, edge.target_role, edge.defect});
+    for (const auto& first : catalogue.edges) for (const auto& second : catalogue.edges) {
+        if (first.target_role != second.source_role) continue;
+        ++out.composable_pairs;
+        const auto net = first.defect + second.defect;
+        if (direct.count({first.source_role, second.target_role, net})) {
+            ++out.closed_pairs;
+        } else {
+            ++out.missing_pairs;
+            if (out.missing_pairs == 1)
+                out.first_missing = {first.source_role, first.target_role, second.target_role,
+                                     first.defect, second.defect};
+        }
+    }
+    out.one_step_closed = (out.missing_pairs == 0);
+    out.proved = true;
+    return out;
+}
+
 // Tests the first possible group-extension obstruction: whether a defect
 // label acts as a function on pair roles.  Parent occurrences are retained,
 // so this distinguishes genuine multiplicity from merely having two target

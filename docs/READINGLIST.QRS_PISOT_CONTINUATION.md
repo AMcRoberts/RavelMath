@@ -872,3 +872,6 @@ The first finite audit already finds branching in every tested family, which
 is a concrete obstruction to treating the defect as a deterministic action;
 the target should therefore be a finite sofic/textile correspondence with a
 twisted cocycle, not an assumed group action on individual roles.
+The composition audit finds many two-step paths with no direct one-step
+representative at the summed defect, so the intended closure is genuinely by
+words in the relation. The next proof should formalize that word closure.
