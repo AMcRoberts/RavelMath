@@ -151,6 +151,9 @@ substitution-alphabet domain.
 The flattened edge list is independently checked for endpoint range as well,
 so both the row-wise successor relation and its compact edge view are bounded
 to the same finite node set.
+The zero-state index list is now tied to the per-node zero predicate by a
+kernel-checked membership theorem for every state, eliminating a second
+unconnected representation of the zero/nonzero partition.
 
 **2026-08-08 finite-classifier increment.** `check_strong_coincidence` now
 returns a lexicographically indexed resolution profile for every unordered

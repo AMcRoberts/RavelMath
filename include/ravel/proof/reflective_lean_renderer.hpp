@@ -4667,6 +4667,12 @@ inline std::string render_property_f_graph_instances(const mathlib::reflection::
                 out << (node->zero_nodes[i] ? "true" : "false");
             }
             out << "]\n";
+            for (std::size_t i = 0; i < node_count; ++i) {
+                out << "theorem " << stem << "_zero_membership_" << i << " :\n"
+                    << "    (" << stem << "_nodeZero ⟨" << i
+                    << ", by decide⟩ = true) = (" << i << " ∈ " << stem
+                    << "_zero_nodes) := by decide\n\n";
+            }
             out << "def " << stem << "_sccLabel : Fin " << node_count << " → Fin " << scc_count << " := ![";
             for (std::size_t i = 0; i < node->scc_labels.size(); ++i) {
                 if (i) out << ", ";
