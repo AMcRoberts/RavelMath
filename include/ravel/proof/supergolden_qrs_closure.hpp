@@ -12,6 +12,7 @@
 #include "ravel/contact_boundary.hpp"
 #include "ravel/supergolden_pisot_substitution.hpp"
 #include "ravel/proof/supergolden_three_generator_intertwiner.hpp"
+#include "ravel/proof/cyclotomic_obstruction.hpp"
 namespace ravel::proof {
 
 // Supergolden number: dominant root of x^3-x^2-1, the fourth-smallest
@@ -36,6 +37,8 @@ struct SupergoldenQRSClosureCertificate {
  long long universal_parent_pair_edges{};
  std::array<long long,3> defect_class_edges{};
  bool incidence_polynomial_matches_minpoly_exactly{};
+ CyclotomicObstructionCertificate incidence_cyclotomic;
+ bool incidence_has_no_cyclotomic_factor{};
  bool every_boundary_edge_forced_into_qrs{};
  bool universal_parent_role_intertwiner_schema{};
  bool contact_boundary_complete{};
@@ -72,6 +75,9 @@ inline SupergoldenQRSClosureCertificate derive_supergolden_qrs_closure(){
 
  std::vector<long long> expect = c.minimal_polynomial;
  c.incidence_polynomial_matches_minpoly_exactly = (c.incidence_polynomial == expect);
+ c.incidence_cyclotomic = derive_cyclotomic_obstruction_certificate(chi);
+ c.incidence_has_no_cyclotomic_factor = c.incidence_cyclotomic.proved &&
+     c.incidence_cyclotomic.factors.empty();
 
  // Sanity: the hand-recorded rule in supergolden_pisot_substitution.hpp
  // must agree with what the derivation just produced.
@@ -121,7 +127,11 @@ inline SupergoldenQRSClosureCertificate derive_supergolden_qrs_closure(){
  c.boundary_edges = intertwiner.boundary_edges;
  c.no_fourth_generator = c.every_boundary_edge_forced_into_qrs &&
      c.contact_boundary_complete;
- c.proved = c.incidence_polynomial_matches_minpoly_exactly && c.total_parent_decompositions==4 && c.distinct_prefixes==2 && c.defect_classes==3 && c.universal_parent_role_intertwiner_schema && c.contact_boundary_complete && c.simultaneous_three_generator_intertwiner;
+ c.proved = c.incidence_polynomial_matches_minpoly_exactly &&
+     c.incidence_has_no_cyclotomic_factor && c.total_parent_decompositions==4 &&
+     c.distinct_prefixes==2 && c.defect_classes==3 &&
+     c.universal_parent_role_intertwiner_schema && c.contact_boundary_complete &&
+     c.simultaneous_three_generator_intertwiner;
  return c;
 }
 }

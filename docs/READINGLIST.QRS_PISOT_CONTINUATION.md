@@ -141,8 +141,10 @@ claim closure unless those independent boundary/intertwiner checks succeed.
 Remaining work is steps 11–12: cyclotomic-sector auditing for boundary/twisted
 objects and Lean emission/actual kernel acceptance. Since there is no
 cyclotomic cofactor at the substitution level, the raw substitution audit is
-currently vacuous, but the boundary/twisted sectors still require explicit
-checking.
+now explicit: the incidence characteristic polynomial is passed through the
+exact cyclotomic factor certificate and has no cyclotomic factor. Boundary and
+twisted sectors still require explicit checking, followed by Lean emission and
+actual kernel acceptance.
 
 ## Parallel question kept in the wings
 
