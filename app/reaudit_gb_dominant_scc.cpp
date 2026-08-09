@@ -852,13 +852,13 @@ int main(int argc, char** argv) {
                     cached_gb.shrink_to_fit();
                     print_mem("after dense matrix freed");
                 } else {
-                    // Reconstruct exactly the same edge multiset from the
-                    // report's canonical boundary node list.  This is the
-                    // sparse counterpart of compute_contact_boundary's
-                    // dense G_B materialization: each exact parent pair
-                    // contributes one weighted edge, and parallel entries
-                    // are intentionally preserved because WeightedDigraph's
-                    // SCC/eigenvalue routines sum them by adjacency weight.
+                    // Reconstruct the same edge multiset from the report's
+                    // canonical boundary node list.  Use the historical
+                    // fast forward-target routine here (the routine used by
+                    // compute_contact_boundary itself), so this sparse path
+                    // is a storage optimization rather than a change of
+                    // numerical edge semantics.  Exact targets remain a
+                    // separate diagnostic for near-Salem candidates.
                     const auto subst = make_substitution<4>(rule, inst.beta);
                     std::vector<SNode<4>> nodes;
                     nodes.reserve(rep.boundary_nodes.size());
@@ -877,7 +877,7 @@ int main(int argc, char** argv) {
                     g_audit = WeightedDigraph(nodes.size());
                     for (std::size_t s = 0; s < nodes.size(); ++s) {
                         for (const auto& [dst, prefixes] :
-                             simple_forward_targets_exact<4>(subst, nodes[s])) {
+                             simple_forward_targets<4>(subst, nodes[s])) {
                             (void)prefixes;
                             const auto it = index.find(dst);
                             if (it != index.end()) g_audit.add_edge(s, it->second, 1);
