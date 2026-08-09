@@ -141,6 +141,10 @@ Successful Property-F graph staging now also rejects out-of-range SCC labels,
 and the reflected graph theorem proves the nonzero-cycle component count is
 exactly zero. The no-cycle conclusion is therefore carried as checked data,
 not just a nonnegative counter invariant.
+SCC labels are now checked against the component-size vector in both C++
+staging and Lean: every component receives a kernel-checked filtered-label
+count theorem. The finite SCC partition is therefore independently audited,
+not inferred from its total size alone.
 
 **2026-08-08 finite-classifier increment.** `check_strong_coincidence` now
 returns a lexicographically indexed resolution profile for every unordered

@@ -4599,6 +4599,11 @@ inline std::string render_property_f_graph_instances(const mathlib::reflection::
         out << "]\n";
         out << "def " << stem << "_nonzero_cycle_components : Int := "
             << node->nonzero_cycle_components << "\n";
+        for (std::size_t label = 0; label < node->scc_sizes.size(); ++label) {
+            out << "theorem " << stem << "_scc_label_count_" << label << " :\n"
+                << "    (" << stem << "_scc_labels.filter (fun x => x = " << label
+                << ")).length = " << node->scc_sizes[label] << " := by decide\n\n";
+        }
         for (std::size_t i = 0; i < node->gamma_coefficients.size(); ++i) {
             out << "def " << stem << "_gamma_" << i << " : List (Int × Nat) := [";
             const auto& coefficients = node->gamma_coefficients[i];

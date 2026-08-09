@@ -132,6 +132,7 @@ int main() {
     assert(lean.find("property_f_graph_0_edge_0_0_topology") != std::string::npos);
     assert(lean.find("property_f_graph_0_edge_0_0_graph_recurrence") != std::string::npos);
     assert(lean.find("property_f_graph_0_nonzero_cycle_components") != std::string::npos);
+    assert(lean.find("property_f_graph_0_scc_label_count_0") != std::string::npos);
     if (const char* dump_path = std::getenv("RAVEL_PROPERTY_F_LEAN_OUT")) {
         std::ofstream dump(dump_path);
         dump << lean;

@@ -126,6 +126,11 @@ inline bool stage_property_f_graph(const adelic::PropertyFResult& result,
         if (label < 0 || label >= static_cast<long long>(graph.scc_sizes.size()))
             throw std::invalid_argument("property-F graph SCC label is out of range");
     }
+    std::vector<long long> label_counts(graph.scc_sizes.size(), 0);
+    for (const long long label : graph.scc_labels)
+        ++label_counts[static_cast<std::size_t>(label)];
+    if (label_counts != graph.scc_sizes)
+        throw std::invalid_argument("property-F graph SCC labels do not match component sizes");
     if (size_sum != static_cast<long long>(graph.nodes.size()))
         throw std::invalid_argument("property-F graph SCC sizes do not partition the nodes");
     if (graph.nonzero_cycle_components < 0)
