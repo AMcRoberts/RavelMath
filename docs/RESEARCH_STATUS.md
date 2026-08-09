@@ -62,6 +62,16 @@ optimized path changes the tally from 17 established / 8 inconclusive to
 validated cases (`rndW3_21`, `rndW3_25`, `rndW3_26`) are genuine high-growth
 interior searches; two additional inconclusives (`rndW3_7`, `rndW3_18`) have
 untrusted non-maximal-order arithmetic and are not obstruction evidence.
+Focused profiling then separates the remaining cases: `rndW3_21` closes at 6
+nodes; `rndW3_25` reaches 200,002 interior nodes by depth 8 with no partial
+nonzero back-edge; `rndW3_26` reaches 200,003 nodes by depth 52, with 690,430
+boundary edges and no partial nonzero back-edge. The extension certificate
+therefore needs separate fields for transient transport growth, boundary
+crossings, and recurrent zero-only components; a single scalar state count is
+not a family invariant.
+The proposed parameterized bridge contract is recorded in
+`docs/PROPERTY_F_SOFIC_EXTENSION_BRIDGE.md`; it is the route for extending
+the companion transport solution through the full `(n,m)` parameter sheet.
 
 ## Verified engineering boundary
 
