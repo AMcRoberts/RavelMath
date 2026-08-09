@@ -99,7 +99,7 @@ TRANSITION_FILES := $(addprefix $(TRANSITIONS_DIR)/spectre_transitions_,$(addsuf
 .PHONY: csy_finite_carry_automaton_test
 .PHONY: lean_class_ii_catalogue_cross_check_test
 .PHONY: supergolden_qrs_audit
-.PHONY: theta5_contact_boundary_probe property_f_family_autopsy property_f_family_artifact
+.PHONY: theta5_contact_boundary_probe property_f_family_autopsy property_f_family_artifact property_f_transport_certificate_test
 
 all: build data apps tests
 build: $(LIB)
@@ -815,6 +815,7 @@ TESTS_DEFAULT := \
 	single_junction_coincidence_composition_test \
 	second_genuine_fourth_generator_property_f_test \
 	property_f_family_autopsy \
+	property_f_transport_certificate_test \
 	local_field_test \
 	graph_divisor_test \
 	maximal_order_test \
@@ -2293,6 +2294,13 @@ $(TEST_BIN_PROPERTY_F_FAMILY_AUTOPSY): $(TESTDIR)/property_f_family_autopsy_test
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 property_f_family_autopsy: $(TEST_BIN_PROPERTY_F_FAMILY_AUTOPSY)
 	./$(TEST_BIN_PROPERTY_F_FAMILY_AUTOPSY)
+
+TEST_BIN_PROPERTY_F_TRANSPORT_CERTIFICATE := $(BUILDDIR)/property_f_transport_certificate_test
+$(TEST_BIN_PROPERTY_F_TRANSPORT_CERTIFICATE): $(TESTDIR)/property_f_transport_certificate_test.cpp \
+		$(INCDIR)/adelic/property_f_transport_certificate.hpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+property_f_transport_certificate_test: $(TEST_BIN_PROPERTY_F_TRANSPORT_CERTIFICATE)
+	./$(TEST_BIN_PROPERTY_F_TRANSPORT_CERTIFICATE)
 
 PROPERTY_F_FAMILY_ARTIFACT_BIN := $(BUILDDIR)/property_f_family_artifact
 property_f_family_artifact: $(PROPERTY_F_FAMILY_ARTIFACT_BIN)
