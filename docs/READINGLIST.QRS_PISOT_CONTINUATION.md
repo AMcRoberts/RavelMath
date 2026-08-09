@@ -932,3 +932,6 @@ theta-specific role labels.
 The expanded theta1--theta10 and silver/non-unit corpus all passes the generic
 scheme at cap 20, including the genuine fourth-generator witnesses. Use this
 as the current finite stress set before attempting a uniform derivation.
+The general-theory header now exposes the integer-extension scheme directly;
+future callers should use that entry point rather than rebuilding catalogue
+and transport checks by hand.

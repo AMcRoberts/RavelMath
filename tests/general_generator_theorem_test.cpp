@@ -27,6 +27,7 @@ void run(const std::string& name, std::vector<long long> low_first, std::size_t 
     auto R = ring_from_low_first(low_first);
     auto beta_I = isolate_beta(R);
     auto c = ravel::proof::derive_general_generator_theorem(R, beta_I);
+    auto wrapper_scheme = ravel::proof::derive_general_integer_extension_scheme(R, beta_I, 10, 12);
     auto forest = ravel::proof::derive_canonical_parent_role_catalogue(R, beta_I);
     auto holonomy = ravel::proof::derive_parent_role_holonomy(forest);
     const auto cycles = ravel::proof::derive_parent_role_unit_cycles(forest, 12);
@@ -48,6 +49,7 @@ void run(const std::string& name, std::vector<long long> low_first, std::size_t 
               << " proved=" << c.proved << "\n";
     assert(c.proved);
     assert(c.primitive_generator_count == expected_primitive);
+    assert(wrapper_scheme.proved);
     assert(forest.proved);
     assert(holonomy.proved);
     assert(holonomy.edge_count == forest.edges.size());

@@ -13,6 +13,18 @@
 // unexplained gap.
 //
 // =====================================================================
+// NEXT STRUCTURAL LAYER: THE FINITE INTEGER-EXTENSION SCHEME
+// =====================================================================
+//
+// The same role catalogue also isolates a constructive next theorem.  If its
+// zero-defect kernel is connected and it has opposite unit cycles (at any
+// locations), then cycle repetition transports every integer displacement
+// between every pair of roles.  `derive_general_integer_extension_scheme`
+// exposes that implication as a reusable finite certificate; it does not hide
+// an assertion that the two hypotheses hold for every Pisot family.
+//
+// =====================================================================
+//
 // PART 1: THE GENERAL THEOREM (unconditional, always correct)
 // =====================================================================
 //
@@ -181,6 +193,15 @@ namespace ravel::proof {
 inline GeneratorCollapseCertificate derive_general_generator_theorem(
     const mathlib::QBetaRing& R, const mathlib::RootInterval& beta_I) {
     return derive_canonical_substitution_generator_collapse(R, beta_I);
+}
+
+inline ParentRoleIntegerSchemeReport derive_general_integer_extension_scheme(
+    const mathlib::QBetaRing& R, const mathlib::RootInterval& beta_I,
+    std::size_t zero_word_cap = 20, std::size_t cycle_word_cap = 20,
+    std::size_t root_role = 0) {
+    const auto catalogue = derive_canonical_parent_role_catalogue(R, beta_I);
+    return derive_parent_role_integer_scheme(
+        catalogue, zero_word_cap, cycle_word_cap, root_role);
 }
 
 }  // namespace ravel::proof

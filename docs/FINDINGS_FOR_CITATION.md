@@ -4038,6 +4038,9 @@ The expanded theta1--theta10 plus silver/non-unit corpus now passes the
 generic integer scheme at cap 20: every case has complete zero-kernel coverage
 and opposite unit cycles, including the two genuine fourth-generator cases.
 This is the broadest finite support so far for the family-level conjecture.
+The scheme is now exposed through the general-theory entry point, so callers
+can request the same finite certificate without reconstructing the catalogue
+internals.
 At word cap 100, theta10 realizes the complete `-20..+20` window
 (850,176/850,176 states), again with all zero-net witnesses replay-checked.
 The reusable window profile at word cap 30 gives largest complete radii 5,
