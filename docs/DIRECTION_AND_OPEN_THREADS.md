@@ -173,13 +173,14 @@ itself. This is a settled point; mentioned here for completeness.
   (`FINDINGS_FOR_CITATION.md` line 199-207) because the pipeline
   used `extract_recurrent_core` (largest-by-node-count), not
   `extract_dominant_recurrent_core`. A re-audit driver
-  (`app/reaudit_gb_dominant_scc.cpp`, started this session, not
-  yet finished) re-runs the 4-letter non-unimodular survey with
-  the dominant-SCC extractor and compares the three λ values
-  (whole-matrix, largest-SCC, dominant-SCC). The pilot indicates
-  the largest-SCC and dominant-SCC always agree on these
-  candidates' G_B, so the original's λ values are NOT affected
-  by the largest-vs-dominant distinction.
+  (`app/reaudit_gb_dominant_scc.cpp`) re-runs the 4-letter
+  non-unimodular survey with the dominant-SCC extractor and compares
+  the three λ values (whole-matrix, largest-SCC, dominant-SCC). A
+  correctness audit found a stale 3×3 determinant filter and an
+  unassigned SCC-split flag; both are fixed, but the corrected pilot
+  produced no converged candidate under its bounded contact caps.
+  The historical row therefore remains provisional until a clean batch
+  is obtained from the corrected driver.
 
 **What's open (Item B research targets, in priority order)**:
 
@@ -367,8 +368,9 @@ with the dominant one being the 210-node one, NOT the 221-node
 largest). `extract_recurrent_core` is documented in its own
 header comment to give wrong answers for graphs of comparable
 size to Hexanacci's; the G_B re-audit driver
-(`app/reaudit_gb_dominant_scc.cpp`) verifies this on a fresh
-batch.
+(`app/reaudit_gb_dominant_scc.cpp`) is the check for this distinction,
+but its corrected run still needs a converged clean batch before it can
+be used as evidence.
 
 **ASan (AddressSanitizer)** — the safety net for the precision-
 vs-digits.size() invariant that was the source of the recent

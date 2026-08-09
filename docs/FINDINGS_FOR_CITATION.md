@@ -197,15 +197,15 @@ point, and is the §C / Finding 2 case below.
 **Scope of the claim**: 11 data points, one alphabet size (4), one
 `|det|` (2), narrow entry range (0–3). Not evidence about unimodular
 Pisot in general, non-unimodular Pisot at other alphabet sizes, or
-non-unimodular Pisot with `|det| > 2`. **Re-audited and confirmed
-(2026-08-01)**: `app/reaudit_gb_dominant_scc.cpp` checked a fresh
-batch (target=4, then target=20; combined 24 candidates checked, 14
-clean/converged) with `extract_dominant_recurrent_core` against the
-original `extract_recurrent_core` (largest-by-node-count) side by
-side. **14/14 clean candidates agree exactly** (dominant-SCC ==
-largest-SCC, `λ` values identical to within `1.1e-9`), zero SCC
-splits. The largest-SCC-vs-dominant-SCC distinction does NOT affect
-this row's original `λ(G_B)` values; no longer provisional.
+non-unimodular Pisot with `|det| > 2`. The planned re-audit is not
+currently confirmed: an implementation audit found that the driver
+had been filtering 4×4 candidates with a stale hand-expanded 3×3
+determinant, and its SCC-split flag was never assigned. The corrected
+driver now uses a dimension-independent determinant and records the
+dominant/largest SCC size comparison, but a reproducible pilot with
+the corrected path produced no converged candidate under its bounded
+contact caps. Until a clean batch is rerun, this row remains
+provisional with respect to the largest-vs-dominant distinction.
 
 **Literature connection**: consistent with Barge, Bruin, Jones &
 Sadun (2010) on non-unimodular Pisot substitutions failing to tile,
@@ -292,13 +292,10 @@ order is not p-maximal; those historical results remain exploratory until
 their prime-ideal factorization is transported into the maximal order. The 4
 previously-skipped multi-PRIME cases still establish when their order data is
 certified. The 39-/87-
-candidate non-unimodular row's "11/87 differ by 10-40%" claim was
-re-audited (`app/reaudit_gb_dominant_scc.cpp`) with the dominant-SCC
-extractor and **confirmed, not just piloted**: 14/14 clean candidates
-across two runs (target=4, target=20) agree exactly between the
-largest-SCC and dominant-SCC extractors, zero disagreements, zero SCC
-splits — the original's λ values are NOT affected by the largest-
-vs-dominant distinction.
+candidate non-unimodular row's "11/87 differ by 10-40%" claim remains
+a re-audit target: the earlier 14/14 statement was generated before
+the determinant and split-flag defects were corrected and cannot serve
+as evidence for the fixed implementation.
 
 **Why "not yet independently hand-verified" rather than a flat claim
 of proof**: this result comes from a from-scratch implementation of

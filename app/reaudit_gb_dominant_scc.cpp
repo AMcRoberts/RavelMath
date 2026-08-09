@@ -122,6 +122,7 @@
 #include "ravel/contact_boundary.hpp"
 #include "ravel/balanced_pair.hpp"
 #include "ravel/graph_divisor.hpp"
+#include "adelic/maximal_order.hpp"
 
 using namespace ravel;
 
@@ -751,12 +752,12 @@ int main(int argc, char** argv) {
         ++yielded;
         print_mem("after inst assigned");
 
-        long long det;
-        {
-            det = inst.M[0][0]*(inst.M[1][1]*inst.M[2][2] - inst.M[1][2]*inst.M[2][1])
-                - inst.M[0][1]*(inst.M[1][0]*inst.M[2][2] - inst.M[1][2]*inst.M[2][0])
-                + inst.M[0][2]*(inst.M[1][0]*inst.M[2][1] - inst.M[1][1]*inst.M[2][0]);
-        }
+        // PisotGenerator is parameterized by the requested alphabet size;
+        // this audit runs at size four.  Keep the determinant calculation
+        // dimension-independent so a 4x4 matrix is not silently filtered by
+        // a stale 3x3 minor (the old hand expansion made the B4 sample
+        // selection mathematically unrelated to the non-unit condition).
+        const long long det = adelic::integer_determinant(inst.M);
         if (std::llabs(det) != 2) continue;
         n_checked++;
 
@@ -861,6 +862,7 @@ int main(int argc, char** argv) {
                 std::tie(g_large, idx_large) = extract_recurrent_core(g_audit);
                 lambda_large = dominant_eigenvalue_estimate_sparse(g_large);
             }
+            scc_split = idx_dom.size() != idx_large.size();
         }
         print_mem("end of heavy-mem block (rep, rule, g_audit freed)");
 
@@ -920,15 +922,26 @@ int main(int argc, char** argv) {
             std::printf("  (more than 50%% of budget; run --cache-clean when you're done.)\n");
         }
     }
-    std::printf("\nConclusion: the largest-SCC extractor and the dominant-SCC\n"
-                "extractor %s on every clean candidate in this batch. The\n"
-                "39-/87-candidate row's original lambda values are %s affected\n"
-                "by the largest-vs-dominant distinction. The original row\n"
-                "%s as published, modulo the very small numerical tolerance\n"
-                "already documented.\n",
-                n_scc_split == 0 ? "AGREED" : "DISAGREED",
-                n_scc_split == 0 ? "NOT" : "MAY BE",
-                n_scc_split == 0 ? "stands" : "needs re-evaluation");
+    if (n_clean == 0) {
+        // A bounded closure cutoff is not evidence that the two extractors
+        // agree.  In particular, do not let an empty clean sample turn the
+        // historical 39/87 row into a vacuous confirmation.
+        std::printf("\nConclusion: INCONCLUSIVE -- no candidate in this batch\n"
+                    "produced a converged G_B, so the largest-vs-dominant\n"
+                    "comparison did not run. Increase the explicit closure\n"
+                    "caps or choose a reproducible candidate before drawing\n"
+                    "a conclusion about the historical row.\n");
+    } else {
+        std::printf("\nConclusion: the largest-SCC extractor and the dominant-SCC\n"
+                    "extractor %s on every clean candidate in this batch. The\n"
+                    "39-/87-candidate row's original lambda values are %s affected\n"
+                    "by the largest-vs-dominant distinction. The original row\n"
+                    "%s as published, modulo the very small numerical tolerance\n"
+                    "already documented.\n",
+                    n_scc_split == 0 ? "AGREED" : "DISAGREED",
+                    n_scc_split == 0 ? "NOT" : "MAY BE",
+                    n_scc_split == 0 ? "stands" : "needs re-evaluation");
+    }
 
     return 0;
 }
