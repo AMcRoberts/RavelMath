@@ -4026,10 +4026,14 @@ In the same sample, the exact greedy drivers all begin with the digit pattern
 `1,0,>=1`; the schema checker records this driver condition separately from
 the edge replay, identifying the small prefix rule that should underlie the
 uniform proof.
-The mixed regression corrects that interpretation: supergolden and several
-non-unit families realize the role schema with the prefix rule false, while
-some eventually-periodic families fail the schema itself. The prefix is a
-theta-sweep heuristic, not a theorem hypothesis.
+The mixed regression corrects that interpretation: supergolden fails this
+particular role schema, while several non-unit families realize it with the
+prefix rule false and some eventually-periodic families fail it too. The
+prefix is a theta-sweep heuristic, not a theorem hypothesis.
+Despite those schema failures, the generic unit-cycle/zero-kernel transport
+scheme succeeds on every mixed regression case at its finite cap. The uniform
+target is therefore the existence of some opposite unit cycles plus a
+connected zero kernel, not the fixed role labels `2` and `2n`.
 At word cap 100, theta10 realizes the complete `-20..+20` window
 (850,176/850,176 states), again with all zero-net witnesses replay-checked.
 The reusable window profile at word cap 30 gives largest complete radii 5,

@@ -925,3 +925,7 @@ the canonical role paths.
 The mixed regression supplies the necessary counterexample: the prefix rule
 is not universal even when the role schema survives. Keep it as an explanatory
 theta-family pattern, and prove the role relation directly.
+The generic transport scheme nevertheless succeeds on every mixed regression
+case. The uniform theorem should quantify over the cycle locations and prove
+opposite unit holonomies plus a connected zero kernel, rather than assume the
+theta-specific role labels.
