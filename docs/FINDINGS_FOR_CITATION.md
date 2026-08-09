@@ -4079,12 +4079,13 @@ example, while remaining a finite instance rather than a family theorem.
 
 The generic contact-boundary intertwiner now accepts the five-letter canonical
 substitution `0->001, 1->2, 2->03, 3->4, 4->00` for
-`x^3-x^2-2x-2`. With explicit exploratory caps of 20,000 backward-closure
-states and 100,000 corona candidates, the run reaches 20,001 pre-contact
-states, 19,993 contact states, and 38,644 partial boundary candidates before
+`x^3-x^2-2x-2`. With explicit exploratory caps of 100,000 backward-closure
+states and 600,000 corona candidates, the run reaches 100,001 pre-contact
+states, 99,993 contact states, and 193,832 partial boundary candidates before
 both caps fire. It is therefore recorded as **INCONCLUSIVE**, with no
-generator or geometric claim extracted from the partial graph. A larger
-200,000/1,000,000 run remained CPU-bound for more than seven minutes at about
-379 MB RSS and was stopped without being treated as evidence. The first
-witness remains the only geometrically closed fourth-generator instance so
-far; this probe identifies the next resource/algorithm boundary honestly.
+generator or geometric claim extracted from the partial graph. A shared
+prefix-abelianization cache reduced this run to roughly 2–3 minutes and
+192 MB RSS; the remaining cost is the size of the closure frontier, not
+repeated prefix arithmetic. The first witness remains the only geometrically
+closed fourth-generator instance so far; this probe identifies the next
+resource/algorithm boundary honestly.

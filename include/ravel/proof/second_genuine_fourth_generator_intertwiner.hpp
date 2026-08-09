@@ -15,13 +15,9 @@ derive_second_genuine_fourth_generator_intertwiner() {
     constexpr double beta = 2.269530842081144;
     constexpr double beta_conjugate_modulus = 0.9387435225216725;
     ContactBoundaryLimits limits;
-    // This is an explicit exploratory cap.  The five-letter case is much
-    // larger than the first witness; until a converged run is affordable, the
-    // certificate must report INCONCLUSIVE rather than treating partial data
-    // as a geometric theorem.
-    limits.closure_cap = 20000;
-    limits.corona_cap = 100000;
-    limits.max_corona_rounds = 10;
+    limits.closure_cap = 100000;
+    limits.corona_cap = 600000;
+    limits.max_corona_rounds = 14;
     limits.retain_boundary_matrix = false;
     return derive_contact_boundary_generator_intertwiner<5>(
         rule, beta, beta_conjugate_modulus, 2, limits);

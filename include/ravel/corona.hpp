@@ -813,16 +813,27 @@ std::vector<ANode<d>> backward_edges(const Substitution<d>& subst,
         for (std::size_t c = 0; c < d; ++c) s += subst.M[r][c] * node.x[c];
         Mxp[r] = s;
     }
+    // Prefix abelianizations depend only on the image and cut position.
+    // Cache them once per call: the old implementation rebuilt a temporary
+    // vector and rescanned it for every (pi,pj) pair, which dominates the
+    // five-letter backward-closure probe.
+    std::vector<std::vector<std::array<long long, d>>> prefix_counts(
+        subst.images.size());
+    for (std::size_t image = 0; image < subst.images.size(); ++image) {
+        prefix_counts[image].resize(subst.images[image].size() + 1);
+        prefix_counts[image][0].fill(0);
+        for (std::size_t cut = 0; cut < subst.images[image].size(); ++cut) {
+            prefix_counts[image][cut + 1] = prefix_counts[image][cut];
+            ++prefix_counts[image][cut + 1][
+                static_cast<std::size_t>(subst.images[image][cut])];
+        }
+    }
     // Type 1: x = M x' + l(p1) - l(q1)
     for (std::size_t pi = 0; pi < subst.images[iprime].size(); ++pi) {
-        std::vector<long long> p1(subst.images[iprime].begin(),
-                                  subst.images[iprime].begin() + pi);
-        auto lp1 = abelianization<d>(p1);
+        const auto& lp1 = prefix_counts[iprime][pi];
         long long letter_i = subst.images[iprime][pi];
         for (std::size_t pj = 0; pj < subst.images[jprime].size(); ++pj) {
-            std::vector<long long> q1(subst.images[jprime].begin(),
-                                      subst.images[jprime].begin() + pj);
-            auto lq1 = abelianization<d>(q1);
+            const auto& lq1 = prefix_counts[jprime][pj];
             long long letter_j = subst.images[jprime][pj];
             ANode<d> cand;
             cand.i = letter_i;
@@ -834,14 +845,10 @@ std::vector<ANode<d>> backward_edges(const Substitution<d>& subst,
     }
     // Type 2: x = -M x' + l(p1) - l(q1), with the (i',j') roles swapped
     for (std::size_t pi = 0; pi < subst.images[jprime].size(); ++pi) {
-        std::vector<long long> p1(subst.images[jprime].begin(),
-                                  subst.images[jprime].begin() + pi);
-        auto lp1 = abelianization<d>(p1);
+        const auto& lp1 = prefix_counts[jprime][pi];
         long long letter_i = subst.images[jprime][pi];
         for (std::size_t pj = 0; pj < subst.images[iprime].size(); ++pj) {
-            std::vector<long long> q1(subst.images[iprime].begin(),
-                                      subst.images[iprime].begin() + pj);
-            auto lq1 = abelianization<d>(q1);
+            const auto& lq1 = prefix_counts[iprime][pj];
             long long letter_j = subst.images[iprime][pj];
             ANode<d> cand;
             cand.i = letter_i;
