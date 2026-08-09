@@ -179,11 +179,11 @@ itself. This is a settled point; mentioned here for completeness.
   correctness audit found a stale 3×3 determinant filter and an
   unassigned SCC-split flag. A further audit found the same stale 3×3
   determinant inside the candidate generator; both locations are now
-  fixed. The first generator-corrected batch produced 4 clean candidates
-  out of 10 determinant-qualified candidates, with exact λ agreement and
-  no SCC membership splits; six cap hits remain inconclusive. The
-  historical row remains provisional until a larger corrected batch is
-  obtained.
+  fixed. The full generator-corrected batch produced 10 clean candidates
+  out of 20 determinant-qualified candidates, with exact λ agreement and
+  no SCC membership splits; ten cap hits remain inconclusive. The
+  historical row remains provisional because the original 11/87 matrices
+  were not persisted and cannot be replayed exactly.
 
 **What's open (Item B research targets, in priority order)**:
 
@@ -372,7 +372,7 @@ largest). `extract_recurrent_core` is documented in its own
 header comment to give wrong answers for graphs of comparable
 size to Hexanacci's; the G_B re-audit driver
 (`app/reaudit_gb_dominant_scc.cpp`) is the check for this distinction;
-the withdrawn 10/15 run cannot serve as evidence; the fresh 4/10 run is
+the withdrawn 10/15 run cannot serve as evidence; the fresh 10/20 run is
 replacement for the full historical re-audit.
 
 **ASan (AddressSanitizer)** — the safety net for the precision-

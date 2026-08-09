@@ -203,11 +203,12 @@ hand-expanded 3×3 determinant, and its SCC-split flag was never
 assigned. The corrected driver uses a dimension-independent determinant,
 compares actual SCC memberships, and reconstructs the graph sparsely.
 The candidate generator's matching stale 3×3 determinant was also fixed.
-A fresh generator-corrected run produced 4 clean candidates out of 10
-determinant-qualified candidates; all four agreed exactly among whole,
-dominant-SCC, and largest-SCC λ values, with zero membership splits. Six
-explicit cap hits remain inconclusive. This is valid partial evidence,
-not yet a re-audit of the historical 11/87 batch.
+A full generator-corrected run produced 10 clean candidates out of 20
+determinant-qualified candidates; all ten agreed exactly among whole,
+dominant-SCC, and largest-SCC λ values, with zero membership splits. Ten
+explicit cap hits remain inconclusive. This is robust fresh-sample
+evidence, but not a re-audit of the historical 11/87 matrices, which were
+not persisted in the repository.
 
 **Literature connection**: consistent with Barge, Bruin, Jones &
 Sadun (2010) on non-unimodular Pisot substitutions failing to tile,
@@ -299,8 +300,8 @@ a re-audit target: the earlier 14/14 statement was generated before
 the determinant and split-flag defects were corrected and cannot serve
 as evidence for the fixed implementation. The previous 10/15 run is
 withdrawn because its generator filtered the wrong determinant; the fresh
-4/10 result is the first valid replacement but is not large enough to
-replace the historical target.
+10/20 result is valid replacement evidence, but it cannot recover or
+replace the historical target's exact candidate population.
 
 **Why "not yet independently hand-verified" rather than a flat claim
 of proof**: this result comes from a from-scratch implementation of
