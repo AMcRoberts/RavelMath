@@ -274,3 +274,9 @@ The closure API itself now reconstructs and checks the incidence matrix from
 the supplied images before exploring any states. A deliberately tampered
 matrix is rejected by the closure regression, so this input-consistency guard
 does not rely only on the production caller's construction discipline.
+
+Closure witness staging now records the first and second occurrence positions
+for every validated terminal/vector witness. Those positions are emitted in
+the typed prefix/full payloads and their Lean summaries, so the reflected
+artifact retains an occurrence-level witness rather than only an aggregate
+state match.

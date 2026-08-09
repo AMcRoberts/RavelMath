@@ -2,6 +2,7 @@
 
 #include <array>
 #include <cstddef>
+#include <optional>
 #include <stdexcept>
 #include <set>
 #include <string>
@@ -31,24 +32,24 @@ enum class StrongCoincidencePrefixClosureStageResult {
 };
 
 template <std::size_t d>
-inline bool validate_closure_pair_witness_against_words(
+inline std::optional<std::pair<long long, long long>> find_closure_pair_occurrence(
     const std::array<std::vector<long long>, d>& images,
     long long first_letter, long long second_letter, long long depth,
     long long terminal_letter, const std::vector<long long>& target_vector,
     bool from_suffix, long long max_word_len = 5'000'000) {
     if (depth < 1 || terminal_letter < 0 || static_cast<std::size_t>(terminal_letter) >= d ||
         target_vector.size() != d)
-        return false;
+        return std::nullopt;
     std::vector<long long> first = images[static_cast<std::size_t>(first_letter)];
     std::vector<long long> second = images[static_cast<std::size_t>(second_letter)];
     for (long long k = 1; k < depth; ++k) {
         if (first.size() > static_cast<std::size_t>(max_word_len) ||
-            second.size() > static_cast<std::size_t>(max_word_len)) return false;
+            second.size() > static_cast<std::size_t>(max_word_len)) return std::nullopt;
         first = adelic::apply_substitution<d>(images, first);
         second = adelic::apply_substitution<d>(images, second);
     }
     if (first.size() > static_cast<std::size_t>(max_word_len) ||
-        second.size() > static_cast<std::size_t>(max_word_len)) return false;
+        second.size() > static_cast<std::size_t>(max_word_len)) return std::nullopt;
 
     auto collect = [&](const std::vector<long long>& word) {
         std::set<std::vector<long long>> states;
@@ -73,7 +74,44 @@ inline bool validate_closure_pair_witness_against_words(
     };
     const auto first_states = collect(first);
     const auto second_states = collect(second);
-    return first_states.count(target_vector) != 0 && second_states.count(target_vector) != 0;
+    if (!first_states.count(target_vector) || !second_states.count(target_vector))
+        return std::nullopt;
+    auto find_position = [&](const std::vector<long long>& word) -> long long {
+        std::array<long long, d> total{};
+        for (const long long letter : word) ++total[static_cast<std::size_t>(letter)];
+        std::array<long long, d> prefix{};
+        for (std::size_t position = 0; position < word.size(); ++position) {
+            const long long letter = word[position];
+            if (letter == terminal_letter) {
+                std::vector<long long> state(d);
+                if (from_suffix) {
+                    for (std::size_t i = 0; i < d; ++i)
+                        state[i] = total[i] - prefix[i] -
+                            (static_cast<long long>(i) == letter ? 1 : 0);
+                } else {
+                    state.assign(prefix.begin(), prefix.end());
+                }
+                if (state == target_vector) return static_cast<long long>(position);
+            }
+            ++prefix[static_cast<std::size_t>(letter)];
+        }
+        return -1;
+    };
+    const long long first_position = find_position(first);
+    const long long second_position = find_position(second);
+    if (first_position < 0 || second_position < 0) return std::nullopt;
+    return std::make_pair(first_position, second_position);
+}
+
+template <std::size_t d>
+inline bool validate_closure_pair_witness_against_words(
+    const std::array<std::vector<long long>, d>& images,
+    long long first_letter, long long second_letter, long long depth,
+    long long terminal_letter, const std::vector<long long>& target_vector,
+    bool from_suffix, long long max_word_len = 5'000'000) {
+    return find_closure_pair_occurrence<d>(images, first_letter, second_letter, depth,
+                                           terminal_letter, target_vector, from_suffix,
+                                           max_word_len).has_value();
 }
 
 // Stage a closed prefix-half landmark closure.  This is an independent
@@ -109,11 +147,13 @@ inline StrongCoincidencePrefixClosureStageResult stage_strong_coincidence_prefix
     for (std::size_t i = 0; i < d; ++i)
         for (std::size_t j = i + 1; j < d; ++j) {
             const std::size_t index = pair_index(i, j);
-            if (index >= result.pair_resolution_depths.size() ||
-                !validate_closure_pair_witness_against_words<d>(
-                    images, static_cast<long long>(i), static_cast<long long>(j),
-                    result.pair_resolution_depths[index],
-                    result.pair_terminal_letters[index], result.pair_vectors[index], false))
+            const auto occurrence = index < result.pair_resolution_depths.size()
+                ? find_closure_pair_occurrence<d>(
+                      images, static_cast<long long>(i), static_cast<long long>(j),
+                      result.pair_resolution_depths[index],
+                      result.pair_terminal_letters[index], result.pair_vectors[index], false)
+                : std::nullopt;
+            if (!occurrence)
                 return StrongCoincidencePrefixClosureStageResult::witness_rejected;
         }
     if (!mathlib::reflection::enabled())
@@ -124,6 +164,18 @@ inline StrongCoincidencePrefixClosureStageResult stage_strong_coincidence_prefix
     node.pair_resolution_depths = result.pair_resolution_depths;
     node.pair_terminal_letters = result.pair_terminal_letters;
     node.pair_vectors = result.pair_vectors;
+    node.pair_first_positions.resize(result.pair_resolution_depths.size());
+    node.pair_second_positions.resize(result.pair_resolution_depths.size());
+    for (std::size_t i = 0; i < d; ++i)
+        for (std::size_t j = i + 1; j < d; ++j) {
+            const std::size_t index = pair_index(i, j);
+            const auto occurrence = find_closure_pair_occurrence<d>(
+                images, static_cast<long long>(i), static_cast<long long>(j),
+                result.pair_resolution_depths[index], result.pair_terminal_letters[index],
+                result.pair_vectors[index], false);
+            node.pair_first_positions[index] = occurrence->first;
+            node.pair_second_positions[index] = occurrence->second;
+        }
     node.depth_reached = result.depth_reached;
     node.max_depth = max_depth;
     node.outcome_budget = static_cast<long long>(outcome_budget);
@@ -177,12 +229,14 @@ inline StrongCoincidenceClosureStageResult stage_strong_coincidence_closure(
     for (std::size_t i = 0; i < d; ++i)
         for (std::size_t j = i + 1; j < d; ++j) {
             const std::size_t index = pair_index(i, j);
-            if (index >= result.pair_resolution_depths.size() ||
-                !validate_closure_pair_witness_against_words<d>(
-                    images, static_cast<long long>(i), static_cast<long long>(j),
-                    result.pair_resolution_depths[index],
-                    result.pair_terminal_letters[index], result.pair_vectors[index],
-                    result.pair_from_suffix[index]))
+            const auto occurrence = index < result.pair_resolution_depths.size()
+                ? find_closure_pair_occurrence<d>(
+                      images, static_cast<long long>(i), static_cast<long long>(j),
+                      result.pair_resolution_depths[index],
+                      result.pair_terminal_letters[index], result.pair_vectors[index],
+                      result.pair_from_suffix[index])
+                : std::nullopt;
+            if (!occurrence)
                 return StrongCoincidenceClosureStageResult::witness_rejected;
         }
     if (!mathlib::reflection::enabled())
@@ -194,6 +248,18 @@ inline StrongCoincidenceClosureStageResult stage_strong_coincidence_closure(
     node.pair_terminal_letters = result.pair_terminal_letters;
     node.pair_vectors = result.pair_vectors;
     node.pair_from_suffix = result.pair_from_suffix;
+    node.pair_first_positions.resize(result.pair_resolution_depths.size());
+    node.pair_second_positions.resize(result.pair_resolution_depths.size());
+    for (std::size_t i = 0; i < d; ++i)
+        for (std::size_t j = i + 1; j < d; ++j) {
+            const std::size_t index = pair_index(i, j);
+            const auto occurrence = find_closure_pair_occurrence<d>(
+                images, static_cast<long long>(i), static_cast<long long>(j),
+                result.pair_resolution_depths[index], result.pair_terminal_letters[index],
+                result.pair_vectors[index], result.pair_from_suffix[index]);
+            node.pair_first_positions[index] = occurrence->first;
+            node.pair_second_positions[index] = occurrence->second;
+        }
     node.depth_reached = result.depth_reached;
     node.max_depth = max_depth;
     node.outcome_budget = static_cast<long long>(outcome_budget);

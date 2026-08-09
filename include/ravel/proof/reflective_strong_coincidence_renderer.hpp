@@ -96,6 +96,18 @@ inline std::string render_strong_coincidence_prefix_closure_instances(
             out << "]";
         }
         out << "]\n";
+        out << "def " << stem << "_first_positions : List Int := [";
+        for (std::size_t i = 0; i < node->pair_first_positions.size(); ++i) {
+            if (i) out << ", ";
+            out << node->pair_first_positions[i];
+        }
+        out << "]\n";
+        out << "def " << stem << "_second_positions : List Int := [";
+        for (std::size_t i = 0; i < node->pair_second_positions.size(); ++i) {
+            if (i) out << ", ";
+            out << node->pair_second_positions[i];
+        }
+        out << "]\n";
         out << "def " << stem << "_matrix : List Int := [";
         for (std::size_t i = 0; i < node->matrix.size(); ++i) {
             if (i) out << ", ";
@@ -109,6 +121,10 @@ inline std::string render_strong_coincidence_prefix_closure_instances(
             << "    " << stem << "_terminal_letters.length = "
             << node->pair_terminal_letters.size() << " ∧\n"
             << "    " << stem << "_vectors.length = " << node->pair_vectors.size() << " ∧\n"
+            << "    " << stem << "_first_positions.length = "
+            << node->pair_first_positions.size() << " ∧\n"
+            << "    " << stem << "_second_positions.length = "
+            << node->pair_second_positions.size() << " ∧\n"
             << "    " << stem << "_matrix.length = " << node->matrix.size() << " ∧\n"
             << "    " << node->depth_reached << " ≤ " << node->max_depth << " ∧\n"
             << "    " << (node->holds ? "True" : "False") << " := by decide\n\n";
@@ -165,6 +181,18 @@ inline std::string render_strong_coincidence_closure_instances(
             out << (node->pair_from_suffix[i] ? "true" : "false");
         }
         out << "]\n";
+        out << "def " << stem << "_first_positions : List Int := [";
+        for (std::size_t i = 0; i < node->pair_first_positions.size(); ++i) {
+            if (i) out << ", ";
+            out << node->pair_first_positions[i];
+        }
+        out << "]\n";
+        out << "def " << stem << "_second_positions : List Int := [";
+        for (std::size_t i = 0; i < node->pair_second_positions.size(); ++i) {
+            if (i) out << ", ";
+            out << node->pair_second_positions[i];
+        }
+        out << "]\n";
         out << "def " << stem << "_matrix : List Int := [";
         for (std::size_t i = 0; i < node->matrix.size(); ++i) {
             if (i) out << ", ";
@@ -179,6 +207,10 @@ inline std::string render_strong_coincidence_closure_instances(
             << node->pair_terminal_letters.size() << " ∧\n"
             << "    " << stem << "_vectors.length = " << node->pair_vectors.size() << " ∧\n"
             << "    " << stem << "_from_suffix.length = " << node->pair_from_suffix.size() << " ∧\n"
+            << "    " << stem << "_first_positions.length = "
+            << node->pair_first_positions.size() << " ∧\n"
+            << "    " << stem << "_second_positions.length = "
+            << node->pair_second_positions.size() << " ∧\n"
             << "    " << stem << "_matrix.length = " << node->matrix.size() << " ∧\n"
             << "    " << node->depth_reached << " ≤ " << node->max_depth << " ∧\n"
             << "    " << (node->holds ? "True" : "False") << " := by decide\n\n";
