@@ -317,6 +317,20 @@ struct ConstantLastLetterCertificate {
     std::string description;
 };
 
+// A concrete bounded run of the strong-coincidence checker.  This is finite
+// evidence for the supplied substitution, not an unconditional theorem about
+// all substitutions; the search limits and aggregate result remain explicit.
+struct StrongCoincidenceRunCertificate {
+    std::vector<std::vector<long long>> images;
+    long long depth_reached = 0;
+    long long unresolved_pairs = 0;
+    long long max_depth = 0;
+    long long max_word_len = 0;
+    bool holds = false;
+    bool inconclusive = false;
+    std::string description;
+};
+
 // Records a zero-run of length R (Finding 39/41): two chain-offset
 // positions `s1_offset`, `s2_offset` inside the run reach the run's
 // terminal position R after `k1`, `k2` steps respectively (both equal
@@ -957,7 +971,8 @@ using Payload = std::variant<MatrixFamily, MatrixInstance, EraseIndexMap,
                              SparseSupportCertificate, TriangularityCertificate,
                              DeterminantIdentity, LemmaApplication, IntegerEigenvectorNoWitness,
                              PeriodRotationCertificate, ConstantFirstLetterCertificate,
-                             ConstantLastLetterCertificate, ZeroRunSameChainCertificate,
+                             ConstantLastLetterCertificate, StrongCoincidenceRunCertificate,
+                             ZeroRunSameChainCertificate,
                              FirstLetterOrbitCertificate, LastLetterOrbitCertificate,
                              LeftmostLoopCertificate, DepressedCubicNotPisotCertificate,
                              ClassIIShellRoundCertificate, ClassIIFixedTableCertificate,
@@ -1268,6 +1283,7 @@ inline std::string payload_name(const Payload& payload) {
         else if constexpr (std::is_same_v<T, PeriodRotationCertificate>) return "lean.period_rotation_certificate";
         else if constexpr (std::is_same_v<T, ConstantFirstLetterCertificate>) return "lean.constant_first_letter_certificate";
         else if constexpr (std::is_same_v<T, ConstantLastLetterCertificate>) return "lean.constant_last_letter_certificate";
+        else if constexpr (std::is_same_v<T, StrongCoincidenceRunCertificate>) return "lean.strong_coincidence_run_certificate";
         else if constexpr (std::is_same_v<T, ZeroRunSameChainCertificate>) return "lean.zero_run_same_chain_certificate";
         else if constexpr (std::is_same_v<T, FirstLetterOrbitCertificate>) return "lean.first_letter_orbit_certificate";
         else if constexpr (std::is_same_v<T, LastLetterOrbitCertificate>) return "lean.last_letter_orbit_certificate";
@@ -1403,6 +1419,11 @@ inline std::string payload_detail(const Payload& payload) {
                 << " scc=" << value.strongly_connected_components
                 << " nonzero_cycles=" << value.nonzero_cycle_components
                 << " holds=" << (value.holds ? "true" : "false");
+        } else if constexpr (std::is_same_v<T, StrongCoincidenceRunCertificate>) {
+            out << value.description << " -- depth=" << value.depth_reached
+                << " unresolved=" << value.unresolved_pairs
+                << " holds=" << (value.holds ? "true" : "false")
+                << " inconclusive=" << (value.inconclusive ? "true" : "false");
         } else if constexpr (std::is_same_v<T, PropertyFGraphCertificate>) {
             std::size_t edges = 0;
             for (const auto& row : value.successors) edges += row.size();

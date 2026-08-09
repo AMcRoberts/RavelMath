@@ -8,6 +8,7 @@
 
 #include "math/proof_reflection.hpp"
 #include "ravel/proof/reflective_lean_literals.hpp"
+#include "ravel/proof/reflective_strong_coincidence_renderer.hpp"
 
 namespace ravel::proof {
 
@@ -4763,6 +4764,7 @@ inline std::string render_reflective_lean_module(const mathlib::reflection::Trac
     out << render_property_f_finite_run_instances(trace);
     out << render_property_f_graph_instances(trace);
     out << render_property_f_violation_instances(trace);
+    out << render_strong_coincidence_run_instances(trace);
     out << render_class_ii_six_vertex_graduation_instances(trace);
     out << render_class_ii_terminal_sextet_instances(trace);
     out << render_class_ii_penultimate_pair_instances(trace);

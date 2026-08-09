@@ -9,6 +9,7 @@
 #include "math/linalg_qbeta.hpp"
 #include "ravel/proof/property_f_finite_run_certificate.hpp"
 #include "ravel/proof/reflective_lean_renderer.hpp"
+#include "ravel/proof/strong_coincidence_certificate.hpp"
 
 namespace {
 std::vector<std::vector<long long>> transpose(const std::vector<std::vector<long long>>& m) {
@@ -36,6 +37,9 @@ int main() {
         mathlib::reflection::ScopedTrace scope(&trace);
         assert(ravel::proof::stage_property_f_finite_run(result, "Fibonacci"));
         assert(ravel::proof::stage_property_f_graph(result, graph, ring, "Fibonacci"));
+        assert(ravel::proof::stage_strong_coincidence_run(images, 20, 5'000'000,
+                                                          "Fibonacci strong coincidence" )
+               == ravel::proof::StrongCoincidenceStageResult::staged);
     }
     {
         auto tampered = graph;
@@ -92,12 +96,17 @@ int main() {
     auto certificates = trace.find<mathlib::reflection::PropertyFFiniteRunCertificate>();
     assert(certificates.size() == 1);
     assert(certificates.front().second->nodes_explored == 8);
+    const auto coincidence_runs = trace.find<mathlib::reflection::StrongCoincidenceRunCertificate>();
+    assert(coincidence_runs.size() == 1);
+    assert(coincidence_runs.front().second->holds);
+    assert(!coincidence_runs.front().second->inconclusive);
     const std::string lean = ravel::proof::render_reflective_lean_module(trace);
     assert(lean.find("property_f_finite_run_summary_0") != std::string::npos);
     assert(lean.find("2 + 6 = 8") != std::string::npos);
     assert(lean.find("property_f_graph_0_edges") != std::string::npos);
     assert(lean.find("property_f_graph_0_gamma_0") != std::string::npos);
     assert(lean.find("property_f_graph_0_digit_0_0") != std::string::npos);
+    assert(lean.find("strong_coincidence_run_0_summary") != std::string::npos);
     assert(lean.find("property_f_graph_0_charpoly") != std::string::npos);
     assert(lean.find("propertyFQ2Step") != std::string::npos);
     if (const char* dump_path = std::getenv("RAVEL_PROPERTY_F_LEAN_OUT")) {
