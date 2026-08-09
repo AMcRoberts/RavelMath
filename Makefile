@@ -870,6 +870,7 @@ TESTS_DEFAULT := \
 	sturm_chain_reflection_test \
 	leftmost_loop_reflection_test \
 	zero_run_same_chain_reflection_test \
+	branching_walk_composition_test \
 	class_ii_terminal_sextet_reflection_test \
 	adjacent_swap_count_reflection_test \
 	feeder_cycle_charpoly_reflection_test \
@@ -2249,6 +2250,13 @@ $(TEST_BIN_ZERO_RUN_SAME_CHAIN_REFLECTION_TEST): $(TESTDIR)/zero_run_same_chain_
 zero_run_same_chain_reflection_test: $(TEST_BIN_ZERO_RUN_SAME_CHAIN_REFLECTION_TEST)
 	./$(TEST_BIN_ZERO_RUN_SAME_CHAIN_REFLECTION_TEST)
 .PHONY: zero_run_same_chain_reflection_test
+
+TEST_BIN_BRANCHING_WALK_COMPOSITION_TEST := $(BUILDDIR)/branching_walk_composition_test
+$(TEST_BIN_BRANCHING_WALK_COMPOSITION_TEST): $(TESTDIR)/branching_walk_composition_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+branching_walk_composition_test: $(TEST_BIN_BRANCHING_WALK_COMPOSITION_TEST)
+	./$(TEST_BIN_BRANCHING_WALK_COMPOSITION_TEST)
+.PHONY: branching_walk_composition_test
 
 TEST_BIN_CLASS_II_TERMINAL_SEXTET_REFLECTION_TEST := $(BUILDDIR)/class_ii_terminal_sextet_reflection_test
 $(TEST_BIN_CLASS_II_TERMINAL_SEXTET_REFLECTION_TEST): $(TESTDIR)/class_ii_terminal_sextet_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
