@@ -4639,6 +4639,19 @@ inline std::string render_property_f_graph_instances(const mathlib::reflection::
             }
             out << "]\n";
         }
+        for (std::size_t i = 0; i < node->edge_digit_coefficients.size(); ++i) {
+            for (std::size_t j = 0; j < node->edge_digit_coefficients[i].size(); ++j) {
+                out << "def " << stem << "_digit_" << i << "_" << j
+                    << " : List (Int × Nat) := [";
+                const auto& coefficients = node->edge_digit_coefficients[i][j];
+                for (std::size_t k = 0; k < coefficients.size(); ++k) {
+                    if (k) out << ", ";
+                    out << "(" << coefficients[k].numerator << ", "
+                        << coefficients[k].denominator << ")";
+                }
+                out << "]\n";
+            }
+        }
         out << "theorem " << stem << "_shape :\n";
         out << "    (" << stem << "_edges.length = " << edges.size() << ") ∧\n";
         out << "    (" << stem << "_zero_nodes.length = " << zero_indices.size() << ") ∧\n";

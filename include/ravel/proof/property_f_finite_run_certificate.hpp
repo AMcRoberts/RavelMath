@@ -56,6 +56,9 @@ inline bool stage_property_f_graph(const adelic::PropertyFResult& result,
                 throw std::invalid_argument("property-F graph has an out-of-range successor");
             }
         }
+        if (node.edge_digit_coefficients.size() != node.successors.size()) {
+            throw std::invalid_argument("property-F graph edge digit data is misaligned");
+        }
     }
     if (zero_count != result.zero_nodes) {
         throw std::invalid_argument("property-F graph zero-node count disagrees with result");
@@ -67,6 +70,7 @@ inline bool stage_property_f_graph(const adelic::PropertyFResult& result,
     node.letters.reserve(graph.nodes.size());
     node.zero_nodes.reserve(graph.nodes.size());
     node.successors.reserve(graph.nodes.size());
+    node.edge_digit_coefficients.reserve(graph.nodes.size());
     for (const auto& source : graph.nodes) {
         node.gamma_keys.push_back(source.gamma_key);
         std::vector<mathlib::reflection::ExactRationalCoefficient> coefficients;
@@ -77,6 +81,16 @@ inline bool stage_property_f_graph(const adelic::PropertyFResult& result,
         node.letters.push_back(source.letter);
         node.zero_nodes.push_back(source.zero);
         node.successors.push_back(source.successors);
+        std::vector<std::vector<mathlib::reflection::ExactRationalCoefficient>> edge_digits;
+        edge_digits.reserve(source.edge_digit_coefficients.size());
+        for (const auto& digit : source.edge_digit_coefficients) {
+            std::vector<mathlib::reflection::ExactRationalCoefficient> coefficients;
+            coefficients.reserve(digit.size());
+        for (const auto& [numerator, denominator] : digit)
+                coefficients.push_back({numerator, denominator});
+            edge_digits.push_back(std::move(coefficients));
+        }
+        node.edge_digit_coefficients.push_back(std::move(edge_digits));
     }
     node.description = std::move(description);
     mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication,

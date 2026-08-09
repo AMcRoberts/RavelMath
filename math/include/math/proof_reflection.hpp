@@ -572,6 +572,7 @@ struct PropertyFGraphCertificate {
     std::vector<long long> letters;
     std::vector<bool> zero_nodes;
     std::vector<std::vector<long long>> successors;
+    std::vector<std::vector<std::vector<ExactRationalCoefficient>>> edge_digit_coefficients;
     std::string description;
 };
 

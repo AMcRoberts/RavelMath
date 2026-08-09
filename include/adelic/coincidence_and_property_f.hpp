@@ -340,6 +340,7 @@ struct PropertyFGraphNode {
     long long letter = 0;
     bool zero = false;
     std::vector<long long> successors;
+    std::vector<std::vector<std::pair<std::string, std::string>>> edge_digit_coefficients;
 };
 
 struct PropertyFGraph {
@@ -903,6 +904,7 @@ PropertyFResult check_property_f(
     std::vector<mathlib::QElem> node_gamma;
     std::vector<long long> node_letter;
     std::vector<std::vector<long long>> adj;  // adjacency: node -> successor node ids
+    std::vector<std::vector<std::vector<std::pair<std::string, std::string>>>> edge_digits;
     std::vector<bool> is_zero_node;
     std::vector<bool> enqueued;
 
@@ -918,6 +920,7 @@ PropertyFResult check_property_f(
         node_gamma.push_back(gamma);
         node_letter.push_back(letter);
         adj.push_back({});
+        edge_digits.push_back({});
         is_zero_node.push_back(is_zero_now);
         enqueued.push_back(false);
         return id;
@@ -968,6 +971,12 @@ PropertyFResult check_property_f(
                 double norm = archimedean_norm(gamma_prime, secondary_roots);
                 long long v = get_or_create(gamma_prime, static_cast<long long>(b));
                 adj[static_cast<std::size_t>(u)].push_back(v);
+                std::vector<std::pair<std::string, std::string>> digit_coefficients;
+                for (const auto& coefficient : delta_p.coeffs_) {
+                    digit_coefficients.emplace_back(mathlib::str(mathlib::num(coefficient)),
+                                                    mathlib::str(mathlib::den(coefficient)));
+                }
+                edge_digits[static_cast<std::size_t>(u)].push_back(std::move(digit_coefficients));
                 bool within_bound = norm < bound_M && (!extra_bound || extra_bound(gamma_prime));
                 if (within_bound && !enqueued[static_cast<std::size_t>(v)]) {
                     enqueued[static_cast<std::size_t>(v)] = true;
@@ -1021,6 +1030,7 @@ PropertyFResult check_property_f(
             node.letter = node_letter[i];
             node.zero = is_zero_node[i];
             node.successors = adj[i];
+            node.edge_digit_coefficients = edge_digits[i];
             out_graph->nodes.push_back(std::move(node));
         }
     }

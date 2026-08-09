@@ -124,3 +124,6 @@ vector in the power basis, and the Fibonacci artifact renders those vectors
 as Lean `List (Int × Nat)` data. The remaining algebraic bridge is to export
 the edge digit/prefix data and characteristic polynomial so Lean can check
 the recurrence on every serialized edge.
+The export now carries each edge's exact digit coefficient vector as well;
+the remaining step is to include the characteristic polynomial and a generic
+Lean Q(beta) recurrence checker.
