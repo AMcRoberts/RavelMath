@@ -58,6 +58,7 @@ int main() {
     assert(lean.find("property_f_graph_0_gamma_0") != std::string::npos);
     assert(lean.find("property_f_graph_0_digit_0_0") != std::string::npos);
     assert(lean.find("property_f_graph_0_charpoly") != std::string::npos);
+    assert(lean.find("propertyFQ2Step") != std::string::npos);
     if (const char* dump_path = std::getenv("RAVEL_PROPERTY_F_LEAN_OUT")) {
         std::ofstream dump(dump_path);
         dump << lean;

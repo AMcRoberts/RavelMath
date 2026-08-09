@@ -133,3 +133,8 @@ The staging operation now reconstructs every exported source/target/digit
 triple in the supplied `QBetaRing` and rejects any edge whose exact identity
 `gamma' = beta⁻¹ (gamma + delta)` fails. Fibonacci includes a tampering
 regression proving that invalid coefficient data is rejected before reflection.
+For the quadratic Fibonacci characteristic polynomial, the renderer now also
+emits a small generic `PropertyFQ2` arithmetic model and one `norm_num`
+theorem per serialized edge; all eight edge identities kernel-check. Higher
+degree fields remain an explicit follow-up rather than hidden unsupported
+text generation.

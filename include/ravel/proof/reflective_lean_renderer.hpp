@@ -4605,6 +4605,7 @@ inline std::string render_property_f_graph_instances(const mathlib::reflection::
     std::ostringstream out;
     long long counter = 0;
     auto nodes = trace.find<mathlib::reflection::PropertyFGraphCertificate>();
+    bool emitted_q2 = false;
     for (const auto& [id, node] : nodes) {
         (void)id;
         const std::string stem = "property_f_graph_" + std::to_string(counter++);
@@ -4665,6 +4666,45 @@ inline std::string render_property_f_graph_instances(const mathlib::reflection::
         out << "    (" << node->gamma_keys.size() << " = " << node->gamma_coefficients.size() << ") ∧\n";
         out << "    (" << stem << "_charpoly.length > 0) := by\n";
         out << "  decide\n\n";
+
+        if (node->characteristic_polynomial.size() == 3 &&
+            node->characteristic_polynomial[0] == "-1" &&
+            node->characteristic_polynomial[1] == "-1" &&
+            node->characteristic_polynomial[2] == "1" && !emitted_q2) {
+            out << "structure PropertyFQ2 where\n"
+                   "  c0 : ℚ\n"
+                   "  c1 : ℚ\n\n"
+                   "def propertyFQ2Step (g d : PropertyFQ2) : PropertyFQ2 :=\n"
+                   "  { c0 := (g.c1 + d.c1) - (g.c0 + d.c0)\n"
+                   "    c1 := g.c0 + d.c0 }\n\n";
+            emitted_q2 = true;
+        }
+        if (emitted_q2 && node->characteristic_polynomial.size() == 3 &&
+            node->characteristic_polynomial[0] == "-1" &&
+            node->characteristic_polynomial[1] == "-1" &&
+            node->characteristic_polynomial[2] == "1") {
+            auto q2_literal = [](const std::vector<mathlib::reflection::ExactRationalCoefficient>& coefficients) {
+                std::ostringstream value;
+                value << "{ c0 := (" << coefficients[0].numerator << " : ℚ) / "
+                      << coefficients[0].denominator << ", c1 := ("
+                      << coefficients[1].numerator << " : ℚ) / "
+                      << coefficients[1].denominator << " }";
+                return value.str();
+            };
+            for (std::size_t source = 0; source < node->edge_digit_coefficients.size(); ++source) {
+                for (std::size_t edge = 0; edge < node->edge_digit_coefficients[source].size(); ++edge) {
+                    const auto target = static_cast<std::size_t>(node->successors[source][edge]);
+                    const auto& gamma = node->gamma_coefficients[source];
+                    const auto& digit = node->edge_digit_coefficients[source][edge];
+                    const auto& target_gamma = node->gamma_coefficients[target];
+                    if (gamma.size() != 2 || digit.size() != 2 || target_gamma.size() != 2) continue;
+                    out << "theorem " << stem << "_edge_" << source << "_" << edge << " :\n"
+                        << "    propertyFQ2Step " << q2_literal(gamma) << " "
+                        << q2_literal(digit) << " = " << q2_literal(target_gamma)
+                        << " := by\n  norm_num [propertyFQ2Step]\n\n";
+                }
+            }
+        }
     }
     return out.str();
 }
