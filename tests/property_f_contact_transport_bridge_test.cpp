@@ -37,9 +37,12 @@ int main() {
     assert(bridge.boundary_complete);
     assert(bridge.contact_prefixes_in_adelic_alphabet);
     assert(bridge.exact_digit_labels_replay);
+    assert(bridge.transition_labels_commute);
     assert(bridge.boundary_edges > 0);
     assert(bridge.distinct_contact_prefixes > 0);
+    assert(bridge.distinct_difference_labels > 0);
     std::cout << "property_f_contact_transport_bridge: PASS boundary_edges="
               << bridge.boundary_edges << " contact_prefixes="
-              << bridge.distinct_contact_prefixes << "\n";
+              << bridge.distinct_contact_prefixes << " difference_labels="
+              << bridge.distinct_difference_labels << "\n";
 }
