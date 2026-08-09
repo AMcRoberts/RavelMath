@@ -278,6 +278,17 @@ a smarter candidate generator that targets Pisot-preserving
 perturbations specifically now that the pipeline covers the known
 multi-non-simple-ideal case.
 
+**Wider rerun after both fixes (2026-08-09).** The 4-letter driver now
+accepts explicit `--target`, `--K`, `--seed`, and bounded certify/rho/trial
+arguments while retaining the historical defaults. Repeating the target-20,
+`K_max=3`, seed-11 run produced **17 non-unit candidates: 17 ESTABLISHED,
+0 INCONCLUSIVE, 0 FAILED, 0 skipped**. The largest finite property-(F) graph
+had 841,057 nodes; peak observed RSS was about 0.61 GB, comfortably below
+the 10 GB machine limit. Two candidates reported non-maximal Dedekind-order
+diagnostics, but the combined p-adic/property-(F) pipeline still completed
+and classified them; those diagnostics remain visible rather than silently
+being treated as maximal.
+
 **(B2) Smooth-relaxation search.** The natural way to generate
 new Item A and Item B candidates, replacing pure random sampling
 with gradient-based Pisot-preserving mutation. The natural

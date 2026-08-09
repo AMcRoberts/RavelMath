@@ -166,6 +166,14 @@ type explicit in the kernel artifact.
 Every serialized beta-inverse denominator is also checked positive in Lean, so
 the rational step cannot silently rely on division-by-zero behavior.
 
+The wider four-letter non-unit survey has now been rerun after the spectral
+and Hensel-lifting fixes: target 20 with the historical `K_max=3` and bounded
+certification budgets yielded 17 non-unit candidates, all 17 established and
+none inconclusive, failed, or skipped. The largest finite property-(F) graph
+had 841,057 nodes and the observed peak RSS was about 0.61 GB under the
+10 GB machine limit. The driver exposes these caps as command-line options
+for reproducible follow-up runs.
+
 **2026-08-08 finite-classifier increment.** `check_strong_coincidence` now
 returns a lexicographically indexed resolution profile for every unordered
 letter pair: the exact first resolving depth, or `-1` when the bounded run

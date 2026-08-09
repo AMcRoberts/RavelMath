@@ -77,6 +77,7 @@
 
 #include <array>
 #include <cstdio>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -175,13 +176,66 @@ const char* classify(const char* name,
 
 }  // namespace
 
-int main() {
+int main(int argc, char** argv) {
+    std::size_t target = 8;
+    int K_max = 3;
+    unsigned seed = 11;
+    std::size_t max_pairs = 2000;
+    std::size_t max_len = 15000;
+    std::size_t rho_pairs = 2000;
+    std::size_t rho_len = 15000;
+    std::size_t max_trials = 20000;
+    auto read_size = [&](const char* flag, std::size_t& dst, const char* value) {
+        if (!value || *value == '\0') {
+            std::fprintf(stderr, "missing value for %s\n", flag);
+            return false;
+        }
+        try {
+            std::size_t used = 0;
+            const auto parsed = std::stoull(value, &used);
+            if (used != std::string(value).size()) throw std::invalid_argument("trailing");
+            dst = static_cast<std::size_t>(parsed);
+            return true;
+        } catch (...) {
+            std::fprintf(stderr, "invalid value for %s: %s\n", flag, value);
+            return false;
+        }
+    };
+    for (int i = 1; i < argc; ++i) {
+        const std::string flag = argv[i];
+        if (flag == "--target" && i + 1 < argc) {
+            if (!read_size("--target", target, argv[++i])) return 2;
+        } else if (flag == "--K" && i + 1 < argc) {
+            std::size_t parsed = 0;
+            if (!read_size("--K", parsed, argv[++i])) return 2;
+            K_max = static_cast<int>(parsed);
+        } else if (flag == "--seed" && i + 1 < argc) {
+            std::size_t parsed = 0;
+            if (!read_size("--seed", parsed, argv[++i])) return 2;
+            seed = static_cast<unsigned>(parsed);
+        } else if (flag == "--max-pairs" && i + 1 < argc) {
+            if (!read_size("--max-pairs", max_pairs, argv[++i])) return 2;
+        } else if (flag == "--max-len" && i + 1 < argc) {
+            if (!read_size("--max-len", max_len, argv[++i])) return 2;
+        } else if (flag == "--rho-pairs" && i + 1 < argc) {
+            if (!read_size("--rho-pairs", rho_pairs, argv[++i])) return 2;
+        } else if (flag == "--rho-len" && i + 1 < argc) {
+            if (!read_size("--rho-len", rho_len, argv[++i])) return 2;
+        } else if (flag == "--max-trials" && i + 1 < argc) {
+            if (!read_size("--max-trials", max_trials, argv[++i])) return 2;
+        } else {
+            std::fprintf(stderr, "usage: %s [--target N] [--K N] [--seed N] [--max-pairs N] [--max-len N] [--rho-pairs N] [--rho-len N] [--max-trials N]\n", argv[0]);
+            return 2;
+        }
+    }
     std::printf("=== Sweep: random NON-UNIT (non-unimodular) Pisot substitutions, %zu-letter ===\n\n", kAlphabet);
+    std::printf("target=%zu K_max=%d seed=%u certify=(%zu pairs,%zu len) rho=(%zu pairs,%zu len) max_trials=%zu\n\n",
+                target, K_max, seed, max_pairs, max_len, rho_pairs, rho_len, max_trials);
     auto candidates = wide_random_pisot_survey(
-        /*target=*/8, /*K_max=*/3, /*seed=*/11,
-        /*max_pairs_per_certify=*/2000, /*max_len_per_certify=*/15000,
-        /*max_pairs_for_rho=*/2000, /*max_len_for_rho=*/15000,
-        /*max_trials=*/20000, /*alphabet_size=*/static_cast<int>(kAlphabet));
+        target, K_max, seed,
+        max_pairs, max_len,
+        rho_pairs, rho_len,
+        max_trials, static_cast<int>(kAlphabet));
     std::printf("Generated %zu Pisot %zu-letter candidates.\n\n", candidates.size(), kAlphabet);
 
     int n_nonunit = 0, n_checked = 0;
