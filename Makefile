@@ -99,6 +99,7 @@ TRANSITION_FILES := $(addprefix $(TRANSITIONS_DIR)/spectre_transitions_,$(addsuf
 .PHONY: csy_finite_carry_automaton_test
 .PHONY: lean_class_ii_catalogue_cross_check_test
 .PHONY: supergolden_qrs_audit
+.PHONY: theta5_contact_boundary_probe
 
 all: build data apps tests
 build: $(LIB)
@@ -3181,6 +3182,11 @@ supergolden_qrs_test: math/out/libmath.a
 
 supergolden_qrs_audit: supergolden_qrs_test
 	cd $(CURDIR) && ./out/supergolden_qrs_test
+
+theta5_contact_boundary_probe: math/out/libmath.a
+	mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude -Imath/include -Imath/include/mini-gmp tests/theta5_contact_boundary_probe.cpp -o out/theta5_contact_boundary_probe math/out/libmath.a
+	./out/theta5_contact_boundary_probe
 
 shift_branch_three_generator_continuation_test: math/out/libmath.a
 	mkdir -p out

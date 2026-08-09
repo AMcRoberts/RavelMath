@@ -182,7 +182,11 @@ The runtime contact-boundary dispatcher now instantiates alphabet sizes through
 9, so those fifth/sixth canonical substitutions are no longer rejected at the
 type-dispatch boundary. This is only an API/compiler extension: a bounded
 probe of the fifth case did not close within a 90-second exploratory budget,
-so no contact-boundary theorem is claimed for it yet.
+so no contact-boundary theorem is claimed for it yet. The reproducible bounded
+probe now records the first useful layer: with `search_bound=1` and explicit
+caps it reaches `d_cont=84` and a partial 882-node boundary before both the
+closure and corona caps fire; `search_bound=0` gives 28 candidates but no
+boundary.
 
 This reframes the parallel question: stop searching Pisot numbers below 2
 for a fourth generator via this construction. The two remaining routes are
