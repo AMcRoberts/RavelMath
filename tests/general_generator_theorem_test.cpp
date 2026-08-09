@@ -44,6 +44,7 @@ void run(const std::string& name, std::vector<long long> low_first, std::size_t 
     assert(composition.proved);
     assert(composition.composable_pairs == composition.closed_pairs + composition.missing_pairs);
     assert(closure.proved);
+    assert(closure.zero_net_witnesses_verified);
     assert(forest.role_count == forest.alphabet_size * forest.alphabet_size);
     std::size_t parent_occurrences = 0;
     for (const auto& ps : forest.parents) parent_occurrences += ps.size();
@@ -79,7 +80,8 @@ void inspect_forest(const std::string& name, std::vector<long long> low_first,
               << " scc=" << holonomy.components.size()
               << " gcd=" << holonomy.components.front().holonomy_gcd
               << " zero_pairs@" << word_cap << "=" << closure.zero_net_pairs << "/"
-              << forest.role_count * forest.role_count << "\n";
+              << forest.role_count * forest.role_count
+              << " max_zero_word=" << closure.maximum_zero_net_word_length << "\n";
 }
 
 int main() {

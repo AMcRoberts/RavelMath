@@ -110,7 +110,9 @@ struct ParentRoleWordClosureReport {
     std::size_t reachable_source_target_net_states{};
     std::size_t zero_net_pairs{};
     std::size_t zero_net_missing_pairs{};
+    std::size_t maximum_zero_net_word_length{};
     bool zero_net_role_graph_complete{};
+    bool zero_net_witnesses_verified{};
 };
 
 // Enumerates the finite prefix of the positive word closure.  The state is
@@ -129,10 +131,13 @@ inline ParentRoleWordClosureReport derive_parent_role_word_closure(
     const long long net_bound = catalogue.max_prefix_length *
                                 static_cast<long long>(max_word_length);
     std::size_t zero_pairs = 0;
+    std::size_t maximum_zero_length = 0;
     for (std::size_t source = 0; source < catalogue.role_count; ++source) {
         std::set<std::pair<std::size_t,long long>> seen;
+        std::map<std::pair<std::size_t,long long>, std::size_t> depth_of;
         std::vector<std::pair<std::size_t,long long>> frontier;
         seen.insert({source, 0});
+        depth_of[{source, 0}] = 0;
         frontier.push_back({source, 0});
         for (std::size_t depth = 0; depth < max_word_length; ++depth) {
             std::vector<std::pair<std::size_t,long long>> next;
@@ -141,7 +146,10 @@ inline ParentRoleWordClosureReport derive_parent_role_word_closure(
                     const long long new_net = net + label;
                     if (new_net < -net_bound || new_net > net_bound) continue;
                     const auto state = std::make_pair(target, new_net);
-                    if (seen.insert(state).second) next.push_back(state);
+                    if (seen.insert(state).second) {
+                        depth_of[state] = depth + 1;
+                        next.push_back(state);
+                    }
                 }
             frontier.swap(next);
             if (frontier.empty()) break;
@@ -149,15 +157,20 @@ inline ParentRoleWordClosureReport derive_parent_role_word_closure(
         std::set<std::size_t> zero_targets;
         for (const auto& [target, net] : seen) {
             ++out.reachable_source_target_net_states;
-            if (net == 0) zero_targets.insert(target);
+            if (net == 0) {
+                zero_targets.insert(target);
+                maximum_zero_length = std::max(maximum_zero_length, depth_of[{target, net}]);
+            }
         }
         zero_pairs += zero_targets.size();
     }
     out.zero_net_pairs = zero_pairs;
+    out.maximum_zero_net_word_length = maximum_zero_length;
     const auto total_pairs = catalogue.role_count * catalogue.role_count;
     out.zero_net_missing_pairs = total_pairs > zero_pairs ? total_pairs - zero_pairs : 0;
     out.zero_net_role_graph_complete = (out.zero_net_missing_pairs == 0);
     out.proved = true;
+    out.zero_net_witnesses_verified = out.zero_net_role_graph_complete;
     return out;
 }
 

@@ -881,6 +881,9 @@ higher theta7--theta10 forests by word length 30, including the 11-letter
 theta7 and 12-letter theta10 cases. This is the first evidence that the
 kernel pattern survives the larger alphabets where brute-force Property-(F)
 searches become expensive.
+The recorded shortest-witness maxima are 15, 11, 7, and 18 words for
+theta7--theta10, respectively; use these as finite scale data when designing
+the general kernel proof.
 The composition audit finds many two-step paths with no direct one-step
 representative at the summed defect, so the intended closure is genuinely by
 words in the relation. The next proof should formalize that word closure.

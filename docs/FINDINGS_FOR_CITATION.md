@@ -3985,3 +3985,6 @@ one SCC, gcd-1 holonomy, and complete zero-net role connectivity by word
 length 30 (121^2, 64^2, 25^2, and 144^2 ordered pairs respectively). This
 extends the structural pattern beyond the small families without converting
 the bounded search into a universal claim.
+The shortest-witness maxima in those finite certificates are 15, 11, 7, and
+18 words respectively, giving a concrete scale estimate for the kernel
+connectivity rather than only a yes/no reachability result.
