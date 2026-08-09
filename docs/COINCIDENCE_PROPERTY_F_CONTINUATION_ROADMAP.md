@@ -421,3 +421,12 @@ The ordinary classifier path now also skips reflected edge-digit strings
 unless a `PropertyFGraph` payload was explicitly requested. On the same
 `rndW5_6` outlier at the former 1M cap this reduced measured peak RSS to about
 0.75 GB; reflection tests still receive the complete digit payload.
+
+The non-maximal-order handoff is now explicit in the local-field API as
+`compare_first_order_padic_shapes`. It reports the Newton-polygon `(e,f)`
+multiset alongside the Dedekind multiset and the order-maximality bit, without
+pretending that a non-maximal factorization is prime-ideal data. The
+representative quartic at p=2 reports Newton `(1,1)+(1,3)` versus Dedekind
+`(1,1)+(3,1)`, while the worked example and `rnd13` pass with matching,
+maximal-order shapes. This is a diagnostic boundary for the eventual
+higher-order/Montes transport, not a substitute for that transport.

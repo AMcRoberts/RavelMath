@@ -76,6 +76,9 @@ void test_worked_example_tiles() {
     CHECK(!cls.any_non_maximal, "worked example: charpoly is Z[beta]-maximal");
     CHECK(cls.property_f_bound_trusted,
           "worked example: p-adic Property-F bound is trusted");
+    auto shape = adelic::compare_first_order_padic_shapes(charpoly, 2, 30);
+    CHECK(shape.dedekind_order_maximal && shape.first_order_shapes_match,
+          "worked example: certified first-order Newton/Dedekind shapes agree");
 }
 
 // rnd13: charpoly x^4 - 4x^3 - 8x^2 - 6x - 2, |det|=2 with (2)=p^4
@@ -115,6 +118,9 @@ void test_rnd13_tiles() {
     CHECK(!cls.any_non_maximal, "rnd13: charpoly is Z[beta]-maximal");
     CHECK(cls.property_f_bound_trusted,
           "rnd13: p-adic Property-F bound is trusted");
+    auto shape = adelic::compare_first_order_padic_shapes(charpoly, 2, 30);
+    CHECK(shape.dedekind_order_maximal && shape.first_order_shapes_match,
+          "rnd13: certified first-order Newton/Dedekind shapes agree");
 }
 
 // Multi-prime regression: pass a single-prime primes_dividing_det
@@ -187,6 +193,13 @@ void test_nonmaximal_order_is_not_trusted() {
                   segments[1].e == 1 && segments[1].f == 3,
               "non-maximal quartic: Newton (e,f) differs from non-maximal Dedekind data");
     }
+    auto shape = adelic::compare_first_order_padic_shapes(R.charpoly(), 2, 30);
+    CHECK(!shape.dedekind_order_maximal,
+          "non-maximal quartic: shape diagnostic preserves order trust status");
+    CHECK(!shape.first_order_shapes_match,
+          "non-maximal quartic: shape diagnostic exposes first-order mismatch");
+    CHECK(shape.newton_shapes.size() == 2 && shape.dedekind_shapes.size() == 2,
+          "non-maximal quartic: shape diagnostic records both decompositions");
 }
 
 // verdict_label() should give a non-empty string for every enum value.
