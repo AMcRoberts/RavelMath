@@ -23,6 +23,7 @@
 #include "adelic/prefix_automaton.hpp"
 #include "adelic/coincidence_and_property_f.hpp"
 #include "adelic/classify_adelic.hpp"
+#include "adelic/maximal_order.hpp"
 
 using adelic::classify_tiling;
 using adelic::TilingVerdict;
@@ -171,6 +172,11 @@ void test_nonmaximal_order_is_not_trusted() {
     auto [bound, trusted] = adelic::make_combined_padic_bound({2}, R.charpoly());
     CHECK(!trusted, "non-maximal quartic: p-adic bound is not trusted");
     CHECK(bound(R.from_int(0)), "non-maximal quartic: exploratory bound remains callable");
+    auto round = adelic::enlarge_order_round2_bigint({1, -7, 5, -5, 2}, 2);
+    CHECK(round.enlarged, "non-maximal quartic: Round-2 order enlargement is detected");
+    std::fprintf(stderr, "  Round-2 disc_before=%s disc_after=%s needs_another_round=%d\n",
+                 mathlib::str(round.disc_before).c_str(), mathlib::str(round.disc_after).c_str(),
+                 round.needs_another_round ? 1 : 0);
 }
 
 // verdict_label() should give a non-empty string for every enum value.

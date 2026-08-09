@@ -186,6 +186,14 @@ evidence but not a theorem for those cases. Its observed peak RSS was about
 `--property-f-budget` and `--only` so this kind of outlier can be audited in
 isolation without conflating a resource cutoff with a failed certificate.
 
+The representative non-maximal quartic (`x^4 - 7x^3 + 5x^2 - 5x + 2` at
+`p=2`) now has a concrete Round-2 diagnostic: the existing BigInt order
+enlargement changes the discriminant from `-86320` to `-5395` and reports that
+no further round is necessary. This does not yet repair the p-adic bound,
+because the factorization still has to be transported from `Z[beta]` into the
+enlarged order; that basis-aware prime-ideal step is the next order-theory
+target rather than an assumption hidden in the classifier.
+
 **2026-08-08 finite-classifier increment.** `check_strong_coincidence` now
 returns a lexicographically indexed resolution profile for every unordered
 letter pair: the exact first resolving depth, or `-1` when the bounded run
