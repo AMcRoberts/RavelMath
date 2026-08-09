@@ -7,6 +7,7 @@
 #include <string>
 
 #include "math/proof_reflection.hpp"
+#include "ravel/proof/reflective_lean_literals.hpp"
 
 namespace ravel::proof {
 
@@ -19,21 +20,6 @@ inline bool has_r_matrix_proof(const mathlib::reflection::Trace& trace) {
     return false;
 }
 
-
-// Renders an n x n integer matrix in Lean's `!![a, b; c, d]` notation.
-inline std::string render_lean_int_matrix(const std::vector<long long>& flat, long long n) {
-    std::ostringstream out;
-    out << "!![";
-    for (long long i = 0; i < n; ++i) {
-        if (i > 0) out << "; ";
-        for (long long j = 0; j < n; ++j) {
-            if (j > 0) out << ", ";
-            out << flat[static_cast<std::size_t>(i * n + j)];
-        }
-    }
-    out << "]";
-    return out.str();
-}
 
 // The general lemma this renderer's per-instance corollaries cite --
 // embedded here (not imported cross-file) so each emitted module is
@@ -157,18 +143,6 @@ inline const char* period_rotation_general_lemma_lean() {
         "    have hz1 : zeta⁻¹ = 1 := mul_left_cancel₀ hlam hlz\n"
         "    exact inv_eq_one.mp hz1\n"
         "  · rw [norm_mul, norm_inv, habs1, inv_one, mul_one]\n\n";
-}
-
-// Renders `c : Fin n → ℤ` as an explicit Lean vector literal.
-inline std::string render_lean_int_vector(const std::vector<long long>& v) {
-    std::ostringstream out;
-    out << "(![";
-    for (std::size_t i = 0; i < v.size(); ++i) {
-        if (i > 0) out << ", ";
-        out << v[i];
-    }
-    out << "] : Fin " << v.size() << " → ℤ)";
-    return out.str();
 }
 
 // Mechanically emits one Lean corollary PER `PeriodRotationCertificate`
@@ -349,19 +323,6 @@ inline const char* word_orbit_iteration_lemma_lean() {
         "theorem applyN_succ {d : ℕ} (sigma : Fin d → List (Fin d)) (k : ℕ) (w : List (Fin d)) :\n"
         "    applyN sigma (k + 1) w = applyOnce sigma (applyN sigma k w) := by\n"
         "  simp [applyN, Function.iterate_succ_apply']\n\n";
-}
-
-// Renders a substitution image (a list of letters, as `long long`
-// alphabet indices) as a Lean `List (Fin d)` literal.
-inline std::string render_lean_fin_list(const std::vector<long long>& letters) {
-    std::ostringstream out;
-    out << "[";
-    for (std::size_t i = 0; i < letters.size(); ++i) {
-        if (i > 0) out << ", ";
-        out << letters[i];
-    }
-    out << "]";
-    return out.str();
 }
 
 // Mechanically emits one Lean corollary of `constant_first_letter_
@@ -821,22 +782,6 @@ inline const char* adjacent_unequal_count_lemma_lean() {
     return
         "def adjacentUnequalCount (words : List (List Nat)) : Nat :=\n"
         "  (words.map (fun w => ((w.zip w.tail).filter (fun p => p.1 ≠ p.2)).length)).sum\n\n";
-}
-
-inline std::string render_lean_nat_list_of_list(const std::vector<std::vector<long long>>& images) {
-    std::ostringstream out;
-    out << '[';
-    for (std::size_t i = 0; i < images.size(); ++i) {
-        if (i) out << ", ";
-        out << '[';
-        for (std::size_t j = 0; j < images[i].size(); ++j) {
-            if (j) out << ", ";
-            out << images[i][j];
-        }
-        out << ']';
-    }
-    out << ']';
-    return out.str();
 }
 
 // Mechanically emits, PER `AdjacentSwapCountCertificate` node, an instance of
@@ -3959,17 +3904,6 @@ inline const char* class_ii_neighbor_d_support_lemma_lean() {
 }
 
 // Renders `{a, b, c, ...}` for a concrete Nat list (Finset literal syntax).
-inline std::string render_nat_finset(const std::vector<long long>& xs) {
-    std::ostringstream out;
-    out << "{";
-    for (std::size_t i = 0; i < xs.size(); ++i) {
-        if (i > 0) out << ", ";
-        out << xs[i];
-    }
-    out << "}";
-    return out.str();
-}
-
 // Mechanically emits, PER `ClassIINeighborDSupportCertificate` node, a
 // `decide`-checked EQUALITY between the CONCRETE source/target index
 // sets C++ actually computed (from its own affine-edge catalog) and
