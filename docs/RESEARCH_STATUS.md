@@ -85,6 +85,12 @@ The same test invokes the symbolic general-m scheduler, so these are paired
 instances rather than separate experiments. This is evidence for the bridge
 contract, not yet a uniform all-`d,m` theorem: the remaining task is to turn
 the finite transport growth pattern into a parameterized rank or adelic bound.
+An opt-in extended regression now closes `(5,1)`, `(5,2)`, `(5,3)`, and
+`(6,1)` (8,307; 67,007; 792,212; and 188,545 nodes). The `(6,2)` partial
+search reaches 500,009 nodes at depth 14 with zero partial nonzero
+back-edges, but remains explicitly inconclusive. This is the first evidence
+that the high-dimensional growth is large-but-harmless transient transport;
+it is not yet a proof of the missing uniform bound.
 
 ## Verified engineering boundary
 

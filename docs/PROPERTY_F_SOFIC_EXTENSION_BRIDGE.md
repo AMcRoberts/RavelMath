@@ -121,3 +121,12 @@ yet prove the all-`d,m` adelic bound, but it establishes the intended common
 contract on a nontrivial rectangle and gives a concrete growth law to attack:
 for fixed `m`, transport size grows with `d`, while for fixed `d=4` it grows
 rapidly but remains finite and cycle-safe.
+
+An opt-in extended regression pushes beyond that rectangle
+(`generalized_multinacci_property_f_transport_extended_test`). It closes
+`(5,1)`, `(5,2)`, `(5,3)`, and `(6,1)` at 8,307, 67,007, 792,212, and
+188,545 nodes respectively. The `(6,2)` search reaches 500,009 nodes at
+depth 14 without a partial nonzero back-edge; it is deliberately recorded as
+inconclusive rather than promoted to a closure claim. The largest closed run
+uses about 687 MB RSS and 1:57, so the observed growth is expensive transient
+transport, not evidence of a recurrent obstruction.
