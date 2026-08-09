@@ -4743,6 +4743,14 @@ inline std::string render_property_f_graph_instances(const mathlib::reflection::
                 out << "]";
             }
             out << "]\n";
+            out << "theorem " << stem << "_beta_inverse_matrix_shape :\n"
+                << "    " << stem << "_beta_inverse_matrix.length = " << degree
+                << " := by decide\n\n";
+            for (long long row = 0; row < degree; ++row) {
+                out << "theorem " << stem << "_beta_inverse_row_" << row << "_shape :\n"
+                    << "    (" << stem << "_beta_inverse_matrix[" << row
+                    << "]?.getD []).length = " << degree << " := by decide\n\n";
+            }
             out << "def " << stem << "_beta_inverse_entry (row col : Nat) : ℚ :=\n"
                 << "  let p := (" << stem << "_beta_inverse_matrix.getD row []).getD col (0, 1)\n"
                 << "  (p.1 : ℚ) / p.2\n\n";

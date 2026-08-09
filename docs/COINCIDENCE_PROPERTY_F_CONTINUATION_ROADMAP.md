@@ -157,6 +157,9 @@ unconnected representation of the zero/nonzero partition.
 The per-instance Q(β) step now consumes the serialized beta-inverse matrix
 through a typed rational lookup, rather than duplicating those entries as
 unrelated literals in the recurrence definition.
+The reflected matrix payload also carries kernel-checked row and row-width
+theorems, preventing the rational lookup's defensive defaults from masking a
+dimension mismatch.
 
 **2026-08-08 finite-classifier increment.** `check_strong_coincidence` now
 returns a lexicographically indexed resolution profile for every unordered
