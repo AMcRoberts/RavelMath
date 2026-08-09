@@ -201,3 +201,10 @@ The profile also exposes the forward-contraction carry-radius proxy
 the secondary embeddings dominates one carried digit. This separates the
 contraction threshold from the subsequent count of admissible coefficient
 vectors.
+The radius is not itself a state-count predictor: `(4,6)` has proxy radius
+about 34.2 but only 33,837 closed states, whereas `(6,2)` has radius about
+20.1 and 4,914,771 closed states. The latter is larger because the
+six-coordinate lattice and its 11 return channels generate a much denser set
+of distinct admissible vectors inside the contraction core. This is why the
+uniform theorem must bound lattice cardinality/branching, not just the norm
+radius.

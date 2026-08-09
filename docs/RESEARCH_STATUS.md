@@ -102,6 +102,11 @@ uniform reachable-vector rank bound as the next theorem-facing deliverable.
 The profile's additional proxy `m*rho/(1-rho)` is the forward-contraction
 carry radius, separating the contraction threshold from the subsequent count
 of admissible coefficient vectors.
+The radius alone does not predict node count: `(4,6)` has proxy radius about
+34.2 but 33,837 closed states, while `(6,2)` has radius about 20.1 and
+4,914,771. The difference is the denser six-coordinate, 11-channel lattice
+reachability, so the uniform argument must control cardinality/branching as
+well as norm radius.
 The exact digit/transition identity is now checked by
 `generalized_multinacci_affine_transport.hpp`: `delta(0^k)=k*beta` and
 `gamma' = beta^(-1)gamma+k`. This isolates the future rank problem into the
