@@ -4752,6 +4752,13 @@ inline std::string render_property_f_graph_instances(const mathlib::reflection::
                 out << "theorem " << stem << "_beta_inverse_row_" << row << "_shape :\n"
                     << "    (" << stem << "_beta_inverse_matrix[" << row
                     << "]?.getD []).length = " << degree << " := by decide\n\n";
+                for (long long column = 0; column < degree; ++column) {
+                    out << "theorem " << stem << "_beta_inverse_denominator_" << row
+                        << "_" << column << " :\n"
+                        << "    ((" << stem << "_beta_inverse_matrix[" << row
+                        << "]?).bind (fun r => r[" << column
+                        << "]?)).map (fun p => decide (p.2 > 0)) = some true := by decide\n\n";
+                }
             }
             out << "def " << stem << "_beta_inverse_entry (row col : Nat) : ℚ :=\n"
                 << "  let p := (" << stem << "_beta_inverse_matrix.getD row []).getD col (0, 1)\n"

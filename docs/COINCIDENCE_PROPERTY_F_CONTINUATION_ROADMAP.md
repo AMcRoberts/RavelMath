@@ -163,6 +163,8 @@ dimension mismatch.
 The graph shape theorem now also ties the characteristic-polynomial length to
 the beta-inverse matrix dimension, making the degree used by the Q(β) state
 type explicit in the kernel artifact.
+Every serialized beta-inverse denominator is also checked positive in Lean, so
+the rational step cannot silently rely on division-by-zero behavior.
 
 **2026-08-08 finite-classifier increment.** `check_strong_coincidence` now
 returns a lexicographically indexed resolution profile for every unordered
