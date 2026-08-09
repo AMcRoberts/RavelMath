@@ -178,6 +178,12 @@ including the fifth (`x^6-x^5-x^4+x^2-1`) and sixth (`x^5-x^3-x^2-x-1`)
 smallest, neither of which has been folded into the concrete contact-
 boundary/intertwiner machinery yet (only supergolden has, so far).
 
+The runtime contact-boundary dispatcher now instantiates alphabet sizes through
+9, so those fifth/sixth canonical substitutions are no longer rejected at the
+type-dispatch boundary. This is only an API/compiler extension: a bounded
+probe of the fifth case did not close within a 90-second exploratory budget,
+so no contact-boundary theorem is claimed for it yet.
+
 This reframes the parallel question: stop searching Pisot numbers below 2
 for a fourth generator via this construction. The two remaining routes are
 (a) `beta >= 2`, where a digit value of `2` opens a third prefix `[0,0]`

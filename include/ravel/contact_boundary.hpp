@@ -20,10 +20,11 @@
 // (σ_1: 2.286 vs 1.746).  This module therefore exposes them as
 // a PAIR tagged "conjecture: equal?", never as a single equality.
 //
-// Currently dispatched on d = 2, 3, 4 (covers Fibonacci, Tribonacci,
-// Plastic, Supergolden, σ_1, σ_2, Tetrabonacci, and the 2-letter
-// Pisot rings the local project cares about).  For other d values
-// the runtime errors out with a clear message.
+// Currently dispatched on d = 2..9 (covering the canonical alphabets of the
+// first six Pisot cases, including the fifth/sixth cases with 8/9 letters).
+// Larger alphabets still error out with a clear runtime message; dispatch
+// support does not by itself promise that an unbounded contact search will
+// close within a finite resource budget.
 
 #pragma once
 
@@ -771,7 +772,7 @@ ContactBoundaryReport compute_contact_boundary(
 // `compute_contact_boundary_from_subst<d>` be instantiated for the
 // new d; the recursive templates below will pick them up
 // automatically.
-constexpr std::size_t MAX_DISPATCH_D = 8;
+constexpr std::size_t MAX_DISPATCH_D = 9;
 
 namespace contact_boundary_detail {
 

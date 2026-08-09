@@ -203,12 +203,12 @@ int main() {
               "(letter 0 at start of σ(0), σ(1), σ(2))");
     }
 
-    // d = 5, 6, 7, 8 are now supported (MAX_DISPATCH_D = 8).  Verify
+    // d = 5, 6, 7, 8, 9 are now supported (MAX_DISPATCH_D = 9).  Verify
     // the dispatch doesn't throw for d in this range, and that the
     // returned report has a sensible structure (non-negative sizes,
     // non-empty conjecture_status — even if the input subst doesn't
     // produce a meaningful |G_B| or a Pisot-consistent rho_nc).
-    for (std::size_t d = 5; d <= 8; ++d) {
+    for (std::size_t d = 5; d <= 9; ++d) {
         // Use a more interesting subst: each letter maps to itself
         // plus 0.  This gives a substitution matrix with 1's on the
         // diagonal and 1's in row 0.
@@ -234,15 +234,14 @@ int main() {
         CHECK(dispatch_ok, label);
     }
 
-    // A wrong-d error path: a 9-letter rule is past MAX_DISPATCH_D and
+    // A wrong-d error path: a 10-letter rule is past MAX_DISPATCH_D and
     // should throw.
-    std::vector<std::vector<std::int8_t>> sigma9{
-        {0, 1, 2, 3, 4, 5, 6, 7, 8}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}
-    };
-    SubstitutionRule rule9(sigma9);
+    std::vector<std::vector<std::int8_t>> sigma10(10, std::vector<std::int8_t>{0});
+    sigma10[0] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    SubstitutionRule rule10(sigma10);
     bool threw = false;
     try {
-        (void)compute_contact_boundary_dispatch(rule9, 1.5, 0.0, {});
+        (void)compute_contact_boundary_dispatch(rule10, 1.5, 0.0, {});
     } catch (const std::invalid_argument&) {
         threw = true;
     }
