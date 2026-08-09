@@ -44,7 +44,7 @@ int main() {
     // 2 nodes x C(4,2)=6 pairs each = 12 instances.
     assert(lean.find("constant_last_letter_instance_11") != std::string::npos);
 
-    std::ofstream out("/tmp/constant_last_letter_generated.lean");
+    std::ofstream out("lean/generated/constant_last_letter_batch.lean");
     out << lean;
     out.close();
 

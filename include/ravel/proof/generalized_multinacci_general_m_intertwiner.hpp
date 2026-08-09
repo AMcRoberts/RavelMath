@@ -7,6 +7,7 @@
 
 #include "ravel/proof/condition_f_pair_boundary_substitution.hpp"
 #include "ravel/proof/generalized_multinacci_general_m.hpp"
+#include "math/proof_reflection.hpp"
 
 namespace ravel::proof {
 
@@ -130,6 +131,23 @@ inline GeneralizedMultinacciGeneralMIntertwinerProof
         out.obstruction=e.what();
     }
     return out;
+}
+
+// Stages a `GeneralizedMultinacciGeneralMIntertwinerReflectionCertificate`
+// for one multiplicity m -- gates on `proof.proved`, which independently
+// rechecks every roof-word channel's Q/R intertwining inequality (see
+// derive_generalized_multinacci_general_m_intertwiner above).
+inline void stage_generalized_multinacci_general_m_intertwiner(
+        const GeneralizedMultinacciGeneralMIntertwinerProof& proof,
+        const std::string& description) {
+    if (!proof.proved) return;
+    if (!mathlib::reflection::enabled()) return;
+    mathlib::reflection::GeneralizedMultinacciGeneralMIntertwinerReflectionCertificate node;
+    node.multiplicity = static_cast<long long>(proof.multiplicity);
+    node.symbolic_cut_states = static_cast<long long>(proof.symbolic_cut_states);
+    node.words_checked = static_cast<long long>(proof.words_checked);
+    node.description = description;
+    mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, node);
 }
 
 } // namespace ravel::proof

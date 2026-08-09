@@ -377,6 +377,50 @@ struct LeftmostLoopCertificate {
     std::string description;
 };
 
+// `family_closed_forms.hpp`'s `certify_class_ii_adjacent_swap_count`/
+// `certify_nbonacci_adjacent_swap_count` already construct the substitution
+// and independently count its adjacent-unequal-letter swap sites -- this
+// carries the CONCRETE images (as they actually are, not a placeholder) plus
+// the verified count, so the renderer can have Lean recompute the count from
+// the same images via `decide` rather than just restating the number.
+struct AdjacentSwapCountCertificate {
+    std::string family;  // "class_ii" or "nbonacci"
+    long long a = 0, b = 0, n = 0;
+    std::vector<std::vector<long long>> images;
+    long long count = 0;
+    std::string description;
+};
+
+// `cycle_charpoly_campaign_validation.lean`'s `concreteCycleMatrix_charpoly`
+// (X^(n+1)-1) combined with `graph_cycle_charpoly_factor_validation.lean`'s
+// `feeder_cycle_charpoly_closed` give the full closed form for a directed
+// (n+1)-cycle plus one transient feeder edge -- this carries the CONCRETE n
+// and feeder target index (matching `graph_structural_campaign.hpp`'s
+// `cycle_with_transient_feeder`/`certify_feeder_cycle_block`), so the
+// renderer instantiates both lemmas directly rather than restating the
+// closed form as an unchecked comment.
+struct FeederCycleCharpolyCertificate {
+    long long n = 0;
+    long long feeder_target = 0;
+    std::string description;
+};
+
+// docs/FAMILY_OF_FAMILIES.md's displayed regular-shell closed forms for
+// the three Class-II adjacent-swap neighbors (neighbor 0: x^6*(x^4-
+// ((t+2)^2-2)x^2+1); neighbor 1: x^3*(x^2-t(t+2)); neighbor 2: x^2*(x^2-
+// k^2)) -- verified here for the FIRST time against the concrete compressed
+// matrix (class_ii_neighbor_compressed_matrix_for_states) via exact integer
+// Faddeev-LeVerrier (self-checked internally via Cayley-Hamilton), so the
+// renderer can instantiate lean/class_ii_neighbor_dominance.lean's
+// neighbor{0,1,2}_shell_below_* theorems (previously flat: zero C++
+// consumer) at this CONCRETE (neighbor, a, t).
+struct RegularShellCharpolyCertificate {
+    long long neighbor = 0;
+    long long a = 0;
+    long long t = 0;  // the shell parameter (t for neighbors 0/1, k for 2)
+    std::string description;
+};
+
 // Finding 32, generalized (NOT specific to sigma_{0,2}): a depressed
 // cubic x^3+c*x+d with a verified sign-change bracket (lo,hi) around
 // its real root -- carries the CONCRETE (c,d) so the renderer
@@ -537,6 +581,304 @@ struct BothFixedAffineCertificate {
     long long a_required = 0;
 };
 
+// lean/universal_shell_pumping_proof.lean's consumer: a concrete
+// n-bonacci carry-cycle pumping step, independently replayed and closed
+// by ravel::proof::certify_strict_shell_pump (translation-cycle replay,
+// affine-transport replay, face alignment, strict radius growth --
+// nothing here is trusted, all re-derived from the raw states/digits).
+// Carries the concrete (source_radius, lifted_radius) pair so the
+// renderer instantiates a two-point concrete Cycle type at those exact
+// values, rather than merely restating the abstract StrictShellPump
+// definition.
+struct StrictShellPumpInstanceCertificate {
+    std::string certificate_id;
+    unsigned long long source_radius = 0;
+    unsigned long long lifted_radius = 0;
+    bool face_aligned = false;
+};
+
+// lean/playground_recurrent_family_exhaustion.lean's consumer: an
+// independently extracted, per-component classification of every
+// recurrent SCC of a concrete corona-truth graph (Tarjan SCC extraction,
+// per-component grade range, structural-family predicate replay -- see
+// ravel::proof::derive_recurrent_family_exhaustion and its real caller,
+// tests/recurrent_family_exhaustion_real_test.cpp). Carries the exact
+// per-component family assignment so the renderer instantiates the
+// general `recurrent_family_exhaustion` theorem's `classified` premise
+// at this CONCRETE dimension's component list, not merely restate it.
+struct RecurrentFamilyExhaustionCertificate {
+    long long dimension = 0;
+    std::vector<std::string> family_kinds;  // one per component, in order
+    std::string description;
+};
+
+// lean/predicted_core_scc_exhaustion.lean's consumer:
+// ravel::proof::certify_predicted_core_scc independently runs Tarjan's
+// algorithm over the concrete predicted-core graph at this dimension and
+// verifies it forms exactly one SCC (`direct_tarjan_one_scc`), together
+// with exact node/edge/predecessor-table counts checked against the
+// closed-form combinatorial formulas. Carries the exact node count so the
+// renderer instantiates `exact_scc_of_stronglyConnected_noReturnAfterExit`
+// at a concrete `Fin node_count` vertex type with `Core := Set.univ`
+// (trivially satisfying `hnoReturn`), taking the graph's verified strong
+// connectivity as documented C++-verified input data -- the same trust
+// boundary PisotRootOrderingCertificate/RegularShellCharpolyCertificate
+// already have for their own C++-verified facts.
+struct PredictedCoreSccExhaustionCertificate {
+    long long dimension = 0;
+    long long node_count = 0;
+    long long edge_count = 0;
+    std::string description;
+};
+
+// lean/coupled_automaton_characterization.lean's consumer:
+// ravel::proof::certify_synthesized_winning_predicate independently
+// re-evaluates a predicate tree at every concrete state's feature value
+// (not trusting any pre-labeled "Win" set) and exhaustively checks the
+// hinit/hstep/haccept obligations `synthesized_winning_predicate_sound`
+// requires over the full finite state/input space. Carries the exact
+// finite state count, per-state Win value, and initial/accepting state
+// sets so the renderer instantiates the theorem at a concrete
+// `Fin state_count` state type via `decide`, not merely restate it.
+// lean/radial_translation_defect.lean's consumer:
+// ravel::proof::certify_translation_defect independently computes the
+// translated block-dynamics output, the base-plus-linear-translation
+// value, and their difference (the "same translation defect") from raw
+// integer matrix/vector arithmetic -- nothing here is asserted. Carries
+// the exact concrete (block, state, translation, forcing) data so the
+// renderer applies the general `affine_block_same_translation_defect`
+// theorem at this CONCRETE instance and independently checks (via
+// `decide`) that the C++-computed defect vector matches `B *ᵥ t - t`.
+struct RadialTranslationDefectCertificate {
+    std::vector<std::vector<long long>> block;
+    std::vector<long long> state;
+    std::vector<long long> translation;
+    std::vector<long long> forcing;
+    std::vector<long long> same_translation_defect;
+    std::string description;
+};
+
+// lean/defect_spliced_covering_tube.lean's consumer:
+// ravel::proof::certify_defect_spliced_tube independently re-verifies the
+// base path's own n-bonacci recurrence (not previously checked by that
+// function -- added here so nothing is pre-trusted), the translation
+// window's recurrence, and the transported (spliced) path's recurrence at
+// the adjusted digit, all via raw integer arithmetic. Carries one concrete
+// per-step (x, t, digit, defect, base_next, translation_next,
+// transported_next) tuple so the renderer applies the general
+// `defect_splice_step` algebraic identity at this CONCRETE dimension-`dim`
+// step and independently checks (via `decide`) that both sides equal the
+// C++-computed successor states.
+struct DefectSpliceStepCertificate {
+    long long dim = 0;
+    std::vector<long long> x;
+    std::vector<long long> t;
+    long long digit = 0;
+    long long defect = 0;
+    std::vector<long long> base_next;
+    std::vector<long long> translation_next;
+    std::vector<long long> transported_next;
+    std::string description;
+};
+
+// lean/universal_dominance_shell_return_validation.lean's and
+// lean/universal_dominance_phase_rank_transport.lean's consumer:
+// ravel::proof::universal_dominance::validate_shell_return_certificate
+// independently verifies (from raw edge/state data, nothing pre-trusted)
+// that every state in a concrete finite relation has an outgoing edge
+// (`certificate_closed`, exactly `hout`). Carries the exact concrete edge
+// set so the renderer instantiates `no_strict_rank_relation_closed` /
+// `shell_empty_of_strict_first_return_rank` /
+// `no_nonempty_shell_with_strict_first_return_rank` /
+// `shell_empty_of_phase_rank_transport` at this CONCRETE closed relation,
+// keeping the rank function itself universally quantified (matching the
+// theorems' own generality) rather than fixing one -- the interesting
+// content is that NO integer rank could make this specific, C++-verified
+// closed relation strict, not a witness to one that does (none exists).
+struct UniversalDominanceClosedRelationCertificate {
+    long long state_count = 0;
+    std::vector<std::array<long long, 2>> edges;
+    std::string description;
+};
+
+// lean/generated/condition_f_joint_qr_playground.lean's consumer -- the
+// actual closure of the flagship universal n-bonacci boundary-dominance
+// theorem (rho(G_B(n)) = rho(predicted_core(n)) for every n >= 3), via
+// the canonical Q/R (balanced/one-sided-defect parent-prefix) split, NOT
+// the earlier, explicitly abandoned shell-rank/carry-bound route (see
+// diary 2026-08-05 "universal maximum-shell exclusion refuted": a
+// triangular-wave counterfamily refuted universal shell-two acyclicity;
+// "Do not resume"). ravel::proof::derive_condition_f_joint_pair_comparison
+// independently re-derives, from the canonical parent-role Q/R matrices,
+// that the base alphabet (A=2) has exactly one recurrent SCC (so the
+// core pair is the whole recurrent pair and the identity is a
+// simultaneous intertwiner) and that every dimension extension through
+// the target reduces to a finite-depth acyclic boundary substitution in
+// the SAME two generators -- nothing here is pre-trusted. Carries the
+// exact target dimension checked so the renderer records which concrete
+// extent of the induction this run re-verified.
+struct ConditionFJointDominanceCertificate {
+    long long target_dimension = 0;
+    long long base_roles = 0;
+    long long base_scc_count = 0;
+    std::string description;
+};
+
+// lean/generated/finite_positive_grammar_majorant.lean's consumer -- the
+// GENERAL theorem behind the Q/R (2-generator), plastic/supergolden
+// (3-generator), and the found 4/5-generator witnesses: an arbitrary,
+// possibly-unboundedly-large finite generator alphabet, not fixed at
+// two or three. ravel::proof::derive_finite_positive_grammar_majorant
+// independently re-derives, from raw per-channel multiplicity/norm-bound
+// data, one exact rational count matrix and one exact rational
+// norm-weighted matrix per generator; this certificate carries per-
+// generator scalar sums (independently re-summed from those matrices,
+// not trusted from the aggregate `.proved` flag alone) so the renderer
+// instantiates `norm_generator_word_majorant` at this CONCRETE
+// generator alphabet via `Fin generator_count`.
+struct FinitePositiveGrammarMajorantReflectionCertificate {
+    long long base_vertices = 0;
+    long long generator_count = 0;
+    std::vector<long long> count_scalar_num;
+    std::vector<long long> count_scalar_den;
+    std::vector<long long> norm_scalar_num;
+    std::vector<long long> norm_scalar_den;
+    std::string description;
+};
+
+struct ThirdSmallestPisotParryFactorizationCertificate {
+    std::vector<long long> minimal_polynomial;
+    std::vector<long long> parry_polynomial;
+    std::vector<long long> cyclotomic_factor;
+    std::string description;
+};
+
+struct GeneralizedMultinacciAdmissibleSubgrammarReflectionCertificate {
+    long long dimension = 0;
+    long long multiplicity = 0;
+    long long source_states = 0;
+    long long witnessed_edges = 0;
+    long long words_checked = 0;
+    std::string description;
+};
+
+struct GeneralizedMultinacciGeneralMReflectionCertificate {
+    long long multiplicity = 0;
+    std::string description;
+};
+
+struct GeneralizedMultinacciGeneralMIntertwinerReflectionCertificate {
+    long long multiplicity = 0;
+    long long symbolic_cut_states = 0;
+    long long words_checked = 0;
+    std::string description;
+};
+
+struct GeneralizedMultinacciPrimitiveIntertwinerReflectionCertificate {
+    long long dimension = 0;
+    long long multiplicity = 0;
+    long long boundary_expanded_states = 0;
+    long long universal_expanded_states = 0;
+    long long universal_macro_edges = 0;
+    long long mapped_phase_states = 0;
+    std::string description;
+};
+
+struct GeneralizedMultinacciSignedRenewalTwistReflectionCertificate {
+    long long dimension = 0;
+    long long multiplicity = 0;
+    long long maximum_return_time = 0;
+    long long macro_edges = 0;
+    std::string description;
+};
+
+struct GeneralizedMultinacciSymbolicEmbeddingReflectionCertificate {
+    long long dimension = 0;
+    long long multiplicity = 0;
+    long long total_parent_occurrences = 0;
+    long long universal_macro_edges = 0;
+    std::string description;
+};
+
+struct MonotoneProfileCorridorClosureReflectionCertificate {
+    long long dimension = 0;
+    long long thick_parents = 0;
+    std::string description;
+};
+
+struct NormWeightedQRMajorantReflectionCertificate {
+    long long base_vertices = 0;
+    long long replayed_words_count = 0;
+    bool all_channels_contractive = false;
+    bool expansive_channel_detected = false;
+    std::string description;
+};
+
+struct ThreeGeneratorIntertwinerFamilyReflectionCertificate {
+    std::string family;  // "plastic" or "supergolden"
+    long long generator_count = 0;
+    long long boundary_states = 0;
+    long long boundary_edges = 0;
+    long long universal_edges = 0;
+    std::string description;
+};
+
+struct ShiftBranchThreeGeneratorContinuationReflectionCertificate {
+    long long dimension = 0;
+    long long parent_occurrences = 0;
+    long long neutral_pair_count = 0;
+    std::string description;
+};
+
+// A lightweight certificate for fully abstract, unconditionally-proven
+// general lemmas whose associated C++ certificate independently sweeps and
+// re-verifies concrete instances that ALL already fall under the general
+// theorem's scope (so no further per-instance Lean corollary is needed --
+// the general theorem already covers every case the sweep checks).
+struct GeneralInfraSweepConfirmedCertificate {
+    std::string subject;  // identifies which lemma family this confirms
+    std::string description;
+};
+
+struct CoefficientProfileParityObstructionReflectionCertificate {
+    long long dimension = 0;
+    bool even_dimension = false;
+    std::string description;
+};
+
+struct CyclotomicObstructionReflectionCertificate {
+    std::vector<long long> coefficients;  // ascending, coeff(0) = constant term
+    bool has_order_two = false;
+    long long eval_at_minus_one = 0;
+    std::string description;
+};
+
+struct CyclicSpliceCompactnessReflectionCertificate {
+    long long state_count = 0;
+    std::vector<std::vector<long long>> successors;
+    std::vector<long long> orbit_states;
+    std::string description;
+};
+
+struct CyclicSpliceCompletionReflectionCertificate {
+    long long state_count = 0;
+    std::vector<long long> deterministic_next;  // next[i] = successors[i].front()
+    long long initial_state = 0;
+    long long transient_laps = 0;
+    long long period_laps = 0;
+    std::string description;
+};
+
+struct WinningPredicateReflectionCertificate {
+    std::string certificate_id;
+    long long state_count = 0;
+    std::vector<bool> win;             // one per state, in order
+    std::vector<long long> init_states;
+    std::vector<long long> accept_states;
+    std::vector<std::array<long long, 3>> transitions;  // (from, input, to)
+    std::vector<long long> inputs;
+};
+
 using Payload = std::variant<MatrixFamily, MatrixInstance, EraseIndexMap,
                              SparseSupportCertificate, TriangularityCertificate,
                              DeterminantIdentity, LemmaApplication, IntegerEigenvectorNoWitness,
@@ -550,6 +892,32 @@ using Payload = std::variant<MatrixFamily, MatrixInstance, EraseIndexMap,
                              ClassIISixVertexGraduationCertificate, ClassIITerminalSextetCertificate,
                              ClassIIPenultimatePairCertificate, ClassIIInteriorTipCertificate,
                              ClassIIGlobalRoundPhaseCertificate, BothFixedAffineCertificate,
+                             AdjacentSwapCountCertificate, FeederCycleCharpolyCertificate,
+                             RegularShellCharpolyCertificate, StrictShellPumpInstanceCertificate,
+                             RecurrentFamilyExhaustionCertificate,
+                             PredictedCoreSccExhaustionCertificate,
+                             WinningPredicateReflectionCertificate,
+                             RadialTranslationDefectCertificate,
+                             DefectSpliceStepCertificate,
+                             UniversalDominanceClosedRelationCertificate,
+                             ConditionFJointDominanceCertificate,
+                             FinitePositiveGrammarMajorantReflectionCertificate,
+                             ThirdSmallestPisotParryFactorizationCertificate,
+                             GeneralizedMultinacciAdmissibleSubgrammarReflectionCertificate,
+                             GeneralizedMultinacciGeneralMReflectionCertificate,
+                             GeneralizedMultinacciGeneralMIntertwinerReflectionCertificate,
+                             GeneralizedMultinacciPrimitiveIntertwinerReflectionCertificate,
+                             GeneralizedMultinacciSignedRenewalTwistReflectionCertificate,
+                             GeneralizedMultinacciSymbolicEmbeddingReflectionCertificate,
+                             MonotoneProfileCorridorClosureReflectionCertificate,
+                             NormWeightedQRMajorantReflectionCertificate,
+                             ThreeGeneratorIntertwinerFamilyReflectionCertificate,
+                             ShiftBranchThreeGeneratorContinuationReflectionCertificate,
+                             GeneralInfraSweepConfirmedCertificate,
+                             CoefficientProfileParityObstructionReflectionCertificate,
+                             CyclotomicObstructionReflectionCertificate,
+                             CyclicSpliceCompactnessReflectionCertificate,
+                             CyclicSpliceCompletionReflectionCertificate,
                              ProofObligation, TextObservation>;
 
 struct Node {
@@ -840,6 +1208,34 @@ inline std::string payload_name(const Payload& payload) {
         else if constexpr (std::is_same_v<T, ClassIIInteriorTipCertificate>) return "lean.class_ii_interior_tip_certificate";
         else if constexpr (std::is_same_v<T, ClassIIGlobalRoundPhaseCertificate>) return "lean.class_ii_global_round_phase_certificate";
         else if constexpr (std::is_same_v<T, BothFixedAffineCertificate>) return "lean.both_fixed_affine_certificate";
+        else if constexpr (std::is_same_v<T, AdjacentSwapCountCertificate>) return "lean.adjacent_swap_count_certificate";
+        else if constexpr (std::is_same_v<T, FeederCycleCharpolyCertificate>) return "lean.feeder_cycle_charpoly_certificate";
+        else if constexpr (std::is_same_v<T, RegularShellCharpolyCertificate>) return "lean.regular_shell_charpoly_certificate";
+        else if constexpr (std::is_same_v<T, StrictShellPumpInstanceCertificate>) return "lean.strict_shell_pump_instance_certificate";
+        else if constexpr (std::is_same_v<T, RecurrentFamilyExhaustionCertificate>) return "lean.recurrent_family_exhaustion_certificate";
+        else if constexpr (std::is_same_v<T, PredictedCoreSccExhaustionCertificate>) return "lean.predicted_core_scc_exhaustion_certificate";
+        else if constexpr (std::is_same_v<T, WinningPredicateReflectionCertificate>) return "lean.winning_predicate_certificate";
+        else if constexpr (std::is_same_v<T, RadialTranslationDefectCertificate>) return "lean.radial_translation_defect_certificate";
+        else if constexpr (std::is_same_v<T, DefectSpliceStepCertificate>) return "lean.defect_splice_step_certificate";
+        else if constexpr (std::is_same_v<T, UniversalDominanceClosedRelationCertificate>) return "lean.universal_dominance_closed_relation_certificate";
+        else if constexpr (std::is_same_v<T, ConditionFJointDominanceCertificate>) return "lean.condition_f_joint_dominance_certificate";
+        else if constexpr (std::is_same_v<T, FinitePositiveGrammarMajorantReflectionCertificate>) return "lean.finite_positive_grammar_majorant_certificate";
+        else if constexpr (std::is_same_v<T, ThirdSmallestPisotParryFactorizationCertificate>) return "lean.third_smallest_pisot_parry_factorization_certificate";
+        else if constexpr (std::is_same_v<T, GeneralizedMultinacciAdmissibleSubgrammarReflectionCertificate>) return "lean.generalized_multinacci_admissible_subgrammar_certificate";
+        else if constexpr (std::is_same_v<T, GeneralizedMultinacciGeneralMReflectionCertificate>) return "lean.generalized_multinacci_general_m_certificate";
+        else if constexpr (std::is_same_v<T, GeneralizedMultinacciGeneralMIntertwinerReflectionCertificate>) return "lean.generalized_multinacci_general_m_intertwiner_certificate";
+        else if constexpr (std::is_same_v<T, GeneralizedMultinacciPrimitiveIntertwinerReflectionCertificate>) return "lean.generalized_multinacci_primitive_intertwiner_certificate";
+        else if constexpr (std::is_same_v<T, GeneralizedMultinacciSignedRenewalTwistReflectionCertificate>) return "lean.generalized_multinacci_signed_renewal_twist_certificate";
+        else if constexpr (std::is_same_v<T, GeneralizedMultinacciSymbolicEmbeddingReflectionCertificate>) return "lean.generalized_multinacci_symbolic_embedding_certificate";
+        else if constexpr (std::is_same_v<T, MonotoneProfileCorridorClosureReflectionCertificate>) return "lean.monotone_profile_corridor_closure_certificate";
+        else if constexpr (std::is_same_v<T, NormWeightedQRMajorantReflectionCertificate>) return "lean.norm_weighted_qr_majorant_certificate";
+        else if constexpr (std::is_same_v<T, ThreeGeneratorIntertwinerFamilyReflectionCertificate>) return "lean.three_generator_intertwiner_family_certificate";
+        else if constexpr (std::is_same_v<T, ShiftBranchThreeGeneratorContinuationReflectionCertificate>) return "lean.shift_branch_three_generator_continuation_certificate";
+        else if constexpr (std::is_same_v<T, GeneralInfraSweepConfirmedCertificate>) return "lean.general_infra_sweep_confirmed_certificate";
+        else if constexpr (std::is_same_v<T, CoefficientProfileParityObstructionReflectionCertificate>) return "lean.coefficient_profile_parity_obstruction_certificate";
+        else if constexpr (std::is_same_v<T, CyclotomicObstructionReflectionCertificate>) return "lean.cyclotomic_obstruction_certificate";
+        else if constexpr (std::is_same_v<T, CyclicSpliceCompactnessReflectionCertificate>) return "lean.cyclic_splice_compactness_certificate";
+        else if constexpr (std::is_same_v<T, CyclicSpliceCompletionReflectionCertificate>) return "lean.cyclic_splice_completion_certificate";
         else if constexpr (std::is_same_v<T, ProofObligation>) return "proof.obligation";
         else return value.operation;
     }, payload);
@@ -930,6 +1326,105 @@ inline std::string payload_detail(const Payload& payload) {
             out << "const=" << value.const_ << " slope=" << value.slope
                 << " target=" << value.target << " a_required=" << value.a_required
                 << " -- instantiates affine_no_solution_at_or_above_threshold";
+        } else if constexpr (std::is_same_v<T, AdjacentSwapCountCertificate>) {
+            out << value.family << " count=" << value.count << " " << value.description
+                << " -- instantiates adjacentUnequalCount";
+        } else if constexpr (std::is_same_v<T, FeederCycleCharpolyCertificate>) {
+            out << "n=" << value.n << " feeder_target=" << value.feeder_target << " " << value.description
+                << " -- instantiates feeder_cycle_charpoly_closed + concreteCycleMatrix_charpoly";
+        } else if constexpr (std::is_same_v<T, RegularShellCharpolyCertificate>) {
+            out << "neighbor=" << value.neighbor << " a=" << value.a << " t=" << value.t << " "
+                << value.description << " -- instantiates neighbor_shell_below_*";
+        } else if constexpr (std::is_same_v<T, StrictShellPumpInstanceCertificate>) {
+            out << value.certificate_id << " radius " << value.source_radius << " -> "
+                << value.lifted_radius << " face_aligned=" << (value.face_aligned ? "true" : "false")
+                << " -- instantiates StrictShellPump";
+        } else if constexpr (std::is_same_v<T, RecurrentFamilyExhaustionCertificate>) {
+            out << "dimension=" << value.dimension << " components=" << value.family_kinds.size()
+                << " " << value.description << " -- instantiates recurrent_family_exhaustion";
+        } else if constexpr (std::is_same_v<T, PredictedCoreSccExhaustionCertificate>) {
+            out << "dimension=" << value.dimension << " nodes=" << value.node_count
+                << " edges=" << value.edge_count << " " << value.description
+                << " -- instantiates exact_scc_of_stronglyConnected_noReturnAfterExit";
+        } else if constexpr (std::is_same_v<T, WinningPredicateReflectionCertificate>) {
+            out << value.certificate_id << " states=" << value.state_count
+                << " -- instantiates synthesized_winning_predicate_sound";
+        } else if constexpr (std::is_same_v<T, RadialTranslationDefectCertificate>) {
+            out << "dim=" << value.state.size() << " " << value.description
+                << " -- instantiates affine_block_same_translation_defect";
+        } else if constexpr (std::is_same_v<T, DefectSpliceStepCertificate>) {
+            out << "dim=" << value.dim << " " << value.description
+                << " -- instantiates defect_splice_step";
+        } else if constexpr (std::is_same_v<T, UniversalDominanceClosedRelationCertificate>) {
+            out << "states=" << value.state_count << " edges=" << value.edges.size() << " "
+                << value.description << " -- instantiates no_strict_rank_relation_closed";
+        } else if constexpr (std::is_same_v<T, ConditionFJointDominanceCertificate>) {
+            out << "target_dimension=" << value.target_dimension << " base_scc_count="
+                << value.base_scc_count << " " << value.description
+                << " -- instantiates universal_dominance_sandwich";
+        } else if constexpr (std::is_same_v<T, FinitePositiveGrammarMajorantReflectionCertificate>) {
+            out << "generators=" << value.generator_count << " base_vertices=" << value.base_vertices
+                << " " << value.description << " -- instantiates norm_generator_word_majorant";
+        } else if constexpr (std::is_same_v<T, ThirdSmallestPisotParryFactorizationCertificate>) {
+            out << "deg(minpoly)=" << (value.minimal_polynomial.empty() ? 0 : value.minimal_polynomial.size() - 1)
+                << " " << value.description << " -- instantiates third_smallest_pisot_parry_factorization";
+        } else if constexpr (std::is_same_v<T, GeneralizedMultinacciAdmissibleSubgrammarReflectionCertificate>) {
+            out << "D=" << value.dimension << " m=" << value.multiplicity
+                << " states=" << value.source_states << " edges=" << value.witnessed_edges
+                << " words=" << value.words_checked << " " << value.description
+                << " -- instantiates admissible_subgrammar_intertwines";
+        } else if constexpr (std::is_same_v<T, GeneralizedMultinacciGeneralMReflectionCertificate>) {
+            out << "m=" << value.multiplicity << " " << value.description
+                << " -- instantiates schedulerCoefficient_zero/schedulerCoefficient_positive";
+        } else if constexpr (std::is_same_v<T, GeneralizedMultinacciGeneralMIntertwinerReflectionCertificate>) {
+            out << "m=" << value.multiplicity << " states=" << value.symbolic_cut_states
+                << " words=" << value.words_checked << " " << value.description
+                << " -- instantiates roof_word_intertwiner";
+        } else if constexpr (std::is_same_v<T, GeneralizedMultinacciPrimitiveIntertwinerReflectionCertificate>) {
+            out << "D=" << value.dimension << " m=" << value.multiplicity
+                << " boundary_states=" << value.boundary_expanded_states
+                << " universal_states=" << value.universal_expanded_states << " "
+                << value.description << " -- instantiates labelled_subgraph_intertwiner";
+        } else if constexpr (std::is_same_v<T, GeneralizedMultinacciSignedRenewalTwistReflectionCertificate>) {
+            out << "D=" << value.dimension << " m=" << value.multiplicity
+                << " roof=" << value.maximum_return_time << " " << value.description
+                << " -- instantiates defect_roof_bounded";
+        } else if constexpr (std::is_same_v<T, GeneralizedMultinacciSymbolicEmbeddingReflectionCertificate>) {
+            out << "D=" << value.dimension << " m=" << value.multiplicity
+                << " total_parents=" << value.total_parent_occurrences << " "
+                << value.description << " -- instantiates deletion_only_subsum";
+        } else if constexpr (std::is_same_v<T, MonotoneProfileCorridorClosureReflectionCertificate>) {
+            out << "D=" << value.dimension << " k=" << value.thick_parents << " "
+                << value.description << " -- instantiates corridor_extra_occurrences";
+        } else if constexpr (std::is_same_v<T, NormWeightedQRMajorantReflectionCertificate>) {
+            out << "base_vertices=" << value.base_vertices << " words=" << value.replayed_words_count
+                << " contractive=" << (value.all_channels_contractive ? "true" : "false")
+                << " expansive=" << (value.expansive_channel_detected ? "true" : "false") << " "
+                << value.description << " -- instantiates norm_qr_word_majorant";
+        } else if constexpr (std::is_same_v<T, ThreeGeneratorIntertwinerFamilyReflectionCertificate>) {
+            out << value.family << " boundary_states=" << value.boundary_states
+                << " boundary_edges=" << value.boundary_edges << " " << value.description
+                << " -- instantiates " << value.family << "_word_intertwiner";
+        } else if constexpr (std::is_same_v<T, ShiftBranchThreeGeneratorContinuationReflectionCertificate>) {
+            out << "D=" << value.dimension << " parents=" << value.parent_occurrences << " "
+                << value.description << " -- instantiates three_generator_word_induction";
+        } else if constexpr (std::is_same_v<T, GeneralInfraSweepConfirmedCertificate>) {
+            out << value.subject << " " << value.description;
+        } else if constexpr (std::is_same_v<T, CoefficientProfileParityObstructionReflectionCertificate>) {
+            out << "D=" << value.dimension << " even=" << (value.even_dimension ? "true" : "false")
+                << " " << value.description
+                << " -- instantiates nearest_left_profile_even_has_minus_one_root/nearest_left_profile_odd_value";
+        } else if constexpr (std::is_same_v<T, CyclotomicObstructionReflectionCertificate>) {
+            out << "deg=" << (value.coefficients.empty() ? 0 : value.coefficients.size() - 1)
+                << " has_order_two=" << (value.has_order_two ? "true" : "false") << " "
+                << value.description << " -- instantiates x_add_one_dvd_iff_eval_neg_one_zero";
+        } else if constexpr (std::is_same_v<T, CyclicSpliceCompactnessReflectionCertificate>) {
+            out << "state_count=" << value.state_count << " orbit_length=" << value.orbit_states.size()
+                << " " << value.description << " -- instantiates ClosedOrbit";
+        } else if constexpr (std::is_same_v<T, CyclicSpliceCompletionReflectionCertificate>) {
+            out << "state_count=" << value.state_count << " transient=" << value.transient_laps
+                << " period=" << value.period_laps << " " << value.description
+                << " -- instantiates finite_serial_relation_has_repeated_orbit";
         } else if constexpr (std::is_same_v<T, ProofObligation>) {
             out << value.obligation_id << ": " << value.proposition;
             if (!value.blocked_by.empty()) out << " [blocked by " << value.blocked_by << ']';
@@ -1012,6 +1507,21 @@ inline NodeId observe(std::string operation, std::string subject,
     return record(NodeKind::Observation,
                   TextObservation{std::move(operation), std::move(subject), std::move(detail)},
                   std::move(parents));
+}
+
+// Records a `GeneralInfraSweepConfirmedCertificate`: the caller has just
+// independently re-verified (by direct assertion/exception, not merely a
+// cached bool) a concrete C++ sweep whose every case already falls under
+// a fully abstract, unconditionally kernel-checked Lean theorem. Callers
+// must only invoke this AFTER the real check has passed -- there is no
+// separate `.proved` gate here since the caller's own verification (an
+// `assert`/`throw`-checked sweep) is the gate.
+inline void confirm_general_infra_sweep(const std::string& subject, const std::string& description) {
+    if (!enabled()) return;
+    GeneralInfraSweepConfirmedCertificate node;
+    node.subject = subject;
+    node.description = description;
+    record(NodeKind::LemmaApplication, node);
 }
 
 } // namespace mathlib::reflection

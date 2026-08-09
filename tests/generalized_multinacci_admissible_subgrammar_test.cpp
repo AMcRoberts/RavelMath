@@ -1,12 +1,16 @@
+#include <cassert>
+#include <fstream>
 #include <iostream>
 #include <stdexcept>
 #include <tuple>
 #include <vector>
 
+#include "math/proof_reflection.hpp"
 #include "ravel/contact_boundary.hpp"
 #include "ravel/d_cont_check.hpp"
 #include "ravel/generalized_multinacci.hpp"
 #include "ravel/proof/generalized_multinacci_admissible_subgrammar.hpp"
+#include "ravel/proof/reflective_lean_renderer.hpp"
 
 using namespace ravel;
 
@@ -17,7 +21,7 @@ static ravel::proof::NonnegativeMatrix matrix(std::initializer_list<std::initial
 }
 
 template <std::size_t d>
-void check(std::size_t m) {
+void check(std::size_t m, int& staged_count) {
     const auto raw=generalized_multinacci_rule(d,m);
     SubstitutionRule rule(raw);
     const auto beta=generalized_multinacci_beta(d,m);
@@ -41,15 +45,38 @@ void check(std::size_t m) {
         throw std::runtime_error("D="+std::to_string(d)+" m="+std::to_string(m)+": "+proof.obstruction);
     std::cout << "D="<<d<<" m="<<m<<" states="<<proof.source_states
               <<" edges="<<proof.witnessed_edges<<" words="<<proof.words_checked<<"\n";
+    ravel::proof::stage_generalized_multinacci_admissible_subgrammar(
+        proof, "D="+std::to_string(d)+" m="+std::to_string(m)+" boundary admissible subgrammar sweep");
+    ++staged_count;
 }
 
 int main() {
-    for(std::size_t m=1;m<=6;++m) {
-        check<2>(m);
-        check<3>(m);
-        check<4>(m);
+    mathlib::reflection::Trace trace("generalized_multinacci_admissible_subgrammar_batch");
+    int staged_count = 0;
+    {
+        mathlib::reflection::ScopedTrace scope(&trace);
+        for(std::size_t m=1;m<=6;++m) {
+            check<2>(m, staged_count);
+            check<3>(m, staged_count);
+            check<4>(m, staged_count);
+        }
+        // One larger-D stress sample for each of the first three multiplicities.
+        for(std::size_t m=1;m<=3;++m) check<5>(m, staged_count);
     }
-    // One larger-D stress sample for each of the first three multiplicities.
-    for(std::size_t m=1;m<=3;++m) check<5>(m);
+
+    auto nodes = trace.find<mathlib::reflection::GeneralizedMultinacciAdmissibleSubgrammarReflectionCertificate>();
+    std::cout << "trace recorded " << nodes.size()
+              << " GeneralizedMultinacciAdmissibleSubgrammarReflectionCertificate nodes"
+                 " (staged " << staged_count << ")\n";
+    assert(static_cast<int>(nodes.size()) == staged_count);
+
+    std::string lean = ravel::proof::render_reflective_lean_module(trace);
+    assert(lean.find("admissible_subgrammar_intertwines") != std::string::npos);
+    assert(lean.find("generalized_multinacci_admissible_subgrammar_instance_0") != std::string::npos);
+
+    std::ofstream out("lean/generated/generalized_multinacci_admissible_subgrammar.lean");
+    out << lean;
+    out.close();
+
     std::cout << "generalized multinacci admissible subgrammar PASS\n";
 }

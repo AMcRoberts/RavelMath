@@ -41,6 +41,7 @@ int main() {
         pisot_info_t info;
         int rc = pisot_classify_degree_n(coeffs, 5, &info);
         assert(rc == 0);
+        pisot_info_clear(&info);
         std::printf("[ok] degree 5 Pentanacci correctly refused (two complex pairs, guard fires)\n");
     }
 

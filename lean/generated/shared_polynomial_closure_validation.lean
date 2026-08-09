@@ -4,7 +4,7 @@ namespace RavelSharedPolynomialClosure
 
 theorem matrix_spectral_polynomial_normal_form : ([1, 1, 1, 1] : List Int) = [1, 1, 1, 1] := by rfl
 
-def close_matrix_geometric_recurrence_normalForm : ℕ → Polynomial ℤ
+noncomputable def close_matrix_geometric_recurrence_normalForm : ℕ → Polynomial ℤ
   | 0 => 1
   | n + 1 => Polynomial.X * close_matrix_geometric_recurrence_normalForm n + 1
 
@@ -22,7 +22,7 @@ theorem close_matrix_geometric_recurrence
       rfl
 
 
-def close_spectral_geometric_recurrence_normalForm : ℕ → Polynomial ℤ
+noncomputable def close_spectral_geometric_recurrence_normalForm : ℕ → Polynomial ℤ
   | 0 => 1
   | n + 1 => Polynomial.X * close_spectral_geometric_recurrence_normalForm n + 1
 

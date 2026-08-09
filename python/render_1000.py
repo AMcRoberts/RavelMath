@@ -65,7 +65,7 @@ plt.close(fig)
 imgs = [Image.open("/home/claude/spectre_1000.png").convert("RGB"),
         Image.open("/home/claude/hex_1000.png").convert("RGB")]
 imgs[0].save(
-    "/mnt/user-data/outputs/spectre-hex-swap.gif",
+    "spectre-hex-swap.gif",
     save_all=True, append_images=[imgs[1]], duration=[1000, 1000], loop=0,
 )
 print("done")

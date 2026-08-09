@@ -82,6 +82,37 @@ def dContFaceCandidateNodeG : DContFaceCandidateKindG → ClassIINodeG
   | .f30 => ⟨2,  0, -1,  0, 2⟩ | .f31 => ⟨2,  0,  1,  0, 2⟩
   | .f32 => ⟨2,  1,  0,  0, 2⟩
 
+inductive Neighbor2FixedKindG
+  | n00 | n01 | n02 | n03 | n04 | n05 | n06 | n07
+  | n08 | n09 | n10 | n11 | n12 | n13 | n14 | n15
+  | n16 | n17 | n18 | n19 | n20 | n21 | n22 | n23
+  deriving DecidableEq, Fintype
+
+def neighbor2FixedNodeG : Neighbor2FixedKindG → ClassIINodeG
+  | .n00 => ⟨0, -2,  2,  1, 1⟩ | .n01 => ⟨0, -1,  0,  1, 0⟩
+  | .n02 => ⟨0, -1,  1,  1, 0⟩ | .n03 => ⟨0, -1,  1,  1, 2⟩
+  | .n04 => ⟨0, -1,  2,  1, 0⟩ | .n05 => ⟨0,  1, -2, -1, 0⟩
+  | .n06 => ⟨0,  1, -1, -1, 0⟩ | .n07 => ⟨0,  1, -1,  0, 2⟩
+  | .n08 => ⟨0,  1,  0, -1, 0⟩ | .n09 => ⟨1, -1,  1,  0, 1⟩
+  | .n10 => ⟨1,  0,  1,  0, 0⟩ | .n11 => ⟨1,  1, -2, -1, 0⟩
+  | .n12 => ⟨1,  1, -1,  0, 1⟩ | .n13 => ⟨1,  2, -2, -1, 0⟩
+  | .n14 => ⟨1,  2, -1, -1, 0⟩ | .n15 => ⟨2, -2,  2,  0, 1⟩
+  | .n16 => ⟨2, -1,  1,  0, 0⟩ | .n17 => ⟨2, -1,  1,  0, 2⟩
+  | .n18 => ⟨2, -1,  2,  0, 0⟩ | .n19 => ⟨2, -1,  2,  0, 1⟩
+  | .n20 => ⟨2,  1, -2, -1, 0⟩ | .n21 => ⟨2,  1, -1, -1, 0⟩
+  | .n22 => ⟨2,  1, -1,  0, 2⟩ | .n23 => ⟨2,  2, -1, -1, 0⟩
+
+inductive FirstBackwardKindG
+  | b00 | b01 | b02 | b03 | b04 | b05
+  deriving DecidableEq, Fintype
+
+def firstBackwardNodeG : FirstBackwardKindG → ClassIINodeG
+  | .b00 => ⟨1,  1, -1,  0, 2⟩ | .b01 => ⟨2,  0,  1,  0, 0⟩
+  | .b02 => ⟨0,  0,  0,  1, 1⟩ | .b03 => ⟨2,  0,  1, -1, 0⟩
+  | .b04 => ⟨0,  1, -1,  0, 0⟩ | .b05 => ⟨0, -1,  1,  1, 1⟩
+
+def secondBackwardNodeG : ClassIINodeG := ⟨1, 1, 0, -1, 0⟩
+
 abbrev NeighborNodeG := ℤ × ℤ × ℤ × ℤ × ℤ
 
 def round1Raw27G : List NeighborNodeG :=

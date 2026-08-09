@@ -1,11 +1,15 @@
 #include <array>
+#include <cassert>
+#include <fstream>
 #include <iostream>
 #include <stdexcept>
 #include <vector>
 
+#include "math/proof_reflection.hpp"
 #include "ravel/ambient_graph.hpp"
 #include "ravel/generalized_multinacci.hpp"
 #include "ravel/proof/generalized_multinacci_symbolic_embedding.hpp"
+#include "ravel/proof/reflective_lean_renderer.hpp"
 
 using namespace ravel;
 
@@ -26,7 +30,7 @@ static void symbolic_range() {
 }
 
 template<std::size_t D>
-static void implementation_cross_check(std::size_t m) {
+static void implementation_cross_check(std::size_t m, int& staged_count) {
     const auto raw=generalized_multinacci_rule(D,m);
     std::array<std::vector<long long>,D> images;
     for(std::size_t i=0;i<D;++i)
@@ -49,18 +53,42 @@ static void implementation_cross_check(std::size_t m) {
     }
     if(total!=p.total_parent_occurrences)
         throw std::runtime_error("total occurrence implementation mismatch");
+    proof::stage_generalized_multinacci_symbolic_embedding(
+        p, "D="+std::to_string(D)+" m="+std::to_string(m)+" symbolic embedding cross-check");
+    ++staged_count;
 }
 
 int main() {
     symbolic_range();
-    for(std::size_t m=1;m<=32;++m) {
-        implementation_cross_check<2>(m);
-        implementation_cross_check<3>(m);
-        implementation_cross_check<4>(m);
-        implementation_cross_check<5>(m);
-        implementation_cross_check<6>(m);
-        implementation_cross_check<7>(m);
-        implementation_cross_check<8>(m);
+
+    mathlib::reflection::Trace trace("generalized_multinacci_symbolic_embedding_batch");
+    int staged_count = 0;
+    {
+        mathlib::reflection::ScopedTrace scope(&trace);
+        for(std::size_t m=1;m<=32;++m) {
+            implementation_cross_check<2>(m, staged_count);
+            implementation_cross_check<3>(m, staged_count);
+            implementation_cross_check<4>(m, staged_count);
+            implementation_cross_check<5>(m, staged_count);
+            implementation_cross_check<6>(m, staged_count);
+            implementation_cross_check<7>(m, staged_count);
+            implementation_cross_check<8>(m, staged_count);
+        }
     }
+
+    auto nodes = trace.find<mathlib::reflection::GeneralizedMultinacciSymbolicEmbeddingReflectionCertificate>();
+    std::cout << "trace recorded " << nodes.size()
+              << " GeneralizedMultinacciSymbolicEmbeddingReflectionCertificate nodes"
+                 " (staged " << staged_count << ")\n";
+    assert(static_cast<int>(nodes.size()) == staged_count);
+
+    std::string lean = proof::render_reflective_lean_module(trace);
+    assert(lean.find("deletion_only_subsum") != std::string::npos);
+    assert(lean.find("generalized_multinacci_symbolic_embedding_instance_0") != std::string::npos);
+
+    std::ofstream out("lean/generated/generalized_multinacci_symbolic_embedding.lean");
+    out << lean;
+    out.close();
+
     std::cout<<"generalized multinacci symbolic embedding PASS\n";
 }

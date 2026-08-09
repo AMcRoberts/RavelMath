@@ -35,7 +35,7 @@ int main() {
     assert(lean.find("class_ii_terminal_shell_instance_1") != std::string::npos);
     assert(lean.find("terminalCrossColours_not_eq_interior_extremesG") != std::string::npos);
 
-    std::ofstream out("/tmp/class_ii_terminal_shell_generated.lean");
+    std::ofstream out("lean/generated/class_ii_terminal_shell_batch.lean");
     out << lean;
     out.close();
 

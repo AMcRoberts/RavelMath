@@ -82,7 +82,10 @@ def RealizedLanguageComplete
       (deriveWord word (.terminal terminal)).Eval step sourceController
 
 /-- The concrete affine-transport implementation must prove this premise:
-any accepted realized controller path constructs a replayable strict pump. -/
+any accepted realized controller path constructs a replayable strict pump.
+Stated as a genuine `Prop` (an existential exhibiting the lift), rather than
+returning the `Type`-sorted `StrictShellPumpWitness` structure directly --
+the latter does not elaborate at sort `Prop`. -/
 def AcceptedPathPumps
     {Cycle : Type v} {Controller : Type u}
     (Recurrent : Cycle → Prop) (radius : Cycle → ℕ)
@@ -92,7 +95,7 @@ def AcceptedPathPumps
       (terminal : Controller → Prop),
       Follows step sourceController word targetController →
       terminal targetController →
-      StrictShellPumpWitness Recurrent radius sourceCycle
+      ∃ lifted, Recurrent lifted ∧ radius sourceCycle < radius lifted
 
 /-- This closes the realized-language seam.  It contains no finite-family or
 quotient assumption: residual acceptance is converted to a concrete path, and
@@ -109,10 +112,8 @@ theorem strictShellPump_of_realized_language
     hcomplete sourceCycle hrec houter
   obtain ⟨targetController, hpath, hterminal⟩ :=
     (eval_deriveWord_iff_path step word (.terminal terminal) sourceController).mp haccept
-  let witness :=
-    hsound sourceCycle hrec houter word sourceController targetController
-      terminal hpath hterminal
-  exact ⟨witness.lifted, witness.lifted_recurrent, witness.strict_outward⟩
+  exact hsound sourceCycle hrec houter word sourceController targetController
+    terminal hpath hterminal
 
 theorem iterate_strict_shell_lift
     {State : Type v}

@@ -1,7 +1,11 @@
+#include <cassert>
+#include <fstream>
 #include <iostream>
 #include <stdexcept>
 #include <vector>
+#include "math/proof_reflection.hpp"
 #include "ravel/proof/cyclotomic_obstruction.hpp"
+#include "ravel/proof/reflective_lean_renderer.hpp"
 
 using mathlib::PolyZ;
 using namespace ravel::proof;
@@ -9,6 +13,9 @@ using namespace ravel::proof;
 static void require(bool x, const char* msg) { if (!x) throw std::runtime_error(msg); }
 
 int main() {
+    mathlib::reflection::Trace trace("cyclotomic_obstruction_batch");
+    mathlib::reflection::ScopedTrace scope(&trace);
+
     require(cyclotomic_polynomial(1) == PolyZ{-1,1}, "Phi1");
     require(cyclotomic_polynomial(2) == PolyZ{1,1}, "Phi2");
     require(cyclotomic_polynomial(3) == PolyZ{1,1,1}, "Phi3");
@@ -22,6 +29,7 @@ int main() {
     require(cert.has_order(2) && cert.has_order(3), "missing factors");
     require(!cert.has_order(1), "spurious Phi1");
     require(cert.remaining_factor == PolyZ{-2,1}, "remaining factor");
+    stage_cyclotomic_obstruction(cert, "Phi2*Phi3*(x-2) composite factorization witness");
 
     const auto sector = derive_z2_character_sector_certificate(PolyZ{-2,1}, PolyZ{1,1});
     require(sector.proved && sector.nontrivial_sector_has_order_two, "Z2 sector");
@@ -45,7 +53,21 @@ int main() {
         const auto q = ravel::simple_parry_profile_polynomial(digits);
         const auto c = derive_cyclotomic_obstruction_certificate(q);
         require(c.has_order(2) == (D%2==0), "nearest-left parity detector");
+        stage_cyclotomic_obstruction(c, "D="+std::to_string(D)+" nearest-left profile factorization instance");
     }
+
+    auto nodes = trace.find<mathlib::reflection::CyclotomicObstructionReflectionCertificate>();
+    std::cout << "trace recorded " << nodes.size()
+              << " CyclotomicObstructionReflectionCertificate nodes\n";
+    assert(nodes.size() == 63);
+
+    std::string lean = render_reflective_lean_module(trace);
+    assert(lean.find("polyOfCoeffs") != std::string::npos);
+    assert(lean.find("cyclotomic_obstruction_instance_0") != std::string::npos);
+
+    std::ofstream out("lean/generated/cyclotomic_obstruction.lean");
+    out << lean;
+    out.close();
 
     std::cout << "cyclotomic obstruction PASS\n";
 }

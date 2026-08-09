@@ -76,7 +76,7 @@ int main() {
     assert(lean.find("period_rotation_instance_1") != std::string::npos);
     assert(lean.find("period_rotation_instance_2") != std::string::npos);
 
-    std::ofstream out("/tmp/period_rotation_generated.lean");
+    std::ofstream out("lean/generated/period_rotation_batch.lean");
     out << lean;
     out.close();
 

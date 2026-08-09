@@ -16,5 +16,4 @@ many of these by filename as its evidence trail; its references were
 updated to point in here. If you're looking for why a specific claim in
 that document is believed, the cited file is here, unchanged.
 
-Moved 2026-08-05 as part of a project-history cleanup; see
-`../../.ravel/DIARY.md` for the session record.
+Moved 2026-08-05 as part of a project-history cleanup.

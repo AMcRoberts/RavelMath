@@ -64,7 +64,7 @@ int main() {
     assert(lean.find("depressed_cubic_q_gt_one_iff_beta_lt_neg_d") != std::string::npos);
     assert(lean.find("depressed_cubic_instance_19") != std::string::npos);
 
-    std::ofstream out("/tmp/depressed_cubic_not_pisot_generated.lean");
+    std::ofstream out("lean/generated/depressed_cubic_not_pisot_batch.lean");
     out << lean;
     out.close();
 

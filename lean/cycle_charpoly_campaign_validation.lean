@@ -1,6 +1,8 @@
 import Mathlib.Tactic
 import Mathlib.RingTheory.AdjoinRoot
+import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
+import Mathlib.LinearAlgebra.Matrix.Reindex
 
 namespace RavelGenerated
 
@@ -62,6 +64,74 @@ theorem canonicalCycleCore_companion_entries
         else if (i : ℕ) = (j : ℕ) + 1 then 1 else 0 := by
   dsimp
   exact (AdjoinRoot.powerBasis (cyclePolynomial_ne_zero K n)).leftMulMatrix
+
+/-- The dimension-transport theorem `canonicalCycleCore_companion_entries`'s own
+docstring flagged as future work: `pb.dim` for the `AdjoinRoot.powerBasis` of
+`X^(n+1)-1` is literally `n+1`, by that polynomial's `natDegree`. -/
+theorem cyclePolynomial_natDegree_succ (K : Type*) [Field K] (n : ℕ) :
+    (cyclePolynomial K (n + 1)).natDegree = n + 1 := by
+  simpa [cyclePolynomial] using
+    Polynomial.natDegree_X_pow_sub_C (R := K) (r := (1 : K))
+
+theorem canonicalCycleCore_dim (K : Type*) [Field K] (n : ℕ) :
+    (AdjoinRoot.powerBasis (cyclePolynomial_ne_zero K n)).dim = n + 1 :=
+  cyclePolynomial_natDegree_succ K n
+
+/-- The concrete cyclic-shift 0/1 matrix on `Fin (n+1)`: edge `i -> i+1 mod (n+1)`,
+exactly the "installed graph attractor model"'s directed-cycle adjacency matrix
+(`docs/GRAPH_CYCLE_CANONICALIZATION_AND_FACTOR_SEAM.md`), not an abstract stand-in. -/
+def concreteCycleMatrix (K : Type*) [Field K] (n : ℕ) : Matrix (Fin (n + 1)) (Fin (n + 1)) K :=
+  Matrix.of (fun i j =>
+    if (i : ℕ) = (j : ℕ) + 1 then 1
+    else if (j : ℕ) + 1 = n + 1 ∧ (i : ℕ) = 0 then 1 else 0)
+
+/-- Completes `canonicalCycleCore_charpoly` down to the CONCRETE cycle-adjacency
+matrix (the dimension-transport step the campaign doc named as the remaining
+gap): reindexing `canonicalCycleCore` by `canonicalCycleCore_dim` and unfolding
+the companion-matrix entries against `X^(n+1)-1`'s own coefficients shows it
+equals `concreteCycleMatrix` on the nose, so its characteristic polynomial
+transports across for free. -/
+theorem concreteCycleMatrix_charpoly (K : Type*) [Field K] (n : ℕ) :
+    (concreteCycleMatrix K n).charpoly = cyclePolynomial K (n + 1) := by
+  let f := cyclePolynomial K (n + 1)
+  let hf : f ≠ 0 := cyclePolynomial_ne_zero K n
+  let pb := AdjoinRoot.powerBasis hf
+  have hdim : pb.dim = n + 1 := canonicalCycleCore_dim K n
+  have hentries := pb.leftMulMatrix
+  have hreindex :
+      Matrix.reindex (finCongr hdim) (finCongr hdim) (canonicalCycleCore K n) =
+        concreteCycleMatrix K n := by
+    ext i j
+    simp only [canonicalCycleCore, Matrix.reindex_apply, Matrix.submatrix_apply,
+      finCongr_symm, finCongr_apply, concreteCycleMatrix, Matrix.of_apply]
+    show (Algebra.leftMulMatrix pb.basis) pb.gen
+        ((Fin.cast hdim.symm) i) ((Fin.cast hdim.symm) j) = _
+    rw [hentries]
+    simp only [Matrix.of_apply]
+    have hminpolyGen : pb.minpolyGen = f := by
+      rw [pb.minpolyGen_eq]
+      exact AdjoinRoot.minpoly_powerBasis_gen_of_monic (cyclePolynomial_monic_succ K n)
+    have hi0 : (Fin.cast hdim.symm i : ℕ) = (i : ℕ) := by simp
+    have hj0 : (Fin.cast hdim.symm j : ℕ) = (j : ℕ) := by simp
+    rw [hi0, hj0, hdim]
+    rw [hminpolyGen]
+    have hcoeff : ∀ k : ℕ, k < n + 1 → f.coeff k = if k = 0 then (-1 : K) else 0 := by
+      intro k hk
+      by_cases h0 : k = 0
+      · simp [f, cyclePolynomial, h0]
+      · simp only [f, cyclePolynomial, Polynomial.coeff_sub, Polynomial.coeff_X_pow,
+          Polynomial.coeff_one, h0, if_false]
+        rw [if_neg (by omega : ¬ (k = n + 1))]
+        ring
+    have hi_lt : (i : ℕ) < n + 1 := i.isLt
+    have hcoeff_i := hcoeff (i : ℕ) hi_lt
+    split_ifs with h1 h2 h3 h3 <;>
+      first
+        | rfl
+        | (exfalso; omega)
+        | (rw [hcoeff_i]; split_ifs at hcoeff_i ⊢ <;> first | rfl | (exfalso; omega) | ring)
+  rw [← hreindex, Matrix.charpoly_reindex]
+  exact canonicalCycleCore_charpoly K n
 
 end
 

@@ -7,6 +7,16 @@
 extern "C" {
 #endif
 
+/* Maximum polynomial degree this library's exact Sturm-chain/PRS
+ * machinery supports. poly_t's internal coefficient array (private
+ * to exact_pisot.c) is sized POLY_COEFFS_CAP = PISOT_MAX_POLY_DEGREE+1
+ * slots to hold exactly this. This is the single source of truth for
+ * that capacity: every public entry point that accepts a degree
+ * enforces this bound against it, and exact_pisot.c's internal
+ * POLY_COEFFS_CAP is defined in terms of it. Changing the supported
+ * degree range means changing only this constant. */
+#define PISOT_MAX_POLY_DEGREE 15
+
 typedef struct {
     int is_pisot;
     mpz_ptr beta_lo_num, beta_lo_den;
@@ -30,12 +40,15 @@ int pisot_classify_3x3(const long long M[3][3], pisot_info_t* out);
  * Pisot.  Same conventions as pisot_classify_3x3. */
 int pisot_classify_4x4(const long long M[4][4], pisot_info_t* out);
 
-/* Classify an arbitrary-degree (1..15) monic integer polynomial
- * directly from coefficients (low-to-high, coeffs[0..degree-1]; the
- * leading coeffs[degree]=1 is implicit and not included). Rigorous
- * for any degree, but returns 0 (failure, not a guess) whenever the
- * polynomial has more than one complex-conjugate pair -- see the
- * comment at pisot_classify_degree_n's definition in exact_pisot.c. */
+/* Classify an arbitrary-degree (1..PISOT_MAX_POLY_DEGREE) monic
+ * integer polynomial directly from coefficients (low-to-high,
+ * coeffs[0..degree-1]; the leading coeffs[degree]=1 is implicit and
+ * not included). Enforces the degree bound itself and returns 0
+ * (failure) if it's violated -- callers do not need to check first.
+ * Rigorous for any degree in range, but returns 0 (failure, not a
+ * guess) whenever the polynomial has more than one complex-conjugate
+ * pair -- see the comment at pisot_classify_degree_n's definition in
+ * exact_pisot.c. */
 int pisot_classify_degree_n(const long long* coeffs, int degree, pisot_info_t* out);
 
 /* Render a rational num/den as a decimal string (10 digits past the

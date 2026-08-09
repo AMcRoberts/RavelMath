@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include "math/proof_reflection.hpp"
+
 namespace ravel::proof {
 
 struct MonotoneProfileParentChoice {
@@ -71,6 +73,22 @@ inline MonotoneProfileCorridorClosure
     out.parent_role_suspension_intertwiner=true;
     out.proved=true;
     return out;
+}
+
+// Stages a `MonotoneProfileCorridorClosureReflectionCertificate` for one
+// (D,k) instance -- gates on `proof.proved` (requiring D>=2, 0<=k<=D-1;
+// see the derivation above) so `corridor_extra_occurrences D k` can be
+// instantiated with its hypothesis `k <= D` satisfied.
+inline void stage_monotone_profile_corridor_closure(
+        const MonotoneProfileCorridorClosure& proof,
+        const std::string& description) {
+    if (!proof.proved) return;
+    if (!mathlib::reflection::enabled()) return;
+    mathlib::reflection::MonotoneProfileCorridorClosureReflectionCertificate node;
+    node.dimension = static_cast<long long>(proof.dimension);
+    node.thick_parents = static_cast<long long>(proof.thick_parents);
+    node.description = description;
+    mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, node);
 }
 
 } // namespace ravel::proof

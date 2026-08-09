@@ -678,6 +678,136 @@ containment/window facts about pre_contact not yet rendered),
 `ClassIISixVertexGraduationCertificate`, `ClassIINeighborDSupport
 Certificate`.
 
+## Prioritized roadmap (written 2026-08-08, ordered closest-to-done first)
+
+AM's instruction: take the full roadmap to completing the C++/reflective
+retrofit (rather than flat hand-authored proofs), starting with the
+work that's already mostly done and moving outward from there. This is
+that ordering, as a snapshot -- update it in place as items close
+rather than appending a new dated addendum per item, the way the rest
+of this file does; this section is meant to stay short and current,
+not grow into another chronological log.
+
+### Tier 0 -- infrastructure already built, only the connecting proof is missing
+
+**Sturm-chain wiring for Finding 30.** `SturmSeq.count_roots_between`
+is proved, kernel-checked, zero `sorry` (also shipped as mathlib4
+#42558/#42559). `math/include/math/sturm.hpp` already has the full
+exact-rational Sturm-chain toolkit (`sturm_chain`, `sturm_root_count`,
+`isolate_real_root_rat`, `isolate_beta`) that `pisot_classify_poly`
+(`math/src/exact_pisot.c`) uses for Finding 30's degree-general Pisot
+classification. Nothing links the two yet -- zero Sturm-shaped payload
+exists in `math/include/math/proof_reflection.hpp`'s `Payload` variant.
+Three steps, in order:
+1. Prove the canonical PRS (principal remainder sequence) construction
+   satisfies the abstract `SturmSeq` structure -- this is the one
+   missing mathematical link; everything else here is wiring.
+2. Add a `SturmChainCertificate`-shaped payload carrying the actual
+   C++-computed chain/root-isolation data (not a name-only citation --
+   the original pattern, per this file's own corrected-shortcut
+   lesson above).
+3. Handler + renderer that instantiate the PRS proof against that
+   concrete data and emit a `decide`-checked corollary for a real
+   `pisot_classify_poly` run.
+
+This is the highest-leverage item on the board: it's the one finding
+this whole retrofit project has called "genuinely hard" since the
+plan's first draft, and every prerequisite except the wiring itself
+now exists.
+
+### Tier 1 -- already retrofitted, closing acknowledged gaps rather than starting new work
+
+- **Findings 39/41** (zero-run bound). `first_letter_orbit_coincidence.lean`
+  / `last_letter_orbit_coincidence.lean` already close the mixed/
+  cross-run cases via an orbit-collision reduction, kernel-checked.
+  Two honest gaps remain, both worth closing before calling this done:
+  (a) the theorem is conditional on orbit collision happening -- that
+  precondition isn't itself proved as a Lean existence theorem; (b) it
+  matches the general `R+1` depth formula on the checked case but
+  doesn't derive it in general.
+- **Finding 12, Rounds 2/3.** Round 4 (of 4 base-premise rounds in
+  `GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md`) is retrofitted and
+  regression-checked (sampled 20-of-323 against
+  `affine_no_solution_at_or_above_threshold`). Rounds 2 and 3 share
+  that same arithmetic core, just against different catalogue data --
+  extracting their instance populations the way Round 4's was
+  extracted is very likely a short repeat of an already-proven
+  pattern, not new math. (Round 1 closes by a literature argument with
+  no C++ computation to thread -- not a retrofit candidate at all.)
+
+### Tier 2 -- partial retrofit, next increment already identified, moderate new work
+
+- **Remaining Class-II files**: `class_ii_balanced_pivot.lean` and
+  `class_ii_round234_shape_closure.lean`. Sixteen other Class-II
+  connections are done via the same extract-then-reflect-then-decide
+  pattern; these two just weren't in the cross-check test used to
+  de-risk the other sixteen, so they need fresh verification before
+  connecting -- likely mechanical once verified, not a new pattern.
+- **Finding 23** (walk-realizability). The Cayley-Hamilton cubic
+  sub-fact (`M^3 = M + I`) is retrofitted via Mathlib's own `Matrix`
+  power machinery. The actual open question -- the
+  composition-counting walk-realizability layer -- is untouched and
+  needs a real scoping pass before estimating cost, similar to how
+  Finding 30 got scoped before this session's Sturm work started.
+
+### Tier 3 -- needs new mathematical machinery, but no longer maximally hard
+
+- **Finding 29** (general root monotonicity in n, dominant root → a+1).
+  Only the instance-level ordering (a=1..5) is retrofitted, reusing
+  Finding 30's own Sturm-chain rational brackets. The general claim
+  needs an IVT-based root characterization plus a monotonicity/limit
+  argument in Lean -- comparable in scope to what Finding 30's gap
+  used to be. Once the Tier 0 Sturm wiring exists, revisit this: the
+  IVT/interval-isolation machinery it needs may now be substantially
+  closer at hand than when this was last assessed.
+- **Finding 22** (Diophantine reduction / landmark-vector cancellation).
+  Flagged as genuinely unexamined for retrofit potential, not yet
+  ruled in or out either way -- needs the same kind of scoping pass
+  the other findings already got before it can be placed more
+  precisely in this ordering.
+
+### Tier 4 -- old thread, needs individual per-finding assessment
+
+Findings 1-8, 10, 11, 13-16, 36, 40, 6.5/6.6/6.7 (the pre-Finding-42
+n-bonacci/Class-II thread). Only partially covered, incidentally, by
+the sixteen Class-II C++-function connections above -- no individual
+per-finding retrofit assessment has been done for these as standalone
+claims. Lowest priority: assess each for shape (genuine theorem vs.
+empirical result that should NOT get a forced corollary, per this
+file's own standing rule) before attempting anything.
+
+### Parked -- not on this roadmap, for good reason
+
+- **Property F, full machinery** (Findings 18-21's remaining scope).
+  Needs p-adic number theory formalized in Lean first -- a bigger gap
+  than Finding 30's was, with no partial path found yet. The one
+  already-correct piece (`zeroWalk_eq_zero_iff`) is already wired via
+  citation; don't reopen the rest without a genuinely new angle.
+- **Findings 28, 31, 33, 24, and the open converse halves of 25/34.**
+  Correctly triaged OUT already -- refuted result, inconclusive
+  search, literature survey, methodological tool, and open questions
+  respectively. Not gaps in the retrofit; forcing a Lean corollary
+  onto any of these would be dishonest, not thorough.
+
+### Adjacent but distinct: sorry-closure work (not retrofit wiring, but tracked here for visibility)
+
+These are hand-authored Lean files with open `sorry`s, not flat-proof
+retrofit targets -- closing them is proof work, not C++ wiring. Listed
+because they're the only files in `lean/` (46 files) or `lean/generated/`
+(65 files, all sorry-free) that still have one:
+- `lean/free_involution_perron_core.lean` (1 `sorry`) and
+  `lean/free_involution_perron_existence_draft.lean` (8 `sorry`s, despite
+  `MATHLIB_BACKLOG_WORKLIST_2026-08-07.md` citing "three remaining" --
+  re-verify the current count before starting, the file may have grown
+  since that doc was written). This is backlog item #3, a genuine
+  clean-room situation: ~9 open mathlib4 PRs by other contributors
+  (mkaratarakis/or4nge19) are actively building the Perron-Frobenius
+  foundation this needs, and it's partly gated on mathlib4#36770
+  (Brouwer fixed point, open, external).
+- `lean/bp_correction_determinant.lean` (1 `sorry`) -- backlog item #4
+  flags this as foldable in as a supporting lemma once picked up;
+  otherwise unassessed.
+
 ## What this plan deliberately does NOT promise
 
 - A general "compile arbitrary C++ derivations into Lean" system.

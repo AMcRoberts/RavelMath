@@ -115,6 +115,34 @@ polynomial VALUES at a point rather than a list of COEFFICIENTS, so the
 underlying list-processing lemma cannot be called directly but the
 technique and several destutter-manipulation lemmas transfer.
 
+## Spectre / hat aperiodic monotile (later same day, separate from the Sturm work above)
+
+**Citation keys:** `SmithMyersKaplanGoodmanStrauss2023Spectre` (primary),
+`SmithMyersKaplanGoodmanStrauss2023Hat` (precursor, cited for context).
+
+Audit finding: `include/ravel/spectre_geometry.hpp`, `python/spectre*.py`,
+and `docs/FINDINGS_FOR_CITATION.md` had cited "Smith, Myers, Kaplan &
+Goodman-Strauss (2023) -- aperiodic monotile" by author/year only, in
+source comments and one sparse findings-list line, for years of this
+project's life -- no `refs/references.bib` entry, no archived full text,
+and no disambiguation between the two closely related 2023 papers by the
+same author team (the "hat" monotile, which needs reflections, vs. the
+"Spectre" chiral monotile, which doesn't).
+
+Downloaded both full papers directly from arXiv (2303.10798 for the hat,
+91 pages; 2305.17743 for the Spectre, 25 pages -- both are the
+`combinatorial-theory.org` journal-published versions mirrored on arXiv,
+not preprint-only). Confirmed which paper the actual implemented geometry
+belongs to by grepping extracted text rather than assuming: the string
+"Spectre" occurs 103 times in 2305.17743 and zero times in 2303.10798 --
+`spectre_geometry.hpp`'s vertex coordinates, substitution table, and
+supertile assembly are from the chiral-monotile paper specifically. Added
+both to `refs/references.bib` with full text archived per
+`refs/FULLTEXT_MANIFEST.tsv`, updated the header comment in
+`spectre_geometry.hpp` and the citation line in
+`docs/FINDINGS_FOR_CITATION.md` to name the correct paper explicitly
+rather than the ambiguous "(2023)" shorthand.
+
 ## Documentation rule
 
 Per `docs/WEB_AND_API_BIBLIOGRAPHY_USAGE_2026-08-03.md`'s established

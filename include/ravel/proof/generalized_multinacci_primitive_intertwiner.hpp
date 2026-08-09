@@ -11,6 +11,7 @@
 #include "ravel/proof/condition_f_pair_boundary_substitution.hpp"
 #include "ravel/proof/generalized_multinacci_boundary_word_lift.hpp"
 #include "ravel/proof/positive_word_graph_expansion.hpp"
+#include "math/proof_reflection.hpp"
 
 namespace ravel::proof {
 
@@ -292,6 +293,26 @@ derive_generalized_multinacci_primitive_intertwiner(
     if(!out.proved && out.obstruction.empty())
         out.obstruction="primitive generalized-multinacci Q/R intertwiner failed";
     return out;
+}
+
+// Stages a `GeneralizedMultinacciPrimitiveIntertwinerReflectionCertificate`
+// for one (D,m) instance -- gates on `proof.proved`, itself derived from
+// independently re-checked base-role/private-phase projections and a
+// simultaneous Q/R intertwiner check (see the derivation above).
+inline void stage_generalized_multinacci_primitive_intertwiner(
+        const GeneralizedMultinacciPrimitiveIntertwinerProof& proof,
+        const std::string& description) {
+    if (!proof.proved) return;
+    if (!mathlib::reflection::enabled()) return;
+    mathlib::reflection::GeneralizedMultinacciPrimitiveIntertwinerReflectionCertificate node;
+    node.dimension = static_cast<long long>(proof.dimension);
+    node.multiplicity = static_cast<long long>(proof.multiplicity);
+    node.boundary_expanded_states = static_cast<long long>(proof.boundary_expanded_states);
+    node.universal_expanded_states = static_cast<long long>(proof.universal_expanded_states);
+    node.universal_macro_edges = static_cast<long long>(proof.universal_macro_edges);
+    node.mapped_phase_states = static_cast<long long>(proof.mapped_phase_states);
+    node.description = description;
+    mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, node);
 }
 
 } // namespace ravel::proof

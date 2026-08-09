@@ -10,6 +10,8 @@
 #include <utility>
 #include <vector>
 
+#include "math/proof_reflection.hpp"
+
 namespace ravel::proof {
 
 /** A finite relation representing one complete traversal of a recurrent base
@@ -104,6 +106,40 @@ inline std::string render_periodic_controller_orbit_report(
         "closes=" + std::string(proof.closes ? "true" : "false") + "\n"
         "valid=" + std::string(proof.valid ? "true" : "false") + "\n"
         "failure=" + proof.failure + "\n";
+}
+
+// Stages a `CyclicSpliceCompletionReflectionCertificate` -- gates on
+// `proof.valid` AND an independent recomputation of the deterministic
+// "always pick the first successor" iteration from `relation` (not
+// trusting the search that originally found the repeat), checking the
+// same repeat C++ found genuinely holds under that recomputed function
+// before staging.
+inline void stage_cyclic_splice_completion(
+        const OneLapControllerRelation& relation,
+        const PeriodicControllerOrbitProof& proof,
+        const std::string& description) {
+    if (!proof.valid) return;
+    std::vector<long long> next;
+    for (const auto& s : relation.successors) {
+        if (s.empty()) return;
+        next.push_back(static_cast<long long>(s.front()));
+    }
+    std::size_t cur = proof.initial_state;
+    for (std::size_t i = 0; i < proof.transient_laps; ++i)
+        cur = static_cast<std::size_t>(next[cur]);
+    const std::size_t at_transient = cur;
+    for (std::size_t i = 0; i < proof.period_laps; ++i)
+        cur = static_cast<std::size_t>(next[cur]);
+    if (cur != at_transient) return;
+    if (!mathlib::reflection::enabled()) return;
+    mathlib::reflection::CyclicSpliceCompletionReflectionCertificate node;
+    node.state_count = static_cast<long long>(relation.state_count);
+    node.deterministic_next = next;
+    node.initial_state = static_cast<long long>(proof.initial_state);
+    node.transient_laps = static_cast<long long>(proof.transient_laps);
+    node.period_laps = static_cast<long long>(proof.period_laps);
+    node.description = description;
+    mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, node);
 }
 
 } // namespace ravel::proof

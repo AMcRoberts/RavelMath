@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ravel/ambient_graph.hpp"
+#include "math/proof_reflection.hpp"
 #include "ravel/contact_boundary.hpp"
 #include "ravel/corona.hpp"
 #include "ravel/plastic_number_substitution.hpp"
@@ -192,6 +193,25 @@ inline PlasticThreeGeneratorIntertwinerCertificate
     if (!out.proved && out.obstruction.empty())
         out.obstruction = "plastic three-generator comparison invariant failed";
     return out;
+}
+
+// Stages a `ThreeGeneratorIntertwinerFamilyReflectionCertificate` (family
+// "plastic") -- gates on `cert.proved`, which requires all three generator
+// inequalities (g0/gplus/gminus) to have been independently re-checked
+// above against the concrete boundary/universal matrices.
+inline void stage_plastic_three_generator_intertwiner(
+        const PlasticThreeGeneratorIntertwinerCertificate& cert,
+        const std::string& description) {
+    if (!cert.proved) return;
+    if (!mathlib::reflection::enabled()) return;
+    mathlib::reflection::ThreeGeneratorIntertwinerFamilyReflectionCertificate node;
+    node.family = "plastic";
+    node.generator_count = static_cast<long long>(cert.generator_count);
+    node.boundary_states = static_cast<long long>(cert.boundary_states);
+    node.boundary_edges = cert.boundary_edges;
+    node.universal_edges = cert.universal_edges;
+    node.description = description;
+    mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, node);
 }
 
 } // namespace ravel::proof

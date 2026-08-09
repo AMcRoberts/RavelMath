@@ -102,6 +102,17 @@ def neighbor2FixedNodeG : Neighbor2FixedKindG → ClassIINodeG
   | .n20 => ⟨2,  1, -2, -1, 0⟩ | .n21 => ⟨2,  1, -1, -1, 0⟩
   | .n22 => ⟨2,  1, -1,  0, 2⟩ | .n23 => ⟨2,  2, -1, -1, 0⟩
 
+inductive FirstBackwardKindG
+  | b00 | b01 | b02 | b03 | b04 | b05
+  deriving DecidableEq, Fintype
+
+def firstBackwardNodeG : FirstBackwardKindG → ClassIINodeG
+  | .b00 => ⟨1,  1, -1,  0, 2⟩ | .b01 => ⟨2,  0,  1,  0, 0⟩
+  | .b02 => ⟨0,  0,  0,  1, 1⟩ | .b03 => ⟨2,  0,  1, -1, 0⟩
+  | .b04 => ⟨0,  1, -1,  0, 0⟩ | .b05 => ⟨0, -1,  1,  1, 1⟩
+
+def secondBackwardNodeG : ClassIINodeG := ⟨1, 1, 0, -1, 0⟩
+
 /-- Mechanically emitted: every node C++ actually built for the "neighbor2_fixed" table is in neighbor2FixedNodeG's range. -/
 theorem class_ii_fixed_table_instance_0 :
     ∀ node ∈ [(⟨0,-2,2,1,1⟩ : ClassIINodeG), (⟨0,-1,0,1,0⟩ : ClassIINodeG), (⟨0,-1,1,1,0⟩ : ClassIINodeG), (⟨0,-1,1,1,2⟩ : ClassIINodeG), (⟨0,-1,2,1,0⟩ : ClassIINodeG), (⟨0,1,-2,-1,0⟩ : ClassIINodeG), (⟨0,1,-1,-1,0⟩ : ClassIINodeG), (⟨0,1,-1,0,2⟩ : ClassIINodeG), (⟨0,1,0,-1,0⟩ : ClassIINodeG), (⟨1,-1,1,0,1⟩ : ClassIINodeG), (⟨1,0,1,0,0⟩ : ClassIINodeG), (⟨1,1,-2,-1,0⟩ : ClassIINodeG), (⟨1,1,-1,0,1⟩ : ClassIINodeG), (⟨1,2,-2,-1,0⟩ : ClassIINodeG), (⟨1,2,-1,-1,0⟩ : ClassIINodeG), (⟨2,-2,2,0,1⟩ : ClassIINodeG), (⟨2,-1,1,0,0⟩ : ClassIINodeG), (⟨2,-1,1,0,2⟩ : ClassIINodeG), (⟨2,-1,2,0,0⟩ : ClassIINodeG), (⟨2,-1,2,0,1⟩ : ClassIINodeG), (⟨2,1,-2,-1,0⟩ : ClassIINodeG), (⟨2,1,-1,-1,0⟩ : ClassIINodeG), (⟨2,1,-1,0,2⟩ : ClassIINodeG), (⟨2,2,-1,-1,0⟩ : ClassIINodeG)], ∃ k : Neighbor2FixedKindG, neighbor2FixedNodeG k = node := by

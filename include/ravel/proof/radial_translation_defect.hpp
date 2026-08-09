@@ -1,7 +1,10 @@
 #pragma once
 #include <cstdint>
 #include <stdexcept>
+#include <string>
 #include <vector>
+
+#include "math/proof_reflection.hpp"
 
 namespace ravel::proof {
 
@@ -51,6 +54,26 @@ inline TranslationDefectCertificate certify_translation_defect(
     const auto expected = add(base,linear_translation);
     const auto same_translation = add(base,translation);
     return {translated, expected, sub(translated,same_translation), translated==expected};
+}
+
+inline void stage_translation_defect(
+    const IntegerMatrix& block, const IntegerVector& state,
+    const IntegerVector& translation, const IntegerVector& forcing,
+    const std::string& description) {
+    const auto cert = certify_translation_defect(block, state, translation, forcing);
+    if (!cert.affine_transport_exact) return;
+    if (!mathlib::reflection::enabled()) return;
+    const auto to_ll = [](const IntegerVector& v) {
+        return std::vector<long long>(v.begin(), v.end());
+    };
+    mathlib::reflection::RadialTranslationDefectCertificate node;
+    for (const auto& row : block) node.block.push_back(to_ll(row));
+    node.state = to_ll(state);
+    node.translation = to_ll(translation);
+    node.forcing = to_ll(forcing);
+    node.same_translation_defect = to_ll(cert.same_translation_defect);
+    node.description = description;
+    mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, node);
 }
 
 } // namespace ravel::proof

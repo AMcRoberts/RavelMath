@@ -43,7 +43,7 @@ int main() {
     assert(lean.find("class_ii_global_round_phase_instance_4") != std::string::npos);
     assert(lean.find("classIIGlobalRoundPhaseG_spec") != std::string::npos);
 
-    std::ofstream out("/tmp/class_ii_global_round_phase_generated.lean");
+    std::ofstream out("lean/generated/class_ii_global_round_phase_batch.lean");
     out << lean;
     out.close();
 

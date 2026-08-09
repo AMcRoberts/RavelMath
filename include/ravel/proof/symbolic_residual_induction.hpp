@@ -171,16 +171,26 @@ inline std::string render_residual_induction_lean(
           << bool_list_lean(proof.concrete_family.members[representative]) << "\n";
     }
     o << "    | _ => #[]\n\n";
-    o << "def pre : Digit → Fin residualCount → Fin residualCount\n";
-    o << "  | d, q => ⟨(match d.val, q.val with\n";
+    o << "def preRaw (d : Digit) (q : Fin residualCount) : Nat :=\n";
+    o << "  match d.val, q.val with\n";
     for (std::size_t q = 0; q < proof.quotient_members.size(); ++q) {
         for (std::size_t di = 0; di < 3; ++di) {
             const std::int64_t digit = static_cast<std::int64_t>(di) - 1;
-            o << "      | " << di << ", " << q << " => "
+            o << "  | " << di << ", " << q << " => "
               << proof.quotient_pre.at({q, digit}) << "\n";
         }
     }
-    o << "      | _, _ => 0), by native_decide⟩\n\n";
+    o << "  | _, _ => 0\n\n";
+    o << "/-- Proved once as a universally-quantified, closed statement so\n";
+    o << "    `native_decide` can actually run: with `d`/`q` already bound as\n";
+    o << "    explicit lambda arguments (as in a direct `pre d q := ⟨preRaw d q,\n";
+    o << "    by native_decide⟩` definition), the goal contains free variables\n";
+    o << "    and `native_decide`/`decide` cannot evaluate it at all -- found\n";
+    o << "    exactly this way, kernel-checking this file for the first time. -/\n";
+    o << "theorem preRaw_lt : ∀ (d : Digit) (q : Fin residualCount), preRaw d q < residualCount := by\n";
+    o << "  native_decide\n\n";
+    o << "def pre (d : Digit) (q : Fin residualCount) : Fin residualCount :=\n";
+    o << "  ⟨preRaw d q, preRaw_lt d q⟩\n\n";
     o << "def residualIndex (word : List Digit) (terminal : Fin residualCount) : Fin residualCount :=\n";
     o << "  word.foldr pre terminal\n\n";
     o << "theorem residualIndex_nil (t : Fin residualCount) : residualIndex [] t = t := by rfl\n";

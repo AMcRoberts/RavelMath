@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "ravel/proof/generalized_multinacci_primitive_intertwiner.hpp"
+#include "math/proof_reflection.hpp"
 
 namespace ravel::proof {
 
@@ -124,6 +125,28 @@ inline GeneralizedMultinacciSymbolicEmbeddingProof
     out.proved=out.parameter_domain &&
                out.universal_suspension_embedding_all_dimensions;
     return out;
+}
+
+// Stages a `GeneralizedMultinacciSymbolicEmbeddingReflectionCertificate`
+// for one (D,m) instance -- gates on `proof.proved` AND the independently
+// re-checked identity universal_macro_edges = total_parent_occurrences^2
+// (not assumed; recomputed here from the certificate's own recorded
+// fields, matching what derive_generalized_multinacci_symbolic_embedding's
+// caller in the test file cross-checks against a wholly separate
+// implementation).
+inline void stage_generalized_multinacci_symbolic_embedding(
+        const GeneralizedMultinacciSymbolicEmbeddingProof& proof,
+        const std::string& description) {
+    if (!proof.proved) return;
+    if (proof.universal_macro_edges != proof.total_parent_occurrences * proof.total_parent_occurrences) return;
+    if (!mathlib::reflection::enabled()) return;
+    mathlib::reflection::GeneralizedMultinacciSymbolicEmbeddingReflectionCertificate node;
+    node.dimension = static_cast<long long>(proof.dimension);
+    node.multiplicity = static_cast<long long>(proof.multiplicity);
+    node.total_parent_occurrences = static_cast<long long>(proof.total_parent_occurrences);
+    node.universal_macro_edges = static_cast<long long>(proof.universal_macro_edges);
+    node.description = description;
+    mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, node);
 }
 
 } // namespace ravel::proof

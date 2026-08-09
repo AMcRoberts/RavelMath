@@ -12,7 +12,7 @@ namespace SignFluxRank
 
 variable {State : Type} (edge : State → State → Prop)
 
-structure GeneratedPotential where
+structure GeneratedPotential (State : Type) where
   value : State → Int
 
 def StrictOn (R : GeneratedPotential State) : Prop :=

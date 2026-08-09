@@ -29,7 +29,12 @@ theorem profileEval_relabel
     (∑ u : U, (∑ l : L, if embed l = u then profile l else 0) * value u)
       = ∑ l : L, profile l * value (embed l) := by
   classical
+  simp_rw [Finset.sum_mul]
   rw [Finset.sum_comm]
-  simp [Finset.mul_sum]
+  simp only [ite_mul, zero_mul]
+  congr 1
+  funext l
+  rw [Finset.sum_ite_eq Finset.univ (embed l) (fun u => profile l * value u)]
+  simp
 
 end RavelPlayground

@@ -171,6 +171,46 @@ lean-check: nbonacci_charmpoly_proof_probe
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/sturm_sequence_root_counting.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/depressed_cubic_complex_pair_modulus.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/depressed_cubic_not_pisot_batch.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/adjacent_swap_count_batch.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/cycle_charpoly_campaign_validation.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/graph_cycle_charpoly_factor_validation.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/cyclic_controller_pumping.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/continuation_controller_family_algebra.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/nbonacci_margin_catalogue.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/feeder_cycle_charpoly_batch.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/regular_shell_charpoly_batch.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/strict_shell_pump_batch.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/realized_first_return_completeness.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/recurrent_family_exhaustion_batch.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/predicted_core_scc_exhaustion_batch.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/coupled_winning_predicate_batch.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/radial_translation_defect_batch.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/defect_splice_step_batch.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/condition_f_joint_dominance_batch.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/condition_f_joint_qr_playground.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/finite_positive_grammar_majorant.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/finite_positive_grammar_majorant_batch.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/nbonacci_universal_n.kernel_checked.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/characteristic_minor_maps_direct.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/coefficient_profile_parity_obstruction.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/cyclotomic_obstruction.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/first_return_obligations_discharged.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/generalized_multinacci_admissible_subgrammar.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/generalized_multinacci_general_m.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/generalized_multinacci_general_m_intertwiner.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/generalized_multinacci_primitive_intertwiner.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/generalized_multinacci_signed_renewal_twist.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/generalized_multinacci_symbolic_embedding.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/generic_residual_formula.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/monotone_profile_corridor_closure.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/norm_weighted_qr_majorant.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/multi_compartment_closure_validation.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/plastic_three_generator_intertwiner.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/quartic_fourth_generator_quotient.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/shared_polynomial_closure_validation.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/shift_branch_three_generator_continuation.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/supergolden_three_generator_intertwiner.lean)
+	cd $(LEAN_ENV) && lake env lean $(abspath lean/generated/third_smallest_pisot_parry_factorization_batch.lean)
 	@if rg -n '^[[:space:]]*sorry([[:space:]]|$$)' \
 		lean/free_involution_perron_core.lean \
 		lean/return_contact_lift.lean \
@@ -227,6 +267,46 @@ lean-check: nbonacci_charmpoly_proof_probe
 		lean/sturm_sequence_root_counting.lean \
 		lean/depressed_cubic_complex_pair_modulus.lean \
 		lean/generated/depressed_cubic_not_pisot_batch.lean \
+		lean/generated/adjacent_swap_count_batch.lean \
+		lean/cycle_charpoly_campaign_validation.lean \
+		lean/graph_cycle_charpoly_factor_validation.lean \
+		lean/cyclic_controller_pumping.lean \
+		lean/continuation_controller_family_algebra.lean \
+		lean/nbonacci_margin_catalogue.lean \
+		lean/generated/feeder_cycle_charpoly_batch.lean \
+		lean/generated/regular_shell_charpoly_batch.lean \
+		lean/generated/strict_shell_pump_batch.lean \
+		lean/generated/realized_first_return_completeness.lean \
+		lean/generated/recurrent_family_exhaustion_batch.lean \
+		lean/generated/predicted_core_scc_exhaustion_batch.lean \
+		lean/generated/coupled_winning_predicate_batch.lean \
+		lean/generated/radial_translation_defect_batch.lean \
+		lean/generated/defect_splice_step_batch.lean \
+		lean/generated/condition_f_joint_dominance_batch.lean \
+		lean/generated/condition_f_joint_qr_playground.lean \
+		lean/generated/finite_positive_grammar_majorant.lean \
+		lean/generated/finite_positive_grammar_majorant_batch.lean \
+		lean/generated/nbonacci_universal_n.kernel_checked.lean \
+		lean/generated/characteristic_minor_maps_direct.lean \
+		lean/generated/coefficient_profile_parity_obstruction.lean \
+		lean/generated/cyclotomic_obstruction.lean \
+		lean/generated/first_return_obligations_discharged.lean \
+		lean/generated/generalized_multinacci_admissible_subgrammar.lean \
+		lean/generated/generalized_multinacci_general_m.lean \
+		lean/generated/generalized_multinacci_general_m_intertwiner.lean \
+		lean/generated/generalized_multinacci_primitive_intertwiner.lean \
+		lean/generated/generalized_multinacci_signed_renewal_twist.lean \
+		lean/generated/generalized_multinacci_symbolic_embedding.lean \
+		lean/generated/generic_residual_formula.lean \
+		lean/generated/monotone_profile_corridor_closure.lean \
+		lean/generated/multi_compartment_closure_validation.lean \
+		lean/generated/norm_weighted_qr_majorant.lean \
+		lean/generated/plastic_three_generator_intertwiner.lean \
+		lean/generated/quartic_fourth_generator_quotient.lean \
+		lean/generated/shared_polynomial_closure_validation.lean \
+		lean/generated/shift_branch_three_generator_continuation.lean \
+		lean/generated/supergolden_three_generator_intertwiner.lean \
+		lean/generated/third_smallest_pisot_parry_factorization_batch.lean \
 		lean/generated/period_rotation_batch.lean; then \
 		echo "ERROR: enrolled Lean file contains sorry"; exit 1; \
 	else \
@@ -714,6 +794,8 @@ TESTS_DEFAULT := \
 	corona_test \
 	contact_boundary_test \
 	exact_pisot_test \
+	pisot_degree_bound_safety_test \
+	pisot_classify_degree_n_test \
 	spectral_general_test \
 	survey_test \
 	qbeta_eigenvalue_test \
@@ -759,7 +841,48 @@ TESTS_DEFAULT := \
 	proof_campaign_engine_test \
 	generalized_campaign_test \
 	legacy_campaign_bridge_test \
-	qmatrix_typed_ir_test
+	qmatrix_typed_ir_test \
+	class_ii_backward_layers_reflection_test \
+	cayley_hamilton_cubic_reflection_test \
+	class_ii_shell_citation_test \
+	class_ii_penultimate_pair_reflection_test \
+	class_ii_both_fixed_affine_reflection_test \
+	class_ii_six_vertex_graduation_reflection_test \
+	class_ii_neighbor_d_support_reflection_test \
+	constant_last_letter_reflection_test \
+	class_ii_interior_tip_reflection_test \
+	class_ii_global_round_phase_reflection_test \
+	barge_diamond_finding37_test \
+	class_ii_d_cont_in_pre_contact_reflection_test \
+	class_ii_fixed_tables_reflection_test \
+	last_letter_orbit_reflection_test \
+	depressed_cubic_not_pisot_reflection_test \
+	class_ii_terminal_shell_reflection_test \
+	barge_diamond_certificate_test \
+	class_ii_neighbor2_fixed_reflection_test \
+	class_ii_round1_raw27_reflection_test \
+	barge_diamond_wide_batch_test \
+	period_rotation_certificate_test \
+	constant_first_letter_reflection_test \
+	first_letter_orbit_finding41_test \
+	first_letter_orbit_reflection_test \
+	pisot_root_ordering_reflection_test \
+	leftmost_loop_reflection_test \
+	zero_run_same_chain_reflection_test \
+	class_ii_terminal_sextet_reflection_test \
+	adjacent_swap_count_reflection_test \
+	feeder_cycle_charpoly_reflection_test \
+	regular_shell_charpoly_reflection_test \
+	strict_shell_pump_reflection_test \
+	realized_first_return_completeness_test \
+	recurrent_family_exhaustion_reflection_test \
+	predicted_core_scc_exhaustion_reflection_test \
+	coupled_winning_predicate_reflection_test \
+	radial_translation_defect_reflection_test \
+	defect_splice_step_reflection_test \
+	condition_f_joint_dominance_reflection_test \
+	finite_positive_grammar_majorant_reflection_test \
+	third_smallest_pisot_parry_factorization_reflection_test
 
 tests: $(TESTS_DEFAULT)
 
@@ -866,6 +989,16 @@ $(CONTACT_BOUNDARY_TEST_BIN): $(TESTDIR)/contact_boundary_test.cpp | $(BUILDDIR)
 EXACT_PISOT_TEST_BIN := $(BUILDDIR)/exact_pisot_test
 exact_pisot_test: $(EXACT_PISOT_TEST_BIN)
 $(EXACT_PISOT_TEST_BIN): $(TESTDIR)/exact_pisot_test.cpp $(MATH_INCDIR)/exact_pisot.h | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) -I$(MATH_INCDIR) -I$(MATH_INCGMPL) $< $(MATH_LIB) -o $@
+
+PISOT_DEGREE_BOUND_SAFETY_TEST_BIN := $(BUILDDIR)/pisot_degree_bound_safety_test
+pisot_degree_bound_safety_test: $(PISOT_DEGREE_BOUND_SAFETY_TEST_BIN)
+$(PISOT_DEGREE_BOUND_SAFETY_TEST_BIN): $(TESTDIR)/pisot_degree_bound_safety_test.cpp $(MATH_INCDIR)/exact_pisot.h | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) -I$(MATH_INCDIR) -I$(MATH_INCGMPL) $< $(MATH_LIB) -o $@
+
+PISOT_CLASSIFY_DEGREE_N_TEST_BIN := $(BUILDDIR)/pisot_classify_degree_n_test
+pisot_classify_degree_n_test: $(PISOT_CLASSIFY_DEGREE_N_TEST_BIN)
+$(PISOT_CLASSIFY_DEGREE_N_TEST_BIN): $(TESTDIR)/pisot_classify_degree_n_test.cpp $(MATH_INCDIR)/exact_pisot.h | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) -I$(MATH_INCDIR) -I$(MATH_INCGMPL) $< $(MATH_LIB) -o $@
 
 SPECTRAL_GENERAL_TEST_BIN := $(BUILDDIR)/spectral_general_test
@@ -1907,6 +2040,291 @@ proof_campaign_engine_test: $(PROOF_CAMPAIGN_ENGINE_TEST_BIN)
 	./$(PROOF_CAMPAIGN_ENGINE_TEST_BIN)
 .PHONY: proof_campaign_engine_test
 
+# ==== LEAN Bridge renderer tests: each rebuilds its canonical
+# lean/generated/*.lean file directly (no /tmp indirection), so
+# `make <name>` is always the unambiguous way to regenerate and
+# re-verify the C++ side of any of these findings.
+TEST_BIN_CLASS_II_BACKWARD_LAYERS_REFLECTION_TEST := $(BUILDDIR)/class_ii_backward_layers_reflection_test
+$(TEST_BIN_CLASS_II_BACKWARD_LAYERS_REFLECTION_TEST): $(TESTDIR)/class_ii_backward_layers_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+class_ii_backward_layers_reflection_test: $(TEST_BIN_CLASS_II_BACKWARD_LAYERS_REFLECTION_TEST)
+	./$(TEST_BIN_CLASS_II_BACKWARD_LAYERS_REFLECTION_TEST)
+.PHONY: class_ii_backward_layers_reflection_test
+
+TEST_BIN_CAYLEY_HAMILTON_CUBIC_REFLECTION_TEST := $(BUILDDIR)/cayley_hamilton_cubic_reflection_test
+$(TEST_BIN_CAYLEY_HAMILTON_CUBIC_REFLECTION_TEST): $(TESTDIR)/cayley_hamilton_cubic_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+cayley_hamilton_cubic_reflection_test: $(TEST_BIN_CAYLEY_HAMILTON_CUBIC_REFLECTION_TEST)
+	./$(TEST_BIN_CAYLEY_HAMILTON_CUBIC_REFLECTION_TEST)
+.PHONY: cayley_hamilton_cubic_reflection_test
+
+TEST_BIN_CLASS_II_SHELL_CITATION_TEST := $(BUILDDIR)/class_ii_shell_citation_test
+$(TEST_BIN_CLASS_II_SHELL_CITATION_TEST): $(TESTDIR)/class_ii_shell_citation_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+class_ii_shell_citation_test: $(TEST_BIN_CLASS_II_SHELL_CITATION_TEST)
+	./$(TEST_BIN_CLASS_II_SHELL_CITATION_TEST)
+.PHONY: class_ii_shell_citation_test
+
+TEST_BIN_CLASS_II_PENULTIMATE_PAIR_REFLECTION_TEST := $(BUILDDIR)/class_ii_penultimate_pair_reflection_test
+$(TEST_BIN_CLASS_II_PENULTIMATE_PAIR_REFLECTION_TEST): $(TESTDIR)/class_ii_penultimate_pair_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+class_ii_penultimate_pair_reflection_test: $(TEST_BIN_CLASS_II_PENULTIMATE_PAIR_REFLECTION_TEST)
+	./$(TEST_BIN_CLASS_II_PENULTIMATE_PAIR_REFLECTION_TEST)
+.PHONY: class_ii_penultimate_pair_reflection_test
+
+TEST_BIN_CLASS_II_BOTH_FIXED_AFFINE_REFLECTION_TEST := $(BUILDDIR)/class_ii_both_fixed_affine_reflection_test
+$(TEST_BIN_CLASS_II_BOTH_FIXED_AFFINE_REFLECTION_TEST): $(TESTDIR)/class_ii_both_fixed_affine_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+class_ii_both_fixed_affine_reflection_test: $(TEST_BIN_CLASS_II_BOTH_FIXED_AFFINE_REFLECTION_TEST)
+	./$(TEST_BIN_CLASS_II_BOTH_FIXED_AFFINE_REFLECTION_TEST)
+.PHONY: class_ii_both_fixed_affine_reflection_test
+
+TEST_BIN_CLASS_II_SIX_VERTEX_GRADUATION_REFLECTION_TEST := $(BUILDDIR)/class_ii_six_vertex_graduation_reflection_test
+$(TEST_BIN_CLASS_II_SIX_VERTEX_GRADUATION_REFLECTION_TEST): $(TESTDIR)/class_ii_six_vertex_graduation_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+class_ii_six_vertex_graduation_reflection_test: $(TEST_BIN_CLASS_II_SIX_VERTEX_GRADUATION_REFLECTION_TEST)
+	./$(TEST_BIN_CLASS_II_SIX_VERTEX_GRADUATION_REFLECTION_TEST)
+.PHONY: class_ii_six_vertex_graduation_reflection_test
+
+TEST_BIN_CLASS_II_NEIGHBOR_D_SUPPORT_REFLECTION_TEST := $(BUILDDIR)/class_ii_neighbor_d_support_reflection_test
+$(TEST_BIN_CLASS_II_NEIGHBOR_D_SUPPORT_REFLECTION_TEST): $(TESTDIR)/class_ii_neighbor_d_support_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+class_ii_neighbor_d_support_reflection_test: $(TEST_BIN_CLASS_II_NEIGHBOR_D_SUPPORT_REFLECTION_TEST)
+	./$(TEST_BIN_CLASS_II_NEIGHBOR_D_SUPPORT_REFLECTION_TEST)
+.PHONY: class_ii_neighbor_d_support_reflection_test
+
+TEST_BIN_CONSTANT_LAST_LETTER_REFLECTION_TEST := $(BUILDDIR)/constant_last_letter_reflection_test
+$(TEST_BIN_CONSTANT_LAST_LETTER_REFLECTION_TEST): $(TESTDIR)/constant_last_letter_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+constant_last_letter_reflection_test: $(TEST_BIN_CONSTANT_LAST_LETTER_REFLECTION_TEST)
+	./$(TEST_BIN_CONSTANT_LAST_LETTER_REFLECTION_TEST)
+.PHONY: constant_last_letter_reflection_test
+
+TEST_BIN_CLASS_II_INTERIOR_TIP_REFLECTION_TEST := $(BUILDDIR)/class_ii_interior_tip_reflection_test
+$(TEST_BIN_CLASS_II_INTERIOR_TIP_REFLECTION_TEST): $(TESTDIR)/class_ii_interior_tip_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+class_ii_interior_tip_reflection_test: $(TEST_BIN_CLASS_II_INTERIOR_TIP_REFLECTION_TEST)
+	./$(TEST_BIN_CLASS_II_INTERIOR_TIP_REFLECTION_TEST)
+.PHONY: class_ii_interior_tip_reflection_test
+
+TEST_BIN_CLASS_II_GLOBAL_ROUND_PHASE_REFLECTION_TEST := $(BUILDDIR)/class_ii_global_round_phase_reflection_test
+$(TEST_BIN_CLASS_II_GLOBAL_ROUND_PHASE_REFLECTION_TEST): $(TESTDIR)/class_ii_global_round_phase_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+class_ii_global_round_phase_reflection_test: $(TEST_BIN_CLASS_II_GLOBAL_ROUND_PHASE_REFLECTION_TEST)
+	./$(TEST_BIN_CLASS_II_GLOBAL_ROUND_PHASE_REFLECTION_TEST)
+.PHONY: class_ii_global_round_phase_reflection_test
+
+TEST_BIN_BARGE_DIAMOND_FINDING37_TEST := $(BUILDDIR)/barge_diamond_finding37_test
+$(TEST_BIN_BARGE_DIAMOND_FINDING37_TEST): $(TESTDIR)/barge_diamond_finding37_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+barge_diamond_finding37_test: $(TEST_BIN_BARGE_DIAMOND_FINDING37_TEST)
+	./$(TEST_BIN_BARGE_DIAMOND_FINDING37_TEST)
+.PHONY: barge_diamond_finding37_test
+
+TEST_BIN_CLASS_II_D_CONT_IN_PRE_CONTACT_REFLECTION_TEST := $(BUILDDIR)/class_ii_d_cont_in_pre_contact_reflection_test
+$(TEST_BIN_CLASS_II_D_CONT_IN_PRE_CONTACT_REFLECTION_TEST): $(TESTDIR)/class_ii_d_cont_in_pre_contact_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+class_ii_d_cont_in_pre_contact_reflection_test: $(TEST_BIN_CLASS_II_D_CONT_IN_PRE_CONTACT_REFLECTION_TEST)
+	./$(TEST_BIN_CLASS_II_D_CONT_IN_PRE_CONTACT_REFLECTION_TEST)
+.PHONY: class_ii_d_cont_in_pre_contact_reflection_test
+
+TEST_BIN_CLASS_II_FIXED_TABLES_REFLECTION_TEST := $(BUILDDIR)/class_ii_fixed_tables_reflection_test
+$(TEST_BIN_CLASS_II_FIXED_TABLES_REFLECTION_TEST): $(TESTDIR)/class_ii_fixed_tables_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+class_ii_fixed_tables_reflection_test: $(TEST_BIN_CLASS_II_FIXED_TABLES_REFLECTION_TEST)
+	./$(TEST_BIN_CLASS_II_FIXED_TABLES_REFLECTION_TEST)
+.PHONY: class_ii_fixed_tables_reflection_test
+
+TEST_BIN_LAST_LETTER_ORBIT_REFLECTION_TEST := $(BUILDDIR)/last_letter_orbit_reflection_test
+$(TEST_BIN_LAST_LETTER_ORBIT_REFLECTION_TEST): $(TESTDIR)/last_letter_orbit_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+last_letter_orbit_reflection_test: $(TEST_BIN_LAST_LETTER_ORBIT_REFLECTION_TEST)
+	./$(TEST_BIN_LAST_LETTER_ORBIT_REFLECTION_TEST)
+.PHONY: last_letter_orbit_reflection_test
+
+TEST_BIN_DEPRESSED_CUBIC_NOT_PISOT_REFLECTION_TEST := $(BUILDDIR)/depressed_cubic_not_pisot_reflection_test
+$(TEST_BIN_DEPRESSED_CUBIC_NOT_PISOT_REFLECTION_TEST): $(TESTDIR)/depressed_cubic_not_pisot_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+depressed_cubic_not_pisot_reflection_test: $(TEST_BIN_DEPRESSED_CUBIC_NOT_PISOT_REFLECTION_TEST)
+	./$(TEST_BIN_DEPRESSED_CUBIC_NOT_PISOT_REFLECTION_TEST)
+.PHONY: depressed_cubic_not_pisot_reflection_test
+
+TEST_BIN_CLASS_II_TERMINAL_SHELL_REFLECTION_TEST := $(BUILDDIR)/class_ii_terminal_shell_reflection_test
+$(TEST_BIN_CLASS_II_TERMINAL_SHELL_REFLECTION_TEST): $(TESTDIR)/class_ii_terminal_shell_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+class_ii_terminal_shell_reflection_test: $(TEST_BIN_CLASS_II_TERMINAL_SHELL_REFLECTION_TEST)
+	./$(TEST_BIN_CLASS_II_TERMINAL_SHELL_REFLECTION_TEST)
+.PHONY: class_ii_terminal_shell_reflection_test
+
+TEST_BIN_BARGE_DIAMOND_CERTIFICATE_TEST := $(BUILDDIR)/barge_diamond_certificate_test
+$(TEST_BIN_BARGE_DIAMOND_CERTIFICATE_TEST): $(TESTDIR)/barge_diamond_certificate_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+barge_diamond_certificate_test: $(TEST_BIN_BARGE_DIAMOND_CERTIFICATE_TEST)
+	./$(TEST_BIN_BARGE_DIAMOND_CERTIFICATE_TEST)
+.PHONY: barge_diamond_certificate_test
+
+TEST_BIN_CLASS_II_NEIGHBOR2_FIXED_REFLECTION_TEST := $(BUILDDIR)/class_ii_neighbor2_fixed_reflection_test
+$(TEST_BIN_CLASS_II_NEIGHBOR2_FIXED_REFLECTION_TEST): $(TESTDIR)/class_ii_neighbor2_fixed_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+class_ii_neighbor2_fixed_reflection_test: $(TEST_BIN_CLASS_II_NEIGHBOR2_FIXED_REFLECTION_TEST)
+	./$(TEST_BIN_CLASS_II_NEIGHBOR2_FIXED_REFLECTION_TEST)
+.PHONY: class_ii_neighbor2_fixed_reflection_test
+
+TEST_BIN_CLASS_II_ROUND1_RAW27_REFLECTION_TEST := $(BUILDDIR)/class_ii_round1_raw27_reflection_test
+$(TEST_BIN_CLASS_II_ROUND1_RAW27_REFLECTION_TEST): $(TESTDIR)/class_ii_round1_raw27_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+class_ii_round1_raw27_reflection_test: $(TEST_BIN_CLASS_II_ROUND1_RAW27_REFLECTION_TEST)
+	./$(TEST_BIN_CLASS_II_ROUND1_RAW27_REFLECTION_TEST)
+.PHONY: class_ii_round1_raw27_reflection_test
+
+TEST_BIN_BARGE_DIAMOND_WIDE_BATCH_TEST := $(BUILDDIR)/barge_diamond_wide_batch_test
+$(TEST_BIN_BARGE_DIAMOND_WIDE_BATCH_TEST): $(TESTDIR)/barge_diamond_wide_batch_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+barge_diamond_wide_batch_test: $(TEST_BIN_BARGE_DIAMOND_WIDE_BATCH_TEST)
+	./$(TEST_BIN_BARGE_DIAMOND_WIDE_BATCH_TEST)
+.PHONY: barge_diamond_wide_batch_test
+
+TEST_BIN_PERIOD_ROTATION_CERTIFICATE_TEST := $(BUILDDIR)/period_rotation_certificate_test
+$(TEST_BIN_PERIOD_ROTATION_CERTIFICATE_TEST): $(TESTDIR)/period_rotation_certificate_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+period_rotation_certificate_test: $(TEST_BIN_PERIOD_ROTATION_CERTIFICATE_TEST)
+	./$(TEST_BIN_PERIOD_ROTATION_CERTIFICATE_TEST)
+.PHONY: period_rotation_certificate_test
+
+TEST_BIN_CONSTANT_FIRST_LETTER_REFLECTION_TEST := $(BUILDDIR)/constant_first_letter_reflection_test
+$(TEST_BIN_CONSTANT_FIRST_LETTER_REFLECTION_TEST): $(TESTDIR)/constant_first_letter_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+constant_first_letter_reflection_test: $(TEST_BIN_CONSTANT_FIRST_LETTER_REFLECTION_TEST)
+	./$(TEST_BIN_CONSTANT_FIRST_LETTER_REFLECTION_TEST)
+.PHONY: constant_first_letter_reflection_test
+
+TEST_BIN_FIRST_LETTER_ORBIT_FINDING41_TEST := $(BUILDDIR)/first_letter_orbit_finding41_test
+$(TEST_BIN_FIRST_LETTER_ORBIT_FINDING41_TEST): $(TESTDIR)/first_letter_orbit_finding41_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+first_letter_orbit_finding41_test: $(TEST_BIN_FIRST_LETTER_ORBIT_FINDING41_TEST)
+	./$(TEST_BIN_FIRST_LETTER_ORBIT_FINDING41_TEST)
+.PHONY: first_letter_orbit_finding41_test
+
+TEST_BIN_FIRST_LETTER_ORBIT_REFLECTION_TEST := $(BUILDDIR)/first_letter_orbit_reflection_test
+$(TEST_BIN_FIRST_LETTER_ORBIT_REFLECTION_TEST): $(TESTDIR)/first_letter_orbit_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+first_letter_orbit_reflection_test: $(TEST_BIN_FIRST_LETTER_ORBIT_REFLECTION_TEST)
+	./$(TEST_BIN_FIRST_LETTER_ORBIT_REFLECTION_TEST)
+.PHONY: first_letter_orbit_reflection_test
+
+TEST_BIN_PISOT_ROOT_ORDERING_REFLECTION_TEST := $(BUILDDIR)/pisot_root_ordering_reflection_test
+$(TEST_BIN_PISOT_ROOT_ORDERING_REFLECTION_TEST): $(TESTDIR)/pisot_root_ordering_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+pisot_root_ordering_reflection_test: $(TEST_BIN_PISOT_ROOT_ORDERING_REFLECTION_TEST)
+	./$(TEST_BIN_PISOT_ROOT_ORDERING_REFLECTION_TEST)
+.PHONY: pisot_root_ordering_reflection_test
+
+TEST_BIN_LEFTMOST_LOOP_REFLECTION_TEST := $(BUILDDIR)/leftmost_loop_reflection_test
+$(TEST_BIN_LEFTMOST_LOOP_REFLECTION_TEST): $(TESTDIR)/leftmost_loop_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+leftmost_loop_reflection_test: $(TEST_BIN_LEFTMOST_LOOP_REFLECTION_TEST)
+	./$(TEST_BIN_LEFTMOST_LOOP_REFLECTION_TEST)
+.PHONY: leftmost_loop_reflection_test
+
+TEST_BIN_ZERO_RUN_SAME_CHAIN_REFLECTION_TEST := $(BUILDDIR)/zero_run_same_chain_reflection_test
+$(TEST_BIN_ZERO_RUN_SAME_CHAIN_REFLECTION_TEST): $(TESTDIR)/zero_run_same_chain_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+zero_run_same_chain_reflection_test: $(TEST_BIN_ZERO_RUN_SAME_CHAIN_REFLECTION_TEST)
+	./$(TEST_BIN_ZERO_RUN_SAME_CHAIN_REFLECTION_TEST)
+.PHONY: zero_run_same_chain_reflection_test
+
+TEST_BIN_CLASS_II_TERMINAL_SEXTET_REFLECTION_TEST := $(BUILDDIR)/class_ii_terminal_sextet_reflection_test
+$(TEST_BIN_CLASS_II_TERMINAL_SEXTET_REFLECTION_TEST): $(TESTDIR)/class_ii_terminal_sextet_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+class_ii_terminal_sextet_reflection_test: $(TEST_BIN_CLASS_II_TERMINAL_SEXTET_REFLECTION_TEST)
+	./$(TEST_BIN_CLASS_II_TERMINAL_SEXTET_REFLECTION_TEST)
+.PHONY: class_ii_terminal_sextet_reflection_test
+
+TEST_BIN_ADJACENT_SWAP_COUNT_REFLECTION_TEST := $(BUILDDIR)/adjacent_swap_count_reflection_test
+$(TEST_BIN_ADJACENT_SWAP_COUNT_REFLECTION_TEST): $(TESTDIR)/adjacent_swap_count_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+adjacent_swap_count_reflection_test: $(TEST_BIN_ADJACENT_SWAP_COUNT_REFLECTION_TEST)
+	./$(TEST_BIN_ADJACENT_SWAP_COUNT_REFLECTION_TEST)
+.PHONY: adjacent_swap_count_reflection_test
+
+TEST_BIN_FEEDER_CYCLE_CHARPOLY_REFLECTION_TEST := $(BUILDDIR)/feeder_cycle_charpoly_reflection_test
+$(TEST_BIN_FEEDER_CYCLE_CHARPOLY_REFLECTION_TEST): $(TESTDIR)/feeder_cycle_charpoly_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+feeder_cycle_charpoly_reflection_test: $(TEST_BIN_FEEDER_CYCLE_CHARPOLY_REFLECTION_TEST)
+	./$(TEST_BIN_FEEDER_CYCLE_CHARPOLY_REFLECTION_TEST)
+.PHONY: feeder_cycle_charpoly_reflection_test
+
+TEST_BIN_REGULAR_SHELL_CHARPOLY_REFLECTION_TEST := $(BUILDDIR)/regular_shell_charpoly_reflection_test
+$(TEST_BIN_REGULAR_SHELL_CHARPOLY_REFLECTION_TEST): $(TESTDIR)/regular_shell_charpoly_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+regular_shell_charpoly_reflection_test: $(TEST_BIN_REGULAR_SHELL_CHARPOLY_REFLECTION_TEST)
+	./$(TEST_BIN_REGULAR_SHELL_CHARPOLY_REFLECTION_TEST)
+.PHONY: regular_shell_charpoly_reflection_test
+
+TEST_BIN_STRICT_SHELL_PUMP_REFLECTION_TEST := $(BUILDDIR)/strict_shell_pump_reflection_test
+$(TEST_BIN_STRICT_SHELL_PUMP_REFLECTION_TEST): $(TESTDIR)/strict_shell_pump_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+strict_shell_pump_reflection_test: $(TEST_BIN_STRICT_SHELL_PUMP_REFLECTION_TEST)
+	./$(TEST_BIN_STRICT_SHELL_PUMP_REFLECTION_TEST)
+.PHONY: strict_shell_pump_reflection_test
+
+TEST_BIN_PREDICTED_CORE_SCC_EXHAUSTION_REFLECTION_TEST := $(BUILDDIR)/predicted_core_scc_exhaustion_reflection_test
+$(TEST_BIN_PREDICTED_CORE_SCC_EXHAUSTION_REFLECTION_TEST): $(TESTDIR)/predicted_core_scc_exhaustion_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+predicted_core_scc_exhaustion_reflection_test: $(TEST_BIN_PREDICTED_CORE_SCC_EXHAUSTION_REFLECTION_TEST)
+	./$(TEST_BIN_PREDICTED_CORE_SCC_EXHAUSTION_REFLECTION_TEST)
+.PHONY: predicted_core_scc_exhaustion_reflection_test
+
+TEST_BIN_COUPLED_WINNING_PREDICATE_REFLECTION_TEST := $(BUILDDIR)/coupled_winning_predicate_reflection_test
+$(TEST_BIN_COUPLED_WINNING_PREDICATE_REFLECTION_TEST): $(TESTDIR)/coupled_winning_predicate_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+coupled_winning_predicate_reflection_test: $(TEST_BIN_COUPLED_WINNING_PREDICATE_REFLECTION_TEST)
+	./$(TEST_BIN_COUPLED_WINNING_PREDICATE_REFLECTION_TEST)
+.PHONY: coupled_winning_predicate_reflection_test
+
+TEST_BIN_RADIAL_TRANSLATION_DEFECT_REFLECTION_TEST := $(BUILDDIR)/radial_translation_defect_reflection_test
+$(TEST_BIN_RADIAL_TRANSLATION_DEFECT_REFLECTION_TEST): $(TESTDIR)/radial_translation_defect_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+radial_translation_defect_reflection_test: $(TEST_BIN_RADIAL_TRANSLATION_DEFECT_REFLECTION_TEST)
+	./$(TEST_BIN_RADIAL_TRANSLATION_DEFECT_REFLECTION_TEST)
+.PHONY: radial_translation_defect_reflection_test
+
+TEST_BIN_DEFECT_SPLICE_STEP_REFLECTION_TEST := $(BUILDDIR)/defect_splice_step_reflection_test
+$(TEST_BIN_DEFECT_SPLICE_STEP_REFLECTION_TEST): $(TESTDIR)/defect_splice_step_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+defect_splice_step_reflection_test: $(TEST_BIN_DEFECT_SPLICE_STEP_REFLECTION_TEST)
+	./$(TEST_BIN_DEFECT_SPLICE_STEP_REFLECTION_TEST)
+.PHONY: defect_splice_step_reflection_test
+
+# universal_dominance_closed_relation_reflection_test retired 2026-08-08:
+# it existed solely to emit lean/generated/universal_dominance_closed_relation_batch.lean
+# for the shell-rank/carry-bound route, superseded by the canonical Q/R
+# closure (docs/NBONACCI_UNIVERSAL_DOMINANCE_CLOSED_2026-08-08.md). Test
+# moved to archive/2026-08-08_superseded_shell_rank_route/, Lean output to
+# lean/archive/universal_dominance_closed_relation_batch.lean.
+
+TEST_BIN_CONDITION_F_JOINT_DOMINANCE_REFLECTION_TEST := $(BUILDDIR)/condition_f_joint_dominance_reflection_test
+$(TEST_BIN_CONDITION_F_JOINT_DOMINANCE_REFLECTION_TEST): $(TESTDIR)/condition_f_joint_dominance_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+condition_f_joint_dominance_reflection_test: $(TEST_BIN_CONDITION_F_JOINT_DOMINANCE_REFLECTION_TEST)
+	./$(TEST_BIN_CONDITION_F_JOINT_DOMINANCE_REFLECTION_TEST)
+.PHONY: condition_f_joint_dominance_reflection_test
+
+TEST_BIN_FINITE_POSITIVE_GRAMMAR_MAJORANT_REFLECTION_TEST := $(BUILDDIR)/finite_positive_grammar_majorant_reflection_test
+$(TEST_BIN_FINITE_POSITIVE_GRAMMAR_MAJORANT_REFLECTION_TEST): $(TESTDIR)/finite_positive_grammar_majorant_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+finite_positive_grammar_majorant_reflection_test: $(TEST_BIN_FINITE_POSITIVE_GRAMMAR_MAJORANT_REFLECTION_TEST)
+	./$(TEST_BIN_FINITE_POSITIVE_GRAMMAR_MAJORANT_REFLECTION_TEST)
+.PHONY: finite_positive_grammar_majorant_reflection_test
+
+TEST_BIN_THIRD_SMALLEST_PISOT_PARRY_FACTORIZATION_REFLECTION_TEST := $(BUILDDIR)/third_smallest_pisot_parry_factorization_reflection_test
+$(TEST_BIN_THIRD_SMALLEST_PISOT_PARRY_FACTORIZATION_REFLECTION_TEST): $(TESTDIR)/third_smallest_pisot_parry_factorization_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+third_smallest_pisot_parry_factorization_reflection_test: $(TEST_BIN_THIRD_SMALLEST_PISOT_PARRY_FACTORIZATION_REFLECTION_TEST)
+	./$(TEST_BIN_THIRD_SMALLEST_PISOT_PARRY_FACTORIZATION_REFLECTION_TEST)
+.PHONY: third_smallest_pisot_parry_factorization_reflection_test
+
+
 
 GENERALIZED_CAMPAIGN_TEST_BIN := $(BUILDDIR)/generalized_campaign_test
 $(GENERALIZED_CAMPAIGN_TEST_BIN): $(TESTDIR)/generalized_campaign_test.cpp | $(BUILDDIR) $(MATH_LIB)
@@ -2186,16 +2604,16 @@ out/first_return_obligation_discharge_test: tests/first_return_obligation_discha
 first_return_obligation_discharge_test: out/first_return_obligation_discharge_test
 	./out/first_return_obligation_discharge_test
 
-out/cyclic_splice_completion_test: tests/cyclic_splice_completion_test.cpp include/ravel/proof/cyclic_splice_completion.hpp
+out/cyclic_splice_completion_test: tests/cyclic_splice_completion_test.cpp include/ravel/proof/cyclic_splice_completion.hpp math/out/libmath.a
 	@mkdir -p out
-	$(CXX) $(CXXFLAGS) -Iinclude $< -o $@
+	$(CXX) $(CXXFLAGS) -Iinclude -Imath/include -Imath/include/mini-gmp $< math/out/libmath.a -o $@
 
 .PHONY: cyclic_splice_completion_test
 cyclic_splice_completion_test: out/cyclic_splice_completion_test
 	./out/cyclic_splice_completion_test
 
-cyclic_splice_compactness_test:
-	$(CXX) $(CXXFLAGS) -Iinclude tests/cyclic_splice_compactness_test.cpp -o out/cyclic_splice_compactness_test
+cyclic_splice_compactness_test: math/out/libmath.a
+	$(CXX) $(CXXFLAGS) -Iinclude -Imath/include -Imath/include/mini-gmp tests/cyclic_splice_compactness_test.cpp math/out/libmath.a -o out/cyclic_splice_compactness_test
 	./out/cyclic_splice_compactness_test
 
 periodic_word_controller_cycle_test:
@@ -2418,6 +2836,17 @@ recurrent_family_exhaustion_real_test: $(RECURRENT_FAMILY_EXHAUSTION_REAL_TEST_B
 $(RECURRENT_FAMILY_EXHAUSTION_REAL_TEST_BIN): $(TESTDIR)/recurrent_family_exhaustion_real_test.cpp $(MATH_LIB)
 	@mkdir -p $(BUILDDIR)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+out/corona_truth_n6.bin: $(ADJACENT_COMPETITOR_TRANSPORT_BIN)
+	@mkdir -p out
+	./$(ADJACENT_COMPETITOR_TRANSPORT_BIN) --legacy-corona 6
+
+TEST_BIN_RECURRENT_FAMILY_EXHAUSTION_REFLECTION_TEST := $(BUILDDIR)/recurrent_family_exhaustion_reflection_test
+$(TEST_BIN_RECURRENT_FAMILY_EXHAUSTION_REFLECTION_TEST): $(TESTDIR)/recurrent_family_exhaustion_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+recurrent_family_exhaustion_reflection_test: $(TEST_BIN_RECURRENT_FAMILY_EXHAUSTION_REFLECTION_TEST) out/corona_truth_n6.bin
+	./$(TEST_BIN_RECURRENT_FAMILY_EXHAUSTION_REFLECTION_TEST)
+.PHONY: recurrent_family_exhaustion_reflection_test
 
 REJECTED_BOUNDARY_EXHAUSTION_TEST_BIN := $(BUILDDIR)/rejected_boundary_exhaustion_test
 .PHONY: rejected_boundary_exhaustion_test
@@ -2686,6 +3115,38 @@ generalized_multinacci_admissible_subgrammar_test: math/out/libmath.a
 generalized_multinacci_primitive_intertwiner_test: math/out/libmath.a
 	mkdir -p out
 	$(CXX) $(CXXFLAGS) -Iinclude -Imath/include -Imath/include/mini-gmp tests/generalized_multinacci_primitive_intertwiner_test.cpp -o out/generalized_multinacci_primitive_intertwiner_test math/out/libmath.a
+
+generalized_multinacci_general_m_test: math/out/libmath.a
+	mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude -Imath/include -Imath/include/mini-gmp tests/generalized_multinacci_general_m_test.cpp -o out/generalized_multinacci_general_m_test math/out/libmath.a
+
+generalized_multinacci_general_m_intertwiner_test: math/out/libmath.a
+	mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude -Imath/include -Imath/include/mini-gmp tests/generalized_multinacci_general_m_intertwiner_test.cpp -o out/generalized_multinacci_general_m_intertwiner_test math/out/libmath.a
+
+generalized_multinacci_signed_renewal_twist_test: math/out/libmath.a
+	mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude -Imath/include -Imath/include/mini-gmp tests/generalized_multinacci_signed_renewal_twist_test.cpp -o out/generalized_multinacci_signed_renewal_twist_test math/out/libmath.a
+
+monotone_profile_corridor_closure_test: math/out/libmath.a
+	mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude -Imath/include -Imath/include/mini-gmp tests/monotone_profile_corridor_closure_test.cpp -o out/monotone_profile_corridor_closure_test math/out/libmath.a
+
+plastic_three_generator_intertwiner_test: math/out/libmath.a
+	mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude -Imath/include -Imath/include/mini-gmp tests/plastic_three_generator_intertwiner_test.cpp -o out/plastic_three_generator_intertwiner_test math/out/libmath.a
+
+supergolden_three_generator_intertwiner_test: math/out/libmath.a
+	mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude -Imath/include -Imath/include/mini-gmp tests/supergolden_three_generator_intertwiner_test.cpp -o out/supergolden_three_generator_intertwiner_test math/out/libmath.a
+
+shift_branch_three_generator_continuation_test: math/out/libmath.a
+	mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude -Imath/include -Imath/include/mini-gmp tests/shift_branch_three_generator_continuation_test.cpp -o out/shift_branch_three_generator_continuation_test math/out/libmath.a
+
+coefficient_profile_parity_obstruction_test: math/out/libmath.a
+	mkdir -p out
+	$(CXX) $(CXXFLAGS) -Iinclude -Imath/include -Imath/include/mini-gmp tests/coefficient_profile_parity_obstruction_test.cpp -o out/coefficient_profile_parity_obstruction_test math/out/libmath.a
 
 .PHONY: generalized_multinacci_symbolic_embedding_test
 generalized_multinacci_symbolic_embedding_test: math/out/libmath.a

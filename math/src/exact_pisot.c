@@ -66,6 +66,11 @@
 #include "mini-gmp/mini-gmp.h"
 #include "mini-gmp/mini-mpq.h"
 
+/* poly_t's internal coefficient-array capacity, derived from the one
+ * public contract constant (PISOT_MAX_POLY_DEGREE, exact_pisot.h) so
+ * there is exactly one place to change the supported degree range. */
+#define POLY_COEFFS_CAP (PISOT_MAX_POLY_DEGREE + 1)
+
 /* =================================================================
  * Heap-allocated mpz/mpq helpers (used only for the low-frequency
  * public pisot_info_t fields -- see file header).
@@ -95,7 +100,7 @@ static void mpz_drop(mpz_ptr* p) {
  * ================================================================= */
 
 typedef struct {
-    mpq_t coeffs[16];  /* up to degree 15; only [0..degree] are mpq_init'd */
+    mpq_t coeffs[POLY_COEFFS_CAP];  /* up to degree PISOT_MAX_POLY_DEGREE; only [0..degree] are mpq_init'd */
     int degree;
 } poly_t;
 
@@ -286,7 +291,7 @@ static int sturm_chain_build(poly_t* seq, const poly_t* f) {
     poly_normalize(&seq[1]);
 
     int len = 2;
-    while (len < 16) {
+    while (len < POLY_COEFFS_CAP) {
         poly_t q, r;
         poly_divmod(&seq[len-2], &seq[len-1], &q, &r);
         if (poly_is_zero(&r)) {
@@ -300,6 +305,20 @@ static int sturm_chain_build(poly_t* seq, const poly_t* f) {
         len++;
         poly_clear(&q); poly_clear(&r);
         if (seq[len-1].degree == 0) break;
+    }
+    /* If the loop ran all the way to the array's capacity without ever
+     * reaching a genuine termination (zero remainder, or a constant
+     * last entry), the chain is truncated and mathematically invalid
+     * for Sturm sign-counting: every downstream sturm_count/isolate_roots
+     * call would silently compute a wrong result from an incomplete
+     * sign sequence. Signal failure instead of returning it -- this
+     * can only be reached for a squarefree input degree right at
+     * PISOT_MAX_POLY_DEGREE whose PRS chain needs the full capacity
+     * and doesn't reach a nonzero-constant terminus exactly at the
+     * last slot. */
+    if (len >= POLY_COEFFS_CAP && seq[len - 1].degree != 0) {
+        for (int i = 0; i < len; ++i) poly_clear(&seq[i]);
+        return 0;
     }
     return len;
 }
@@ -605,6 +624,26 @@ static void char_poly_4x4(const long long M[4][4], long long coeffs[5]) {
  * assumes monic).  Returns 0 on failure, 1 on success. */
 static int pisot_classify_poly(const long long *coeffs, int degree,
                                pisot_info_t *out) {
+    /* `out` is always fully initialized before any return (callers may
+     * unconditionally call pisot_info_clear on it), so the degree bound
+     * -- which must be checked before `degree` or `coeffs[0]` is used
+     * to build `p` or compute abs_det_signed below, since degree > cap
+     * would overflow poly_t's fixed-size coeffs array (POLY_COEFFS_CAP,
+     * exact_pisot.h) -- is checked only after this initialization. */
+    out->is_pisot = 0;
+    out->beta_lo_num = mpz_new_si(0); out->beta_lo_den = mpz_new_si(1);
+    out->beta_hi_num = mpz_new_si(0); out->beta_hi_den = mpz_new_si(1);
+    out->n_real_inside = 0;
+    out->has_complex_pair = 0;
+    out->is_complex_modulus_lt_1 = 0;
+    out->cm_lo_num = mpz_new_si(0); out->cm_lo_den = mpz_new_si(1);
+    out->cm_hi_num = mpz_new_si(0); out->cm_hi_den = mpz_new_si(1);
+    out->det_abs = mpz_new();
+
+    if (degree < 1 || degree > PISOT_MAX_POLY_DEGREE) {
+        return 0;
+    }
+
     poly_t p;
     poly_init(&p);
     for (int i = 0; i < degree; ++i) {
@@ -617,16 +656,6 @@ static int pisot_classify_poly(const long long *coeffs, int degree,
      * for even degree, coeffs[0] = +det.  But we want |det| so just
      * take absolute value of coeffs[0]. */
     long long abs_det_signed = coeffs[0] < 0 ? -coeffs[0] : coeffs[0];
-
-    out->is_pisot = 0;
-    out->beta_lo_num = mpz_new_si(0); out->beta_lo_den = mpz_new_si(1);
-    out->beta_hi_num = mpz_new_si(0); out->beta_hi_den = mpz_new_si(1);
-    out->n_real_inside = 0;
-    out->has_complex_pair = 0;
-    out->is_complex_modulus_lt_1 = 0;
-    out->cm_lo_num = mpz_new_si(0); out->cm_lo_den = mpz_new_si(1);
-    out->cm_hi_num = mpz_new_si(0); out->cm_hi_den = mpz_new_si(1);
-    out->det_abs = mpz_new();
     mpz_set_si(out->det_abs, abs_det_signed);
 
     if (!poly_is_squarefree(&p)) {
@@ -639,7 +668,7 @@ static int pisot_classify_poly(const long long *coeffs, int degree,
     }
 
     /* Build Sturm chain. */
-    poly_t seq[16];
+    poly_t seq[POLY_COEFFS_CAP];
     int slen = sturm_chain_build(seq, &p);
     if (slen < 2) {
         for (int i = 0; i < slen; ++i) poly_clear(&seq[i]);
@@ -858,13 +887,15 @@ int pisot_classify_4x4(const long long M[4][4], pisot_info_t* out) {
     return pisot_classify_poly(coeffs, 4, out);
 }
 
-/* Classify an arbitrary-degree (1..15, poly_t's internal capacity)
- * monic integer polynomial directly from its coefficients (low-to-
- * high, coeffs[degree] is implicitly 1 and NOT included -- pass only
- * coeffs[0..degree-1]). Exposes the same certified logic
- * pisot_classify_3x3/4x4 use, generalized: rigorous for any degree,
- * but returns failure (0) rather than a guess whenever the
- * polynomial has more than one complex-conjugate pair, since the
+/* Classify an arbitrary-degree (1..PISOT_MAX_POLY_DEGREE, poly_t's
+ * internal capacity) monic integer polynomial directly from its
+ * coefficients (low-to-high, coeffs[degree] is implicitly 1 and NOT
+ * included -- pass only coeffs[0..degree-1]). Exposes the same
+ * certified logic pisot_classify_3x3/4x4 use, generalized: rigorous
+ * for any degree in range (pisot_classify_poly enforces the bound
+ * itself and returns 0 if violated -- this function does not need to
+ * check first), but returns failure (0) rather than a guess whenever
+ * the polynomial has more than one complex-conjugate pair, since the
  * modulus bound this method uses only certifies the COMBINED product
  * of all complex pairs, not each pair individually (see the comment
  * at the n_complex>1 check inside pisot_classify_poly). Degree <=4
@@ -885,10 +916,11 @@ int pisot_classify_degree_n(const long long* coeffs, int degree, pisot_info_t* o
  * two eigenvalues of the M-node Chebyshev collocation matrix).
  *
  * Coefficients are in low-to-high order (coeffs[i] is the
- * coefficient of x^i).  The degree may be any value in [1, 15]
- * (poly_t's internal capacity); the polynomial is treated as
- * monic in degree, but the leading coefficient is allowed to be
- * arbitrary as long as the Sturm chain builds.
+ * coefficient of x^i).  The degree may be any value in
+ * [1, PISOT_MAX_POLY_DEGREE] (poly_t's internal capacity, enforced
+ * below); the polynomial is treated as monic in degree, but the
+ * leading coefficient is allowed to be arbitrary as long as the
+ * Sturm chain builds.
  * ================================================================= */
 int isolate_real_root_generic_mpz(mpz_srcptr* coeffs, int degree,
                                   long long lo_num, long long lo_den,
@@ -896,7 +928,7 @@ int isolate_real_root_generic_mpz(mpz_srcptr* coeffs, int degree,
                                   int tol_bits,
                                   mpz_ptr* lo_out_num, mpz_ptr* lo_out_den,
                                   mpz_ptr* hi_out_num, mpz_ptr* hi_out_den) {
-    if (degree < 1 || degree > 15) return 0;
+    if (degree < 1 || degree > PISOT_MAX_POLY_DEGREE) return 0;
 
     poly_t p;
     poly_init(&p);
@@ -912,7 +944,7 @@ int isolate_real_root_generic_mpz(mpz_srcptr* coeffs, int degree,
     poly_normalize(&p);
     if (poly_degree(&p) < 1) { poly_clear(&p); return 0; }
 
-    poly_t seq[16];
+    poly_t seq[POLY_COEFFS_CAP];
     int slen = sturm_chain_build(seq, &p);
     if (slen < 2) {
         for (int i = 0; i < slen; ++i) poly_clear(&seq[i]);

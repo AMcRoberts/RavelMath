@@ -497,8 +497,22 @@ two minutes at n<=6 (the n=7 case takes ~30s for the dump).
   Regularity Property, non-unimodular Pisot tiling failure.
 - Barge, M. & Gambaudo, J.-M. (2011) — geometric realization /
   boundary spectral radius bound.
-- Smith, D., Myers, J. S., Kaplan, C. S. & Goodman-Strauss, C. (2023)
-  — aperiodic monotile.
+- Smith, D., Myers, J. S., Kaplan, C. S. & Goodman-Strauss, C.,
+  *"A Chiral Aperiodic Monotile"*, Combinatorial Theory 4(2) (2024), #13,
+  arXiv:2305.17743 (`SmithMyersKaplanGoodmanStrauss2023Spectre`) — the
+  actual source for the "Spectre" tile implemented in
+  `include/ravel/spectre_geometry.hpp` and `python/spectre*.py` (grep-confirmed:
+  "Spectre" occurs 103 times in this paper's text, zero times in the
+  companion paper below). Its direct precursor, *"An Aperiodic Monotile"*,
+  Combinatorial Theory 4(1) (2024), #6, arXiv:2303.10798
+  (`SmithMyersKaplanGoodmanStrauss2023Hat`), introduces the "hat" tile,
+  which still needs its mirror reflection to tile the plane — cited for
+  context, not itself the geometry this project implements. Previously
+  cited here only as "aperiodic monotile (2023)" with no bibliography
+  entry, no archived full text, and no disambiguation between the two
+  closely related papers — corrected 2026-08-07; both are now in
+  `refs/references.bib` with full text archived per
+  `refs/FULLTEXT_MANIFEST.tsv`.
 - Hall, M. J. W. & Branciard, C., Phys. Rev. A 102, 052228 (2020) —
   source for the CHSH-style correlation statistic used as a
   diagnostic in `include/ravel/thermometer.hpp` and

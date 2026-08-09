@@ -87,7 +87,7 @@ durations = [260] * len(images)
 durations[0] = 900
 durations[-1] = 2200
 
-out_path = "/mnt/user-data/outputs/spectre-ca-freeze.gif"
+out_path = "spectre-ca-freeze.gif"
 images[0].save(
     out_path,
     save_all=True,

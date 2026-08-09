@@ -43,7 +43,7 @@ int main() {
     assert(lean.find("class_ii_interior_tip_instance_1") != std::string::npos);
     assert(lean.find("neighbor2InteriorTipG") != std::string::npos);
 
-    std::ofstream out("/tmp/class_ii_interior_tip_generated.lean");
+    std::ofstream out("lean/generated/class_ii_interior_tip_batch.lean");
     out << lean;
     out.close();
 

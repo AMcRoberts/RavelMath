@@ -7,6 +7,7 @@
 
 #include "ravel/proof/generalized_multinacci_prefix_phase.hpp"
 #include "ravel/proof/generalized_multinacci_signed_renewal_twist.hpp"
+#include "math/proof_reflection.hpp"
 
 namespace ravel::proof {
 
@@ -111,6 +112,22 @@ bool general_m_concrete_twist_refines_symbolic_scheduler(
         }
     }
     return true;
+}
+
+// Stages a `GeneralizedMultinacciGeneralMReflectionCertificate` for one
+// multiplicity m -- gates on `proof.proved`, which independently rechecks
+// (via derive_generalized_multinacci_general_m above) that the observed
+// scheduler coefficients exactly match the closed form m+1 / 2(m+1-d)
+// before this function is ever reached.
+inline void stage_generalized_multinacci_general_m(
+        const GeneralizedMultinacciGeneralMProof& proof,
+        const std::string& description) {
+    if (!proof.proved) return;
+    if (!mathlib::reflection::enabled()) return;
+    mathlib::reflection::GeneralizedMultinacciGeneralMReflectionCertificate node;
+    node.multiplicity = static_cast<long long>(proof.multiplicity);
+    node.description = description;
+    mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, node);
 }
 
 } // namespace ravel::proof

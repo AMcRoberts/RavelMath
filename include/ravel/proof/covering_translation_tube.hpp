@@ -8,6 +8,8 @@
 #include <utility>
 #include <vector>
 
+#include "math/proof_reflection.hpp"
+
 namespace ravel::proof {
 
 using IntegerState = std::vector<std::int64_t>;
@@ -271,6 +273,34 @@ inline DefectSplicedTubeCertificate certify_defect_spliced_tube(
         cert.adjusted_digits_admissible &&
         cert.transported_replay_checked && geometry;
     return cert;
+}
+
+// Stages every per-step defect-splice transition in a certified tube into
+// the reflection trace. Unlike certify_defect_spliced_tube itself, this
+// ALSO independently re-verifies the base path's own n-bonacci recurrence
+// (nothing here is pre-trusted) before staging any step.
+inline void stage_defect_splice_steps(
+    const DefectSplicedTubeCertificate& cert, const std::string& description) {
+    if (!cert.first_return_transport) return;
+    if (!mathlib::reflection::enabled()) return;
+    const auto dim = cert.base_path.empty() ? 0 : cert.base_path.front().size();
+    for (std::size_t k = 0; k < cert.base_digits.size(); ++k) {
+        if (nbonacci_step(cert.base_path[k], cert.base_digits[k]) != cert.base_path[k + 1])
+            return;  // base path's own recurrence failed independent replay
+        mathlib::reflection::DefectSpliceStepCertificate node;
+        node.dim = static_cast<long long>(dim);
+        node.x.assign(cert.base_path[k].begin(), cert.base_path[k].end());
+        node.t.assign(cert.translation_windows[k].begin(), cert.translation_windows[k].end());
+        node.digit = cert.base_digits[k];
+        node.defect = cert.splice_defects[k];
+        node.base_next.assign(cert.base_path[k + 1].begin(), cert.base_path[k + 1].end());
+        node.translation_next.assign(
+            cert.translation_windows[k + 1].begin(), cert.translation_windows[k + 1].end());
+        node.transported_next.assign(
+            cert.transported_path[k + 1].begin(), cert.transported_path[k + 1].end());
+        node.description = description + " step " + std::to_string(k);
+        mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, node);
+    }
 }
 
 }  // namespace ravel::proof

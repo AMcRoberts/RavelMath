@@ -36,7 +36,7 @@ int main() {
     assert(lean.find("class_ii_six_vertex_graduation_instance_1") != std::string::npos);
     assert(lean.find("promotedNodesG_nodup") != std::string::npos);
 
-    std::ofstream out("/tmp/class_ii_six_vertex_graduation_generated.lean");
+    std::ofstream out("lean/generated/class_ii_six_vertex_graduation_batch.lean");
     out << lean;
     out.close();
 

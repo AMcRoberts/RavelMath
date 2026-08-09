@@ -52,10 +52,9 @@ constancy was vacuous, not evidence** -- with only 5 points (grade-2) or
 which is "constant" by definition regardless of the true underlying
 function; it takes at least two *independent* matching values at the top
 difference level to mean anything, and the grade-3 sequences never had
-more than one. This is the exact same trap the project's own history
-(`DIARY.md`, the "44 distinct shapes" saga) has hit and caught before,
-now caught here mechanically by the holdout check rather than by a human
-noticing after the fact.
+more than one. This is a recurring pattern-mining trap, now caught here
+mechanically by the holdout check rather than by a human noticing after
+the fact.
 
 **What this rules out**: these competitor SCCs are not simple
 polynomial-in-`n` families under naive size-rank matching across `n`.

@@ -5,8 +5,12 @@ from itertools import product
 import numpy as np
 from sklearn.tree import DecisionTreeClassifier, export_text
 
-src=Path('/mnt/data/coupled_char_work/ravel_symbolic_controller_characterization_2026-08-04')
-work=Path('/mnt/data/ravel_coupled_automaton_characterization_2026-08-04')
+src=Path(os.environ.get(
+    'RAVEL_COUPLED_SOURCE',
+    'coupled_char_work/ravel_symbolic_controller_characterization_2026-08-04'))
+work=Path(os.environ.get(
+    'RAVEL_COUPLED_WORK',
+    'ravel_coupled_automaton_characterization_2026-08-04'))
 if work.exists(): shutil.rmtree(work)
 shutil.copytree(src,work)
 proj=work/'RavelMathPub'
@@ -140,7 +144,7 @@ theorem synthesized_winning_predicate_sound
 end RavelGenerated
 '''
 (proj/'lean/coupled_automaton_characterization.lean').write_text(lean_text)
-stand=Path('/mnt/data/coupled_automaton_characterization.PLAYGROUND.lean'); stand.write_text(lean_text)
+stand=work/'coupled_automaton_characterization.PLAYGROUND.lean'; stand.write_text(lean_text)
 
 mk=proj/'Makefile'; m=mk.read_text()
 if 'coupled_winning_predicate_test:' not in m:
@@ -151,11 +155,8 @@ if build.returncode: raise RuntimeError(build.stdout+build.stderr)
 
 report=work/'COUPLED_AUTOMATON_CHARACTERIZATION_REPORT_2026-08-04.md'
 report.write_text('# Coupled automaton characterization\n\n'+json.dumps(summary,indent=2)+'\n\nThe decision trees classify every backward-winning controller state in the finite corpus exactly. This is a characterization certificate, not yet a uniform theorem. The learner output must be converted into a compact symbolic invariant and replayed independently before theorem promotion.\n')
-for rel in ['.ravel/CURRENT_STATE.md','.ravel/TODAY.md','.ravel/DIARY.md']:
- p=work/rel
- if p.exists(): p.write_text(p.read_text()+"\n\n## 2026-08-04 — Coupled automaton characterization\n- Generated exact backward winning sets for the joint first-return/controller system.\n- Learned collision-free predicate trees separately for n=3 and n=4.\n- Added a replayable predicate-tree trust boundary.\n- Next seam: compress learned trees into a dimension-uniform inductive invariant.\n")
 (work/'COUPLED_AUTOMATON_BUILD.log').write_text(build.stdout+'\n'+build.stderr)
-zip_path=Path('/mnt/data/ravel_coupled_automaton_characterization_2026-08-04.zip')
+zip_path=work.parent/'ravel_coupled_automaton_characterization_2026-08-04.zip'
 if zip_path.exists(): zip_path.unlink()
 with zipfile.ZipFile(zip_path,'w',zipfile.ZIP_DEFLATED) as z:
  for p in work.rglob('*'):

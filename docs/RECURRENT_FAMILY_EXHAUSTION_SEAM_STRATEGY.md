@@ -1,5 +1,7 @@
 # Strategy: close the recurrent-family exhaustion seam
 
+> **Correction, 2026-08-08.** The finite result below (n=6, resp. n=3..7) stands and is now the basis of a kernel-checked reflection wiring (`recurrent_family_exhaustion_reflection_test.cpp` / `predicted_core_scc_exhaustion_reflection_test.cpp`). Its stated dependency on an "all-n induction" / "universal carry-bound theorem" is moot: the universal n-bonacci dominance theorem closed via a different route (the canonical Q/R split) that never needed this hull/carry-bound machinery. See `NBONACCI_UNIVERSAL_DOMINANCE_CLOSED_2026-08-08.md`.
+
 ## Exact seam
 
 The finite classifier is already complete through `n = 7`. Grade descent closes

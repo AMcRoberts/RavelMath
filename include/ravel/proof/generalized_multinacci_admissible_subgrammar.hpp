@@ -8,6 +8,7 @@
 #include "ravel/proof/generalized_multinacci_boundary_word_lift.hpp"
 #include "ravel/proof/generalized_multinacci_general_m.hpp"
 #include "ravel/proof/generalized_multinacci_general_m_intertwiner.hpp"
+#include "math/proof_reflection.hpp"
 
 namespace ravel::proof {
 
@@ -109,6 +110,27 @@ GeneralizedMultinacciAdmissibleSubgrammarProof
         out.obstruction=e.what();
     }
     return out;
+}
+
+// Stages a `GeneralizedMultinacciAdmissibleSubgrammarReflectionCertificate`
+// for one (D,m) sweep instance -- gates on the certificate's own `.proved`
+// flag, which is itself derived from independently re-checked Q/R
+// intertwining inequalities per witnessed edge (see
+// `derive_generalized_multinacci_admissible_subgrammar` above), not a
+// static assumption.
+inline void stage_generalized_multinacci_admissible_subgrammar(
+        const GeneralizedMultinacciAdmissibleSubgrammarProof& proof,
+        const std::string& description) {
+    if (!proof.proved) return;
+    if (!mathlib::reflection::enabled()) return;
+    mathlib::reflection::GeneralizedMultinacciAdmissibleSubgrammarReflectionCertificate node;
+    node.dimension = static_cast<long long>(proof.dimension);
+    node.multiplicity = static_cast<long long>(proof.multiplicity);
+    node.source_states = static_cast<long long>(proof.source_states);
+    node.witnessed_edges = static_cast<long long>(proof.witnessed_edges);
+    node.words_checked = static_cast<long long>(proof.words_checked);
+    node.description = description;
+    mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, node);
 }
 
 } // namespace ravel::proof

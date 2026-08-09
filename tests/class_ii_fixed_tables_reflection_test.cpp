@@ -45,7 +45,7 @@ int main() {
     assert(lean.find("dContNodeG") != std::string::npos);
     assert(lean.find("dContFaceCandidateNodeG") != std::string::npos);
 
-    std::ofstream out("/tmp/class_ii_fixed_tables_generated.lean");
+    std::ofstream out("lean/generated/class_ii_fixed_tables_batch.lean");
     out << lean;
     out.close();
 

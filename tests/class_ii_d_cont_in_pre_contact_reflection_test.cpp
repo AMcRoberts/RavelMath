@@ -34,7 +34,7 @@ int main() {
     // fire from the same trace data (this test doesn't remove it).
     assert(lean.find("class_ii_fixed_table_instance_0") != std::string::npos);
 
-    std::ofstream out("/tmp/class_ii_d_cont_in_pre_contact_generated.lean");
+    std::ofstream out("lean/generated/class_ii_d_cont_in_pre_contact_batch.lean");
     out << lean;
     out.close();
 

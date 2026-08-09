@@ -57,7 +57,7 @@ enum class LeanStepKind {
     Intro, Ext, SimpOnly, HaveBySimpaUsing, HaveByOmega, Have, HaveIsLt,
     Simp, Rewrite, ExpandDeterminant, Exact, Funext, ByCases, SplitIfs,
     Omega, AllGoalsOmega, AllGoalsSimpAllOmega, AllGoalsDeepSimpAllOmega, AllGoalsBranchContextSimpOmegaRing, TerminalCofactorTransport, ResidualSingleSupportLaplaceClosure, SourceTruthRecurrenceClosure, SourceTruthCharacteristicQTransport, SourceTruthCharacteristicRTransport, SourceTruthCharacteristicSplit, Induction, Cases, Ring, RingNF,
-    HaveByChangeAtExact, ClosePolynomialGeometricSuccessor
+    HaveByChangeAtExact, ClosePolynomialGeometricSuccessor, AllGoalsSimpOnlySplitIfs, AllGoalsSimpOnlySplitIfsAtStar, AllGoalsSplitIfsAtStar, TrySimpOnly
 };
 
 // Typed erased-index expression for any EraseIndex.minor emitter.
@@ -110,27 +110,79 @@ inline std::string render_fin_index(const SymbolicFinIndex& index,
         return "(Fin.last (" + index.predecessor_expression + "))";
     }
     if (index.kind == SymbolicFinIndexKind::LastOfPred) {
-        return "(Ravel.Matrix.EraseIndex.lastPred " + index.proof_expression + ")";
+        return "(Fin.last (" + bound_expr + " - 1))";
     }
     if (index.kind == SymbolicFinIndexKind::FirstOfPred) {
-        return "(Ravel.Matrix.EraseIndex.firstPred " + index.proof_expression + ")";
+        return "(⟨0, by omega⟩ : Fin (" + bound_expr + "))";
     }
-    return "⟨" + std::to_string(index.literal_value) + ", by omega⟩";
+    return "(⟨" + std::to_string(index.literal_value) + ", by omega⟩ : Fin (" + bound_expr + "))";
 }
 
-// Generic composer for an EraseIndex.minor application. The matrix expression
-// and the bound expression together name the source matrix and the dimension
-// Lean sees for its indices; the SymbolicFinIndex values carry the row and
-// column arguments through render_fin_index. Theorem-specific strings must
-// never embed integer row/column literals here.
+// True when `expr` is already syntactically of the shape "X + 1", so that
+// Fin.succ/Fin.castSucc/Fin.succAbove's codomain `Fin (dom + 1)` unifies with
+// `Fin expr` BY DEFINITIONAL COMPUTATION (Nat.succ_sub_one reduces (X+1)-1 to
+// X, hence (X+1-1)+1 reduces back to X+1). When `expr` is a bare/subtracted
+// expression like "n" or "n - 1" that equality is only true GIVEN the
+// section's own `hn` hypothesis, not definitionally, so Lean's unifier can't
+// close it on its own -- an explicit Fin.cast is required in that case.
+inline bool is_successor_shaped(const std::string& expr) {
+    return expr.size() >= 4 && expr.compare(expr.size() - 4, 4, " + 1") == 0;
+}
+
+// Canonical public Mathlib omission maps.  Reflection normalizes boundary
+// deletions before Lean rendering so downstream proofs never depend on the
+// retired Ravel.Matrix.EraseIndex helper layer.
+//
+// `source_bound_expr` names the AMBIENT (larger) Fin bound -- the omission
+// map's codomain. The domain (one smaller, since exactly one index is
+// omitted) is always `source_bound_expr - 1`. When `source_bound_expr` is
+// not already successor-shaped, `(source_bound_expr - 1) + 1` does not
+// reduce back to `source_bound_expr` by rfl (only by omega, using the
+// section's own `2 ≤ n`-style hypothesis), so the raw omission map is
+// wrapped in an explicit `Fin.cast` to bridge that gap. A literal pivot used
+// with `.succAbove` additionally needs its own type ascribed in successor
+// form (`Fin (dom + 1)`, not `Fin source_bound_expr`), since Lean can only
+// resolve `.succAbove` dot notation against a syntactically-successor type.
+inline std::string render_omit_map(const SymbolicFinIndex& index,
+                                   const std::string& source_bound_expr) {
+    const std::string dom_bound_expr = "(" + source_bound_expr + " - 1)";
+    const bool cast_needed = !is_successor_shaped(source_bound_expr);
+    const auto wrap = [&](const std::string& raw_map) -> std::string {
+        if (!cast_needed) return raw_map;
+        return "(fun i => Fin.cast (by omega : " + dom_bound_expr + " + 1 = " +
+               source_bound_expr + ") (" + raw_map + " i))";
+    };
+    if (index.kind == SymbolicFinIndexKind::FirstOfPred)
+        return wrap("Fin.succ");
+    if (index.kind == SymbolicFinIndexKind::LastOfPred ||
+        index.kind == SymbolicFinIndexKind::LastOfSuccessor)
+        return wrap("Fin.castSucc");
+    if (index.kind == SymbolicFinIndexKind::Literal && index.literal_value == 0)
+        return wrap("Fin.succ");
+    const std::string pivot_bound = cast_needed ? (dom_bound_expr + " + 1") : source_bound_expr;
+    const std::string pivot =
+        "(⟨" + std::to_string(index.literal_value) + ", by omega⟩ : Fin (" + pivot_bound + "))";
+    // Emit Fin.succAbove's own literal if-then-else body (rather than the
+    // `.succAbove` dot-notation call) so the very first `split_ifs` pass sees
+    // the branch directly -- unfolding `.succAbove` via a later separate simp
+    // pass causes pathological non-termination once composed with an outer
+    // Fin.cast layer.  `Fin.succAbove p i = if i.castSucc < p then i.castSucc
+    // else i.succ` by definition (Mathlib.Data.Fin.SuccPred).
+    const std::string succ_above_body =
+        "if i.castSucc < " + pivot + " then i.castSucc else i.succ";
+    if (!cast_needed) return "(fun i => " + succ_above_body + ")";
+    return "(fun i => Fin.cast (by omega : " + dom_bound_expr + " + 1 = " +
+           source_bound_expr + ") (" + succ_above_body + "))";
+}
+
 inline std::string render_minor_application(
         const std::string& matrix_expr,
         const SymbolicFinIndex& row,
         const SymbolicFinIndex& column,
         const std::string& source_bound_expr) {
-    return "Ravel.Matrix.EraseIndex.minor (" + matrix_expr + ") " +
-           render_fin_index(row, source_bound_expr) + " " +
-           render_fin_index(column, source_bound_expr);
+    return "(" + matrix_expr + ").submatrix " +
+           render_omit_map(row, source_bound_expr) + " " +
+           render_omit_map(column, source_bound_expr);
 }
 
 struct PiecewiseMatrixTransform {
@@ -482,7 +534,7 @@ public:
             equality_spec.theorem = {"Erased-index transport generated from the typed family and transform.",
                 "qMatrix_minor_eq_qMatrix", {{"n", "ℕ"}, {"hn", "2 ≤ n"}},
                 render_minor_application("qMatrix (n + 1)", SymbolicFinIndex::literal(0), SymbolicFinIndex::literal(0), "n") + " = qMatrix n"};
-            equality_spec.transform = {1, SymbolicFinIndex::literal(0), SymbolicFinIndex::literal(0), "Ravel.Matrix.EraseIndex.minor"};
+            equality_spec.transform = {1, SymbolicFinIndex::literal(0), SymbolicFinIndex::literal(0), "Matrix.submatrix"};
             equality_spec.dimension_facts = {
                 {"hn_sub_two", "n - 2 + 2 = n", ""},
                 {"hn_succ_sub_two", "n + 1 - 2 = n - 1", ""},
@@ -521,7 +573,9 @@ public:
                 "Entrywise transport from the residual cofactor core to the reflected residual family.",
                 "qResidualCore_eq_rMatrix", {{"n", "ℕ"}, {"hn", "2 ≤ n"}},
                 "qResidualCore n hn = rMatrix (n - 1)"};
-            sparse_spec.residual_transport_simp = {"qResidualCore", "qResidualMinor", "qMatrix", "rMatrix", "Ravel.Matrix.EraseIndex.minor", "Ravel.Matrix.EraseIndex.skip_zero_skip_lastPred_val", "Ravel.Matrix.EraseIndex.skip_one_skip_firstPred_val"};
+            sparse_spec.residual_transport_simp = {"qResidualCore", "qResidualMinor", "qMatrix", "rMatrix",
+                "Matrix.submatrix", "Matrix.of_apply",
+                "Fin.val_cast", "Fin.val_succ", "Fin.val_castSucc"};
             sparse_spec.residual_transport_dimension_facts = {
                 {"hn_sub_two", "n - 2 + 2 = n", ""},
                 {"hn_succ_sub_two", "n + 1 - 2 = n - 1", ""},
@@ -545,14 +599,15 @@ public:
                 "(qResidualMinor n hn).det = 1"};
             sparse_spec.residual_expansion = {"Matrix.det_succ_column_zero", "qResidualMinor n hn",
                 "n - 1 = (n - 2).succ", "(n - 2).succ", "qResidualMinorSucc"};
-            sparse_spec.residual_determinant_simp = {"qResidualMinor", "qResidualCore_eq_rMatrix n hn", "rMatrix_det", "qMatrix", "Ravel.Matrix.EraseIndex.minor", "Ravel.Matrix.EraseIndex.skip_zero_val"};
+            sparse_spec.residual_determinant_simp = {"qResidualMinor", "qResidualCore_eq_rMatrix n hn", "rMatrix_det", "qMatrix"};
             sparse_spec.recurrence = {
                 "Sparse row expansion composed from support, minor transports, and cofactor signs.",
                 "qMatrix_det_recurrence", {{"n", "ℕ"}, {"hn", "2 ≤ n"}},
                 "(qMatrix (n + 1)).det = Polynomial.X * (qMatrix n).det + 1"};
             sparse_spec.recurrence_expansion = {"Matrix.det_succ_row_zero", "qMatrix (n + 1)",
                 "n = (n - 1).succ", "(n - 1).succ", "qMatrixSucc"};
-            sparse_spec.recurrence_simp = {"qMatrix", "qMatrix_minor_eq_qMatrix", "qResidualMinor", "qResidualMinor_det n hn", "Ravel.Matrix.EraseIndex.minor", "Ravel.Matrix.EraseIndex.skip_zero_val", "Ravel.Matrix.EraseIndex.skip_last_val", "Ravel.Matrix.EraseIndex.skip_lastPred_val", "Ravel.Matrix.EraseIndex.skip_finLast_val", "Fin.sum_univ_succ"};
+            sparse_spec.recurrence_simp = {"qMatrix", "qMatrix_minor_eq_qMatrix", "qResidualMinor", "qResidualMinor_det n hn", "Fin.sum_univ_succ",
+                "Fin.val_cast", "Fin.succAbove"};
             sparse_spec.established_facts = {"residual cofactor determinant equals one", "determinant successor recurrence"};
             campaign.tasks.push_back({"q_matrix.determinant_recurrence",
                 CampaignOperation::DeriveSparseCofactorRecurrence,
@@ -598,7 +653,7 @@ public:
                   "nbonacciCharacteristic_minor_q", {{"n", "ℕ"}, {"hn", "2 ≤ n"}},
                   render_minor_application("nbonacciCharacteristicMatrix (n + 1)", SymbolicFinIndex::literal(0), SymbolicFinIndex::literal(0), "n + 1") +
                   " = qMatrix (n + 1)"},
-                 {"nbonacciCharacteristicMatrix", "qMatrix", "Ravel.Matrix.EraseIndex.minor", "Ravel.Matrix.EraseIndex.skip_zero_val"},
+                 {"nbonacciCharacteristicMatrix", "qMatrix"},
                  {{"hn_sub_two", "n - 2 + 2 = n", ""},
                   {"hn_succ_sub_two", "n + 1 - 2 = n - 1", ""},
                   {"hn_succ_sub_one", "n + 1 - 1 = n", ""},
@@ -613,7 +668,7 @@ public:
                   "nbonacciCharacteristic_minor_r", {{"n", "ℕ"}, {"hn", "2 ≤ n"}},
                   render_minor_application("nbonacciCharacteristicMatrix (n + 1)", SymbolicFinIndex::last_of_successor("n"), SymbolicFinIndex::literal(0), "n + 1") +
                   " = rMatrix (n + 1)"},
-                 {"nbonacciCharacteristicMatrix", "rMatrix", "Ravel.Matrix.EraseIndex.minor", "Ravel.Matrix.EraseIndex.skip_zero_val", "Ravel.Matrix.EraseIndex.skip_finLast_val"},
+                 {"nbonacciCharacteristicMatrix", "rMatrix"},
                  {{"hn_sub_two", "n - 2 + 2 = n", ""},
                   {"hn_succ_sub_two", "n + 1 - 2 = n - 1", ""},
                   {"hn_succ_sub_one", "n + 1 - 1 = n", ""},
@@ -632,7 +687,7 @@ public:
                 "nbonacci_characteristic_split", {{"n", "ℕ"}, {"hn", "2 ≤ n"}},
                 "(nbonacciCharacteristicMatrix (n + 1)).det = Polynomial.X * (qMatrix (n + 1)).det + (-1 : Polynomial ℤ) ^ (n + 1) * (rMatrix (n + 1)).det"};
             split_spec.expansion = {"Matrix.det_succ_column_zero", "nbonacciCharacteristicMatrix (n + 1)", "", "", ""};
-            split_spec.split_simp = {"nbonacciCharacteristicMatrix", "nbonacciCharacteristic_minor_q n hn", "nbonacciCharacteristic_minor_r n hn", "Ravel.Matrix.EraseIndex.minor", "Ravel.Matrix.EraseIndex.skip_zero_val", "Ravel.Matrix.EraseIndex.skip_last_val", "Ravel.Matrix.EraseIndex.skip_lastPred_val", "Ravel.Matrix.EraseIndex.skip_finLast_val"};
+            split_spec.split_simp = {"nbonacciCharacteristicMatrix", "nbonacciCharacteristic_minor_q n hn", "nbonacciCharacteristic_minor_r n hn"};
             split_spec.established_facts = {"principal minor transport", "residual minor transport", "characteristic determinant split"};
             campaign.tasks.push_back({"nbonacci.characteristic_split",
                 CampaignOperation::DeriveCharacteristicCofactorSplit,
@@ -896,24 +951,26 @@ private:
             if (std::find(simp_lemmas.begin(), simp_lemmas.end(), lemma) == simp_lemmas.end())
                 simp_lemmas.push_back(lemma);
         };
+        // Public Fin omission maps are normalized by render_omit_map.  Expose only
+        // Mathlib's public matrix/index evaluation rules to the branch closer.
+        append_simp_unique("Matrix.submatrix");
+        append_simp_unique("Matrix.of_apply");
+        append_simp_unique("Matrix.reindex_apply");
+        append_simp_unique("Fin.castOrderIso_apply");
+        append_simp_unique("Fin.castOrderIso_symm_apply");
+        append_simp_unique("Fin.val_cast");
         if (transform.erased_row.kind == SymbolicFinIndexKind::Literal &&
             transform.erased_row.literal_value == 0)
-            append_simp_unique("Ravel.Matrix.EraseIndex.skip_zero_val");
+            append_simp_unique("Fin.val_succ");
         if (transform.erased_column.kind == SymbolicFinIndexKind::Literal &&
             transform.erased_column.literal_value == 0)
-            append_simp_unique("Ravel.Matrix.EraseIndex.skip_zero_val");
-        if (transform.erased_row.kind == SymbolicFinIndexKind::LastOfPred)
-            append_simp_unique("Ravel.Matrix.EraseIndex.skip_lastPred_val");
-        if (transform.erased_column.kind == SymbolicFinIndexKind::LastOfPred)
-            append_simp_unique("Ravel.Matrix.EraseIndex.skip_lastPred_val");
-        if (transform.erased_row.kind == SymbolicFinIndexKind::LastOfSuccessor)
-            append_simp_unique("Ravel.Matrix.EraseIndex.skip_finLast_val");
-        if (transform.erased_column.kind == SymbolicFinIndexKind::LastOfSuccessor)
-            append_simp_unique("Ravel.Matrix.EraseIndex.skip_finLast_val");
-        if (transform.erased_row.kind == SymbolicFinIndexKind::FirstOfPred)
-            append_simp_unique("Ravel.Matrix.EraseIndex.skip_firstPred_val");
-        if (transform.erased_column.kind == SymbolicFinIndexKind::FirstOfPred)
-            append_simp_unique("Ravel.Matrix.EraseIndex.skip_firstPred_val");
+            append_simp_unique("Fin.val_succ");
+        if (transform.erased_row.kind == SymbolicFinIndexKind::LastOfPred ||
+            transform.erased_row.kind == SymbolicFinIndexKind::LastOfSuccessor)
+            append_simp_unique("Fin.val_castSucc");
+        if (transform.erased_column.kind == SymbolicFinIndexKind::LastOfPred ||
+            transform.erased_column.kind == SymbolicFinIndexKind::LastOfSuccessor)
+            append_simp_unique("Fin.val_castSucc");
         std::vector<LeanStep> steps = {
             {LeanStepKind::Funext, "", "", "", {"i", "j"}},
             {LeanStepKind::HaveIsLt, "hi", "", "i", {}},
@@ -969,7 +1026,7 @@ private:
         ClosedProofArtifact artifact;
         artifact.artifact_id = task.task_id;
         artifact.imports = {"Mathlib.LinearAlgebra.Matrix.Determinant.Basic",
-            "Mathlib.Algebra.Polynomial.Basic", "Mathlib.Tactic", "Ravel.Matrix.EraseIndex"};
+            "Mathlib.Algebra.Polynomial.Basic", "Mathlib.Tactic"};
         artifact.definitions = {spec->definition};
         artifact.theorems = {theorem_from_signature(spec->theorem,
             derive_piecewise_matrix_equality(family->piecewise, family->piecewise,
@@ -1006,7 +1063,7 @@ private:
         }
         ClosedProofArtifact artifact;
         artifact.artifact_id = task.task_id;
-        artifact.imports = {"Mathlib.LinearAlgebra.Matrix.Determinant.Basic", "Mathlib.Tactic", "Ravel.Matrix.EraseIndex"};
+        artifact.imports = {"Mathlib.LinearAlgebra.Matrix.Determinant.Basic", "Mathlib.Tactic"};
         artifact.definitions = spec->definitions;
         artifact.theorems = {
             theorem_from_signature(spec->residual_transport, [&]() {
@@ -1018,7 +1075,12 @@ private:
                     steps.push_back(fact.proof_expression.empty()
                         ? LeanStep{LeanStepKind::HaveByOmega, fact.name, fact.proposition, "", {}}
                         : LeanStep{LeanStepKind::Have, fact.name, fact.proposition, fact.proof_expression, {}});
-                steps.push_back({LeanStepKind::SimpOnly, "", "", "", spec->residual_transport_simp});
+                steps.push_back({LeanStepKind::TrySimpOnly, "", "", "",
+                    {"qResidualCore", "qResidualMinor", "qMatrix", "rMatrix"}});
+                steps.push_back({LeanStepKind::TrySimpOnly, "", "", "",
+                    {"Matrix.submatrix", "Matrix.of_apply"}});
+                steps.push_back({LeanStepKind::TrySimpOnly, "", "", "",
+                    {"Fin.val_cast", "Fin.val_succ", "Fin.val_castSucc"}});
                 steps.push_back({LeanStepKind::SplitIfs, "", "", "", {}});
                 steps.push_back(branch_closure_step(spec->residual_transport_branch_closure));
                 return steps;
@@ -1114,7 +1176,7 @@ private:
         }
         ClosedProofArtifact artifact;
         artifact.artifact_id = task.task_id;
-        artifact.imports = {"Mathlib.LinearAlgebra.Matrix.Determinant.Basic", "Mathlib.Tactic", "Ravel.Matrix.EraseIndex"};
+        artifact.imports = {"Mathlib.LinearAlgebra.Matrix.Determinant.Basic", "Mathlib.Tactic"};
         artifact.definitions = spec->definitions;
         for (const auto& transport : spec->minor_transports) {
             artifact.theorems.push_back(theorem_from_signature(transport.theorem, {
@@ -1207,7 +1269,9 @@ inline std::string render_step(const LeanStep& step) {
         case LeanStepKind::Funext:
             out << "  funext"; for (const auto& arg : step.arguments) out << ' ' << arg; break;
         case LeanStepKind::SimpOnly:
-            out << "  simp only ["; for (std::size_t i=0;i<step.arguments.size();++i) { if(i) out << ", "; out << step.arguments[i]; } out << ']'; break;
+            out << "  set_option maxRecDepth 16384 in\n  simp only ["; for (std::size_t i=0;i<step.arguments.size();++i) { if(i) out << ", "; out << step.arguments[i]; } out << ']'; break;
+        case LeanStepKind::TrySimpOnly:
+            out << "  set_option maxRecDepth 16384 in\n  try (simp only ["; for (std::size_t i=0;i<step.arguments.size();++i) { if(i) out << ", "; out << step.arguments[i]; } out << "])"; break;
         case LeanStepKind::HaveBySimpaUsing:
             out << "  have " << step.name << " : " << step.proposition << " := by\n";
             out << "    simpa ["; for (std::size_t i=0;i<step.arguments.size();++i) { if(i) out << ", "; out << step.arguments[i]; } out << "] using " << step.expression; break;
@@ -1259,14 +1323,26 @@ inline std::string render_step(const LeanStep& step) {
         case LeanStepKind::AllGoalsOmega:
             out << "  all_goals omega"; break;
         case LeanStepKind::AllGoalsSimpAllOmega:
-            out << "  all_goals (set_option maxRecDepth 4096 in simp_all) <;> omega"; break;
+            out << "  all_goals (set_option maxRecDepth 4096 in simp_all [Fin.succAbove, Fin.lt_def, qMatrix, rMatrix]) <;> (try split_ifs) <;> first | rfl | omega"; break;
         case LeanStepKind::AllGoalsDeepSimpAllOmega:
-            out << "  all_goals (set_option maxRecDepth 16384 in simp_all) <;> omega"; break;
+            out << "  all_goals (set_option maxRecDepth 16384 in simp_all [Fin.succAbove, Fin.lt_def, qMatrix, rMatrix]) <;> (try split_ifs) <;> first | rfl | omega"; break;
+        case LeanStepKind::AllGoalsSimpOnlySplitIfs:
+            out << "  all_goals (try (simp only ["; for (std::size_t i=0;i<step.arguments.size();++i) { if(i) out << ", "; out << step.arguments[i]; } out << "])); all_goals (try split_ifs)"; break;
+        case LeanStepKind::AllGoalsSimpOnlySplitIfsAtStar:
+            out << "  all_goals ((try (simp only ["; for (std::size_t i=0;i<step.arguments.size();++i) { if(i) out << ", "; out << step.arguments[i]; } out << "] at *)) <;> (try (split_ifs at *)))"; break;
+        case LeanStepKind::AllGoalsSplitIfsAtStar:
+            out << "  all_goals (try (split_ifs at *))"; break;
         case LeanStepKind::AllGoalsBranchContextSimpOmegaRing:
             out << "  all_goals simp_all only <;> omega <;> ring"; break;
         case LeanStepKind::ResidualSingleSupportLaplaceClosure:
             if (step.arguments.size() != 2)
                 throw std::logic_error("residual single-support closure requires matrix and dimension");
+            out << "  have hdet_zero :\n";
+            out << "      hdet_equiv.symm (0 : Fin (n - 2).succ) = (⟨0, by omega⟩ : Fin (n - 1)) := by\n";
+            out << "    apply Fin.ext\n";
+            out << "    rfl\n";
+            out << "  let hne_n1 : NeZero (n - 1) := ⟨by omega⟩\n";
+            out << "  let _ := hne_n1\n";
             out << "  have hfirst_column (x : Fin " << step.arguments[1] << ") :\n";
             out << "      " << step.arguments[0] << " x 0 = "
                 << "if 1 + x.val = n - 1 then 1 else 0 := by\n";
@@ -1278,24 +1354,21 @@ inline std::string render_step(const LeanStep& step) {
             out << "      have hn_one : 1 < n := by omega\n";
             out << "      have hzero_ne : (0 : ℕ) ≠ n - 1 := by omega\n";
             out << "      simp [" << step.arguments[0]
-                << ", qResidualMinor, qMatrix, Ravel.Matrix.EraseIndex.minor, "
-                << "Ravel.Matrix.EraseIndex.skip_zero_val, "
-                << "Ravel.Matrix.EraseIndex.skip_val_of_lt, hx, hx_comm, "
-                << "hn_one, hzero_ne]\n";
+                << ", hdet_equiv, qResidualMinor, qMatrix, Matrix.submatrix, Matrix.of_apply, Matrix.reindex_apply, "
+                << "Fin.castOrderIso_apply, Fin.castOrderIso_symm_apply, hdet_zero, Fin.cast_zero, "
+                << "Fin.one_succAbove_zero, hx, hx_comm, hn_one, hzero_ne]\n";
             out << "    · have hx_comm : x.val + 1 ≠ n - 1 := by omega\n";
             out << "      have hx_row_lt : x.val + 1 < n - 1 := by omega\n";
             out << "      have hx_row_ne_zero : x.val + 1 ≠ 0 := by omega\n";
             out << "      simp [" << step.arguments[0]
-                << ", qResidualMinor, qMatrix, Ravel.Matrix.EraseIndex.minor, "
-                << "Ravel.Matrix.EraseIndex.skip_zero_val, "
-                << "Ravel.Matrix.EraseIndex.skip_val_of_lt, hx, hx_comm, "
-                << "hx_row_lt, hx_row_ne_zero]\n";
+                << ", hdet_equiv, qResidualMinor, qMatrix, Matrix.submatrix, Matrix.of_apply, Matrix.reindex_apply, "
+                << "Fin.castOrderIso_apply, Fin.castOrderIso_symm_apply, hdet_zero, Fin.cast_zero, "
+                << "Fin.one_succAbove_zero, hx, hx_comm, hx_row_lt, hx_row_ne_zero]\n";
             out << "  rw [Finset.sum_eq_single (Fin.last (n - 2))]\n";
             out << "  · have hx : 1 + (Fin.last (n - 2)).val = n - 1 := by\n";
             out << "      simp\n";
             out << "      omega\n";
-            out << "    rw [hfirst_column (Fin.last (n - 2)), if_pos hx, "
-                << "hterminal_cofactor_det (Fin.last (n - 2)) hx]\n";
+            out << "    rw [hfirst_column (Fin.last (n - 2)), if_pos hx, hterminal_cofactor_det (Fin.last (n - 2)) hx]\n";
             out << "    have hlast_val : (Fin.last (n - 2)).val = n - 2 := rfl\n";
             out << "    rw [hlast_val]\n";
             out << "    simp only [mul_one]\n";
@@ -1330,11 +1403,38 @@ inline std::string render_step(const LeanStep& step) {
             out << "      omega\n";
             out << "    subst x\n";
             out << "    funext i j\n";
-            out << "    simp [" << step.arguments[0] << ", " << step.arguments[2]
-                << ", Ravel.Matrix.EraseIndex.minor, "
-                << "Ravel.Matrix.EraseIndex.skip_lastPred_val, "
-                << "Ravel.Matrix.EraseIndex.skip_zero_val]\n";
-            out << "    congr 1 <;> apply Fin.ext <;> simp\n";
+            out << "    have hi := i.isLt\n";
+            out << "    have hj := j.isLt\n";
+            out << "    have hrow :\n";
+            out << "        Fin.cast (by omega : (n - 1) + 1 = n)\n";
+            out << "          (Fin.succ (hdet_equiv.symm ((Fin.last (n - 2)).succAbove i))) =\n";
+            out << "        (⟨i.val + 1, by omega⟩ : Fin n) := by\n";
+            out << "      apply Fin.ext\n";
+            out << "      simp [hdet_equiv, Fin.succAbove]\n";
+            out << "    have hinner_col :\n";
+            out << "        hdet_equiv.symm j.succ =\n";
+            out << "          (⟨j.val + 1, by omega⟩ : Fin (n - 1)) := by\n";
+            out << "      apply Fin.ext\n";
+            out << "      rfl\n";
+            out << "    have hcol_skip :\n";
+            out << "        (if (hdet_equiv.symm j.succ).castSucc < (⟨1, by omega⟩ : Fin ((n - 1).succ)) then\n";
+            out << "            (hdet_equiv.symm j.succ).castSucc else (hdet_equiv.symm j.succ).succ) =\n";
+            out << "        (⟨j.val + 2, by omega⟩ : Fin ((n - 1).succ)) := by\n";
+            out << "      rw [hinner_col]\n";
+            out << "      apply Fin.ext\n";
+            out << "      simp [Fin.succAbove]\n";
+            out << "      try omega\n";
+            out << "    have hcol :\n";
+            out << "        Fin.cast (by omega : (n - 1) + 1 = n)\n";
+            out << "          (if (hdet_equiv.symm j.succ).castSucc < (⟨1, by omega⟩ : Fin ((n - 1).succ)) then\n";
+            out << "              (hdet_equiv.symm j.succ).castSucc else (hdet_equiv.symm j.succ).succ) =\n";
+            out << "        (⟨j.val + 2, by omega⟩ : Fin n) := by\n";
+            out << "      rw [hcol_skip]\n";
+            out << "      apply Fin.ext\n";
+            out << "      rfl\n";
+            out << "    simp only [" << step.arguments[0] << ", qResidualMinor, " << step.arguments[2] << ",\n";
+            out << "      Matrix.submatrix, Matrix.of_apply, Matrix.reindex_apply]\n";
+            out << "    congr 1 <;> (apply Fin.ext; simp [hdet_equiv, Fin.succAbove]; try omega)\n";
             out << "  have hterminal_cofactor_det (x : Fin " << step.arguments[3]
                 << ") (hx : 1 + x.val = n - 1) :\n";
             out << "      (" << step.arguments[0]
@@ -1348,89 +1448,50 @@ inline std::string render_step(const LeanStep& step) {
             if (step.arguments.size() != 1)
                 throw std::logic_error("source-truth recurrence closure requires transported matrix");
             out << "  have hprincipal :\n";
-            out << "      " << step.arguments[0]
-                << ".submatrix Fin.succ Fin.succ = qMatrix n := by\n";
-            out << "    funext i j\n";
-            out << "    have hentry := congrArg (fun M => M i j) "
-                << "(qMatrix_minor_eq_qMatrix n hn)\n";
-            out << "    change qMatrix (n + 1) ⟨i.val + 1, by omega⟩ "
-                << "⟨j.val + 1, by omega⟩ = qMatrix n i j\n";
-            out << "    have hrow : (⟨i.val + 1, by omega⟩ : Fin n) = "
-                << "Ravel.Matrix.EraseIndex.skip (⟨0, by omega⟩ : Fin n) i := by\n";
-            out << "      apply Fin.ext\n";
-            out << "      simp\n";
-            out << "    have hcol : (⟨j.val + 1, by omega⟩ : Fin n) = "
-                << "Ravel.Matrix.EraseIndex.skip (⟨0, by omega⟩ : Fin n) j := by\n";
-            out << "      apply Fin.ext\n";
-            out << "      simp\n";
-            out << "    exact (congrArg₂ (qMatrix (n + 1)) hrow hcol).trans hentry\n";
+            out << "      " << step.arguments[0] << ".submatrix Fin.succ Fin.succ = qMatrix n := by\n";
+            out << "    have hsrc := qMatrix_minor_eq_qMatrix n hn\n";
+            out << "    funext a b\n";
+            out << "    have := congrFun (congrFun hsrc ⟨a.val, by omega⟩) ⟨b.val, by omega⟩\n";
+            out << "    simp only [" << step.arguments[0] << ", Matrix.submatrix, Matrix.of_apply,\n";
+            out << "      Fin.val_cast, Fin.val_succ] at this ⊢\n";
+            out << "    convert this using 3 <;> simp\n";
             out << "  let zeroTail : Fin (n - 1) := ⟨0, by omega⟩\n";
             out << "  let oneSucc : Fin (n - 1).succ := zeroTail.succ\n";
             out << "  have hresidual :\n";
-            out << "      " << step.arguments[0]
-                << ".submatrix Fin.succ oneSucc.succAbove = qResidualMinor n hn := by\n";
-            out << "    funext i j\n";
-            out << "    change qMatrix (n + 1) ⟨i.val + 1, by omega⟩ "
-                << "⟨(oneSucc.succAbove j).val, by omega⟩ = "
-                << "qMatrix (n + 1) "
-                << "(Ravel.Matrix.EraseIndex.skip (⟨0, by omega⟩ : Fin n) i) "
-                << "(Ravel.Matrix.EraseIndex.skip (⟨1, by omega⟩ : Fin n) j)\n";
-            out << "    have hrow : (⟨i.val + 1, by omega⟩ : Fin n) = "
-                << "Ravel.Matrix.EraseIndex.skip (⟨0, by omega⟩ : Fin n) i := by\n";
-            out << "      apply Fin.ext\n";
-            out << "      simp\n";
-            out << "    have hdim : (n - 1).succ = n := by omega\n";
-            out << "    have hcol : Fin.cast hdim (oneSucc.succAbove j) = "
-                << "Ravel.Matrix.EraseIndex.skip (⟨1, by omega⟩ : Fin n) j := by\n";
-            out << "      apply Fin.ext\n";
-            out << "      by_cases hj : j.val = 0\n";
-            out << "      · have hlt : j.castSucc < "
-                << "(⟨1, by omega⟩ : Fin (n - 1).succ) := by\n";
-            out << "          change j.val < 1\n";
-            out << "          omega\n";
-            out << "        simp [oneSucc, zeroTail, Fin.succAbove, "
-                << "Ravel.Matrix.EraseIndex.skip, hlt, hj]\n";
-            out << "      · have hnotlt : ¬ j.castSucc < "
-                << "(⟨1, by omega⟩ : Fin (n - 1).succ) := by\n";
-            out << "          change ¬ j.val < 1\n";
-            out << "          omega\n";
-            out << "        simp [oneSucc, zeroTail, Fin.succAbove, "
-                << "Ravel.Matrix.EraseIndex.skip, hnotlt, hj]\n";
-            out << "    have hcol' : (⟨(oneSucc.succAbove j).val, by omega⟩ : Fin n) = "
-                << "Ravel.Matrix.EraseIndex.skip (⟨1, by omega⟩ : Fin n) j := by\n";
-            out << "      apply Fin.ext\n";
-            out << "      simpa [hdim] using congrArg Fin.val hcol\n";
-            out << "    exact congrArg₂ (qMatrix (n + 1)) hrow hcol'\n";
-            out << "  have hzero_map : "
-                << "(0 : Fin (n - 1).succ).succAbove = Fin.succ := by\n";
+            out << "      " << step.arguments[0] << ".submatrix Fin.succ oneSucc.succAbove = qResidualMinor n hn := by\n";
+            out << "    funext a b\n";
+            out << "    simp only [" << step.arguments[0] << ", qResidualMinor, Matrix.submatrix, Matrix.of_apply,\n";
+            out << "      oneSucc, zeroTail]\n";
+            out << "    congr 1 <;> (apply Fin.ext; simp [Fin.succAbove]; try omega)\n";
+            out << "  have hzero_map :\n";
+            out << "      (0 : Fin (n - 1).succ).succAbove =\n";
+            out << "        (Fin.succ : Fin (n - 1) → Fin (n - 1).succ) := by\n";
             out << "    funext j\n";
             out << "    apply Fin.ext\n";
             out << "    rfl\n";
             out << "  have hzero_summand :\n";
-            out << "      (-1 : Polynomial ℤ) ^ ((0 : Fin (n - 1).succ) : ℕ) * "
-                << step.arguments[0] << " 0 0 * (" << step.arguments[0]
-                << ".submatrix Fin.succ (0 : Fin (n - 1).succ).succAbove).det = "
-                << "Polynomial.X * (qMatrix n).det := by\n";
-            out << "    rw [hzero_map, hprincipal]\n";
+            out << "      (-1 : Polynomial ℤ) ^ ((0 : Fin (n - 1).succ) : ℕ) * " << step.arguments[0]
+                << " 0 0 * (" << step.arguments[0] << ".submatrix Fin.succ Fin.succ).det = Polynomial.X * (qMatrix n).det := by\n";
+            out << "    rw [hprincipal]\n";
             out << "    have hn_one : 1 < n := by omega\n";
             out << "    have hzero_ne : (0 : ℕ) ≠ n - 1 := by omega\n";
             out << "    simp [" << step.arguments[0]
-                << ", qMatrix, hn_one, hzero_ne]\n";
+                << ", hdet_equiv, qMatrix, Matrix.reindex_apply, Fin.castOrderIso_apply, Fin.castOrderIso_symm_apply, "
+                << "Fin.val_cast, Fin.val_castSucc, Fin.val_succ, Fin.succAbove_zero_apply, Fin.one_succAbove_zero, "
+                << "Fin.succAbove_last_apply, hn_one, hzero_ne]\n";
             out << "  have hone_summand :\n";
-            out << "      (-1 : Polynomial ℤ) ^ (oneSucc : ℕ) * "
-                << step.arguments[0] << " 0 oneSucc * "
-                << "(" << step.arguments[0]
-                << ".submatrix Fin.succ oneSucc.succAbove).det = 1 := by\n";
+            out << "      (-1 : Polynomial ℤ) ^ (oneSucc : ℕ) * " << step.arguments[0]
+                << " 0 oneSucc * (" << step.arguments[0] << ".submatrix Fin.succ oneSucc.succAbove).det = 1 := by\n";
             out << "    rw [hresidual, qResidualMinor_det n hn]\n";
             out << "    have hn_one : 1 < n := by omega\n";
             out << "    have hzero_ne : (0 : ℕ) ≠ n - 1 := by omega\n";
             out << "    simp [oneSucc, zeroTail, " << step.arguments[0]
-                << ", qMatrix, hn_one, hzero_ne]\n";
+                << ", hdet_equiv, qMatrix, Matrix.reindex_apply, Fin.castOrderIso_apply, Fin.castOrderIso_symm_apply, "
+                << "Fin.val_cast, Fin.val_castSucc, Fin.val_succ, Fin.succAbove_zero_apply, Fin.one_succAbove_zero, "
+                << "Fin.succAbove_last_apply, hn_one, hzero_ne]\n";
             out << "  have htail_zero (x : Fin (n - 1)) (hx : x ≠ zeroTail) :\n";
-            out << "      (-1 : Polynomial ℤ) ^ (x.succ : ℕ) * "
-                << step.arguments[0] << " 0 x.succ * "
-                << "(" << step.arguments[0]
-                << ".submatrix Fin.succ x.succ.succAbove).det = 0 := by\n";
+            out << "      (-1 : Polynomial ℤ) ^ (x.succ : ℕ) * " << step.arguments[0]
+                << " 0 x.succ * (" << step.arguments[0] << ".submatrix Fin.succ x.succ.succAbove).det = 0 := by\n";
             out << "    have hxv : x.val ≠ 0 := by\n";
             out << "      intro h\n";
             out << "      apply hx\n";
@@ -1439,24 +1500,22 @@ inline std::string render_step(const LeanStep& step) {
             out << "    have hn_one : 1 < n := by omega\n";
             out << "    have hrow_nonterminal : (0 : ℕ) ≠ n - 1 := by omega\n";
             out << "    have hcol_ne_one : x.val + 1 ≠ 1 := by omega\n";
-            out << "    have hentry : " << step.arguments[0]
-                << " 0 x.succ = 0 := by\n";
+            out << "    have hentry : " << step.arguments[0] << " 0 x.succ = 0 := by\n";
             out << "      simp [" << step.arguments[0]
-                << ", qMatrix, hn_one, hrow_nonterminal, hcol_ne_one, hxv]\n";
+                << ", hdet_equiv, qMatrix, Matrix.reindex_apply, Fin.castOrderIso_apply, Fin.castOrderIso_symm_apply, "
+                << "Fin.val_cast, Fin.val_castSucc, Fin.val_succ, Fin.succAbove_zero_apply, Fin.one_succAbove_zero, "
+                << "Fin.succAbove_last_apply, hn_one, hrow_nonterminal, hcol_ne_one, hxv]\n";
             out << "    rw [hentry]\n";
             out << "    simp\n";
             out << "  rw [Fin.sum_univ_succ]\n";
+            out << "  rw [hzero_map]\n";
             out << "  rw [hzero_summand]\n";
             out << "  have htail_sum :\n";
-            out << "      (∑ i : Fin (n - 1), (-1 : Polynomial ℤ) ^ (i.succ : ℕ) * "
-                << step.arguments[0] << " 0 i.succ * "
-                << "(" << step.arguments[0]
-                << ".submatrix Fin.succ i.succ.succAbove).det) = 1 := by\n";
+            out << "      (∑ i : Fin (n - 1), (-1 : Polynomial ℤ) ^ (i.succ : ℕ) * " << step.arguments[0]
+                << " 0 i.succ * (" << step.arguments[0] << ".submatrix Fin.succ i.succ.succAbove).det) = 1 := by\n";
             out << "    rw [Finset.sum_eq_single zeroTail]\n";
-            out << "    · change (-1 : Polynomial ℤ) ^ (oneSucc : ℕ) * "
-                << step.arguments[0] << " 0 oneSucc * "
-                << "(" << step.arguments[0]
-                << ".submatrix Fin.succ oneSucc.succAbove).det = 1\n";
+            out << "    · change (-1 : Polynomial ℤ) ^ (oneSucc : ℕ) * " << step.arguments[0]
+                << " 0 oneSucc * (" << step.arguments[0] << ".submatrix Fin.succ oneSucc.succAbove).det = 1\n";
             out << "      exact hone_summand\n";
             out << "    · intro b hb hne\n";
             out << "      exact htail_zero b hne\n";
@@ -1473,9 +1532,7 @@ inline std::string render_step(const LeanStep& step) {
             out << "  have hj_shift_bound : j.val + 1 < n + 1 := by omega\n";
             out << "  have hi_terminal_bound : i.val ≤ n - 1 := by omega\n";
             out << "  have hj_terminal_bound : j.val ≤ n - 1 := by omega\n";
-            out << "  simp only [nbonacciCharacteristicMatrix, qMatrix, "
-                << "Ravel.Matrix.EraseIndex.minor, "
-                << "Ravel.Matrix.EraseIndex.skip_zero_val]\n";
+            out << "  simp only [nbonacciCharacteristicMatrix, qMatrix, Matrix.submatrix, Matrix.of_apply, Fin.val_succ]\n";
             out << "  split_ifs <;> grind";
             break;
         case LeanStepKind::SourceTruthCharacteristicRTransport:
@@ -1484,55 +1541,38 @@ inline std::string render_step(const LeanStep& step) {
             out << "  have hj := j.isLt\n";
             out << "  have hn_last : n + 1 - 1 = n := by omega\n";
             out << "  have hj_shift_bound : j.val + 1 < n + 1 := by omega\n";
-            out << "  simp only [nbonacciCharacteristicMatrix, rMatrix, "
-                << "Ravel.Matrix.EraseIndex.minor, "
-                << "Ravel.Matrix.EraseIndex.skip_finLast_val, "
-                << "Ravel.Matrix.EraseIndex.skip_zero_val]\n";
+            out << "  simp only [nbonacciCharacteristicMatrix, rMatrix, Matrix.submatrix, Matrix.of_apply, Fin.val_castSucc, Fin.val_succ]\n";
             out << "  split_ifs <;> grind";
             break;
         case LeanStepKind::SourceTruthCharacteristicSplit:
             out << "  rw [Fin.sum_univ_succ]\n";
+            out << "  have hzero_map :\n";
+            out << "      (0 : Fin (n + 1)).succAbove = (Fin.succ : Fin n → Fin (n + 1)) := by\n";
+            out << "    funext j\n";
+            out << "    apply Fin.ext\n";
+            out << "    rfl\n";
+            out << "  rw [hzero_map]\n";
             out << "  have hq_cofactor :\n";
-            out << "      (nbonacciCharacteristicMatrix (n + 1)).submatrix "
-                << "(0 : Fin (n + 1)).succAbove Fin.succ = qMatrix (n + 1) := by\n";
-            out << "    funext i j\n";
-            out << "    have hentry := congrArg (fun M => M i j) "
-                << "(nbonacciCharacteristic_minor_q n hn)\n";
-            out << "    change nbonacciCharacteristicMatrix (n + 1) "
-                << "⟨i.val + 1, by omega⟩ ⟨j.val + 1, by omega⟩ = "
-                << "qMatrix (n + 1) i j\n";
-            out << "    have hrow : (⟨i.val + 1, by omega⟩ : Fin (n + 1)) = "
-                << "Ravel.Matrix.EraseIndex.skip (⟨0, by omega⟩ : Fin (n + 1)) i := by\n";
-            out << "      apply Fin.ext\n";
-            out << "      simp\n";
-            out << "    have hcol : (⟨j.val + 1, by omega⟩ : Fin (n + 1)) = "
-                << "Ravel.Matrix.EraseIndex.skip (⟨0, by omega⟩ : Fin (n + 1)) j := by\n";
-            out << "      apply Fin.ext\n";
-            out << "      simp\n";
-            out << "    exact (congrArg₂ (nbonacciCharacteristicMatrix (n + 1)) hrow hcol).trans hentry\n";
+            out << "      (nbonacciCharacteristicMatrix (n + 1)).submatrix Fin.succ Fin.succ = qMatrix (n + 1) :=\n";
+            out << "    nbonacciCharacteristic_minor_q n hn\n";
             out << "  have htop_summand :\n";
-            out << "      (-1 : Polynomial ℤ) ^ ((0 : Fin (n + 1)) : ℕ) * "
-                << "nbonacciCharacteristicMatrix (n + 1) 0 0 * "
-                << "((nbonacciCharacteristicMatrix (n + 1)).submatrix "
-                << "(0 : Fin (n + 1)).succAbove Fin.succ).det = "
+            out << "      (-1 : Polynomial ℤ) ^ ((0 : Fin (n + 1)) : ℕ) * nbonacciCharacteristicMatrix (n + 1) 0 0 * "
+                << "((nbonacciCharacteristicMatrix (n + 1)).submatrix Fin.succ Fin.succ).det = "
                 << "Polynomial.X * (qMatrix (n + 1)).det := by\n";
             out << "    rw [hq_cofactor]\n";
-            out << "    have hentry : nbonacciCharacteristicMatrix (n + 1) 0 0 = "
-                << "Polynomial.X := by\n";
+            out << "    have hentry : nbonacciCharacteristicMatrix (n + 1) 0 0 = Polynomial.X := by\n";
             out << "      have hzero_ne_last : (0 : ℕ) ≠ n := by omega\n";
             out << "      simp [nbonacciCharacteristicMatrix, hzero_ne_last]\n";
             out << "    rw [hentry]\n";
-            out << "    norm_num <;> rfl\n";
+            out << "    norm_num\n";
+            out << "    rfl\n";
             out << "  rw [htop_summand]\n";
             out << "  let characteristicTailSummand : Fin n → Polynomial ℤ := fun i =>\n";
-            out << "    (-1 : Polynomial ℤ) ^ (i.succ : ℕ) * "
-                << "nbonacciCharacteristicMatrix (n + 1) i.succ 0 * "
-                << "((nbonacciCharacteristicMatrix (n + 1)).submatrix "
-                << "i.succ.succAbove Fin.succ).det\n";
+            out << "    (-1 : Polynomial ℤ) ^ (i.succ : ℕ) * nbonacciCharacteristicMatrix (n + 1) i.succ 0 * "
+                << "((nbonacciCharacteristicMatrix (n + 1)).submatrix i.succ.succAbove Fin.succ).det\n";
             out << "  let lastTail : Fin n := ⟨n - 1, by omega⟩\n";
             out << "  have htail_single :\n";
-            out << "      (∑ i : Fin n, characteristicTailSummand i) = "
-                << "characteristicTailSummand lastTail := by\n";
+            out << "      (∑ i : Fin n, characteristicTailSummand i) = characteristicTailSummand lastTail := by\n";
             out << "    apply Finset.sum_eq_single lastTail\n";
             out << "    · intro b hb hne\n";
             out << "      dsimp [characteristicTailSummand]\n";
@@ -1542,18 +1582,15 @@ inline std::string render_step(const LeanStep& step) {
             out << "        apply Fin.ext\n";
             out << "        simp [lastTail]\n";
             out << "        omega\n";
-            out << "      have hentry : "
-                << "nbonacciCharacteristicMatrix (n + 1) b.succ 0 = 0 := by\n";
+            out << "      have hentry : nbonacciCharacteristicMatrix (n + 1) b.succ 0 = 0 := by\n";
             out << "        have hb_lt := b.isLt\n";
             out << "        simp [nbonacciCharacteristicMatrix, hb_value_ne_last]\n";
             out << "      rw [hentry]\n";
             out << "      simp\n";
             out << "    · simp\n";
             out << "  have htail_sum :\n";
-            out << "      (∑ i : Fin n, (-1 : Polynomial ℤ) ^ (i.succ : ℕ) * "
-                << "nbonacciCharacteristicMatrix (n + 1) i.succ 0 * "
-                << "((nbonacciCharacteristicMatrix (n + 1)).submatrix "
-                << "i.succ.succAbove Fin.succ).det) = "
+            out << "      (∑ i : Fin n, (-1 : Polynomial ℤ) ^ (i.succ : ℕ) * nbonacciCharacteristicMatrix (n + 1) i.succ 0 * "
+                << "((nbonacciCharacteristicMatrix (n + 1)).submatrix i.succ.succAbove Fin.succ).det) = "
                 << "(-1 : Polynomial ℤ) ^ (n + 1) * (rMatrix (n + 1)).det := by\n";
             out << "    change (∑ i : Fin n, characteristicTailSummand i) = _\n";
             out << "    rw [htail_single]\n";
@@ -1562,31 +1599,19 @@ inline std::string render_step(const LeanStep& step) {
             out << "      apply Fin.ext\n";
             out << "      simp [lastTail]\n";
             out << "      omega\n";
+            out << "    have hlast_map :\n";
+            out << "        (Fin.last n).succAbove = (Fin.castSucc : Fin n → Fin (n + 1)) := by\n";
+            out << "      funext j\n";
+            out << "      apply Fin.ext\n";
+            out << "      simp [Fin.succAbove]\n";
             out << "    have hr_cofactor :\n";
-            out << "        (nbonacciCharacteristicMatrix (n + 1)).submatrix "
-                << "lastTail.succ.succAbove Fin.succ = rMatrix (n + 1) := by\n";
-            out << "      rw [hlast_succ]\n";
-            out << "      funext i j\n";
-            out << "      have hentry := congrArg (fun M => M i j) "
-                << "(nbonacciCharacteristic_minor_r n hn)\n";
-            out << "      have hrow : (Fin.last n).succAbove i = "
-                << "Ravel.Matrix.EraseIndex.skip (Fin.last n) i := by\n";
-            out << "        apply Fin.ext\n";
-            out << "        simp\n";
-            out << "      have hcol : (⟨j.val + 1, by omega⟩ : Fin (n + 1)) = "
-                << "Ravel.Matrix.EraseIndex.skip (⟨0, by omega⟩ : Fin (n + 1)) j := by\n";
-            out << "        apply Fin.ext\n";
-            out << "        simp\n";
-            out << "      change nbonacciCharacteristicMatrix (n + 1) "
-                << "((Fin.last n).succAbove i) ⟨j.val + 1, by omega⟩ = "
-                << "rMatrix (n + 1) i j\n";
-            out << "      exact (congrArg₂ (nbonacciCharacteristicMatrix (n + 1)) hrow hcol).trans hentry\n";
+            out << "        (nbonacciCharacteristicMatrix (n + 1)).submatrix lastTail.succ.succAbove Fin.succ = rMatrix (n + 1) := by\n";
+            out << "      rw [hlast_succ, hlast_map]\n";
+            out << "      exact nbonacciCharacteristic_minor_r n hn\n";
             out << "    rw [hr_cofactor]\n";
             out << "    have hlastTailVal : lastTail.val = n - 1 := by\n";
             out << "      simp [lastTail]\n";
-            out << "    have hlastEntry : "
-                << "nbonacciCharacteristicMatrix (n + 1) lastTail.succ 0 = "
-                << "Polynomial.C (-1) := by\n";
+            out << "    have hlastEntry : nbonacciCharacteristicMatrix (n + 1) lastTail.succ 0 = Polynomial.C (-1) := by\n";
             out << "      rw [hlast_succ]\n";
             out << "      have hzero_ne_n : (0 : ℕ) ≠ n := by omega\n";
             out << "      simp [nbonacciCharacteristicMatrix, hzero_ne_n]\n";
@@ -1647,7 +1672,7 @@ inline std::string render_closed_campaign_lean(const CampaignResult& result) {
         out << " :\n    " << definition.type << " :=\n  " << definition.value << "\n\n";
     }
     for (const auto& theorem : theorems) {
-        out << "/-- " << theorem.documentation << " -/\nlemma " << theorem.name;
+        out << "set_option maxRecDepth 16384 in\n/-- " << theorem.documentation << " -/\nlemma " << theorem.name;
         for (const auto& [binder, type] : theorem.binders) out << " (" << binder << " : " << type << ')';
         out << " :\n    " << theorem.proposition << " := by\n";
         for (const auto& step : theorem.proof) out << render_step(step) << '\n';

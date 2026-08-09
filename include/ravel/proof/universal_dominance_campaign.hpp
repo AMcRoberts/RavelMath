@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <map>
@@ -10,6 +11,8 @@
 #include <string>
 #include <utility>
 #include <vector>
+
+#include "math/proof_reflection.hpp"
 
 namespace ravel::proof::universal_dominance {
 
@@ -254,6 +257,27 @@ inline std::string render_campaign_report(const CampaignMap& map) {
     out += "active seams:\n";
     for (const auto& seam : map.active_seams) out += "  - " + seam + "\n";
     return out;
+}
+
+// Stages a concrete closed relation (every state has a verified outgoing
+// edge -- `certificate_closed`, exactly `hout`) into the reflection trace.
+// Deliberately does NOT require `rank_strict`: the theorems this backs are
+// non-existence results (no integer rank can make a closed finite relation
+// strict), so the certificate's value is the CLOSED structure itself, kept
+// universally quantified over rank at the Lean side.
+inline void stage_universal_dominance_closed_relation(
+    const ShellReturnCertificate& cert, const std::string& description) {
+    const auto validation = validate_shell_return_certificate(cert);
+    if (!validation.dimensions_consistent || !validation.endpoints_valid ||
+        !validation.certificate_closed)
+        return;
+    if (!mathlib::reflection::enabled()) return;
+    mathlib::reflection::UniversalDominanceClosedRelationCertificate node;
+    node.state_count = static_cast<long long>(cert.shell_states.size());
+    for (const auto& [from, to] : cert.edges)
+        node.edges.push_back({static_cast<long long>(from), static_cast<long long>(to)});
+    node.description = description;
+    mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, node);
 }
 
 }  // namespace ravel::proof::universal_dominance

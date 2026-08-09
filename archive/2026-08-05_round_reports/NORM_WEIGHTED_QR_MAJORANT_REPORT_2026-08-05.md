@@ -72,8 +72,7 @@ uploaded project did not contain the configured Mathlib ridealong/toolchain.
 The precise obstruction was:
 
 ```text
-safe_lean_check: Mathlib ridealong not found under:
-/mnt/data/ravel_full_work/ravel_work_2026-08-03_LEAN_dependencies_2026-08-03
+safe_lean_check: Mathlib ridealong not found under the configured local dependency directory
 ```
 
 Therefore the Lean artifact is emitted and reviewable but is not marked

@@ -1,5 +1,13 @@
 # Research status
 
+> **2026-08-08 note.** The universal n-bonacci boundary-dominance theorem
+> (`rho(G_B(n))=rho(predicted_core(n))` for every `n>=3`) is closed --
+> Lean kernel checked, unconditional in `n`, independently reconfirmed
+> this session. See `THEOREM_STATUS.md`'s Theorem 0.5 and
+> `NBONACCI_UNIVERSAL_DOMINANCE_CLOSED_2026-08-08.md` for the full
+> account and which earlier documents (shell-rank/carry-bound route,
+> refuted 2026-08-05) this supersedes.
+>
 > **2026-08-03 proof-system note.** The n-bonacci universal-n work now serves as the integration test for the reflective proof engine. The campaign is internally closed through generic operations, but Lean kernel acceptance remains pending the complete matching toolchain and compiled dependencies. Older chunk-generator and Lua-emitter status notes are archived under `docs/archive/2026-08-03_pre_generic_proof_system/`.
 
 This is the concise entry point for the mathematical and engineering

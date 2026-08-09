@@ -46,12 +46,13 @@ theorem shell_empty_of_phase_rank_transport
   have hnonempty : Shell.Nonempty := Set.nonempty_iff_ne_empty.mpr hne
   let rank : State → ℤ := fun x => level x + offset (phase x)
   obtain ⟨x, hxShell, hxMax⟩ :=
-    hnonempty.exists_isMaxOn rank
+    Shell.exists_max_image rank (Set.toFinite Shell) hnonempty
   obtain ⟨y, hyShell, hxy⟩ := hout x hxShell
   have hstrict : rank x < rank y := by
     dsimp [rank]
     have h := hconstraint hxShell hyShell hxy
     omega
-  exact (not_lt_of_ge (hxMax hyShell)) hstrict
+  have hle : rank y ≤ rank x := hxMax y hyShell
+  omega
 
 end RavelGenerated

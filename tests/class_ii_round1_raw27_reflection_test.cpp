@@ -34,7 +34,7 @@ int main() {
     assert(lean.find("round1_raw27_instance_0") != std::string::npos);
     assert(lean.find("round1Raw27G") != std::string::npos);
 
-    std::ofstream out("/tmp/class_ii_round1_raw27_generated.lean");
+    std::ofstream out("lean/generated/class_ii_round1_raw27_batch.lean");
     out << lean;
     out.close();
 

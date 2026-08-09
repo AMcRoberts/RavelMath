@@ -2,7 +2,7 @@
 
 ## New-context bootstrap
 
-Start at `../../.ravel/START_HERE.md`. Its mandatory `CORE_READINGLIST.md` puts these first:
+Start with these two work-repository documents:
 
 1. `SOURCE_FILE_ATLAS.md` — ownership and repository locations;
 2. `MATHEMATICAL_API.md` — prototypes, exactness boundaries, and the mandatory `Reflective proof engine` operating breadcrumb.
@@ -32,7 +32,6 @@ Operational references:
 - `SOURCE_FILE_ATLAS.md` — repository locations;
 - `MATHEMATICAL_API.md` — exact math APIs;
 - `THEOREM_STATUS.md` — formal-status ledger;
-- `DOCUMENTATION_AUDIT_2026-08-03.md` — current documentation audit and archive boundary;
 - `RESEARCH_STATUS.md` — broader research state.
 - `CORONA_SURFACE_PROJECTION.md` — request-driven corona/D_cont projection, completeness contract, and legacy switch.
 - `LEAN_THEOREM_INVENTORY_2026-08-04.md` — generated live-tree index of Lean theorem and lemma declarations.

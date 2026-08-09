@@ -6,6 +6,7 @@
 
 #include "ravel/simple_parry_profile.hpp"
 #include "ravel/proof/cyclotomic_obstruction.hpp"
+#include "math/proof_reflection.hpp"
 
 namespace ravel::proof {
 
@@ -53,6 +54,23 @@ derive_nearest_left_profile_parity_obstruction(std::size_t D) {
     if (!out.proved)
         out.obstruction = "alternating-sum parity identity failed";
     return out;
+}
+
+// Stages a `CoefficientProfileParityObstructionReflectionCertificate` for
+// one dimension D -- gates on `proof.proved`, which independently
+// rechecks (via the exact alternating-sum recomputation above) that
+// value_at_minus_one's parity classification matches even_dimension
+// before this function is ever reached.
+inline void stage_coefficient_profile_parity_obstruction(
+        const CoefficientProfileParityObstructionProof& proof,
+        const std::string& description) {
+    if (!proof.proved) return;
+    if (!mathlib::reflection::enabled()) return;
+    mathlib::reflection::CoefficientProfileParityObstructionReflectionCertificate node;
+    node.dimension = static_cast<long long>(proof.dimension);
+    node.even_dimension = proof.even_dimension;
+    node.description = description;
+    mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, node);
 }
 
 } // namespace ravel::proof

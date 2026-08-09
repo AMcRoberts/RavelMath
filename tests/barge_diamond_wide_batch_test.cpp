@@ -43,7 +43,7 @@ int main() {
     assert(lean.find("barge_diamond_instance_0") != std::string::npos);
     assert(lean.find("barge_diamond_instance_1") != std::string::npos);
 
-    std::ofstream out("/tmp/barge_diamond_wide_batch_generated.lean");
+    std::ofstream out("lean/generated/barge_diamond_wide_batch.lean");
     out << lean;
     out.close();
 

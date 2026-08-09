@@ -687,6 +687,50 @@
     \texttt{2014\_Eberl\_Sturm-sequences-formalisation-document.\{pdf,txt\}}.}
 }
 
+@article{SmithMyersKaplanGoodmanStrauss2023Hat,
+  author={Smith, David and Myers, Joseph Samuel and Kaplan, Craig S. and
+    Goodman-Strauss, Chaim},
+  title={An Aperiodic Monotile},
+  journal={Combinatorial Theory}, volume={4}, number={1}, pages={\#6},
+  year={2024}, eprint={2303.10798}, archivePrefix={arXiv},
+  primaryClass={math.CO},
+  note={Submitted Mar 2023; published Jun 2024. Introduces the "hat"
+    aperiodic monotile -- the first solution to the aperiodic-monotile
+    ("einstein") problem, but one that requires its mirror reflection to
+    tile the plane. Cited alongside SmithMyersKaplanGoodmanStrauss2023Spectre
+    as the direct precursor: the "Spectre" tile actually implemented in
+    \texttt{include/ravel/spectre\_geometry.hpp} is the reflection-free
+    variant from the companion paper, not this one -- grep-confirmed: the
+    string "Spectre" occurs 103 times in the companion paper's full text and
+    zero times in this one. Local preservation: PDF/TXT recorded in
+    \texttt{refs/FULLTEXT\_MANIFEST.tsv}, full text kept in
+    \texttt{refs/FullText/smith\_myers\_kaplan\_goodmanstrauss\_2023\_hat\_
+    2303.10798.\{pdf,txt\}}.}
+}
+
+@article{SmithMyersKaplanGoodmanStrauss2023Spectre,
+  author={Smith, David and Myers, Joseph Samuel and Kaplan, Craig S. and
+    Goodman-Strauss, Chaim},
+  title={A Chiral Aperiodic Monotile},
+  journal={Combinatorial Theory}, volume={4}, number={2}, pages={\#13},
+  year={2024}, eprint={2305.17743}, archivePrefix={arXiv},
+  primaryClass={math.CO},
+  note={Submitted May 2023; published Sep 2024. Introduces the "Spectre"
+    tile: a chiral aperiodic monotile that tiles the plane using only
+    translations and rotations (no reflections needed), unlike the "hat"
+    tile of the companion paper SmithMyersKaplanGoodmanStrauss2023Hat. This
+    is the actual geometric source for
+    \texttt{include/ravel/spectre\_geometry.hpp}'s vertex coordinates,
+    substitution rule table, and supertile assembly recipe, and for
+    \texttt{python/spectre*.py}. Previously cited only by author-and-year in
+    source comments and in \texttt{docs/FINDINGS\_FOR\_CITATION.md}, without
+    a bibliography entry, archived full text, or disambiguation from the hat
+    paper -- corrected 2026-08-07. Local preservation: PDF/TXT recorded in
+    \texttt{refs/FULLTEXT\_MANIFEST.tsv}, full text kept in
+    \texttt{refs/FullText/smith\_myers\_kaplan\_goodmanstrauss\_2023\_spectre\_
+    2305.17743.\{pdf,txt\}}.}
+}
+
 @inproceedings{LiPaulson2018BudanFourier,
   author={Li, Wenda and Paulson, Lawrence C.},
   title={Counting Polynomial Roots in {I}sabelle/{HOL}: A Formal Proof of the

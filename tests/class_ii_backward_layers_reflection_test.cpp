@@ -38,7 +38,7 @@ int main() {
     assert(lean.find("class_ii_fixed_table_instance_0") != std::string::npos);
     assert(lean.find("class_ii_fixed_table_instance_1") != std::string::npos);
 
-    std::ofstream out("/tmp/class_ii_backward_layers_generated.lean");
+    std::ofstream out("lean/generated/class_ii_backward_layers_batch.lean");
     out << lean;
     out.close();
 

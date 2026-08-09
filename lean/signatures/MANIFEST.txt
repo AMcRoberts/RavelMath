@@ -24,7 +24,7 @@ dbf90869615145cc71d642bd3bb9c3439cd9556e27d408156212db21dfbb682c  lean/class_ii_
   Project: RavelMathPub
   GPG key id: C254E9BC303372F75B33038C3F3D3FD47F09D7E5
   X.509 certificate: lean/signatures/ravel-cert.pem
-  Private key & passphrases: ~/claude/.ravel/keys/ (private)
+  Private key & passphrases: external RAVEL_SIGNING_KEY_DIR (private)
 
 To verify the GPG layer:
 

@@ -1,10 +1,15 @@
 // ravel/spectre_geometry.hpp
 //
 // EVERYTHING that is actually specific to the Spectre aperiodic
-// monotile (Smith-Myers-Kaplan-Goodman-Strauss 2023): its vertex
-// coordinates, its substitution rule table, and its supertile
-// assembly recipe -- expressed as DATA fed into the generic machinery
-// in substitution_lineage.hpp, which knows nothing about any of this.
+// monotile (Smith, Myers, Kaplan & Goodman-Strauss, "A Chiral Aperiodic
+// Monotile", Combinatorial Theory 4(2) (2024) #13, arXiv:2305.17743 --
+// bib key SmithMyersKaplanGoodmanStrauss2023Spectre, full text archived
+// under refs/FullText/; see also its precursor "An Aperiodic Monotile",
+// arXiv:2303.10798, the "hat" tile, which still needs reflections and is
+// NOT what this file implements): its vertex coordinates, its
+// substitution rule table, and its supertile assembly recipe --
+// expressed as DATA fed into the generic machinery in
+// substitution_lineage.hpp, which knows nothing about any of this.
 //
 // If a different substitution tiling is ever wanted (Penrose,
 // Ammann-Beenker, ...), it needs a file shaped exactly like this one

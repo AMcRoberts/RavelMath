@@ -38,7 +38,7 @@ int main() {
     assert(lean.find("class_ii_neighbor_d_support_instance_2") != std::string::npos);
     assert(lean.find("neighbor2BoundaryTargetG_eq") != std::string::npos);
 
-    std::ofstream out("/tmp/class_ii_neighbor_d_support_generated.lean");
+    std::ofstream out("lean/generated/class_ii_neighbor_d_support_batch.lean");
     out << lean;
     out.close();
 

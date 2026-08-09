@@ -50,6 +50,6 @@ for step, snap in enumerate(history):
 
 imgs = [Image.open(p).convert("RGB") for p in frame_paths]
 durations = [1200]*len(imgs)
-imgs[0].save("/mnt/user-data/outputs/spectre-hex-recolor.gif",
+imgs[0].save("spectre-hex-recolor.gif",
              save_all=True, append_images=imgs[1:], duration=durations, loop=0)
 print("wrote gif with", len(imgs), "frames")

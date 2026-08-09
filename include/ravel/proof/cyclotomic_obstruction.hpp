@@ -13,6 +13,7 @@
 
 #include "math/poly_z.hpp"
 #include "math/charpoly.hpp"
+#include "math/proof_reflection.hpp"
 #include "ravel/simple_parry_profile.hpp"
 
 namespace ravel::proof {
@@ -146,6 +147,38 @@ derive_cyclotomic_obstruction_certificate(const mathlib::PolyZ& polynomial,
     out.proved = out.exact_reconstruction;
     if (!out.proved) out.obstruction = "cyclotomic factor reconstruction failed";
     return out;
+}
+
+// Stages a `CyclotomicObstructionReflectionCertificate` -- gates on
+// `cert.proved` AND an independent recomputation of p(-1) via plain
+// Horner evaluation over the polynomial's own coefficients (not trusting
+// `has_order(2)`'s internal factorization search), checking that
+// eval_at_minus_one == 0 exactly matches has_order(2) before staging --
+// this is the same fact `x_add_one_dvd_iff_eval_neg_one_zero` proves, so
+// a mismatch here would mean either the certificate or the theorem is
+// wrong, and the record must not happen.
+inline void stage_cyclotomic_obstruction(
+        const CyclotomicObstructionCertificate& cert,
+        const std::string& description) {
+    if (!cert.proved) return;
+    const long long degree = cert.polynomial.degree();
+    if (degree < 0) return;
+    long long eval_at_minus_one = 0;
+    std::vector<long long> coeffs;
+    for (long long i = degree; i >= 0; --i)
+        coeffs.push_back(std::stoll(mathlib::str(cert.polynomial.coeff(static_cast<std::size_t>(i)))));
+    std::reverse(coeffs.begin(), coeffs.end());  // ascending: coeffs[0] = constant term
+    for (long long i = degree; i >= 0; --i)
+        eval_at_minus_one = eval_at_minus_one * (-1) + coeffs[static_cast<std::size_t>(i)];
+    const bool has_order_two = cert.has_order(2);
+    if ((eval_at_minus_one == 0) != has_order_two) return;
+    if (!mathlib::reflection::enabled()) return;
+    mathlib::reflection::CyclotomicObstructionReflectionCertificate node;
+    node.coefficients = coeffs;
+    node.has_order_two = has_order_two;
+    node.eval_at_minus_one = eval_at_minus_one;
+    node.description = description;
+    mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, node);
 }
 
 struct Z2CharacterSectorCertificate {

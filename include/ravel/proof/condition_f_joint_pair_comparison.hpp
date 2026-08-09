@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "math/proof_reflection.hpp"
 #include "ravel/proof/condition_f_pair_universal_reduction.hpp"
 #include "ravel/proof/joint_pair_rank_one_dominance.hpp"
 
@@ -107,6 +108,18 @@ inline ConditionFJointPairComparison
     out.quotient_core_pair_maximal=out.joint_order_propagates_dimensionwise;
     out.proved=out.quotient_core_pair_maximal;
     return out;
+}
+
+inline void stage_condition_f_joint_dominance(
+    const ConditionFJointPairComparison& cert, const std::string& description) {
+    if (!cert.proved) return;
+    if (!mathlib::reflection::enabled()) return;
+    mathlib::reflection::ConditionFJointDominanceCertificate node;
+    node.target_dimension = static_cast<long long>(cert.target_dimension);
+    node.base_roles = static_cast<long long>(cert.base_roles);
+    node.base_scc_count = static_cast<long long>(cert.base_scc_count);
+    node.description = description;
+    mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, node);
 }
 
 } // namespace ravel::proof

@@ -9,6 +9,8 @@
 #include <utility>
 #include <vector>
 
+#include "math/proof_reflection.hpp"
+
 namespace ravel::proof {
 
 struct ExactNonnegativeRational {
@@ -313,6 +315,25 @@ inline NormWeightedQRMajorantCertificate derive_norm_weighted_qr_majorant(
         out.nonnegative_boundary_polynomial_majorant_derived &&
         out.spectral_radius_corollary_available;
     return out;
+}
+
+// Stages a `NormWeightedQRMajorantReflectionCertificate` -- gates on
+// `cert.proved`, which requires the full chain (channels well-formed,
+// submultiplicativity/triangle-inequality composition, universal Q/R word
+// majorant, and the boundary polynomial majorant) to have been
+// independently re-derived above, not assumed.
+inline void stage_norm_weighted_qr_majorant(
+        const NormWeightedQRMajorantCertificate& cert,
+        const std::string& description) {
+    if (!cert.proved) return;
+    if (!mathlib::reflection::enabled()) return;
+    mathlib::reflection::NormWeightedQRMajorantReflectionCertificate node;
+    node.base_vertices = static_cast<long long>(cert.base_vertices);
+    node.replayed_words_count = static_cast<long long>(cert.replayed_words.size());
+    node.all_channels_contractive = cert.all_channels_contractive;
+    node.expansive_channel_detected = cert.expansive_channel_detected;
+    node.description = description;
+    mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, node);
 }
 
 } // namespace ravel::proof

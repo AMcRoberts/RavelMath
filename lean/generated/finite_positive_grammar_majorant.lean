@@ -78,7 +78,7 @@ def evalScalarGeneratorWord {Γ : Type*}
 /-- Exact abstract norm-weighted lift from any finite or infinite generator
 alphabet; finiteness is needed by certificate generation, not by this induction. -/
 theorem norm_generator_word_majorant
-    {Γ α : Type*} [NormedRing α]
+    {Γ α : Type*} [NormedRing α] [NormOneClass α]
     (M : Γ → α) (a : Γ → ℝ)
     (ha0 : ∀ g, 0 ≤ a g)
     (hM : ∀ g, ‖M g‖ ≤ a g) :
@@ -104,7 +104,7 @@ inductive QR
   | r
   deriving DecidableEq, Repr
 
-example {α : Type*} [NormedRing α]
+example {α : Type*} [NormedRing α] [NormOneClass α]
     (Q R : α) (q r : ℝ)
     (hq0 : 0 ≤ q) (hr0 : 0 ≤ r)
     (hQ : ‖Q‖ ≤ q) (hR : ‖R‖ ≤ r) :

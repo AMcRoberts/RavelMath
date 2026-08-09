@@ -50,10 +50,10 @@ int main() {
     assert(lean.find("barge_diamond_instance_1") != std::string::npos);
     assert(lean.find("barge_diamond_instance_2") != std::string::npos);
 
-    std::ofstream out("/tmp/barge_diamond_generated.lean");
+    std::ofstream out("lean/generated/barge_diamond_batch.lean");
     out << lean;
     out.close();
-    std::cout << "wrote /tmp/barge_diamond_generated.lean (" << lean.size() << " bytes)\n";
+    std::cout << "wrote lean/generated/barge_diamond_batch.lean (" << lean.size() << " bytes)\n";
 
     std::cout << "barge_diamond_certificate: reflection pipeline produces well-formed output "
                  "for all 3 substitutions.\n";

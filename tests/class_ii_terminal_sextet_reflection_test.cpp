@@ -35,7 +35,7 @@ int main() {
     assert(lean.find("class_ii_terminal_sextet_instance_1") != std::string::npos);
     assert(lean.find("neighbor2TerminalSextetG") != std::string::npos);
 
-    std::ofstream out("/tmp/class_ii_terminal_sextet_generated.lean");
+    std::ofstream out("lean/generated/class_ii_terminal_sextet_batch.lean");
     out << lean;
     out.close();
 

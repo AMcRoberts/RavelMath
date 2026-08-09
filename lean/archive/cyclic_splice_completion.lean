@@ -1,10 +1,44 @@
 import Mathlib
 
-namespace RavelCyclicSpliceCompletion
+/-! Generated from typed semantic nodes produced inside the exact math library.
+    Concrete observations are comments; only registered, structurally justified
+    lemma applications become theorem declarations. -/
+
+namespace RavelGenerated
+
+open Matrix
+
+theorem recurrent_radius_le_one_of_pump
+    {State : Type v}
+    (ReturnCapable : State → Prop)
+    (radius : State → ℕ)
+    (bound : ℕ)
+    (hbounded : ∀ x, ReturnCapable x → radius x ≤ bound)
+    (hpump : ∀ source, ReturnCapable source → 2 ≤ radius source →
+      ∃ lifted, ReturnCapable lifted ∧ radius source < radius lifted) :
+    ∀ x, ReturnCapable x → radius x ≤ 1 := by
+  intro x hx
+  by_contra hnot
+  have hxOuter : 2 ≤ radius x := by omega
+  have iterate : ∀ k source, ReturnCapable source → 2 ≤ radius source →
+      ∃ y, ReturnCapable y ∧ radius source + k ≤ radius y := by
+    intro k
+    induction k with
+    | zero =>
+        intro source hrec _
+        exact ⟨source, hrec, by simp⟩
+    | succ k ih =>
+        intro source hrec houter
+        obtain ⟨middle, hmiddle, hgrowth⟩ := ih source hrec houter
+        have hmiddleOuter : 2 ≤ radius middle := by omega
+        obtain ⟨target, htarget, hstrict⟩ := hpump middle hmiddle hmiddleOuter
+        exact ⟨target, htarget, by omega⟩
+  obtain ⟨y, hy, hlarge⟩ := iterate (bound + 1) x hx hxOuter
+  have hyBound := hbounded y hy
+  omega
 
 universe u v
 
-/-- A chosen orbit in a serial finite relation. -/
 noncomputable def chooseNext {α : Type u}
     (R : α → α → Prop) (hserial : ∀ x, ∃ y, R x y) (x : α) : α :=
   Classical.choose (hserial x)
@@ -26,9 +60,6 @@ lemma orbit_step {α : Type u}
   simpa [orbit, Function.iterate_succ_apply'] using
     chooseNext_spec R hserial (orbit R hserial start n)
 
-/-- Finiteness converts a serial one-lap controller relation into a periodic
-controller orbit.  A one-lap fixed point is not required: the base cycle may be
-repeated a positive number of times. -/
 theorem finite_serial_relation_has_repeated_orbit
     {α : Type u} [Finite α] [Nonempty α]
     (R : α → α → Prop) (hserial : ∀ x, ∃ y, R x y) :
@@ -43,9 +74,6 @@ theorem finite_serial_relation_has_repeated_orbit
   · exact ⟨start, m, n, hlt, heq⟩
   · exact ⟨start, n, m, hgt, heq.symm⟩
 
-/-- Logical data supplied by the concrete first-return/controller system for
-one outer recurrent source.  `lap` is one complete traversal of the recurrent
-base cycle on the invariant face-aligned controller fiber. -/
 structure SerialLapSystem
     {State : Type v}
     (ReturnCapable : State → Prop)
@@ -56,7 +84,6 @@ structure SerialLapSystem
   nonemptyController : Nonempty Controller
   lap : Controller → Controller → Prop
   serial : ∀ c, ∃ d, lap c d
-  /-- Soundness of repeating the base cycle between equal orbit states. -/
   repeatedLapPumps :
     (∃ start : Controller, ∃ m n : ℕ,
       m < n ∧ orbit lap serial start m = orbit lap serial start n) →
@@ -65,8 +92,6 @@ structure SerialLapSystem
 attribute [instance] SerialLapSystem.finiteController
 attribute [instance] SerialLapSystem.nonemptyController
 
-/-- The former `CyclicSpliceComplete` obligation follows from a serial finite
-one-lap fiber plus the already replayed affine soundness of a repeated lap. -/
 theorem strict_shell_pump_of_serial_lap
     {State : Type v}
     (ReturnCapable : State → Prop)
@@ -80,8 +105,6 @@ theorem strict_shell_pump_of_serial_lap
   apply S.repeatedLapPumps
   exact finite_serial_relation_has_repeated_orbit S.lap S.serial
 
-/-- Final boundedness consequence after cyclic splice has been reduced to the
-serial-lap construction. -/
 theorem recurrent_radius_le_one_of_serial_lap
     {State : Type v}
     (ReturnCapable : State → Prop)
@@ -90,26 +113,25 @@ theorem recurrent_radius_le_one_of_serial_lap
     (hbounded : ∀ x, ReturnCapable x → radius x ≤ bound)
     (system : ∀ source, ReturnCapable source → 2 ≤ radius source →
       SerialLapSystem ReturnCapable radius source) :
-    ∀ x, ReturnCapable x → radius x ≤ 1 := by
-  have hpump := strict_shell_pump_of_serial_lap ReturnCapable radius system
-  intro x hx
-  by_contra hnot
-  have hxOuter : 2 ≤ radius x := by omega
-  have iterate : ∀ k source, ReturnCapable source → 2 ≤ radius source →
-      ∃ y, ReturnCapable y ∧ radius source + k ≤ radius y := by
-    intro k
-    induction k with
-    | zero =>
-        intro source hrec _
-        exact ⟨source, hrec, by simp⟩
-    | succ k ih =>
-        intro source hrec houter
-        obtain ⟨middle, hmiddle, hgrowth⟩ := ih source hrec houter
-        have hmiddleOuter : 2 ≤ radius middle := by omega
-        obtain ⟨target, htarget, hstrict⟩ := hpump middle hmiddle hmiddleOuter
-        exact ⟨target, htarget, by omega⟩
-  obtain ⟨y, hy, hlarge⟩ := iterate (bound + 1) x hx hxOuter
-  have hyBound := hbounded y hy
-  omega
+    ∀ x, ReturnCapable x → radius x ≤ 1 :=
+  recurrent_radius_le_one_of_pump ReturnCapable radius bound hbounded
+    (strict_shell_pump_of_serial_lap ReturnCapable radius system)
 
-end RavelCyclicSpliceCompletion
+/-- Mechanically emitted: state_count=3 transient=1 period=2 3-state relation, transient 1 into a period-2 cycle -- ravel::proof::stage_cyclic_splice_completion
+    independently reconfirmed the repeat under the deterministic
+    "pick the first successor" transition function. -/
+def cyclicSpliceCompletion0Next : Fin 3 → Fin 3
+  | 0 => 1
+  | 1 => 2
+  | 2 => 1
+
+theorem cyclic_splice_completion_instance_0 :
+    cyclicSpliceCompletion0Next^[1] (0 : Fin 3) = cyclicSpliceCompletion0Next^[3] (0 : Fin 3) := by decide
+
+/- Semantic proof graph for: cyclic_splice_completion_batch
+  [0] lean.cyclic_splice_completion_certificate :: state_count=3 transient=1 period=2 3-state relation, transient 1 into a period-2 cycle -- instantiates finite_serial_relation_has_repeated_orbit
+-/
+
+def reflectedNodeCount : Nat := 1
+
+end RavelGenerated

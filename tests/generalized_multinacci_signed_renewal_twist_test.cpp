@@ -1,18 +1,22 @@
+#include <cassert>
+#include <fstream>
 #include <iostream>
 #include <stdexcept>
 #include <tuple>
 #include <vector>
 
+#include "math/proof_reflection.hpp"
 #include "ravel/contact_boundary.hpp"
 #include "ravel/d_cont_check.hpp"
 #include "ravel/generalized_multinacci.hpp"
 #include "ravel/proof/generalized_multinacci_boundary_word_lift.hpp"
 #include "ravel/proof/generalized_multinacci_signed_renewal_twist.hpp"
+#include "ravel/proof/reflective_lean_renderer.hpp"
 
 using namespace ravel;
 
 template <std::size_t d>
-void check_case(std::size_t m) {
+void check_case(std::size_t m, int& staged_count) {
     const auto raw=generalized_multinacci_rule(d,m);
     SubstitutionRule rule(raw);
     const auto beta=generalized_multinacci_beta(d,m);
@@ -35,14 +39,37 @@ void check_case(std::size_t m) {
               <<" roof="<<twist.maximum_return_time
               <<" voltage(-,0,+)="<<twist.negative_voltage_edges<<","<<twist.zero_voltage_edges<<","<<twist.positive_voltage_edges
               <<"\n";
+    ravel::proof::stage_generalized_multinacci_signed_renewal_twist(
+        twist, "D="+std::to_string(d)+" m="+std::to_string(m)+" signed renewal twist instance");
+    ++staged_count;
 }
 
 int main() {
-    for (std::size_t m : {1u,2u,3u}) {
-        check_case<2>(m);
-        check_case<3>(m);
-        check_case<4>(m);
-        check_case<5>(m);
+    mathlib::reflection::Trace trace("generalized_multinacci_signed_renewal_twist_batch");
+    int staged_count = 0;
+    {
+        mathlib::reflection::ScopedTrace scope(&trace);
+        for (std::size_t m : {1u,2u,3u}) {
+            check_case<2>(m, staged_count);
+            check_case<3>(m, staged_count);
+            check_case<4>(m, staged_count);
+            check_case<5>(m, staged_count);
+        }
     }
+
+    auto nodes = trace.find<mathlib::reflection::GeneralizedMultinacciSignedRenewalTwistReflectionCertificate>();
+    std::cout << "trace recorded " << nodes.size()
+              << " GeneralizedMultinacciSignedRenewalTwistReflectionCertificate nodes"
+                 " (staged " << staged_count << ")\n";
+    assert(static_cast<int>(nodes.size()) == staged_count);
+
+    std::string lean = ravel::proof::render_reflective_lean_module(trace);
+    assert(lean.find("defect_roof_bounded") != std::string::npos);
+    assert(lean.find("generalized_multinacci_signed_renewal_twist_instance_0") != std::string::npos);
+
+    std::ofstream out("lean/generated/generalized_multinacci_signed_renewal_twist.lean");
+    out << lean;
+    out.close();
+
     std::cout << "generalized multinacci signed renewal twist PASS\n";
 }

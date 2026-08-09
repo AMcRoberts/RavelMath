@@ -1,4 +1,5 @@
 #include <cassert>
+#include <fstream>
 #include <iostream>
 #include <string>
 
@@ -80,4 +81,8 @@ int main() {
 
     std::cout << result.report();
     std::cout << lean;
+
+    std::ofstream out("lean/generated/shared_polynomial_closure_validation.lean");
+    out << lean;
+    out.close();
 }

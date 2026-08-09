@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ravel/proof/generalized_multinacci_boundary_word_lift.hpp"
+#include "math/proof_reflection.hpp"
 #include "ravel/proof/positive_word_graph_expansion.hpp"
 
 namespace ravel::proof {
@@ -127,6 +128,25 @@ GeneralizedMultinacciSignedRenewalTwistProof
     if (!out.proved && out.obstruction.empty())
         out.obstruction = "signed renewal/voltage factorization failed";
     return out;
+}
+
+// Stages a `GeneralizedMultinacciSignedRenewalTwistReflectionCertificate`
+// for one (D,m) instance -- gates on `proof.proved`, which requires
+// `roof_bounded_by_prefix_multiplicity` (independently rechecked above:
+// maximum_return_time cannot exceed the prefix multiplicity m).
+inline void stage_generalized_multinacci_signed_renewal_twist(
+        const GeneralizedMultinacciSignedRenewalTwistProof& proof,
+        const std::string& description) {
+    if (!proof.proved) return;
+    if (proof.maximum_return_time > proof.multiplicity) return;
+    if (!mathlib::reflection::enabled()) return;
+    mathlib::reflection::GeneralizedMultinacciSignedRenewalTwistReflectionCertificate node;
+    node.dimension = static_cast<long long>(proof.dimension);
+    node.multiplicity = static_cast<long long>(proof.multiplicity);
+    node.maximum_return_time = static_cast<long long>(proof.maximum_return_time);
+    node.macro_edges = static_cast<long long>(proof.macro_edges);
+    node.description = description;
+    mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, node);
 }
 
 } // namespace ravel::proof

@@ -26,7 +26,6 @@ theorem affine_block_same_translation_defect
   rw [affine_block_translation]
   ext i
   simp
-  ring
 
 /-- For the n-bonacci block map `2A-I`, the translation defect is
 `2(A*t-t)`. This is the extra phase datum required by any uniform radial

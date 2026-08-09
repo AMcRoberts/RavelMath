@@ -6,6 +6,7 @@
 #include <utility>
 #include <vector>
 
+#include "math/proof_reflection.hpp"
 #include "ravel/proof/norm_weighted_qr_majorant.hpp"
 
 namespace ravel::proof {
@@ -176,6 +177,51 @@ inline FinitePositiveGrammarMajorantCertificate
         out.universal_word_majorant_derived &&
         out.positive_polynomial_majorant_derived;
     return out;
+}
+
+// Independently re-sums (not trusted from `.proved`) the per-generator
+// count and norm-weighted matrices to a scalar rational pair each, checks
+// the norm-weighted scalar sum does not exceed the count scalar sum for
+// EVERY generator (the concrete instance of
+// `ordinary_generatorwise_projection_derived` this reflection wiring
+// needs), then stages the result.
+inline void stage_finite_positive_grammar_majorant(
+    const FinitePositiveGrammarMajorantCertificate& cert, const std::string& description) {
+    if (!cert.proved) return;
+    if (cert.count_generators.size() != cert.generator_count ||
+        cert.norm_generators.size() != cert.generator_count)
+        return;
+    std::vector<ExactNonnegativeRational> count_scalar(cert.generator_count, {0, 1});
+    std::vector<ExactNonnegativeRational> norm_scalar(cert.generator_count, {0, 1});
+    for (std::size_t g = 0; g < cert.generator_count; ++g) {
+        for (const auto& row : cert.count_generators[g])
+            for (const auto& v : row) {
+                ExactNonnegativeRational next;
+                if (!exact_rational_add(count_scalar[g], v, next)) return;
+                count_scalar[g] = next;
+            }
+        for (const auto& row : cert.norm_generators[g])
+            for (const auto& v : row) {
+                ExactNonnegativeRational next;
+                if (!exact_rational_add(norm_scalar[g], v, next)) return;
+                norm_scalar[g] = next;
+            }
+        if (!exact_rational_le(norm_scalar[g], count_scalar[g])) return;
+    }
+    if (!mathlib::reflection::enabled()) return;
+    mathlib::reflection::FinitePositiveGrammarMajorantReflectionCertificate node;
+    node.base_vertices = static_cast<long long>(cert.base_vertices);
+    node.generator_count = static_cast<long long>(cert.generator_count);
+    for (std::size_t g = 0; g < cert.generator_count; ++g) {
+        const auto c = reduce_exact_rational(count_scalar[g]);
+        const auto n = reduce_exact_rational(norm_scalar[g]);
+        node.count_scalar_num.push_back(static_cast<long long>(c.numerator));
+        node.count_scalar_den.push_back(static_cast<long long>(c.denominator));
+        node.norm_scalar_num.push_back(static_cast<long long>(n.numerator));
+        node.norm_scalar_den.push_back(static_cast<long long>(n.denominator));
+    }
+    node.description = description;
+    mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, node);
 }
 
 inline NormWeightedQRMajorantCertificate specialize_finite_grammar_to_qr(

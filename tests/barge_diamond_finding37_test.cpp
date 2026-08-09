@@ -80,9 +80,9 @@ int main() {
     assert(static_cast<long long>(nodes.size()) == recorded_count);
 
     std::string lean = render_reflective_lean_module(trace);
-    std::ofstream out("/tmp/barge_diamond_finding37_generated.lean");
+    std::ofstream out("lean/generated/barge_diamond_finding37_batch.lean");
     out << lean;
     out.close();
-    std::cout << "wrote /tmp/barge_diamond_finding37_generated.lean (" << lean.size() << " bytes)\n";
+    std::cout << "wrote lean/generated/barge_diamond_finding37_batch.lean (" << lean.size() << " bytes)\n";
     return 0;
 }

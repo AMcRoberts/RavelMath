@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ravel/proof/cyclic_splice_completion.hpp"
+#include "math/proof_reflection.hpp"
 
 namespace ravel::proof {
 
@@ -100,6 +101,35 @@ inline std::string render_cyclic_one_lap_relation_report(
         std::string(proof.relation_replay ? "true" : "false") + "\n"
         "valid=" + std::string(proof.valid ? "true" : "false") + "\n"
         "failure=" + proof.failure + "\n";
+}
+
+// Stages a `CyclicSpliceCompactnessReflectionCertificate` -- gates on
+// `proof.valid` AND an independent replay of every consecutive step in
+// the found orbit against the relation's own adjacency lists (not
+// trusting the DFS search that found it), so a corrupted or
+// coincidentally-shaped orbit cannot be staged.
+inline void stage_cyclic_splice_compactness(
+        const OneLapControllerRelation& relation,
+        const CyclicOneLapRelationProof& proof,
+        const std::string& description) {
+    if (!proof.valid) return;
+    if (proof.closed_orbit.size() < 2) return;
+    for (std::size_t i = 0; i + 1 < proof.closed_orbit.size(); ++i) {
+        const auto u = proof.closed_orbit[i], v = proof.closed_orbit[i + 1];
+        const auto& succ = relation.successors[u];
+        if (std::find(succ.begin(), succ.end(), v) == succ.end()) return;
+    }
+    if (proof.closed_orbit.front() != proof.closed_orbit.back()) return;
+    if (!mathlib::reflection::enabled()) return;
+    mathlib::reflection::CyclicSpliceCompactnessReflectionCertificate node;
+    node.state_count = static_cast<long long>(relation.state_count);
+    for (const auto& s : relation.successors) {
+        std::vector<long long> row(s.begin(), s.end());
+        node.successors.push_back(std::move(row));
+    }
+    node.orbit_states.assign(proof.closed_orbit.begin(), proof.closed_orbit.end());
+    node.description = description;
+    mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, node);
 }
 
 } // namespace ravel::proof

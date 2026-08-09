@@ -81,6 +81,38 @@ artifact, exact hash, proof-chain summary, and scope boundary are recorded in
 `NBONACCI_UNIVERSAL_N_KERNEL_CHECKED_2026-08-03.md`.
 
 
+## Theorem 0.5: universal n-bonacci boundary-dominance
+
+**Status: Lean kernel checked, unconditional in `n`.**
+
+For every natural number `n >= 3`: `rho(G_B(n)) = rho(predicted_core(n))`
+-- the dominant Perron root of the n-bonacci boundary/corona graph equals
+the dominant Perron root of the formula-defined grade-1 core
+(`predicted_core_member` in `include/ravel/nbonacci_margin_invariant.hpp`).
+
+This is the target of `docs/UNIVERSAL_NBONACCI_DOMINANCE_CAMPAIGN.md`,
+closed not by that document's own shell-rank/carry-bound route (explicitly
+refuted, diary 2026-08-05 "universal maximum-shell exclusion refuted": an
+infinite triangular-wave counterfamily falsifies universal shell-two
+acyclicity) but by the canonical Q/R parent-prefix split: every n-bonacci
+transport edge's prefix defect lies in `{-1,0,+1}`, forcing exactly two
+generators (`Q`: balanced, `R`: one-sided defect); the minimal alphabet's
+parent-role graph has one recurrent SCC, giving the identity as a trivial
+base intertwiner; dimension extension is a finite-depth acyclic boundary
+substitution in the same two generators; Q/R-word intertwining is
+polynomial-monotone, so the base comparison propagates to every dimension
+by ordinary induction.
+
+The public artifact is `lean/generated/condition_f_joint_qr_playground.lean`
+(`qr_word_intertwiner`, `qr_polynomial_intertwiner`,
+`jointQR_dimension_induction`, `universal_dominance_sandwich`) --
+kernel-checked with zero errors and zero `sorry`, independently
+reconfirmed in this environment 2026-08-08 (previously only reported by
+an earlier session, never itself in `make lean-check`'s permanent
+coverage; now is, alongside a concrete C++-gated instance emitted by
+`tests/condition_f_joint_dominance_reflection_test.cpp`). Full account:
+`docs/NBONACCI_UNIVERSAL_DOMINANCE_CLOSED_2026-08-08.md`.
+
 ## Theorem candidate: family adjacent-swap closed forms
 
 **Status: executable arbitrary-parameter certificate; Lean validation file

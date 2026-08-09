@@ -35,7 +35,7 @@ int main() {
     assert(lean.find("pisot_root_ordering_instance_4") != std::string::npos);
     assert(lean.find("pisot_root_strictly_between") != std::string::npos);
 
-    std::ofstream out("/tmp/pisot_root_ordering_generated.lean");
+    std::ofstream out("lean/generated/pisot_root_ordering_batch.lean");
     out << lean;
     out.close();
 

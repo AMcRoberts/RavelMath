@@ -82,7 +82,7 @@ fig, ax = new_ax(); add_marks(ax); save_frame(fig, 2, captions[2])
 images = [Image.open(p).convert("RGB") for p in frame_paths]
 durations = [1400, 1400, 2200]
 
-out_path = "/mnt/user-data/outputs/spectre-transition.gif"
+out_path = "spectre-transition.gif"
 images[0].save(
     out_path,
     save_all=True,

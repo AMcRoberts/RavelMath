@@ -47,10 +47,10 @@ int main() {
     if (recorded > 0) {
         std::string lean = render_reflective_lean_module(trace);
         assert(lean.find("last_letter_orbit_collision_forces_coincidence") != std::string::npos);
-        std::ofstream out("/tmp/last_letter_orbit_generated.lean");
+        std::ofstream out("lean/generated/last_letter_orbit_batch.lean");
         out << lean;
         out.close();
-        std::cout << "wrote /tmp/last_letter_orbit_generated.lean\n";
+        std::cout << "wrote lean/generated/last_letter_orbit_batch.lean\n";
     } else {
         std::cout << "no suffix collision found within bound on this example -- "
                      "expected for a pure-rotation lastLetterMap with a coprime gap; "
@@ -75,10 +75,10 @@ int main() {
         assert(nodes2.size() == 1);
         std::string lean2 = render_reflective_lean_module(trace2);
         assert(lean2.find("last_letter_orbit_collision_forces_coincidence") != std::string::npos);
-        std::ofstream out2("/tmp/last_letter_orbit_generated.lean");
+        std::ofstream out2("lean/generated/last_letter_orbit_batch.lean");
         out2 << lean2;
         out2.close();
-        std::cout << "wrote /tmp/last_letter_orbit_generated.lean (fallback example)\n";
+        std::cout << "wrote lean/generated/last_letter_orbit_batch.lean (fallback example)\n";
     }
 
     std::cout << "last_letter_orbit_reflection_test: PASS\n";

@@ -45,7 +45,7 @@ int main() {
     assert(lean.find("both_fixed_affine_instance_0") != std::string::npos);
     assert(lean.find("affine_no_solution_at_or_above_threshold") != std::string::npos);
 
-    std::ofstream out("/tmp/class_ii_both_fixed_affine_generated.lean");
+    std::ofstream out("lean/generated/class_ii_both_fixed_affine_batch.lean");
     out << lean;
     out.close();
 

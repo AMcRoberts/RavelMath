@@ -48,7 +48,7 @@ int main() {
     assert(lean.find("first_letter_orbit_collision_forces_coincidence") != std::string::npos);
     assert(lean.find("first_letter_orbit_instance_1") != std::string::npos);
 
-    std::ofstream out("/tmp/first_letter_orbit_generated.lean");
+    std::ofstream out("lean/generated/first_letter_orbit_batch.lean");
     out << lean;
     out.close();
 

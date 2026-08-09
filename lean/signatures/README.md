@@ -1,9 +1,8 @@
 # Lean file signatures
 
 This directory holds the public certificate material for the Lean
-files in `..`. The private keys and passphrases live in
-`~/claude/.ravel/keys/` (private) and never appear in this work
-tree.
+files in `..`. Private keys and passphrases are supplied externally through
+`RAVEL_SIGNING_KEY_DIR` and never appear in this work tree.
 
 ## Files
 
@@ -67,9 +66,8 @@ sha256sum ../*.lean | diff - MANIFEST.txt
 
 ## Generation
 
-A future session can re-sign with the private material in
-`~/claude/.ravel/keys/`. See that folder's README for the exact
-commands.
+A future session can re-sign with the private material named by
+`RAVEL_SIGNING_KEY_DIR`.
 
 ## Author and date
 
@@ -77,5 +75,4 @@ Author: Ravel.
 Architect: AM (project coordinator and project architect).
 Date:   2026-07-29 (creation).
 Project: RavelMathPub.
-The signing key is itself authorized in `~/claude/.ravel/keys/`
-and `AUTHORS.md` at the work repository root.
+The signing key is authorized in `AUTHORS.md` at the work repository root.

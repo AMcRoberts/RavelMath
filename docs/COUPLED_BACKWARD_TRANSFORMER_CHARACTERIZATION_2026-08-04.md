@@ -1,5 +1,7 @@
 # Coupled backward-transformer characterization
 
+> **SUPERSEDED, 2026-08-08.** This describes an abandoned proof route. The theorem this file targets IS closed -- via a different route (the canonical Q/R split), Lean kernel-checked and independently reconfirmed. See `NBONACCI_UNIVERSAL_DOMINANCE_CLOSED_2026-08-08.md` for the current, authoritative status before reading further.
+
 Local joint features are not exact: the learned decision trees reach about 98.3% accuracy because the same base/controller/face/length signature can have opposite winning labels under different future digit suffixes.
 
 The exact symbolic remaining-word state is the backward transformer

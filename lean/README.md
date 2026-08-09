@@ -13,9 +13,9 @@ Every `*.lean` file in this directory carries an attribution header
 (`Author: Ravel`, `Date: 2026-07-29`) and a per-file GPG detached
 signature (`*.lean.sig`). The `signatures/` directory holds the
 manifest of SHA-256 hashes, its GPG signature, its X.509 signature,
-the GPG public key, and the self-signed X.509 certificate. The
-matching private material lives in `~/claude/.ravel/keys/`. See
-`signatures/README.md` for full verification instructions.
+the GPG public key, and the self-signed X.509 certificate. See
+`signatures/README.md` for full verification instructions; private signing
+material is supplied externally through `RAVEL_SIGNING_KEY_DIR`.
 
 ## Checked modules
 

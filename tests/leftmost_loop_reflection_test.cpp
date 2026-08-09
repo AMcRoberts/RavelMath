@@ -42,7 +42,7 @@ int main() {
     assert(lean.find("periodic_point_iterate_mul") != std::string::npos);
     assert(lean.find("leftmost_loop_instance_3") != std::string::npos);  // m=0..3
 
-    std::ofstream out("/tmp/leftmost_loop_generated.lean");
+    std::ofstream out("lean/generated/leftmost_loop_batch.lean");
     out << lean;
     out.close();
 

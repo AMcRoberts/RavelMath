@@ -1,4 +1,5 @@
 #include <cassert>
+#include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -131,4 +132,8 @@ int main() {
     std::cout << spectral.report();
     std::cout << bridge.report();
     std::cout << lean;
+
+    std::ofstream out("lean/generated/multi_compartment_closure_validation.lean");
+    out << lean;
+    out.close();
 }

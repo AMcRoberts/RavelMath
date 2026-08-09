@@ -38,7 +38,7 @@ inline LeanDeclaration geometric_recurrence_lean_declaration(const std::string& 
     const auto name = lean_identifier(requested_name);
     const auto normal_form = name + "_normalForm";
     std::ostringstream out;
-    out << "def " << normal_form << " : ℕ → Polynomial ℤ\n"
+    out << "noncomputable def " << normal_form << " : ℕ → Polynomial ℤ\n"
         << "  | 0 => 1\n"
         << "  | n + 1 => Polynomial.X * " << normal_form << " n + 1\n\n"
         << "theorem " << name << "\n"

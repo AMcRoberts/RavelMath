@@ -42,7 +42,7 @@ int main() {
     assert(lean.find("same_chain_forces_coincidence") != std::string::npos);
     assert(lean.find("zero_run_same_chain_instance_0") != std::string::npos);
 
-    std::ofstream out("/tmp/zero_run_same_chain_generated.lean");
+    std::ofstream out("lean/generated/zero_run_same_chain_batch.lean");
     out << lean;
     out.close();
 

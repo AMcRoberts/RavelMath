@@ -1,5 +1,7 @@
 # Concrete strict-shell-pump operation
 
+> **SUPERSEDED, 2026-08-08.** This describes an abandoned proof route. The theorem this file targets IS closed -- via a different route (the canonical Q/R split), Lean kernel-checked and independently reconfirmed. See `NBONACCI_UNIVERSAL_DOMINANCE_CLOSED_2026-08-08.md` for the current, authoritative status before reading further.
+
 The abstract `StrictShellPump` seam now has a reusable C++ certificate operation:
 
 - `include/ravel/proof/strict_shell_pump.hpp`

@@ -187,14 +187,28 @@ int main() {
         if (thm.name == "qMatrix_minor_eq_qMatrix") {
             found_qmatrix_thm = true;
             // The proof must be the reusable executable derivation program,
-            // not a theorem-specific case tree or raw Lean payload.
-            assert(thm.proof.size() == 3);
-            assert(thm.proof[0].kind == ravel::proof::LeanStepKind::Ext);
-            assert(thm.proof[1].kind == ravel::proof::LeanStepKind::Simp);
-            assert(thm.proof[2].kind == ravel::proof::LeanStepKind::Omega);
-            assert(thm.proof[1].arguments.size() == 3);
-            assert(thm.proof[1].arguments[0] == "qMatrix");
-            assert(thm.proof[1].arguments[1] == "Ravel.Matrix.EraseIndex.minor");
+            // with public Matrix/Fin normalization rather than the retired
+            // Ravel.Matrix.EraseIndex helper layer.
+            assert(!thm.proof.empty());
+            assert(thm.proof.front().kind == ravel::proof::LeanStepKind::Funext);
+            bool saw_simp_only = false;
+            bool saw_split_ifs = false;
+            for (const auto& step : thm.proof) {
+                if (step.kind == ravel::proof::LeanStepKind::SimpOnly) {
+                    saw_simp_only = true;
+                    bool saw_submatrix = false;
+                    bool saw_private_helper = false;
+                    for (const auto& arg : step.arguments) {
+                        if (arg == "Matrix.submatrix") saw_submatrix = true;
+                        if (arg.find("Ravel.Matrix.EraseIndex") != std::string::npos) saw_private_helper = true;
+                    }
+                    assert(saw_submatrix);
+                    assert(!saw_private_helper);
+                }
+                if (step.kind == ravel::proof::LeanStepKind::SplitIfs) saw_split_ifs = true;
+            }
+            assert(saw_simp_only);
+            assert(saw_split_ifs);
         }
     }
     assert(found_qmatrix_thm);

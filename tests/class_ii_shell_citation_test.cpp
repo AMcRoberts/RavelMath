@@ -37,7 +37,7 @@ int main() {
     assert(lean.find("class_ii_shell_round_injective_instance_1") != std::string::npos);
     assert(lean.find("class_ii_shell_round_injective_instance_3") != std::string::npos);
 
-    std::ofstream out("/tmp/class_ii_shell_citation_generated.lean");
+    std::ofstream out("lean/generated/class_ii_shell_round_batch.lean");
     out << lean;
     out.close();
 

@@ -1,5 +1,7 @@
 # The n-bonacci arithmetic-dominance theorem, closed for n=3,4,5,6,7
 
+> **SUPERSEDED, 2026-08-08.** This describes an abandoned proof route. The theorem this file targets IS closed -- via a different route (the canonical Q/R split), Lean kernel-checked and independently reconfirmed. See `NBONACCI_UNIVERSAL_DOMINANCE_CLOSED_2026-08-08.md` for the current, authoritative status before reading further.
+
 Status: a genuine closure of the theorem this whole program has been
 chasing (`docs/NBONACCI_ARITHMETIC_DOMINANCE_PROGRAM.md`, "The arithmetic
 reversal reduces the open proof to four explicit lemmas"), for five

@@ -48,7 +48,7 @@ int main() {
     std::string lean = render_reflective_lean_module(trace);
     assert(lean.find("first_letter_orbit_collision_forces_coincidence") != std::string::npos);
 
-    std::ofstream out("/tmp/first_letter_orbit_finding41_generated.lean");
+    std::ofstream out("lean/generated/first_letter_orbit_finding41_batch.lean");
     out << lean;
     out.close();
 

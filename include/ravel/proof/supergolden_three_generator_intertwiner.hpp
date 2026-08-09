@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ravel/ambient_graph.hpp"
+#include "math/proof_reflection.hpp"
 #include "ravel/contact_boundary.hpp"
 #include "ravel/corona.hpp"
 #include "ravel/supergolden_pisot_substitution.hpp"
@@ -196,6 +197,24 @@ inline SupergoldenThreeGeneratorIntertwinerCertificate
     if (!out.proved && out.obstruction.empty())
         out.obstruction = "supergolden three-generator comparison invariant failed";
     return out;
+}
+
+// Stages a `ThreeGeneratorIntertwinerFamilyReflectionCertificate` (family
+// "supergolden") -- gates on `cert.proved`, same discipline as
+// stage_plastic_three_generator_intertwiner above.
+inline void stage_supergolden_three_generator_intertwiner(
+        const SupergoldenThreeGeneratorIntertwinerCertificate& cert,
+        const std::string& description) {
+    if (!cert.proved) return;
+    if (!mathlib::reflection::enabled()) return;
+    mathlib::reflection::ThreeGeneratorIntertwinerFamilyReflectionCertificate node;
+    node.family = "supergolden";
+    node.generator_count = static_cast<long long>(cert.generator_count);
+    node.boundary_states = static_cast<long long>(cert.boundary_states);
+    node.boundary_edges = cert.boundary_edges;
+    node.universal_edges = cert.universal_edges;
+    node.description = description;
+    mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, node);
 }
 
 } // namespace ravel::proof

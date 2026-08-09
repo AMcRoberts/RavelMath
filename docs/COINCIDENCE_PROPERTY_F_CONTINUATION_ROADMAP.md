@@ -83,13 +83,6 @@ above is confirmed fixed.
   numbers will drift, search for the header).
 - Property (F) closure: `docs/PROPERTY_F_UNCONDITIONAL_KERNEL_CHECKED_2026-08-06.md`.
 - Findings ledger (cite-by-number): `docs/FINDINGS_FOR_CITATION.md`.
-- Prior unabsorbed exploration notes possibly relevant to this thread:
-  the `NEXT_SESSION_CONDITION_F_*` and `NEXT_SESSION_*GRADE2*`/
-  `*SHELL*` files audited (but not content-reviewed) in
-  `.ravel/FLAT_FILE_ELIMINATION_ROADMAP.md` — read that audit's
-  item 1 before assuming any of that content is either fresh or
-  stale; nobody has actually opened those files against current
-  findings yet.
 - Lean coincidence infrastructure already in the library tier:
   `lean/constant_first_letter_forces_prefix_coincidence.lean`,
   `lean/first_letter_orbit_coincidence.lean`,

@@ -8,6 +8,7 @@
 #include <vector>
 #include "ravel/contact_boundary.hpp"
 #include "ravel/third_smallest_pisot_substitution.hpp"
+#include "math/proof_reflection.hpp"
 namespace ravel::proof {
 struct ThirdSmallestPisotQRSClosureCertificate {
  std::vector<int> greedy_digits;
@@ -56,5 +57,24 @@ inline ThirdSmallestPisotQRSClosureCertificate derive_third_smallest_pisot_qrs_c
  c.no_fourth_or_fifth_generator=c.every_boundary_edge_forced_into_qrs;
  c.proved=c.parry_factorization_exact&&c.incidence_polynomial_matches_parry&&c.total_parent_decompositions==9&&c.distinct_prefixes==2&&c.defect_classes==3&&c.universal_parent_role_intertwiner_schema;
  return c;
+}
+
+// Independently re-verifies the exact integer polynomial identity
+// minimal_polynomial * cyclotomic_factor == parry_polynomial before
+// staging -- gates on genuinely recomputed data, not the certificate's
+// own cached bool, so a corrupted certificate cannot silently pass
+// through to the Lean renderer.
+inline void stage_third_smallest_pisot_parry_factorization(
+        const ThirdSmallestPisotQRSClosureCertificate& c,
+        const std::string& description) {
+    if (!c.proved) return;
+    if (multiply_polynomials(c.minimal_polynomial, c.cyclotomic_factor) != c.parry_polynomial) return;
+    if (!mathlib::reflection::enabled()) return;
+    mathlib::reflection::ThirdSmallestPisotParryFactorizationCertificate node;
+    node.minimal_polynomial = c.minimal_polynomial;
+    node.parry_polynomial = c.parry_polynomial;
+    node.cyclotomic_factor = c.cyclotomic_factor;
+    node.description = description;
+    mathlib::reflection::record(mathlib::reflection::NodeKind::LemmaApplication, node);
 }
 }
