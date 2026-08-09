@@ -306,6 +306,7 @@ lean-check: nbonacci_charmpoly_proof_probe
 		lean/generated/shared_polynomial_closure_validation.lean \
 		lean/generated/shift_branch_three_generator_continuation.lean \
 		lean/generated/supergolden_three_generator_intertwiner.lean \
+		lean/generated/supergolden_qrs_audit.lean \
 		lean/generated/third_smallest_pisot_parry_factorization_batch.lean \
 		lean/generated/period_rotation_batch.lean; then \
 		echo "ERROR: enrolled Lean file contains sorry"; exit 1; \

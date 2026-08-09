@@ -146,8 +146,10 @@ exact cyclotomic factor certificate and has no cyclotomic factor. Boundary and
 twisted sectors are now also checked pairwise: each of the three unordered
 generator pairs is passed through the exact cyclic-voltage Fourier comparison,
 and every nontrivial two-sheet sector is certified below its untwisted sector.
-The remaining work is Lean emission and actual kernel acceptance for this
-combined certificate.
+The regression now emits `lean/generated/supergolden_qrs_audit.lean`, whose
+finite summary is accepted by the actual Lean/Mathlib environment. The
+remaining work is to connect richer boundary matrices to a kernel-level
+certificate rather than only their exact finite summary.
 
 ## Parallel question kept in the wings
 
