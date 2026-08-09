@@ -3928,9 +3928,11 @@ strong coincidence at depth 2 and property (F) at 124 nodes; plastic
 (`x^3-x-1`) closes with coincidence depth 13 and property (F) at 205 nodes;
 the first eventually-periodic witness (`x^3-2x^2-x+1`) closes with depth 2
 and property (F) at 52 nodes. The third-smallest Pisot canonical lift has
-incidence polynomial `(x^2+1)(x^5-x^4-x^3+x^2-1)`; a reduced-field solve of
-the 7-dimensional left Perron eigenvector over the degree-5 Pisot factor
-removes the neutral `Phi_4` sector and closes property (F) at 93,408 nodes,
+incidence polynomial `(x^2+1)(x^5-x^4-x^3+x^2-1)`; the reusable
+`left_eigenvector_via_qbeta_reduced_factor` operation solves its
+7-dimensional left Perron eigenvector over the degree-5 Pisot factor and
+verifies every row exactly. This removes the neutral `Phi_4` sector and
+closes property (F) at 93,408 nodes,
 with strong coincidence at depth 3. The unreduced full-incidence path still
 rejects the neutral roots, so the reduced-field route is now the required
 one for cyclotomic lifts rather than an optional diagnostic.

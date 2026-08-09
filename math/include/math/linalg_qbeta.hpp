@@ -283,6 +283,70 @@ inline EigenvectorResult left_eigenvector_via_qbeta(
     }
 }
 
+// Compute a left Perron eigenvector when the incidence matrix has a
+// cyclotomic (or otherwise neutral) factor and R is the smaller minimal
+// Pisot field.  The ordinary helper above intentionally requires
+// degree(M)==degree(R); this operation instead solves a nonsingular
+// (d-1)-minor of M^T-beta I over R and verifies every remaining row.
+// Trying all choices of the normalized coordinate and omitted equation is
+// cheap at the dimensions used by the canonical beta-substitution probes,
+// and avoids silently choosing a singular cofactor in a cyclotomic lift.
+inline EigenvectorResult left_eigenvector_via_qbeta_reduced_factor(
+    const std::vector<std::vector<long long>>& M_int,
+    const QBetaRing& R) {
+    const std::size_t d = M_int.size();
+    if (d == 0) return EigenvectorResult{false, QBetaVec{}};
+    if (R.degree() >= d) {
+        return left_eigenvector_via_qbeta(M_int, R);
+    }
+    for (const auto& row : M_int) {
+        if (row.size() != d) return EigenvectorResult{false, QBetaVec{}};
+    }
+    const QElem beta = R.beta_k(1);
+    for (std::size_t free_col = 0; free_col < d; ++free_col) {
+        for (std::size_t omitted_row = 0; omitted_row < d; ++omitted_row) {
+            QBetaMat A(d - 1, QBetaVec(d - 1));
+            QBetaVec b(d - 1);
+            std::size_t ar = 0;
+            for (std::size_t row = 0; row < d; ++row) {
+                if (row == omitted_row) continue;
+                std::size_t ac = 0;
+                for (std::size_t col = 0; col < d; ++col) {
+                    if (col == free_col) continue;
+                    QElem entry = R.from_int(M_int[col][row]);
+                    if (row == col) entry = R.sub(entry, beta);
+                    A[ar][ac++] = entry;
+                }
+                b[ar++] = R.from_int(-M_int[free_col][row]);
+            }
+            try {
+                const QBetaVec unknown = solve_linear(A, b, R);
+                QBetaVec v(d, R.from_int(0));
+                v[free_col] = R.from_int(1);
+                std::size_t ac = 0;
+                for (std::size_t col = 0; col < d; ++col)
+                    if (col != free_col) v[col] = unknown[ac++];
+
+                bool valid = true;
+                for (std::size_t row = 0; row < d && valid; ++row) {
+                    QElem residual = R.from_int(0);
+                    for (std::size_t col = 0; col < d; ++col) {
+                        residual = R.add(residual,
+                            R.mul(R.from_int(M_int[col][row]), v[col]));
+                    }
+                    residual = R.sub(residual, R.mul(beta, v[row]));
+                    valid = residual.is_zero();
+                }
+                if (valid) return EigenvectorResult{true, std::move(v)};
+            } catch (...) {
+                // This minor is singular or has a non-invertible pivot;
+                // try another coordinate/equation pair.
+            }
+        }
+    }
+    return EigenvectorResult{false, QBetaVec{}};
+}
+
 // ===================================================================
 // Self-verification: the prevention strategy for eigenvector-sidedness
 // bugs.

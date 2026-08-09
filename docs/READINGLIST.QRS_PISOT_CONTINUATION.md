@@ -841,8 +841,9 @@ the actual prefix-automaton property-(F) checker on canonical Q/R/S
 families. Supergolden closes at 124 nodes, plastic at 205, and the first
 eventually-periodic fourth-generator witness at 52; all three also have
 strong coincidence. The third-smallest lift initially exposed the expected
-neutral-root problem in the full incidence ring; the probe now solves its
+neutral-root problem in the full incidence ring; the reusable
+`left_eigenvector_via_qbeta_reduced_factor` operation now solves its
 7-dimensional Perron eigenvector over the degree-5 minimal Pisot field and
 closes property (F) at 93,408 nodes (coincidence depth 3). This turns the
-cyclotomic-sector issue into a concrete reusable reduction target for the
-next property-(F) cases.
+cyclotomic-sector issue into a reusable route for the next property-(F)
+cases.

@@ -22,6 +22,29 @@ std::vector<std::vector<long long>> transpose(const std::vector<std::vector<long
 }  // namespace
 
 int main() {
+    // Cyclotomic-lift regression: the 7-letter third-smallest Pisot
+    // incidence matrix has a Phi_4 factor, so its Perron vector must be
+    // solved over the degree-5 minimal Pisot field rather than the full
+    // incidence ring.  The reduced-factor helper tries minors and verifies
+    // every row exactly.
+    {
+        const std::vector<std::vector<long long>> matrix7 = {
+            {1, 0, 0, 1, 0, 0, 1},
+            {1, 0, 0, 0, 0, 0, 0},
+            {0, 1, 0, 0, 0, 0, 0},
+            {0, 0, 1, 0, 0, 0, 0},
+            {0, 0, 0, 1, 0, 0, 0},
+            {0, 0, 0, 0, 1, 0, 0},
+            {0, 0, 0, 0, 0, 1, 0},
+        };
+        const mathlib::PolyZ minimal = {-1, 0, 1, -1, -1, 1};
+        const mathlib::QBetaRing reduced_ring(minimal);
+        const auto reduced = mathlib::left_eigenvector_via_qbeta_reduced_factor(
+            matrix7, reduced_ring);
+        assert(reduced.ok);
+        assert(mathlib::verify_left_eigenvector(reduced.v, matrix7, reduced_ring));
+    }
+
     std::array<std::vector<long long>, 2> images = {
         std::vector<long long>{0, 1}, std::vector<long long>{0}};
     const std::vector<std::vector<long long>> matrix = {{1, 1}, {1, 0}};
