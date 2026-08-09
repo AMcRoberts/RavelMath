@@ -120,6 +120,11 @@ against `Q(beta)`, while the 42-point sweep checks the parameterized map shape.
 The endpoint-map layer makes the rank obligation explicit: bound the set of
 reachable coefficient vectors under this finite affine family, rather than
 enumerating the raw zero-expansion graph.
+Because the defining polynomial has constant term `-1`, `beta` is a unit and
+the endpoint linear maps are unimodular: coefficient-lattice volume is
+preserved. Only the secondary embeddings contract forward, so finiteness comes
+from the admissible return language and boundary pruning rather than a scalar
+lattice contraction. This explains why a one-dimensional rank has not emerged.
 Root diagnostics explain the scaling: the weakest secondary modulus rises
 from `0.8508` at `(4,6)` to `0.9094` at `(6,2)`, while the degree and channel
 count increase the coefficient-state branching. This matches the observed

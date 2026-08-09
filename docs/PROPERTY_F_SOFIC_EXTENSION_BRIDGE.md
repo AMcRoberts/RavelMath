@@ -208,3 +208,9 @@ six-coordinate lattice and its 11 return channels generate a much denser set
 of distinct admissible vectors inside the contraction core. This is why the
 uniform theorem must bound lattice cardinality/branching, not just the norm
 radius.
+There is a second reason no one-dimensional “contraction rank” is visible in
+the coefficient coordinates: the constant term of the defining polynomial is
+`-1`, so `beta` is a unit and every endpoint linear part is unimodular. The
+maps preserve lattice volume; only the secondary embeddings contract in the
+forward direction. The finite set is therefore created by admissibility and
+boundary pruning, not by an ordinary contracting lattice map.
