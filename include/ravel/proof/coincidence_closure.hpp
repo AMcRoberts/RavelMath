@@ -307,6 +307,10 @@ struct PrefixClosureCoincidenceResult {
     std::vector<std::vector<long long>> pair_vectors;
     std::vector<std::vector<long long>> pair_first_paths;
     std::vector<std::vector<long long>> pair_second_paths;
+    std::vector<long long> pair_first_junctions;
+    std::vector<long long> pair_second_junctions;
+    std::vector<long long> pair_first_remaining_depths;
+    std::vector<long long> pair_second_remaining_depths;
 };
 
 // Full finite strong-coincidence result obtained by running the exact
@@ -325,6 +329,10 @@ struct ClosureStrongCoincidenceResult {
     std::vector<bool> pair_from_suffix;
     std::vector<std::vector<long long>> pair_first_paths;
     std::vector<std::vector<long long>> pair_second_paths;
+    std::vector<long long> pair_first_junctions;
+    std::vector<long long> pair_second_junctions;
+    std::vector<long long> pair_first_remaining_depths;
+    std::vector<long long> pair_second_remaining_depths;
 };
 
 template <std::size_t d>
@@ -367,6 +375,10 @@ inline PrefixClosureCoincidenceResult check_prefix_coincidence_closure(
     result.pair_vectors.resize(pairs.size());
     result.pair_first_paths.resize(pairs.size());
     result.pair_second_paths.resize(pairs.size());
+    result.pair_first_junctions.assign(pairs.size(), -1);
+    result.pair_second_junctions.assign(pairs.size(), -1);
+    result.pair_first_remaining_depths.assign(pairs.size(), 0);
+    result.pair_second_remaining_depths.assign(pairs.size(), 0);
     if (pairs.empty()) {
         result.holds = true;
         return result;
@@ -404,7 +416,8 @@ inline PrefixClosureCoincidenceResult check_prefix_coincidence_closure(
     };
 
     auto path_from_start = [&](long long start, long long depth, long long terminal,
-                               const ExactVec<d>& target, typename CoincidenceClosure<d>::Path& path) {
+                               const ExactVec<d>& target, typename CoincidenceClosure<d>::Path& path,
+                               long long& junction_out, long long& remaining_out) {
         long long letter = start;
         long long remaining = depth;
         while (remaining > 0 && images[static_cast<std::size_t>(letter)].size() == 1) {
@@ -414,6 +427,8 @@ inline PrefixClosureCoincidenceResult check_prefix_coincidence_closure(
         if (remaining == 0)
             return terminal == letter && target == ExactVec<d>{};
         if (images[static_cast<std::size_t>(letter)].size() < 2) return false;
+        junction_out = letter;
+        remaining_out = remaining;
         return closure.find_path(letter, remaining, terminal, target, path);
     };
 
@@ -454,9 +469,13 @@ inline PrefixClosureCoincidenceResult check_prefix_coincidence_closure(
                     witness.second.begin(), witness.second.end());
                 ExactVec<d> target = witness.second;
                 if (!path_from_start(active[i].first, depth, witness.first, target,
-                                     result.pair_first_paths[active_slots[i]]) ||
+                                     result.pair_first_paths[active_slots[i]],
+                                     result.pair_first_junctions[active_slots[i]],
+                                     result.pair_first_remaining_depths[active_slots[i]]) ||
                     !path_from_start(active[i].second, depth, witness.first, target,
-                                     result.pair_second_paths[active_slots[i]]))
+                                     result.pair_second_paths[active_slots[i]],
+                                     result.pair_second_junctions[active_slots[i]],
+                                     result.pair_second_remaining_depths[active_slots[i]]))
                     throw std::logic_error(
                         "check_prefix_coincidence_closure: reachable witness has no reconstructed path");
             } else {
@@ -494,6 +513,10 @@ inline ClosureStrongCoincidenceResult check_strong_coincidence_closure(
     result.pair_from_suffix.resize(result.pair_resolution_depths.size(), false);
     result.pair_first_paths.resize(result.pair_resolution_depths.size());
     result.pair_second_paths.resize(result.pair_resolution_depths.size());
+    result.pair_first_junctions.assign(result.pair_resolution_depths.size(), -1);
+    result.pair_second_junctions.assign(result.pair_resolution_depths.size(), -1);
+    result.pair_first_remaining_depths.assign(result.pair_resolution_depths.size(), 0);
+    result.pair_second_remaining_depths.assign(result.pair_resolution_depths.size(), 0);
     for (std::size_t i = 0; i < result.pair_resolution_depths.size(); ++i) {
         const long long p = prefix.pair_resolution_depths[i];
         const long long s = suffix.pair_resolution_depths[i];
@@ -508,6 +531,10 @@ inline ClosureStrongCoincidenceResult check_strong_coincidence_closure(
             result.pair_from_suffix[i] = use_suffix;
             result.pair_first_paths[i] = source.pair_first_paths[i];
             result.pair_second_paths[i] = source.pair_second_paths[i];
+            result.pair_first_junctions[i] = source.pair_first_junctions[i];
+            result.pair_second_junctions[i] = source.pair_second_junctions[i];
+            result.pair_first_remaining_depths[i] = source.pair_first_remaining_depths[i];
+            result.pair_second_remaining_depths[i] = source.pair_second_remaining_depths[i];
         }
     }
     result.depth_reached = std::max(prefix.depth_reached, suffix.depth_reached);

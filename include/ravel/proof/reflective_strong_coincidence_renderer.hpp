@@ -29,6 +29,16 @@ inline void render_closure_path_lists(
     render(stem + "_second_paths", second);
 }
 
+inline void render_closure_int_list(std::ostringstream& out, const std::string& name,
+                                    const std::vector<long long>& values) {
+    out << "def " << name << " : List Int := [";
+    for (std::size_t i = 0; i < values.size(); ++i) {
+        if (i) out << ", ";
+        out << values[i];
+    }
+    out << "]\n";
+}
+
 template <typename Edge>
 inline void render_closure_edges(std::ostringstream& out, const std::string& stem,
                                  const std::vector<Edge>& edges) {
@@ -144,6 +154,12 @@ inline std::string render_strong_coincidence_prefix_closure_instances(
         out << "]\n";
         render_closure_path_lists(out, stem, node->pair_first_paths,
                                   node->pair_second_paths);
+        render_closure_int_list(out, stem + "_first_junctions", node->pair_first_junctions);
+        render_closure_int_list(out, stem + "_second_junctions", node->pair_second_junctions);
+        render_closure_int_list(out, stem + "_first_remaining_depths",
+                                node->pair_first_remaining_depths);
+        render_closure_int_list(out, stem + "_second_remaining_depths",
+                                node->pair_second_remaining_depths);
         out << "def " << stem << "_first_positions : List Int := [";
         for (std::size_t i = 0; i < node->pair_first_positions.size(); ++i) {
             if (i) out << ", ";
@@ -172,6 +188,14 @@ inline std::string render_strong_coincidence_prefix_closure_instances(
             << "    " << stem << "_vectors.length = " << node->pair_vectors.size() << " ∧\n"
             << "    " << stem << "_first_paths.length = " << node->pair_first_paths.size() << " ∧\n"
             << "    " << stem << "_second_paths.length = " << node->pair_second_paths.size() << " ∧\n"
+            << "    " << stem << "_first_junctions.length = "
+            << node->pair_first_junctions.size() << " ∧\n"
+            << "    " << stem << "_second_junctions.length = "
+            << node->pair_second_junctions.size() << " ∧\n"
+            << "    " << stem << "_first_remaining_depths.length = "
+            << node->pair_first_remaining_depths.size() << " ∧\n"
+            << "    " << stem << "_second_remaining_depths.length = "
+            << node->pair_second_remaining_depths.size() << " ∧\n"
             << "    " << stem << "_first_positions.length = "
             << node->pair_first_positions.size() << " ∧\n"
             << "    " << stem << "_second_positions.length = "
@@ -229,6 +253,12 @@ inline std::string render_strong_coincidence_closure_instances(
         out << "]\n";
         render_closure_path_lists(out, stem, node->pair_first_paths,
                                   node->pair_second_paths);
+        render_closure_int_list(out, stem + "_first_junctions", node->pair_first_junctions);
+        render_closure_int_list(out, stem + "_second_junctions", node->pair_second_junctions);
+        render_closure_int_list(out, stem + "_first_remaining_depths",
+                                node->pair_first_remaining_depths);
+        render_closure_int_list(out, stem + "_second_remaining_depths",
+                                node->pair_second_remaining_depths);
         out << "def " << stem << "_from_suffix : List Bool := [";
         for (std::size_t i = 0; i < node->pair_from_suffix.size(); ++i) {
             if (i) out << ", ";
@@ -263,6 +293,14 @@ inline std::string render_strong_coincidence_closure_instances(
             << "    " << stem << "_vectors.length = " << node->pair_vectors.size() << " ∧\n"
             << "    " << stem << "_first_paths.length = " << node->pair_first_paths.size() << " ∧\n"
             << "    " << stem << "_second_paths.length = " << node->pair_second_paths.size() << " ∧\n"
+            << "    " << stem << "_first_junctions.length = "
+            << node->pair_first_junctions.size() << " ∧\n"
+            << "    " << stem << "_second_junctions.length = "
+            << node->pair_second_junctions.size() << " ∧\n"
+            << "    " << stem << "_first_remaining_depths.length = "
+            << node->pair_first_remaining_depths.size() << " ∧\n"
+            << "    " << stem << "_second_remaining_depths.length = "
+            << node->pair_second_remaining_depths.size() << " ∧\n"
             << "    " << stem << "_from_suffix.length = " << node->pair_from_suffix.size() << " ∧\n"
             << "    " << stem << "_first_positions.length = "
             << node->pair_first_positions.size() << " ∧\n"

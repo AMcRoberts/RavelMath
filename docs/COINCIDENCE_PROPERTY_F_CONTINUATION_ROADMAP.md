@@ -291,3 +291,6 @@ The certificate now includes the corresponding finite junction-edge table
 (source/target, jump size, child index, landmark, and forced chain), so path
 indices in the Lean payload are meaningful structural references rather than
 opaque integers.
+The payload also records each side's post-deterministic-chain junction and
+remaining depth, so a Lean recurrence checker has all of the state needed to
+interpret a path without reconstructing the skipped singleton chain.

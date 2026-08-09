@@ -83,6 +83,8 @@ int main() {
     assert(staged.front().second->pair_second_positions.size() == 3);
     assert(staged.front().second->pair_first_paths.size() == 3);
     assert(staged.front().second->pair_second_paths.size() == 3);
+    assert(staged.front().second->pair_first_junctions.size() == 3);
+    assert(staged.front().second->pair_second_remaining_depths.size() == 3);
     const auto full_staged = trace.find<
         mathlib::reflection::StrongCoincidenceClosureCertificate>();
     assert(full_staged.size() == 1);
@@ -95,6 +97,8 @@ int main() {
     assert(full_staged.front().second->pair_second_positions.size() == 3);
     assert(full_staged.front().second->pair_first_paths.size() == 3);
     assert(full_staged.front().second->pair_second_paths.size() == 3);
+    assert(full_staged.front().second->pair_first_junctions.size() == 3);
+    assert(full_staged.front().second->pair_second_remaining_depths.size() == 3);
     const std::string rendered = render_reflective_lean_module(trace);
     assert(rendered.find("strong_coincidence_prefix_closure_0_summary") !=
            std::string::npos);

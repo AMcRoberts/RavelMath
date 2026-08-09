@@ -356,6 +356,10 @@ struct StrongCoincidencePrefixClosureCertificate {
     std::vector<std::vector<long long>> pair_vectors;
     std::vector<std::vector<long long>> pair_first_paths;
     std::vector<std::vector<long long>> pair_second_paths;
+    std::vector<long long> pair_first_junctions;
+    std::vector<long long> pair_second_junctions;
+    std::vector<long long> pair_first_remaining_depths;
+    std::vector<long long> pair_second_remaining_depths;
     std::vector<long long> pair_first_positions;
     std::vector<long long> pair_second_positions;
     long long depth_reached = 0;
@@ -380,6 +384,10 @@ struct StrongCoincidenceClosureCertificate {
     std::vector<bool> pair_from_suffix;
     std::vector<std::vector<long long>> pair_first_paths;
     std::vector<std::vector<long long>> pair_second_paths;
+    std::vector<long long> pair_first_junctions;
+    std::vector<long long> pair_second_junctions;
+    std::vector<long long> pair_first_remaining_depths;
+    std::vector<long long> pair_second_remaining_depths;
     std::vector<long long> pair_first_positions;
     std::vector<long long> pair_second_positions;
     long long depth_reached = 0;
