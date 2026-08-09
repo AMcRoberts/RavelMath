@@ -899,3 +899,6 @@ words in the relation. The next proof should formalize that word closure.
 The profile operation records largest complete radii 5, 7, 9, and 4 for
 theta7--theta10 at word cap 30. Its non-monotonicity warns that the eventual
 displacement law is geometric, not a simple function of alphabet size.
+Increasing theta10's cap from 30 to 50 closes its full `-10..+10` window,
+showing that the earlier missing states were a word-length artifact. The open
+question is now the asymptotic word-length bound, not a fixed theta10 defect.

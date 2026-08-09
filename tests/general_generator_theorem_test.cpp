@@ -116,7 +116,7 @@ int main() {
     inspect_forest("theta7 forest", {-1, -1, 0, 0, 1, 0, -1}, 30, 3);
     inspect_forest("theta8 forest", {-2, 1, 0, -1, 1, -1}, 30, 3);
     inspect_forest("theta9 forest", {-1, 0, -1, 0, -1}, 30, 3);
-    inspect_forest("theta10 forest", {-1, -1, 0, 0, 0, 1, 0, -1}, 30, 3);
+    inspect_forest("theta10 forest", {-1, -1, 0, 0, 0, 1, 0, -1}, 50, 10);
 
     std::cout << "\nALL PASS: one call, no case split, correct in every case -- terminating "
                  "or eventually periodic, padded or not, unit or not.\n";
