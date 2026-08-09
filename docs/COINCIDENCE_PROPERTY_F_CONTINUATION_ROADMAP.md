@@ -146,8 +146,8 @@ staging and Lean: every component receives a kernel-checked filtered-label
 count theorem. The finite SCC partition is therefore independently audited,
 not inferred from its total size alone.
 The graph node-letter map is now serialized too; staging rejects out-of-range
-letters and Lean proves every exported letter index lies in the finite node
-domain.
+letters and Lean proves every exported letter index lies in the finite
+substitution-alphabet domain.
 The flattened edge list is independently checked for endpoint range as well,
 so both the row-wise successor relation and its compact edge view are bounded
 to the same finite node set.

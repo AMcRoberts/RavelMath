@@ -88,7 +88,7 @@ inline bool stage_property_f_graph(const adelic::PropertyFResult& result,
     long long zero_count = 0;
     for (std::size_t i = 0; i < graph.nodes.size(); ++i) {
         const auto& node = graph.nodes[i];
-        if (node.letter < 0 || node.letter >= static_cast<long long>(graph.nodes.size()))
+        if (node.letter < 0 || node.letter >= static_cast<long long>(ring.degree()))
             throw std::invalid_argument("property-F graph node letter is out of range");
         if (node.zero) ++zero_count;
         for (const long long successor : node.successors) {

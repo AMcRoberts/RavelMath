@@ -4654,7 +4654,8 @@ inline std::string render_property_f_graph_instances(const mathlib::reflection::
             << "    (" << stem << "_edges.all (fun e => e.1 < " << node->gamma_keys.size()
             << " ∧ e.2 < " << node->gamma_keys.size() << ")) = true := by decide\n\n";
         out << "theorem " << stem << "_letters_in_range :\n"
-            << "    (" << stem << "_letters.all (fun x => x < " << node->letters.size()
+            << "    (" << stem << "_letters.all (fun x => x < "
+            << (node->characteristic_polynomial.size() - 1)
             << ")) = true := by decide\n\n";
 
         const std::size_t node_count = node->gamma_keys.size();
