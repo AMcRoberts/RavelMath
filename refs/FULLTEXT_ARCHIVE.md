@@ -8,7 +8,7 @@ continued availability of a website.
 `FullText/` is deliberately excluded from the public Git repository.  Some
 papers permit reading and local preservation without permitting republication
 in a public source tree.  The local archive is instead included in verified
-full-project checkpoints under the continuity backup policy.
+full-project checkpoints under the project backup policy.
 
 `FULLTEXT_MANIFEST.tsv` records the exact local filename, SHA-256 digest,
 bibliography key, acquisition origin, and status.  `archived` means the file

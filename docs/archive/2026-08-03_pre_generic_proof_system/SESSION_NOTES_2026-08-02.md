@@ -2,7 +2,7 @@
 
 ## What was attempted
 
-I executed (autonomously) the multi-step cut-the-campaign CORRECT plan from this session, starting from the user request "do the filling out of the arbitrary-n entry-preservation piece", then "ok, get to a stopping point" with the final instruction: "save your math and continuity folders in a zip file together, along with doing a documentation on what you did here, and where all the cpp that generates lean files is".
+I executed (autonomously) the multi-step cut-the-campaign CORRECT plan from this session, starting from the user request "do the filling out of the arbitrary-n entry-preservation piece", then "ok, get to a stopping point" with the final instruction: "save a project checkpoint in a zip file, along with documentation on what you did here, and where all the cpp that generates lean files is".
 
 ## What landed
 
