@@ -90,6 +90,11 @@ void test_worked_example_tiles() {
                   static_cast<long long>(residual.factors[0].g.c.size()) - 1 == 1,
               "worked example: e=2 residual refines to a linear factor");
     }
+    auto worked_refined = adelic::refined_newton_shapes(
+        adelic::zp_poly_from_polyz(charpoly, 2, 30));
+    const std::vector<std::pair<long long, long long>> worked_expected_shapes = {{1, 1}, {2, 1}};
+    CHECK(worked_refined.complete && worked_refined.shapes == worked_expected_shapes,
+          "worked example: refined Newton shapes recover (2,1)+(1,1)");
 }
 
 // rnd13: charpoly x^4 - 4x^3 - 8x^2 - 6x - 2, |det|=2 with (2)=p^4
@@ -220,6 +225,11 @@ void test_nonmaximal_order_is_not_trusted() {
                   residual.factors[0].mult == 3 &&
                   static_cast<long long>(residual.factors[0].g.c.size()) - 1 == 1,
               "non-maximal quartic: slope residual refines degree-3 segment to (e,f)=(3,1)");
+        auto refined = adelic::refined_newton_shapes(
+            adelic::zp_poly_from_polyz(R.charpoly(), 2, 30));
+        const std::vector<std::pair<long long, long long>> quartic_expected_shapes = {{1, 1}, {3, 1}};
+        CHECK(refined.complete && refined.shapes == quartic_expected_shapes,
+              "non-maximal quartic: refined Newton shapes recover (1,1)+(3,1)");
     }
     auto shape = adelic::compare_first_order_padic_shapes(R.charpoly(), 2, 30);
     CHECK(!shape.dedekind_order_maximal,

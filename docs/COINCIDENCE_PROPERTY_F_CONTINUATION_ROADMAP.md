@@ -202,6 +202,8 @@ integral-slope segments: the quartic's degree-3 segment has residual
 polynomial `(x+1)^3`, recovering the `(e,f)=(3,1)` factor shape directly.
 The diagnostic now refuses partial residuals unless their computed degree
 matches the segment’s predicted residue degree.
+`refined_newton_shapes` packages the resulting first-order shapes; it recovers
+`(2,1)+(1,1)` for the worked example and `(3,1)+(1,1)` for the quartic.
 The same diagnostic handles the paper's worked (e=2) segment and recovers
 its linear residual factor, so this is not a quartic-only special case.
 As an independent corroboration (not a replacement for the exact in-repo

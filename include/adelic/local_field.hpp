@@ -676,6 +676,37 @@ inline NewtonResidualDiagnostic newton_residual_diagnostic(
     return out;
 }
 
+struct RefinedNewtonShapeDiagnostic {
+    bool complete = false;
+    std::vector<std::pair<long long, long long>> shapes;
+};
+
+// Synthesize the first-order local shapes after residual factorization.  A
+// residual factor of multiplicity m and degree f on a segment with denominator
+// e contributes (e*m, f).  This is the exact refinement visible in the
+// worked example and quartic regressions; `complete=false` means some segment
+// still needs a residual-field or higher-order/Montes treatment.
+inline RefinedNewtonShapeDiagnostic refined_newton_shapes(const ZpPoly& f) {
+    RefinedNewtonShapeDiagnostic out;
+    auto segments = newton_polygon(f);
+    if (segments.empty()) return out;
+    out.complete = true;
+    for (const auto& segment : segments) {
+        auto residual = newton_residual_diagnostic(f, segment);
+        if (!residual.supported) {
+            out.complete = false;
+            continue;
+        }
+        for (const auto& factor : residual.factors) {
+            out.shapes.emplace_back(
+                segment.e * factor.mult,
+                static_cast<long long>(factor.g.c.size()) - 1);
+        }
+    }
+    std::sort(out.shapes.begin(), out.shapes.end());
+    return out;
+}
+
 // ===================================================================
 // Newton iteration on the local polynomial (Approach A)
 // ===================================================================
