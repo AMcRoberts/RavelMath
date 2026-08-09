@@ -93,6 +93,10 @@ struct TilingClassification {
     // Property (F) under the combined p-adic bound.
     bool property_f_holds;
     bool property_f_inconclusive;
+    // False when Dedekind's order/factorization checks do not certify the
+    // p-adic predicate; exploratory graph data is retained, but the verdict
+    // cannot be ESTABLISHED.
+    bool property_f_bound_trusted;
     long long property_f_nodes;
 
     // Final verdict.
@@ -207,16 +211,26 @@ TilingClassification classify_tiling(
     // Step 4: property (F) via the unified combined p-adic bound.
     auto automaton = adelic::build_prefix_automaton<d>(images, eig.v, R);
     adelic::PropertyFResult propf;
+    bool property_f_bound_trusted = true;
     if (primes_dividing_det.empty()) {
         propf = adelic::check_property_f<d>(automaton, property_f_node_budget);
     } else {
         auto [combined_bound, trusted] = adelic::make_combined_padic_bound(
             primes_dividing_det, charpoly);
         propf = adelic::check_property_f<d>(automaton, property_f_node_budget, combined_bound);
-        (void)trusted;  // always true now; the per-ideal paths are all complete
+        property_f_bound_trusted = trusted;
+        propf.extra_bound_trusted = trusted;
+        if (!trusted) {
+            // Preserve the exploratory graph and node count, but do not
+            // promote a run based on a non-maximal Dedekind order to a
+            // certified Property-F result.
+            propf.holds = false;
+            propf.inconclusive = true;
+        }
     }
     out.property_f_holds = propf.holds;
     out.property_f_inconclusive = propf.inconclusive;
+    out.property_f_bound_trusted = property_f_bound_trusted;
     out.property_f_nodes = propf.nodes_explored;
 
     // Step 5: combine the two results into a verdict.

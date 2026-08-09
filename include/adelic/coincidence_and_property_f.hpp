@@ -180,6 +180,7 @@
 #include "adelic/prefix_automaton.hpp"
 #include "adelic/padic.hpp"
 #include "adelic/local_field.hpp"
+#include "adelic/ideal_arithmetic.hpp"
 #include "adelic/property_f_types.hpp"
 
 namespace adelic {
@@ -645,25 +646,30 @@ inline std::function<bool(const mathlib::QElem&)> make_general_padic_bound(
 // rational primes contribute).  The "trusted" flag in the returned
 // pair is `true` when every per-ideal bound is itself complete
 // (i.e., it is the genuine ring-of-integers predicate at that
-// ideal, not a f==1-only approximation).  As of this session,
-// `make_local_field_padic_bound` is complete for arbitrary (e, f)
-// above p (including f > 1, via local_polynomial_cofactor's
-// cofactor branch + the heap-OOB-fixed `qp_local_is_integral`),
-// so the trusted flag is unconditionally `true` here -- the
-// earlier concern (documented in the prior comment block) that
-// f > 1 ideals were "EXCLUDED from the combined bound" is no
-// longer the case.  This is the first session where
-// `make_combined_padic_bound` is used as a drop-in for the
-// classification driver, including the multi-prime case (was the
-// "still-genuinely-open gap" in docs/RESEARCH_STATUS.md and the cause
-// of the multi-PRIME SKIP guard in sweep_nonunit_property_f.cpp).
+// ideal, not a f==1-only approximation). The local-field implementation is
+// complete for arbitrary (e, f) shapes that arise here, but the factorization
+// is certified only when Dedekind's order test and the independent ideal
+// lattice cross-check both pass. A non-maximal result is still useful for
+// exploration, but the returned flag is false and callers must report it as
+// inconclusive rather than as an established Property-F theorem.
 inline std::pair<std::function<bool(const mathlib::QElem&)>, bool>
 make_combined_padic_bound(const std::vector<long long>& primes_dividing_det,
                            const mathlib::PolyZ& charpoly,
                            long long precision = 30) {
     auto bounds = std::make_shared<std::vector<std::function<bool(const mathlib::QElem&)>>>();
+    bool trusted = true;
     for (long long p : primes_dividing_det) {
         auto fac = adelic::factor_prime_in_qbeta(charpoly, p);
+        // Dedekind's factorization is only a factorization in O_K when the
+        // defining order is p-maximal and the independent ideal-lattice
+        // identity agrees.  The local-field implementation can still build
+        // a useful exploratory predicate in the other case, but it is not a
+        // certified ring-of-integers bound and must not yield ESTABLISHED.
+        if (!fac.maximal ||
+            !adelic::cross_check_dedekind_factorization(fac, charpoly,
+                                                        charpoly.degree())) {
+            trusted = false;
+        }
         for (const auto& pi : fac.prime_ideals) {
             long long residue_a = 0;
             if (pi.f == 1) {
@@ -684,7 +690,7 @@ make_combined_padic_bound(const std::vector<long long>& primes_dividing_det,
         for (auto& b : *bounds) if (!b(gamma)) return false;
         return true;
     };
-    return {combined, true};
+    return {combined, trusted};
 }
 
 // ===================================================================

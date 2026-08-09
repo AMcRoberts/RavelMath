@@ -168,19 +168,22 @@ the rational step cannot silently rely on division-by-zero behavior.
 
 The wider four-letter non-unit survey has now been rerun after the spectral
 and Hensel-lifting fixes: target 20 with the historical `K_max=3` and bounded
-certification budgets yielded 17 non-unit candidates, all 17 established and
-none inconclusive, failed, or skipped. The largest finite property-(F) graph
-had 841,057 nodes and the observed peak RSS was about 0.61 GB under the
-10 GB machine limit. The driver exposes these caps as command-line options
-for reproducible follow-up runs.
+certification budgets yielded 17 non-unit candidates. The exploratory graph
+closed for all 17, but two failed the maximal-order trust check; the current
+classifier therefore records 15 trusted established and 2 inconclusive cases.
+The largest finite property-(F) graph had 841,057 nodes and the observed peak
+RSS was about 0.61 GB under the 10 GB machine limit. The driver exposes these
+caps as command-line options for reproducible follow-up runs.
 
 The first `K_max=5` probe (target=8, seed=17) likewise illustrates why the
 finite budget must remain explicit: seven cases closed under the default
 million-node cap, while `rndW5_6` required 3,799,168 nodes and closed under a
-6-million cap. Its observed peak RSS was about 3.6 GB. The widened driver
-supports `--property-f-budget` and `--only` so this kind of outlier can be
-audited in isolation without conflating a resource cutoff with a failed
-Property-F certificate.
+6-million cap. Two cases had non-maximal-order diagnostics, so the trust-aware
+result is 6 established and 2 inconclusive; the finite graph closure is useful
+evidence but not a theorem for those cases. Its observed peak RSS was about
+3.6 GB before the hash-table optimization. The widened driver supports
+`--property-f-budget` and `--only` so this kind of outlier can be audited in
+isolation without conflating a resource cutoff with a failed certificate.
 
 **2026-08-08 finite-classifier increment.** `check_strong_coincidence` now
 returns a lexicographically indexed resolution profile for every unordered

@@ -92,8 +92,12 @@ void classify(const char* name,
     const char* bound_descriptor = primes_dividing_det.empty()
         ? "archimedean-only, VALIDATED shape (unit case)"
         : (primes_dividing_det.size() == 1
-              ? "archimedean + combined p-adic bound, VALIDATED shape (unified local_field.hpp)"
-              : "archimedean + combined p-adic bound across multiple primes, VALIDATED shape (unified local_field.hpp)");
+              ? (cls.property_f_bound_trusted
+                    ? "archimedean + combined p-adic bound, VALIDATED shape (unified local_field.hpp)"
+                    : "archimedean + combined p-adic bound, UNTRUSTED Dedekind order")
+              : (cls.property_f_bound_trusted
+                    ? "archimedean + combined p-adic bound across multiple primes, VALIDATED shape (unified local_field.hpp)"
+                    : "archimedean + combined p-adic bound across multiple primes, UNTRUSTED Dedekind order"));
     (void)bound_descriptor;  // we still print the unified line below
 
     std::printf("Strong coincidence: %s (depth reached: %lld, engine=%s%s)\n",
@@ -103,10 +107,7 @@ void classify(const char* name,
                 cls.strong_coincidence_closure_used ? "exact closure" : "bounded word search",
                 cls.strong_coincidence_inconclusive ? ", cutoff hit before resolving" : "");
     std::printf("Geometric property (F) [%s]: %s (nodes explored: %lld%s)\n\n",
-                primes_dividing_det.empty() ? "archimedean-only, VALIDATED shape (unit case)"
-                    : (primes_dividing_det.size() == 1
-                          ? "archimedean + combined p-adic bound, VALIDATED shape (unified local_field.hpp)"
-                          : "archimedean + combined p-adic bound across multiple primes, VALIDATED shape (unified local_field.hpp)"),
+                bound_descriptor,
                 cls.property_f_holds ? "HOLDS" : (cls.property_f_inconclusive ? "INCONCLUSIVE" : "FAILS"),
                 cls.property_f_nodes,
                 cls.property_f_inconclusive ? ", node budget exhausted" : "");

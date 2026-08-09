@@ -164,8 +164,11 @@ const char* classify(const char* name,
     std::printf("  Property (F) [%s]: %s (%lld nodes%s)\n",
                 primes_dividing_det.empty() ? "unit, VALIDATED"
                     : (primes_dividing_det.size() == 1
-                          ? "combined p-adic bound, VALIDATED"
-                          : "combined p-adic bound across multiple primes, VALIDATED"),
+                          ? (cls.property_f_bound_trusted ? "combined p-adic bound, VALIDATED"
+                                                          : "combined p-adic bound, UNTRUSTED ORDER")
+                          : (cls.property_f_bound_trusted
+                                ? "combined p-adic bound across multiple primes, VALIDATED"
+                                : "combined p-adic bound across multiple primes, UNTRUSTED ORDER")),
                 cls.property_f_holds ? "HOLDS" : (cls.property_f_inconclusive ? "INCONCLUSIVE" : "FAILS"),
                 cls.property_f_nodes,
                 cls.property_f_inconclusive ? " [budget]" : "");

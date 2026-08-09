@@ -20,6 +20,9 @@ struct PropertyFResult {
     bool closure_reached = false;
     bool archimedean_bound_applied = false;
     bool extra_bound_applied = false;
+    // The extra bound may be computed from a non-maximal Dedekind order;
+    // callers must not promote such a finite run to a theorem.
+    bool extra_bound_trusted = true;
     long long node_budget = 0;
     long long boundary_edges = 0;
     long long nodes_explored = 0;

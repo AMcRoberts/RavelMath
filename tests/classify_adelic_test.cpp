@@ -73,6 +73,8 @@ void test_worked_example_tiles() {
           "worked example: classifier exports all pair resolution depths");
     CHECK(cls.property_f_nodes >= 0, "worked example: prop F node count is non-negative");
     CHECK(!cls.any_non_maximal, "worked example: charpoly is Z[beta]-maximal");
+    CHECK(cls.property_f_bound_trusted,
+          "worked example: p-adic Property-F bound is trusted");
 }
 
 // rnd13: charpoly x^4 - 4x^3 - 8x^2 - 6x - 2, |det|=2 with (2)=p^4
@@ -110,6 +112,8 @@ void test_rnd13_tiles() {
     CHECK(cls.strong_coincidence_pair_resolution_depths == std::vector<long long>(6, 1),
           "rnd13: classifier exports six depth-1 pair resolutions");
     CHECK(!cls.any_non_maximal, "rnd13: charpoly is Z[beta]-maximal");
+    CHECK(cls.property_f_bound_trusted,
+          "rnd13: p-adic Property-F bound is trusted");
 }
 
 // Multi-prime regression: pass a single-prime primes_dividing_det
