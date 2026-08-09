@@ -11,6 +11,7 @@
 #include <cstddef>
 #include <cassert>
 #include <cstdint>
+#include <functional>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -41,6 +42,8 @@ struct PropertyFFamilyObservation {
     long long return_words = -1;
     long long return_phase_states = -1;
     long long return_phase_edges = -1;
+    long long return_phase_sccs = -1;
+    long long return_phase_cycle_components = -1;
     bool return_transport_closed = false;
     bool coincidence_holds = false;
     bool property_f_holds = false;
@@ -49,6 +52,45 @@ struct PropertyFFamilyObservation {
 };
 
 namespace detail {
+
+inline std::pair<long long, long long> phase_scc_stats(
+    const std::vector<std::vector<std::size_t>>& graph) {
+    const std::size_t n = graph.size();
+    std::vector<long long> index(n, -1), low(n, 0), stack;
+    std::vector<bool> on_stack(n, false);
+    long long next = 0, sccs = 0, cyclic = 0;
+    std::function<void(std::size_t)> visit = [&](std::size_t u) {
+        index[u] = low[u] = next++;
+        stack.push_back(static_cast<long long>(u));
+        on_stack[u] = true;
+        for (const std::size_t v : graph[u]) {
+            if (index[v] < 0) {
+                visit(v);
+                low[u] = std::min(low[u], low[v]);
+            } else if (on_stack[v]) {
+                low[u] = std::min(low[u], index[v]);
+            }
+        }
+        if (low[u] != index[u]) return;
+        std::vector<std::size_t> component;
+        while (true) {
+            const std::size_t v = static_cast<std::size_t>(stack.back());
+            stack.pop_back();
+            on_stack[v] = false;
+            component.push_back(v);
+            if (v == u) break;
+        }
+        ++sccs;
+        bool has_cycle = component.size() > 1;
+        if (!has_cycle && !component.empty())
+            for (const auto v : graph[component.front()])
+                if (v == component.front()) has_cycle = true;
+        if (has_cycle) ++cyclic;
+    };
+    for (std::size_t u = 0; u < n; ++u)
+        if (index[u] < 0) visit(u);
+    return {sccs, cyclic};
+}
 
 template <std::size_t d>
 inline std::string image_code(const std::array<std::vector<long long>, d>& images) {
@@ -112,6 +154,9 @@ inline PropertyFFamilyObservation analyze_case(
         out.return_phase_edges = 0;
         for (const auto& image : phase.phase_images)
             out.return_phase_edges += static_cast<long long>(image.size());
+        const auto [phase_sccs, phase_cycles] = phase_scc_stats(phase.phase_images);
+        out.return_phase_sccs = phase_sccs;
+        out.return_phase_cycle_components = phase_cycles;
         out.return_transport_closed = true;
     } catch (const std::exception&) {
         // A marker need not be recognizable for every permutation.  That
@@ -120,6 +165,8 @@ inline PropertyFFamilyObservation analyze_case(
         out.return_words = 0;
         out.return_phase_states = 0;
         out.return_phase_edges = 0;
+        out.return_phase_sccs = 0;
+        out.return_phase_cycle_components = 0;
     }
     out.coincidence_holds = closure.holds;
     out.property_f_holds = propf.holds;
@@ -180,7 +227,7 @@ inline std::vector<PropertyFFamilyObservation> run_property_f_family(
 
 // Stable, header-only serialization contract used by the artifact generator.
 inline std::string property_f_family_tsv_header() {
-    return "name\timages\tprefix_states\tdistinct_prefixes\tcoincidence_depth\tcoincidence_unresolved\tproperty_f_nodes\tproperty_f_zero_nodes\tproperty_f_nonzero_nodes\tproperty_f_sccs\tproperty_f_nonzero_cycles\tproperty_f_boundary_edges\treturn_words\treturn_phase_states\treturn_phase_edges\treturn_transport_closed\tcoincidence_holds\tproperty_f_holds\tinconclusive\ttrusted_padic\n";
+    return "name\timages\tprefix_states\tdistinct_prefixes\tcoincidence_depth\tcoincidence_unresolved\tproperty_f_nodes\tproperty_f_zero_nodes\tproperty_f_nonzero_nodes\tproperty_f_sccs\tproperty_f_nonzero_cycles\tproperty_f_boundary_edges\treturn_words\treturn_phase_states\treturn_phase_edges\treturn_phase_sccs\treturn_phase_cycle_components\treturn_transport_closed\tcoincidence_holds\tproperty_f_holds\tinconclusive\ttrusted_padic\n";
 }
 
 inline std::string property_f_family_tsv_row(const PropertyFFamilyObservation& r) {
@@ -192,6 +239,7 @@ inline std::string property_f_family_tsv_row(const PropertyFFamilyObservation& r
         << r.property_f_sccs << '\t' << r.property_f_nonzero_cycles << '\t'
         << r.property_f_boundary_edges << '\t' << r.return_words << '\t'
         << r.return_phase_states << '\t' << r.return_phase_edges << '\t'
+        << r.return_phase_sccs << '\t' << r.return_phase_cycle_components << '\t'
         << r.return_transport_closed << '\t'
         << r.coincidence_holds << '\t'
         << r.property_f_holds << '\t' << r.inconclusive << '\t'

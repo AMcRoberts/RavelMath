@@ -22,6 +22,10 @@ int main() {
         assert(row.return_phase_states >= 0);
         assert(row.return_phase_edges >= 0);
         assert(row.return_transport_closed || row.return_words == 0);
+        if (row.return_transport_closed) {
+            assert(row.return_phase_sccs > 0);
+            assert(row.return_phase_cycle_components >= 0);
+        }
         const auto serialized = adelic::property_f_family_tsv_row(row);
         assert(serialized.find(row.name) != std::string::npos);
     }

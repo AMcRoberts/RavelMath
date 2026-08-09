@@ -29,7 +29,10 @@ others fail marker recognizability.  That failure is retained as data rather
 than treated as a Property-F failure.  The current hypothesis is that the
 large zero-expansion graph is an adelic finite-transport lift analogous to the
 earlier sofic twist; the TSV artifact is intended for the next cocycle/holonomy
-comparison.
+comparison.  The first phase-SCC comparison now sharpens this: closed return
+phase lifts have only 5--12 states, while the corresponding adelic graphs can
+reach 4,277--7,966 states.  Thus ordinary return phase is not the whole lift;
+the excess is carried by the exact Q(beta) displacement coordinate.
 
 ## Verified engineering boundary
 
