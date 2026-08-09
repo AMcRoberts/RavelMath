@@ -1605,6 +1605,23 @@ struct OreFactor {
     long long a;           // residue of β at this prime
 };
 
+// Check the finite-precision factorization certificate independently of the
+// construction path.  Every returned local polynomial must multiply back to
+// the supplied monic Z_p polynomial at the working precision; this catches a
+// plausible-looking collection of local lifts whose product is not the
+// original charpoly.
+inline bool ore_factorization_reconstructs(
+        const ZpPoly& f, const std::vector<OreFactor>& factors) {
+    if (factors.empty()) return false;
+    ZpPoly product = zp_poly_one(f.p, f.precision);
+    for (const auto& factor : factors) {
+        if (factor.m_k.p != f.p || factor.m_k.precision != f.precision)
+            return false;
+        product = zp_poly_mul(product, factor.m_k);
+    }
+    return zp_poly_equal(product, f);
+}
+
 inline std::vector<OreFactor> ore_padic_factorization(const ZpPoly& f, long long precision) {
     std::vector<OreFactor> result;
     auto segs = newton_polygon(f);

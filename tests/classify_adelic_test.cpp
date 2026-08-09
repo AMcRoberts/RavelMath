@@ -241,6 +241,9 @@ void test_nonmaximal_order_is_not_trusted() {
             std::sort(degrees.begin(), degrees.end());
             CHECK((degrees == std::vector<long long>{1, 3}),
                   "non-maximal quartic: Ore local degrees are 1 and 3");
+            CHECK(adelic::ore_factorization_reconstructs(
+                      adelic::zp_poly_from_polyz(R.charpoly(), 2, 30), ore_factors),
+                  "non-maximal quartic: Ore factors reconstruct the input polynomial");
         }
     }
     auto shape = adelic::compare_first_order_padic_shapes(R.charpoly(), 2, 30);

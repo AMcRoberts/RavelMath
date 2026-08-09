@@ -453,3 +453,7 @@ actual `(3,1)` local factor, while preserving the Dedekind residue as the
 translation anchor. Segments whose residual polynomial is incomplete still
 stop with an explicit `higher-order/Montes lift required` diagnostic rather
 than emitting an ambiguous local polynomial.
+The public `ore_factorization_reconstructs` helper independently multiplies
+the returned local polynomials back together at the working p-adic precision,
+making the finite factorization certificate explicit rather than implicit in
+the individual lift checks.
