@@ -287,3 +287,7 @@ memoized DAG outcome recurrence that produced the terminal/vector state, then
 serialized in the typed prefix/full certificates. This keeps the next Lean
 bridge structural: it can check edge choices and remaining-depth landmark
 recurrences without expanding the exponentially growing substitution words.
+The certificate now includes the corresponding finite junction-edge table
+(source/target, jump size, child index, landmark, and forced chain), so path
+indices in the Lean payload are meaningful structural references rather than
+opaque integers.

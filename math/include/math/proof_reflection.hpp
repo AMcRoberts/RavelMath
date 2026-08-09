@@ -340,8 +340,17 @@ struct StrongCoincidenceRunCertificate {
 // outcome profile, while remaining explicit that unresolved pairs may still
 // have a suffix coincidence.
 struct StrongCoincidencePrefixClosureCertificate {
+    struct Edge {
+        long long from_junction = 0;
+        long long to_junction = 0;
+        long long jump_size = 0;
+        long long child_index = 0;
+        std::vector<long long> landmark;
+        std::vector<long long> chain;
+    };
     std::vector<std::vector<long long>> images;
     std::vector<long long> matrix;
+    std::vector<Edge> edges;
     std::vector<long long> pair_resolution_depths;
     std::vector<long long> pair_terminal_letters;
     std::vector<std::vector<long long>> pair_vectors;
@@ -361,8 +370,10 @@ struct StrongCoincidencePrefixClosureCertificate {
 // A bounded full strong-coincidence closure run.  Prefix and suffix are
 // combined by running the exact closure on the substitution and its reverse.
 struct StrongCoincidenceClosureCertificate {
+    using Edge = StrongCoincidencePrefixClosureCertificate::Edge;
     std::vector<std::vector<long long>> images;
     std::vector<long long> matrix;
+    std::vector<Edge> edges;
     std::vector<long long> pair_resolution_depths;
     std::vector<long long> pair_terminal_letters;
     std::vector<std::vector<long long>> pair_vectors;
