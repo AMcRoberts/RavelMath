@@ -133,7 +133,8 @@ const char* classify(const char* name,
                       const std::array<std::vector<long long>, d>& images,
                       const mathlib::PolyZ& charpoly,
                       const std::vector<std::vector<long long>>& M_transpose,
-                      const std::vector<long long>& primes_dividing_det) {
+                      const std::vector<long long>& primes_dividing_det,
+                      std::size_t property_f_budget) {
     print_case_header(HeaderStyle::SHORT_DASH, name);
     std::printf("charpoly: %s   primes dividing det: ", mathlib::str(charpoly).c_str());
     for (auto p : primes_dividing_det) std::printf("%lld ", p);
@@ -152,7 +153,8 @@ const char* classify(const char* name,
     }
     std::printf("\n");
 
-    auto cls = classify_tiling<d>(name, images, charpoly, M_transpose, primes_dividing_det);
+    auto cls = classify_tiling<d>(name, images, charpoly, M_transpose,
+                                  primes_dividing_det, static_cast<long long>(property_f_budget));
 
     std::printf("  Strong coincidence: %s (depth %lld%s)\n",
                 cls.strong_coincidence_holds ? "HOLDS"
@@ -185,6 +187,8 @@ int main(int argc, char** argv) {
     std::size_t rho_pairs = 2000;
     std::size_t rho_len = 15000;
     std::size_t max_trials = 20000;
+    std::size_t property_f_budget = 1'000'000;
+    std::string only_name;
     auto read_size = [&](const char* flag, std::size_t& dst, const char* value) {
         if (!value || *value == '\0') {
             std::fprintf(stderr, "missing value for %s\n", flag);
@@ -223,14 +227,19 @@ int main(int argc, char** argv) {
             if (!read_size("--rho-len", rho_len, argv[++i])) return 2;
         } else if (flag == "--max-trials" && i + 1 < argc) {
             if (!read_size("--max-trials", max_trials, argv[++i])) return 2;
+        } else if (flag == "--property-f-budget" && i + 1 < argc) {
+            if (!read_size("--property-f-budget", property_f_budget, argv[++i])) return 2;
+        } else if (flag == "--only" && i + 1 < argc) {
+            only_name = argv[++i];
         } else {
-            std::fprintf(stderr, "usage: %s [--target N] [--K N] [--seed N] [--max-pairs N] [--max-len N] [--rho-pairs N] [--rho-len N] [--max-trials N]\n", argv[0]);
+            std::fprintf(stderr, "usage: %s [--target N] [--K N] [--seed N] [--max-pairs N] [--max-len N] [--rho-pairs N] [--rho-len N] [--max-trials N] [--property-f-budget N] [--only NAME]\n", argv[0]);
             return 2;
         }
     }
     std::printf("=== Sweep: random NON-UNIT (non-unimodular) Pisot substitutions, %zu-letter ===\n\n", kAlphabet);
-    std::printf("target=%zu K_max=%d seed=%u certify=(%zu pairs,%zu len) rho=(%zu pairs,%zu len) max_trials=%zu\n\n",
-                target, K_max, seed, max_pairs, max_len, rho_pairs, rho_len, max_trials);
+    std::printf("target=%zu K_max=%d seed=%u certify=(%zu pairs,%zu len) rho=(%zu pairs,%zu len) max_trials=%zu property_f_budget=%zu%s%s\n\n",
+                target, K_max, seed, max_pairs, max_len, rho_pairs, rho_len, max_trials,
+                property_f_budget, only_name.empty() ? "" : " only=", only_name.c_str());
     auto candidates = wide_random_pisot_survey(
         target, K_max, seed,
         max_pairs, max_len,
@@ -241,6 +250,7 @@ int main(int argc, char** argv) {
     int n_nonunit = 0, n_checked = 0;
     int n_established = 0, n_inconclusive = 0, n_fail = 0, n_skipped = 0;
     for (auto& inst : candidates) {
+        if (!only_name.empty() && inst.name != only_name) continue;
         long long det = adelic::integer_determinant(inst.M);
         if (std::llabs(det) <= 1) continue;  // want NON-unit this time
         n_nonunit++;
@@ -261,7 +271,8 @@ int main(int argc, char** argv) {
         auto primes = prime_factors(det);
         std::string verdict;
         try {
-            verdict = classify<kAlphabet>(inst.name.c_str(), images, charpoly, transpose(inst.M), primes);
+            verdict = classify<kAlphabet>(inst.name.c_str(), images, charpoly, transpose(inst.M),
+                                          primes, property_f_budget);
         } catch (const std::exception& e) {
             std::printf("--- %s ---\n  EXCEPTION: %s\n  VERDICT: SKIPPED (exception)\n\n",
                          inst.name.c_str(), e.what());

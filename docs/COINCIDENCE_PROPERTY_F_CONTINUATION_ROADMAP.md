@@ -174,6 +174,14 @@ had 841,057 nodes and the observed peak RSS was about 0.61 GB under the
 10 GB machine limit. The driver exposes these caps as command-line options
 for reproducible follow-up runs.
 
+The first `K_max=5` probe (target=8, seed=17) likewise illustrates why the
+finite budget must remain explicit: seven cases closed under the default
+million-node cap, while `rndW5_6` required 3,799,168 nodes and closed under a
+6-million cap. Its observed peak RSS was about 3.6 GB. The widened driver
+supports `--property-f-budget` and `--only` so this kind of outlier can be
+audited in isolation without conflating a resource cutoff with a failed
+Property-F certificate.
+
 **2026-08-08 finite-classifier increment.** `check_strong_coincidence` now
 returns a lexicographically indexed resolution profile for every unordered
 letter pair: the exact first resolving depth, or `-1` when the bounded run

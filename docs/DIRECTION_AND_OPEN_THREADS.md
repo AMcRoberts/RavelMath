@@ -289,6 +289,15 @@ diagnostics, but the combined p-adic/property-(F) pipeline still completed
 and classified them; those diagnostics remain visible rather than silently
 being treated as maximal.
 
+**Wider substitution-length probe (2026-08-09).** A bounded `K_max=5`
+sample (target=8, seed=17, 1,000-pair/10,000-length certify and rho caps)
+initially gave 7 established cases and one Property-F budget cutoff at the
+default 1,000,000 nodes. The driver now exposes `--property-f-budget` and
+`--only`; rerunning the deterministic outlier `rndW5_6` at 6,000,000 nodes
+resolved it at 3,799,168 explored nodes. The sample is therefore 8/8
+established at those explicit finite caps, with observed RSS around 3.6 GB.
+This is stronger bounded evidence, not an infinite closure theorem.
+
 **(B2) Smooth-relaxation search.** The natural way to generate
 new Item A and Item B candidates, replacing pure random sampling
 with gradient-based Pisot-preserving mutation. The natural
