@@ -201,6 +201,14 @@ The profile also exposes the forward-contraction carry-radius proxy
 the secondary embeddings dominates one carried digit. This separates the
 contraction threshold from the subsequent count of admissible coefficient
 vectors.
+The profile now converts these embedding bounds through the inverse Vandermonde
+matrix into a conservative coefficient-box proxy. Its base-10 box sizes are
+about `10^6.82` for `(4,6)`, `10^9.59` for `(6,2)`, and `10^10.94` for `(6,3)`;
+the exact reachable sets (33,837 and 4,914,771 in the first two cases) are
+much sparser than those boxes. This is not a proof-quality count—the roots
+and matrix inversion are floating-point diagnostics—but it gives the correct
+resource scale and explains why the next dimensions should be ranked rather
+than exhaustively enumerated.
 The radius is not itself a state-count predictor: `(4,6)` has proxy radius
 about 34.2 but only 33,837 closed states, whereas `(6,2)` has radius about
 20.1 and 4,914,771 closed states. The latter is larger because the

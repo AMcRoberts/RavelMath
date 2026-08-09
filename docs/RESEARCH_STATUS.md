@@ -125,6 +125,12 @@ the endpoint linear maps are unimodular: coefficient-lattice volume is
 preserved. Only the secondary embeddings contract forward, so finiteness comes
 from the admissible return language and boundary pruning rather than a scalar
 lattice contraction. This explains why a one-dimensional rank has not emerged.
+The growth profile also pushes the embedding-radius proxy through the inverse
+Vandermonde matrix to estimate a coefficient box. The resulting log10 box
+sizes are 6.82 at `(4,6)`, 9.59 at `(6,2)`, and 10.94 at `(6,3)`. Exact
+reachable sets are much sparser than these boxes, but the estimate places the
+next dimensions beyond the practical exhaustive-search envelope; it is
+explicitly a floating-point resource diagnostic, not a theorem.
 Root diagnostics explain the scaling: the weakest secondary modulus rises
 from `0.8508` at `(4,6)` to `0.9094` at `(6,2)`, while the degree and channel
 count increase the coefficient-state branching. This matches the observed
