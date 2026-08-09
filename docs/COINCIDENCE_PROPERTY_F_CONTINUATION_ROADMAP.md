@@ -159,6 +159,12 @@ The worked example and `rnd13` remain at depths 4 and 1 respectively, with a
 measured driver peak of only about 38 MB RSS; the bounded word fallback stays
 at its original limits.
 
+`TilingClassification` now exports the complete lexicographic per-pair
+resolution-depth profile as well as the aggregate depth and engine flag. The
+worked-example and `rnd13` shared-classifier tests assert those profiles
+directly, so production classification no longer discards the finite evidence
+needed to audit a strong-coincidence verdict.
+
 The prefix closure now also has a typed reflection certificate and renderer.
 The staging operation derives the incidence matrix from the supplied images,
 rejects invalid shapes, inconclusive cutoffs, and arithmetic overflow, and

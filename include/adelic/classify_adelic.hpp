@@ -84,6 +84,7 @@ struct TilingClassification {
     bool strong_coincidence_holds;
     bool strong_coincidence_inconclusive;
     long long strong_coincidence_depth;
+    std::vector<long long> strong_coincidence_pair_resolution_depths;
     bool strong_coincidence_closure_used;
 
     // Property (F) under the combined p-adic bound.
@@ -121,6 +122,7 @@ TilingClassification classify_tiling(
     TilingClassification out;
     out.name = name;
     out.strong_coincidence_closure_used = false;
+    out.strong_coincidence_pair_resolution_depths.clear();
 
     // Step 1: factor each prime dividing |det M|, cross-checked.
     out.any_non_maximal = false;
@@ -144,6 +146,7 @@ TilingClassification classify_tiling(
         out.strong_coincidence_holds = false;
         out.strong_coincidence_inconclusive = false;
         out.strong_coincidence_depth = 0;
+        out.strong_coincidence_pair_resolution_depths.clear();
         out.property_f_holds = false;
         out.property_f_inconclusive = false;
         out.property_f_nodes = 0;
@@ -190,6 +193,7 @@ TilingClassification classify_tiling(
     out.strong_coincidence_holds = coin.holds;
     out.strong_coincidence_inconclusive = coin.inconclusive;
     out.strong_coincidence_depth = coin.depth_reached;
+    out.strong_coincidence_pair_resolution_depths = coin.pair_resolution_depths;
 
     // Step 4: property (F) via the unified combined p-adic bound.
     auto automaton = adelic::build_prefix_automaton<d>(images, eig.v, R);
