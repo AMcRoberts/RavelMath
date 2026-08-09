@@ -15,6 +15,22 @@ state of the project. Detailed claim strength is recorded in
 `THEOREM_STATUS.md`; the exact active Class-II seam is recorded in
 `GLOBAL_CATALOGUE_OCCURRENCE_EXHAUSTION.md`.
 
+## Fixed-spectrum transport family (2026-08-09)
+
+The new `property_f_family_artifact` runner studies nine orderings of the
+first and second genuine fourth-generator substitutions while preserving each
+incidence matrix and Pisot polynomial.  Every member closes strong coincidence
+and Property (F), with no nonzero recurrent component.  Nevertheless the
+Property-F graph ranges from 6--10 nodes for the first witness and 9--7,966
+nodes for the second.  This isolates ordering/transport complexity from
+spectral complexity.  The artifact also records a return-word/phase transport
+diagnostic: some marker-0 orderings admit a closed finite phase lift, while
+others fail marker recognizability.  That failure is retained as data rather
+than treated as a Property-F failure.  The current hypothesis is that the
+large zero-expansion graph is an adelic finite-transport lift analogous to the
+earlier sofic twist; the TSV artifact is intended for the next cocycle/holonomy
+comparison.
+
 ## Verified engineering boundary
 
 Historical complete-tree validation passed `make check` and `make lean-check` with the enrolled Lean files sorry-free. The compressed handoff does not currently contain a complete executable Lean/Mathlib build, so this package must not repeat that claim until `scripts/safe_lean_check.sh` succeeds under the matching restored artifacts.

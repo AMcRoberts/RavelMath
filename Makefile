@@ -99,7 +99,7 @@ TRANSITION_FILES := $(addprefix $(TRANSITIONS_DIR)/spectre_transitions_,$(addsuf
 .PHONY: csy_finite_carry_automaton_test
 .PHONY: lean_class_ii_catalogue_cross_check_test
 .PHONY: supergolden_qrs_audit
-.PHONY: theta5_contact_boundary_probe
+.PHONY: theta5_contact_boundary_probe property_f_family_autopsy property_f_family_artifact
 
 all: build data apps tests
 build: $(LIB)
@@ -813,6 +813,8 @@ TESTS_DEFAULT := \
 	coincidence_and_property_f_test \
 	coincidence_closure_prefix_test \
 	single_junction_coincidence_composition_test \
+	second_genuine_fourth_generator_property_f_test \
+	property_f_family_autopsy \
 	local_field_test \
 	graph_divisor_test \
 	maximal_order_test \
@@ -2277,6 +2279,27 @@ $(TEST_BIN_SINGLE_JUNCTION_COINCIDENCE_COMPOSITION_TEST): $(TESTDIR)/single_junc
 single_junction_coincidence_composition_test: $(TEST_BIN_SINGLE_JUNCTION_COINCIDENCE_COMPOSITION_TEST)
 	./$(TEST_BIN_SINGLE_JUNCTION_COINCIDENCE_COMPOSITION_TEST)
 .PHONY: single_junction_coincidence_composition_test
+
+TEST_BIN_SECOND_GENUINE_FOURTH_GENERATOR_PROPERTY_F_TEST := $(BUILDDIR)/second_genuine_fourth_generator_property_f_test
+$(TEST_BIN_SECOND_GENUINE_FOURTH_GENERATOR_PROPERTY_F_TEST): $(TESTDIR)/second_genuine_fourth_generator_property_f_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+second_genuine_fourth_generator_property_f_test: $(TEST_BIN_SECOND_GENUINE_FOURTH_GENERATOR_PROPERTY_F_TEST)
+	./$(TEST_BIN_SECOND_GENUINE_FOURTH_GENERATOR_PROPERTY_F_TEST)
+.PHONY: second_genuine_fourth_generator_property_f_test
+
+TEST_BIN_PROPERTY_F_FAMILY_AUTOPSY := $(BUILDDIR)/property_f_family_autopsy
+$(TEST_BIN_PROPERTY_F_FAMILY_AUTOPSY): $(TESTDIR)/property_f_family_autopsy_test.cpp \
+		$(INCDIR)/adelic/property_f_family_autopsy.hpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+property_f_family_autopsy: $(TEST_BIN_PROPERTY_F_FAMILY_AUTOPSY)
+	./$(TEST_BIN_PROPERTY_F_FAMILY_AUTOPSY)
+
+PROPERTY_F_FAMILY_ARTIFACT_BIN := $(BUILDDIR)/property_f_family_artifact
+property_f_family_artifact: $(PROPERTY_F_FAMILY_ARTIFACT_BIN)
+	./$(PROPERTY_F_FAMILY_ARTIFACT_BIN) $(or $(OUTPUT),out/property_f_family.tsv) $(or $(NODE_BUDGET),100000) $(or $(COINCIDENCE_BUDGET),1000000)
+$(PROPERTY_F_FAMILY_ARTIFACT_BIN): $(APPDIR)/property_f_family_artifact.cpp \
+		$(INCDIR)/adelic/property_f_family_autopsy.hpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
 TEST_BIN_CLASS_II_TERMINAL_SEXTET_REFLECTION_TEST := $(BUILDDIR)/class_ii_terminal_sextet_reflection_test
 $(TEST_BIN_CLASS_II_TERMINAL_SEXTET_REFLECTION_TEST): $(TESTDIR)/class_ii_terminal_sextet_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)
