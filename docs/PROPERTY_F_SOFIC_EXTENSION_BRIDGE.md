@@ -157,6 +157,10 @@ the coefficient state space and weakens contraction, while increasing `m`
 widens the carry alphabet. The current data show no nonzero recurrent signal;
 the missing proof is a reachability rank on the block forest, not a search for
 an additional cycle generator.
+An optimized endpoint-only block experiment did not materially collapse the
+large `(6,2)` search before the same practical limit. This is informative:
+forced descent accounts for path depth, but the hard part is the cardinality
+of distinct reachable coefficient vectors themselves.
 
 An opt-in extended regression pushes beyond that rectangle
 (`generalized_multinacci_property_f_transport_extended_test`). It closes

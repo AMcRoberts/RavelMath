@@ -102,7 +102,9 @@ Root diagnostics explain the scaling: the weakest secondary modulus rises
 from `0.8508` at `(4,6)` to `0.9094` at `(6,2)`, while the degree and channel
 count increase the coefficient-state branching. This matches the observed
 large-but-harmless transient clouds and gives a concrete target for the rank
-bound.
+bound. An optimized endpoint-only block search did not materially collapse
+the `(6,2)` frontier, so forced descent is not the main cost; the remaining
+problem is bounding the number of distinct reachable coefficient vectors.
 
 ## Verified engineering boundary
 
