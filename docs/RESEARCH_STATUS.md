@@ -33,6 +33,12 @@ comparison.  The first phase-SCC comparison now sharpens this: closed return
 phase lifts have only 5--12 states, while the corresponding adelic graphs can
 reach 4,277--7,966 states.  Thus ordinary return phase is not the whole lift;
 the excess is carried by the exact Q(beta) displacement coordinate.
+The SCC profile adds an important qualification: the 4,277- and 7,966-node
+examples have essentially one SCC per node and zero nonzero cycles.  Their
+extra size is therefore predominantly transient transport growth, not
+nontrivial holonomy recurrence.  The sofic-twist analogy should be stated as
+a finite transport extension first, with genuine holonomy only a possible
+secondary layer.
 
 ## Verified engineering boundary
 
