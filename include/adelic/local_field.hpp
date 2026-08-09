@@ -629,6 +629,7 @@ inline PAdicShapeDiagnostic compare_first_order_padic_shapes(
 struct NewtonResidualDiagnostic {
     NewtonSegment segment{};
     bool supported = false;  // exact first residual over F_p
+    bool degree_matches = false;
     FpPoly residual;
     std::vector<FpFactor> factors;
 };
@@ -666,8 +667,12 @@ inline NewtonResidualDiagnostic newton_residual_diagnostic(
     }
     while (out.residual.c.size() > 1 && out.residual.c.back() == 0)
         out.residual.c.pop_back();
-    out.factors = factor_fp(out.residual);
-    out.supported = !out.residual.c.empty() && out.residual.c.back() != 0;
+    const long long residual_degree =
+        static_cast<long long>(out.residual.c.size()) - 1;
+    out.degree_matches = residual_degree == segment.f;
+    out.supported = out.degree_matches && !out.residual.c.empty() &&
+                    out.residual.c.back() != 0;
+    if (out.supported) out.factors = factor_fp(out.residual);
     return out;
 }
 

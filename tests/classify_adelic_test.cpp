@@ -85,7 +85,7 @@ void test_worked_example_tiles() {
     if (!worked_segments.empty()) {
         auto residual = adelic::newton_residual_diagnostic(
             adelic::zp_poly_from_polyz(charpoly, 2, 30), worked_segments.front());
-        CHECK(residual.supported && residual.factors.size() == 1 &&
+        CHECK(residual.supported && residual.degree_matches && residual.factors.size() == 1 &&
                   residual.factors[0].mult == 1 &&
                   static_cast<long long>(residual.factors[0].g.c.size()) - 1 == 1,
               "worked example: e=2 residual refines to a linear factor");
@@ -216,7 +216,7 @@ void test_nonmaximal_order_is_not_trusted() {
               "non-maximal quartic: Newton (e,f) differs from non-maximal Dedekind data");
         auto residual = adelic::newton_residual_diagnostic(
             adelic::zp_poly_from_polyz(R.charpoly(), 2, 30), segments[1]);
-        CHECK(residual.supported && residual.factors.size() == 1 &&
+        CHECK(residual.supported && residual.degree_matches && residual.factors.size() == 1 &&
                   residual.factors[0].mult == 3 &&
                   static_cast<long long>(residual.factors[0].g.c.size()) - 1 == 1,
               "non-maximal quartic: slope residual refines degree-3 segment to (e,f)=(3,1)");
