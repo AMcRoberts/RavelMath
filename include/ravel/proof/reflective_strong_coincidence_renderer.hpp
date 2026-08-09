@@ -158,6 +158,16 @@ inline void render_closure_int_list(std::ostringstream& out, const std::string& 
     out << "]\n";
 }
 
+inline void render_closure_run_metadata(std::ostringstream& out, const std::string& stem,
+                                        long long unresolved_pairs, long long outcome_budget,
+                                        bool holds, bool inconclusive) {
+    out << "def " << stem << "_unresolved_pairs : Int := " << unresolved_pairs << "\n";
+    out << "def " << stem << "_outcome_budget : Int := " << outcome_budget << "\n";
+    out << "def " << stem << "_holds : Bool := " << (holds ? "true" : "false") << "\n";
+    out << "def " << stem << "_inconclusive : Bool := "
+        << (inconclusive ? "true" : "false") << "\n";
+}
+
 inline void render_closure_weighted_vectors(
     std::ostringstream& out, const std::string& name,
     const std::vector<std::vector<std::vector<long long>>>& values) {
@@ -443,6 +453,9 @@ inline std::string render_strong_coincidence_prefix_closure_instances(
         }
         out << "]\n";
         render_closure_edge_validity_check(out, stem, node->images.size());
+        render_closure_run_metadata(out, stem, node->unresolved_pairs,
+                                    node->outcome_budget, node->holds,
+                                    node->inconclusive);
         out << "def " << stem << "_resolution_depths : List Int := [";
         for (std::size_t i = 0; i < node->pair_resolution_depths.size(); ++i) {
             if (i) out << ", ";
@@ -556,6 +569,10 @@ inline std::string render_strong_coincidence_prefix_closure_instances(
             << "    " << stem << "_second_positions.length = "
             << node->pair_second_positions.size() << " ∧\n"
             << "    " << stem << "_matrix.length = " << node->matrix.size() << " ∧\n"
+            << "    " << stem << "_unresolved_pairs = " << node->unresolved_pairs << " ∧\n"
+            << "    " << stem << "_outcome_budget = " << node->outcome_budget << " ∧\n"
+            << "    " << stem << "_holds = " << (node->holds ? "true" : "false") << " ∧\n"
+            << "    " << stem << "_inconclusive = " << (node->inconclusive ? "true" : "false") << " ∧\n"
             << "    " << node->depth_reached << " ≤ " << node->max_depth << " ∧\n"
             << "    " << (node->holds ? "True" : "False") << " := by decide\n\n";
     }
@@ -586,6 +603,9 @@ inline std::string render_strong_coincidence_closure_instances(
         out << "]\n";
         render_closure_edge_validity_check(out, stem, node->images.size());
         render_closure_edge_validity_check(out, stem, node->images.size(), true);
+        render_closure_run_metadata(out, stem, node->unresolved_pairs,
+                                    node->outcome_budget, node->holds,
+                                    node->inconclusive);
         out << "def " << stem << "_resolution_depths : List Int := [";
         for (std::size_t i = 0; i < node->pair_resolution_depths.size(); ++i) {
             if (i) out << ", ";
@@ -708,6 +728,10 @@ inline std::string render_strong_coincidence_closure_instances(
             << "    " << stem << "_second_positions.length = "
             << node->pair_second_positions.size() << " ∧\n"
             << "    " << stem << "_matrix.length = " << node->matrix.size() << " ∧\n"
+            << "    " << stem << "_unresolved_pairs = " << node->unresolved_pairs << " ∧\n"
+            << "    " << stem << "_outcome_budget = " << node->outcome_budget << " ∧\n"
+            << "    " << stem << "_holds = " << (node->holds ? "true" : "false") << " ∧\n"
+            << "    " << stem << "_inconclusive = " << (node->inconclusive ? "true" : "false") << " ∧\n"
             << "    " << node->depth_reached << " ≤ " << node->max_depth << " ∧\n"
             << "    " << (node->holds ? "True" : "False") << " := by decide\n\n";
     }

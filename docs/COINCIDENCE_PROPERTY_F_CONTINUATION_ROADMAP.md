@@ -323,3 +323,7 @@ the kernel reconstructs the prefix landmark, follows the forced singleton
 chain, checks its jump length, and checks the terminal junction. Suffix tables
 are checked against the reversed serialized images, so orientation is explicit
 rather than an unchecked convention.
+The closure metadata is also explicit in the Lean payload now: unresolved-pair
+count, outcome budget, aggregate `holds`, and `inconclusive` status are emitted
+and checked in the finite summary. A bounded positive result therefore cannot
+be mistaken for an unqualified infinite theorem at the artifact boundary.

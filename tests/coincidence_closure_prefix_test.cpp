@@ -120,6 +120,10 @@ int main() {
            std::string::npos);
     assert(rendered.find("strong_coincidence_closure_0_suffix_edges_valid") !=
            std::string::npos);
+    assert(rendered.find("strong_coincidence_closure_0_unresolved_pairs") !=
+           std::string::npos);
+    assert(rendered.find("strong_coincidence_closure_0_inconclusive") !=
+           std::string::npos);
     assert(rendered.find("strong_coincidence_closure_0_first_path_check") !=
            std::string::npos);
     assert(rendered.find("strong_coincidence_closure_0_first_weight_check") !=
