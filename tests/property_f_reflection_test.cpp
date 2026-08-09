@@ -48,6 +48,24 @@ int main() {
         }
         assert(rejected);
     }
+    {
+        std::array<std::vector<long long>, 3> images3 = {
+            std::vector<long long>{0, 1, 2}, std::vector<long long>{0}, std::vector<long long>{1}};
+        const std::vector<std::vector<long long>> matrix3 = {{1, 1, 0}, {1, 0, 1}, {1, 0, 0}};
+        mathlib::QBetaRing ring3(mathlib::charpoly_faddeev_leverrier(matrix3));
+        auto eig3 = mathlib::right_eigenvector_via_qbeta(transpose(matrix3), ring3);
+        assert(eig3.ok);
+        auto automaton3 = adelic::build_prefix_automaton<3>(images3, eig3.v, ring3);
+        adelic::PropertyFGraph graph3;
+        auto result3 = adelic::check_property_f<3>(automaton3, 300000, nullptr, nullptr, nullptr, nullptr, &graph3);
+        assert(!result3.inconclusive);
+        mathlib::reflection::Trace trace3("property_f_reflection_tribonacci");
+        mathlib::reflection::ScopedTrace scope3(&trace3);
+        assert(ravel::proof::stage_property_f_graph(result3, graph3, ring3, "Tribonacci"));
+        assert(!trace3.find<mathlib::reflection::PropertyFGraphCertificate>().empty());
+        const std::string lean3 = ravel::proof::render_reflective_lean_module(trace3);
+        assert(lean3.find("property_f_graph_0_charpoly") != std::string::npos);
+    }
     auto certificates = trace.find<mathlib::reflection::PropertyFFiniteRunCertificate>();
     assert(certificates.size() == 1);
     assert(certificates.front().second->nodes_explored == 8);

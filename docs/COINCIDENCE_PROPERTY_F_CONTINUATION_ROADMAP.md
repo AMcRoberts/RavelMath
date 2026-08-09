@@ -138,3 +138,6 @@ emits a small generic `PropertyFQ2` arithmetic model and one `norm_num`
 theorem per serialized edge; all eight edge identities kernel-check. Higher
 degree fields remain an explicit follow-up rather than hidden unsupported
 text generation.
+The exact C++ recurrence validator is already degree-independent and now runs
+on a Tribonacci degree-3 graph as well; only the Lean arithmetic renderer is
+currently specialized to the quadratic case.
