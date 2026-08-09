@@ -935,6 +935,8 @@ as the current finite stress set before attempting a uniform derivation.
 The general-theory header now exposes the integer-extension scheme directly;
 future callers should use that entry point rather than rebuilding catalogue
 and transport checks by hand.
+It now also exposes an individual finite transport witness, so a requested
+source/target/displacement word can be inspected and replayed directly.
 The parameterized cubic family `sigma_{a,1}` was then stress-tested at
 `a=2,3,4,5`; all four finite certificates pass at cap 20, and the exact
 parent-role catalogue agrees with the digit-difference generator prediction.

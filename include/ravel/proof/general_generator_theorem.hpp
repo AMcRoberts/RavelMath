@@ -204,4 +204,15 @@ inline ParentRoleIntegerSchemeReport derive_general_integer_extension_scheme(
         catalogue, zero_word_cap, cycle_word_cap, root_role);
 }
 
+inline ParentRoleIntegerWitness derive_general_integer_extension_witness(
+    const mathlib::QBetaRing& R, const mathlib::RootInterval& beta_I,
+    std::size_t zero_word_cap, std::size_t cycle_word_cap,
+    std::size_t source_role, std::size_t target_role, long long displacement,
+    std::size_t root_role = 0) {
+    const auto catalogue = derive_canonical_parent_role_catalogue(R, beta_I);
+    return derive_parent_role_integer_witness(
+        catalogue, zero_word_cap, cycle_word_cap, source_role, target_role,
+        displacement, root_role);
+}
+
 }  // namespace ravel::proof

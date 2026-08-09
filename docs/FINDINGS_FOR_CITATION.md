@@ -4041,6 +4041,12 @@ This is the broadest finite support so far for the family-level conjecture.
 The scheme is now exposed through the general-theory entry point, so callers
 can request the same finite certificate without reconstructing the catalogue
 internals.
+The finite transport theorem is now exposed one witness at a time as well:
+given source role, target role, and an integer displacement, the public wrapper
+constructs the source-to-root zero path, repeats the appropriate unit cycle,
+and appends the root-to-target zero path, then replays every edge and checks
+the exact sum. This makes the constructive content inspectable rather than
+leaving it only in aggregate transport counters.
 The parameterized cubic family `sigma_{a,1}: x^3-a x^2-(a+1)x-1`, checked at
 `a=2,3,4,5`, also passes the same cap-20 certificate: each instance has a
 complete zero kernel and opposite unit cycles.  The expensive catalogue agrees

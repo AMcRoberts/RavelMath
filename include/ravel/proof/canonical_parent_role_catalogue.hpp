@@ -385,6 +385,19 @@ struct ParentRoleIntegerSchemeReport {
     std::size_t negative_cycle_length{};
 };
 
+// One explicit witness for a requested integer displacement.  Keeping the
+// word itself in the typed report makes the finite Z-extension constructive:
+// callers can inspect and replay the exact role path instead of relying only
+// on an aggregate "scheme proved" bit.
+struct ParentRoleIntegerWitness {
+    bool proved{};
+    std::size_t source_role{};
+    std::size_t target_role{};
+    long long displacement{};
+    std::vector<std::size_t> roles;
+    std::vector<long long> defects;
+};
+
 // A finite catalogue-level theorem scheme.  The hypotheses are all
 // replay-checked finite facts: every ordered role pair has a zero-defect path,
 // and one common role has +/-1 closed walks.  Repeating those closed walks
@@ -407,6 +420,83 @@ inline ParentRoleIntegerSchemeReport derive_parent_role_integer_scheme(
     out.negative_cycle_length = cycles.negative_defects.size();
     out.arbitrary_integer_displacement = true;
     out.proved = true;
+    return out;
+}
+
+// Constructs one arbitrary integer-displacement witness from the finite
+// scheme hypotheses.  The zero-kernel paths put the source and target at the
+// common cycle root; the sign selects the corresponding unit cycle and the
+// absolute value determines its repetition count.  This is deliberately
+// catalogue-local: it exposes the exact computable witness without claiming
+// that every unbounded Pisot family satisfies the hypotheses uniformly.
+inline ParentRoleIntegerWitness derive_parent_role_integer_witness(
+    const CanonicalParentRoleCatalogue& catalogue, std::size_t zero_word_cap,
+    std::size_t cycle_word_cap, std::size_t source_role,
+    std::size_t target_role, long long displacement, std::size_t root_role = 0) {
+    ParentRoleIntegerWitness out;
+    out.source_role = source_role;
+    out.target_role = target_role;
+    out.displacement = displacement;
+    if (!catalogue.proved || source_role >= catalogue.role_count ||
+        target_role >= catalogue.role_count || root_role >= catalogue.role_count ||
+        zero_word_cap == 0 || cycle_word_cap == 0)
+        return out;
+    const auto closure = derive_parent_role_word_closure(catalogue, zero_word_cap, 0);
+    const auto cycles = derive_parent_role_unit_cycles(catalogue, cycle_word_cap, root_role);
+    if (!closure.zero_net_role_graph_complete || !closure.zero_net_witnesses_verified ||
+        !cycles.positive_cycle_found || !cycles.negative_cycle_found)
+        return out;
+    using Key = std::pair<std::size_t,std::size_t>;
+    std::map<Key, ParentRoleWordClosureReport::ZeroNetWitness> zero_paths;
+    for (const auto& witness : closure.zero_net_witnesses)
+        zero_paths[{witness.source_role, witness.target_role}] = witness;
+    auto append_segment = [](std::vector<std::size_t>& roles,
+                             std::vector<long long>& defects,
+                             const std::vector<std::size_t>& next_roles,
+                             const std::vector<long long>& next_defects) {
+        if (next_roles.empty() || next_roles.size() != next_defects.size() + 1)
+            return false;
+        if (roles.empty()) {
+            roles = next_roles;
+            defects = next_defects;
+            return true;
+        }
+        if (roles.back() != next_roles.front()) return false;
+        defects.insert(defects.end(), next_defects.begin(), next_defects.end());
+        roles.insert(roles.end(), next_roles.begin() + 1, next_roles.end());
+        return true;
+    };
+    const auto& left = zero_paths.at({source_role, root_role});
+    const auto& right = zero_paths.at({root_role, target_role});
+    bool ok = append_segment(out.roles, out.defects, left.roles, left.defects);
+    const auto& cycle = displacement >= 0 ? cycles.positive_roles : cycles.negative_roles;
+    const auto& cycle_defects = displacement >= 0 ? cycles.positive_defects : cycles.negative_defects;
+    const auto repetitions = static_cast<unsigned long long>(
+        displacement >= 0 ? displacement : -(displacement + 1)) +
+        (displacement < 0 ? 1ULL : 0ULL);
+    for (unsigned long long r = 0; r < repetitions && ok; ++r)
+        ok = append_segment(out.roles, out.defects, cycle, cycle_defects);
+    ok = ok && append_segment(out.roles, out.defects, right.roles, right.defects);
+    long long sum = 0;
+    std::set<std::tuple<std::size_t,std::size_t,long long>> direct;
+    for (const auto& edge : catalogue.edges)
+        direct.insert({edge.source_role, edge.target_role, edge.defect});
+    if (ok) {
+        for (std::size_t k = 0; k < out.defects.size(); ++k) {
+            sum += out.defects[k];
+            if (!direct.count({out.roles[k], out.roles[k + 1], out.defects[k]})) {
+                ok = false;
+                break;
+            }
+        }
+        ok = ok && out.roles.front() == source_role && out.roles.back() == target_role &&
+             sum == displacement;
+    }
+    out.proved = ok;
+    if (!ok) {
+        out.roles.clear();
+        out.defects.clear();
+    }
     return out;
 }
 

@@ -28,10 +28,16 @@ void run(const std::string& name, std::vector<long long> low_first, std::size_t 
     auto beta_I = isolate_beta(R);
     auto c = ravel::proof::derive_general_generator_theorem(R, beta_I);
     auto wrapper_scheme = ravel::proof::derive_general_integer_extension_scheme(R, beta_I, 10, 12);
+    auto wrapper_witness = ravel::proof::derive_general_integer_extension_witness(
+        R, beta_I, 10, 12, 0, 1, 3);
     auto forest = ravel::proof::derive_canonical_parent_role_catalogue(R, beta_I);
     auto holonomy = ravel::proof::derive_parent_role_holonomy(forest);
     const auto cycles = ravel::proof::derive_parent_role_unit_cycles(forest, 12);
     const auto scheme = ravel::proof::derive_parent_role_integer_scheme(forest, 10, 12);
+    const auto witness_plus = ravel::proof::derive_parent_role_integer_witness(
+        forest, 10, 12, 0, forest.role_count - 1, 7);
+    const auto witness_minus = ravel::proof::derive_parent_role_integer_witness(
+        forest, 10, 12, forest.role_count - 1, 0, -7);
     if (forest.alphabet_size >= 3) {
         const auto schema = ravel::proof::derive_canonical_unit_cycle_schema(forest);
         std::cout << " schema_driver_prefix=" << schema.digit_driver_prefix_rule
@@ -50,6 +56,10 @@ void run(const std::string& name, std::vector<long long> low_first, std::size_t 
     assert(c.proved);
     assert(c.primitive_generator_count == expected_primitive);
     assert(wrapper_scheme.proved);
+    assert(wrapper_witness.proved);
+    assert(witness_plus.proved && witness_minus.proved);
+    assert(witness_plus.roles.size() == witness_plus.defects.size() + 1);
+    assert(witness_minus.roles.size() == witness_minus.defects.size() + 1);
     assert(forest.proved);
     assert(holonomy.proved);
     assert(holonomy.edge_count == forest.edges.size());
