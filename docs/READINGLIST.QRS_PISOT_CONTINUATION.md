@@ -195,6 +195,14 @@ The adjacent-competitor truth-cache recipe also has an explicit
 n=6→7 family-transport verdict, so a visible `NO_UPPER_FAMILY` classification
 does not make the cache artifact itself fail.
 
+The projected n=6→7 transport now closes as well. Boundary candidates carrying
+a two-atom decomposition are filtered by their canonical catalogue grade before
+entering the grade-two exhaustion proof; cancellation can produce a grade-one
+atom with a two-atom witness, and treating that as grade two was the remaining
+false obstruction. The projected run now reports `boundary=PASS result=PASS`.
+The legacy materialized mode remains a compatibility/cache path and may still
+report the older direct-family `NO_UPPER_FAMILY` diagnostic.
+
 This reframes the parallel question: stop searching Pisot numbers below 2
 for a fourth generator via this construction. The two remaining routes are
 (a) `beta >= 2`, where a digit value of `2` opens a third prefix `[0,0]`

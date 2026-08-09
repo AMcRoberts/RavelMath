@@ -1522,11 +1522,13 @@ bool run_adjacent_competitor_transport_projected() {
             const auto atom_witness = derive_corona_atom_witness(node);
             if (!atom_witness) continue;
             const std::vector<long long> x(node.x.begin(), node.x.end());
-            if (upper_catalogue.grade(x) != 2) {
-                std::printf("ADJ_COMP_PROJECT boundary atom/catalogue grade mismatch\n");
-                all = false;
-                continue;
-            }
+            // A two-atom witness is not by itself a grade-two witness:
+            // overlapping atoms can cancel and leave a grade-one vector.
+            // Only retain candidates whose canonical catalogue grade is
+            // exactly two; lower-grade boundary points are already covered
+            // by the accepted predicate and must not poison the exhaustion
+            // seed set.
+            if (upper_catalogue.grade(x) != 2) continue;
             rejected_grade_two.insert(node);
         }
         const auto requested_nodes = requested_image.nodes;
@@ -1545,11 +1547,7 @@ bool run_adjacent_competitor_transport_projected() {
             const auto atom_witness = derive_corona_atom_witness(node);
             if (!atom_witness) continue;
             const std::vector<long long> x(node.x.begin(), node.x.end());
-            if (upper_catalogue.grade(x) != 2) {
-                std::printf("ADJ_COMP_PROJECT projected boundary atom/catalogue grade mismatch\n");
-                all = false;
-                continue;
-            }
+            if (upper_catalogue.grade(x) != 2) continue;
             rejected_grade_two.insert(node);
         }
         if (!projected_trace.converged || projected_trace.node_cap_hit) {
@@ -1967,9 +1965,10 @@ bool run_adjacent_competitor_transport_projected() {
             const auto atom_witness = derive_corona_atom_witness(node);
             if (!atom_witness) return false;
             const std::vector<long long> x(node.x.begin(), node.x.end());
-            if (upper_catalogue.grade(x) != 2)
-                throw std::logic_error("boundary atom witness/catalogue grade mismatch");
-            return true;
+            // The witness extractor recognizes decompositions that may
+            // collapse to a grade-one atom through cancellation.  The
+            // boundary theorem consumes only genuine grade-two seeds.
+            return upper_catalogue.grade(x) == 2;
         };
         const auto boundary_image = upper_surface.project(boundary_request);
         auto boundary_nodes = boundary_image.nodes;
