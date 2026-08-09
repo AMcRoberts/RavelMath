@@ -17,6 +17,10 @@ int main() {
         assert(row.property_f_holds);
         assert(row.trusted_padic);
         assert(row.property_f_nonzero_cycles == 0);
+        assert(row.property_f_cyclic_sccs >= 0);
+        assert(row.property_f_mixed_cycle_components == 0);
+        assert(row.property_f_zero_cycle_components >= 0);
+        assert(row.property_f_self_loops >= 0);
         assert(row.prefix_states > 0);
         assert(row.return_words >= 0);
         assert(row.return_phase_states >= 0);
