@@ -940,3 +940,7 @@ source/target/displacement word can be inspected and replayed directly.
 The parameterized cubic family `sigma_{a,1}` was then stress-tested at
 `a=2,3,4,5`; all four finite certificates pass at cap 20, and the exact
 parent-role catalogue agrees with the digit-difference generator prediction.
+The concrete contact-boundary gap for the first genuine fourth-generator
+witness is now closed as a finite computation: `x^3-2x^2-2` has a 387-state,
+751-edge boundary graph containing both `+2` and `-2` edges, with all five
+defect channels satisfying the simultaneous finite intertwiner.

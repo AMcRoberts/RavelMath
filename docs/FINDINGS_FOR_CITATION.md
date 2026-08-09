@@ -4058,3 +4058,17 @@ The reusable window profile at word cap 30 gives largest complete radii 5,
 7, 9, and 4 for theta7, theta8, theta9, and theta10 respectively (testing
 radii through 10). The non-monotone sequence is evidence that the window is
 controlled by cocycle geometry, not alphabet size alone.
+
+## Finding 45 — The first genuine fourth generator survives the contact boundary
+
+**Status: EXACT FINITE CONTACT-BOUNDARY COMPUTATION (2026-08-09).**
+
+The concrete intertwiner certificate for the canonical substitution
+`0->001, 1->2, 2->00` of `x^3-2x^2-2` closes on a 387-state contact-boundary
+graph with 751 directed edges. Both defect `+2` and defect `-2` occur as real
+boundary edges, not merely as abstract parent-role classes. The five defect
+channels `{-2,-1,0,+1,+2}` simultaneously satisfy the finite
+boundary-to-universal-role intertwiner, every boundary edge has a catalogue
+witness, and the finite-positive-grammar majorant is ready. This closes the
+geometric validation gap for the first known fourth/fifth primitive-generator
+example, while remaining a finite instance rather than a family theorem.
