@@ -140,6 +140,18 @@ as equal finite Lean lists. This closes a trust-layer gap in the bounded
 classifier: the aggregate `holds` bit is no longer the only exported result,
 and a second search cannot silently disagree about which pair resolved when.
 It remains finite evidence, not an unconditional strong-coincidence theorem.
+
+**2026-08-08 closure-backed prefix classifier.** The existing exact
+`CoincidenceClosure` is now exposed as
+`check_prefix_coincidence_closure`: it deduplicates reachable
+`(terminal-letter, landmark-vector)` states and compares them across every
+letter pair without constructing `sigma^K`. On the non-AR control
+`sigma(0)=12, sigma(1)=2, sigma(2)=0`, its finite prefix verdict agrees with
+the word checker; a disjoint deterministic-cycle control remains explicitly
+inconclusive. Matrix powers, landmark additions, and products now use checked
+integer arithmetic and reject overflow. This is a prefix-half classifier,
+not yet the full suffix-inclusive theorem, but it removes exponential word
+materialization from the next strong-coincidence search path.
 The staging operation now reconstructs every exported source/target/digit
 triple in the supplied `QBetaRing` and rejects any edge whose exact identity
 `gamma' = beta⁻¹ (gamma + delta)` fails. Fibonacci includes a tampering

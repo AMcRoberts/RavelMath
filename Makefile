@@ -808,6 +808,7 @@ TESTS_DEFAULT := \
 	dedekind_factorization_test \
 	ideal_arithmetic_test \
 	coincidence_and_property_f_test \
+	coincidence_closure_prefix_test \
 	local_field_test \
 	graph_divisor_test \
 	maximal_order_test \
@@ -2257,6 +2258,13 @@ $(TEST_BIN_BRANCHING_WALK_COMPOSITION_TEST): $(TESTDIR)/branching_walk_compositi
 branching_walk_composition_test: $(TEST_BIN_BRANCHING_WALK_COMPOSITION_TEST)
 	./$(TEST_BIN_BRANCHING_WALK_COMPOSITION_TEST)
 .PHONY: branching_walk_composition_test
+
+TEST_BIN_COINCIDENCE_CLOSURE_PREFIX_TEST := $(BUILDDIR)/coincidence_closure_prefix_test
+$(TEST_BIN_COINCIDENCE_CLOSURE_PREFIX_TEST): $(TESTDIR)/coincidence_closure_prefix_test.cpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+coincidence_closure_prefix_test: $(TEST_BIN_COINCIDENCE_CLOSURE_PREFIX_TEST)
+	./$(TEST_BIN_COINCIDENCE_CLOSURE_PREFIX_TEST)
+.PHONY: coincidence_closure_prefix_test
 
 TEST_BIN_CLASS_II_TERMINAL_SEXTET_REFLECTION_TEST := $(BUILDDIR)/class_ii_terminal_sextet_reflection_test
 $(TEST_BIN_CLASS_II_TERMINAL_SEXTET_REFLECTION_TEST): $(TESTDIR)/class_ii_terminal_sextet_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)

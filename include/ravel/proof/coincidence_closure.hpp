@@ -59,10 +59,24 @@ namespace ravel::proof {
 template <std::size_t d>
 using ExactVec = std::array<long long, d>;
 
+inline long long checked_exact_add(long long a, long long b) {
+    long long value = 0;
+    if (__builtin_add_overflow(a, b, &value))
+        throw std::overflow_error("coincidence closure vector addition overflow");
+    return value;
+}
+
+inline long long checked_exact_mul(long long a, long long b) {
+    long long value = 0;
+    if (__builtin_mul_overflow(a, b, &value))
+        throw std::overflow_error("coincidence closure matrix product overflow");
+    return value;
+}
+
 template <std::size_t d>
 inline ExactVec<d> exact_vec_add(const ExactVec<d>& a, const ExactVec<d>& b) {
     ExactVec<d> r{};
-    for (std::size_t i = 0; i < d; ++i) r[i] = a[i] + b[i];
+    for (std::size_t i = 0; i < d; ++i) r[i] = checked_exact_add(a[i], b[i]);
     return r;
 }
 
@@ -70,7 +84,8 @@ template <std::size_t d>
 inline ExactVec<d> exact_matvec(const std::array<std::array<long long, d>, d>& M, const ExactVec<d>& v) {
     ExactVec<d> r{};
     for (std::size_t i = 0; i < d; ++i)
-        for (std::size_t j = 0; j < d; ++j) r[i] += M[i][j] * v[j];
+        for (std::size_t j = 0; j < d; ++j)
+            r[i] = checked_exact_add(r[i], checked_exact_mul(M[i][j], v[j]));
     return r;
 }
 
@@ -196,7 +211,8 @@ private:
             for (std::size_t i = 0; i < d; ++i)
                 for (std::size_t j = 0; j < d; ++j) {
                     long long s = 0;
-                    for (std::size_t k = 0; k < d; ++k) s += M_[i][k] * prev[k][j];
+                    for (std::size_t k = 0; k < d; ++k)
+                        s = checked_exact_add(s, checked_exact_mul(M_[i][k], prev[k][j]));
                     result[i][j] = s;
                 }
         }
@@ -208,5 +224,113 @@ private:
     std::map<long long, std::array<std::array<long long, d>, d>> power_memo_;
     ravel::MemoizedDagClosure<std::pair<long long, long long>, OutcomeSet<d>> closure_;
 };
+
+// A finite, exact prefix-half classifier for strong coincidence.  It uses
+// the deduplicated landmark closure rather than materializing sigma^K(b), so
+// its resource bound is on distinct (terminal, vector) outcomes, not on the
+// exponentially growing word length.  The result is deliberately scoped to
+// the PREFIX half: an unresolved pair may still have a suffix coincidence,
+// and therefore is reported as inconclusive rather than as a failure.
+struct PrefixClosureCoincidenceResult {
+    bool holds = false;
+    bool inconclusive = false;
+    long long depth_reached = 0;
+    long long unresolved_pairs = 0;
+    std::vector<long long> pair_resolution_depths;
+};
+
+template <std::size_t d>
+inline PrefixClosureCoincidenceResult check_prefix_coincidence_closure(
+    const std::array<std::vector<long long>, d>& images,
+    const std::array<std::array<long long, d>, d>& matrix,
+    long long max_depth = 20,
+    std::size_t outcome_budget = 1'000'000) {
+    std::vector<std::pair<long long, long long>> pairs;
+    for (long long a = 0; a < static_cast<long long>(d); ++a)
+        for (long long b = a + 1; b < static_cast<long long>(d); ++b)
+            pairs.emplace_back(a, b);
+    PrefixClosureCoincidenceResult result;
+    result.pair_resolution_depths.assign(pairs.size(), -1);
+    if (pairs.empty()) {
+        result.holds = true;
+        return result;
+    }
+    if (max_depth < 1) {
+        result.inconclusive = true;
+        result.unresolved_pairs = static_cast<long long>(pairs.size());
+        return result;
+    }
+
+    const auto edges = build_junction_graph<d>(images);
+    CoincidenceClosure<d> closure(edges, matrix);
+    std::vector<std::pair<long long, long long>> active = pairs;
+    std::vector<std::size_t> active_slots(pairs.size());
+    for (std::size_t i = 0; i < active_slots.size(); ++i) active_slots[i] = i;
+
+    auto outcomes_from_start = [&](long long start, long long depth) {
+        OutcomeSet<d> outcomes;
+        long long letter = start;
+        long long remaining = depth;
+        while (remaining > 0 && images[static_cast<std::size_t>(letter)].size() == 1) {
+            letter = images[static_cast<std::size_t>(letter)][0];
+            --remaining;
+        }
+        if (remaining == 0) {
+            outcomes.insert({letter, ExactVec<d>{}});
+            return outcomes;
+        }
+        if (images[static_cast<std::size_t>(letter)].size() < 2)
+            throw std::invalid_argument(
+                "check_prefix_coincidence_closure: empty-image or invalid deterministic chain");
+        auto const& reachable = closure.reachable(letter, remaining);
+        outcomes.insert(reachable.begin(), reachable.end());
+        return outcomes;
+    };
+
+    for (long long depth = 1; depth <= max_depth; ++depth) {
+        std::map<long long, OutcomeSet<d>> by_start;
+        std::size_t total_outcomes = 0;
+        for (const auto& pair : active) {
+            for (long long start : {pair.first, pair.second}) {
+                if (!by_start.count(start)) {
+                    by_start.emplace(start, outcomes_from_start(start, depth));
+                    total_outcomes += by_start.at(start).size();
+                }
+            }
+        }
+        if (total_outcomes > outcome_budget) {
+            result.depth_reached = depth;
+            result.inconclusive = true;
+            result.unresolved_pairs = static_cast<long long>(active.size());
+            return result;
+        }
+        std::vector<std::pair<long long, long long>> still_active;
+        std::vector<std::size_t> still_slots;
+        for (std::size_t i = 0; i < active.size(); ++i) {
+            const auto& left = by_start.at(active[i].first);
+            const auto& right = by_start.at(active[i].second);
+            bool coincides = false;
+            for (const auto& state : left) {
+                if (right.count(state)) { coincides = true; break; }
+            }
+            if (coincides) {
+                result.pair_resolution_depths[active_slots[i]] = depth;
+            } else {
+                still_active.push_back(active[i]);
+                still_slots.push_back(active_slots[i]);
+            }
+        }
+        active = std::move(still_active);
+        active_slots = std::move(still_slots);
+        result.depth_reached = depth;
+        if (active.empty()) {
+            result.holds = true;
+            return result;
+        }
+    }
+    result.inconclusive = true;
+    result.unresolved_pairs = static_cast<long long>(active.size());
+    return result;
+}
 
 }  // namespace ravel::proof
