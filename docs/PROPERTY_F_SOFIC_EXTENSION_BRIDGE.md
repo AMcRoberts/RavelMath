@@ -149,8 +149,9 @@ reference, the exact root/bound diagnostics are:
 |---|---:|---:|---:|
 | `(4,6)` | 0.8508 | 6.70 | 33,837 nodes, closed |
 | `(5,3)` | 0.8757 | 8.04 | 792,212 nodes, closed |
+| `(5,4)` | 0.8958 | 9.59 | 1,201,687 nodes, closed |
 | `(6,1)` | 0.9062 | 10.66 | 188,545 nodes, closed |
-| `(6,2)` | 0.9094 | 11.04 | >2,000,000 nodes, inconclusive |
+| `(6,2)` | 0.9094 | 11.04 | 4,914,771 nodes, closed |
 
 This predicts “large but harmless” transient growth: increasing `d` widens
 the coefficient state space and weakens contraction, while increasing `m`
@@ -164,9 +165,10 @@ of distinct reachable coefficient vectors themselves.
 
 An opt-in extended regression pushes beyond that rectangle
 (`generalized_multinacci_property_f_transport_extended_test`). It closes
-`(5,1)`, `(5,2)`, `(5,3)`, and `(6,1)` at 8,307, 67,007, 792,212, and
-188,545 nodes respectively. The `(6,2)` search reaches 500,009 nodes at
-depth 14 without a partial nonzero back-edge; it is deliberately recorded as
-inconclusive rather than promoted to a closure claim. The largest closed run
-uses about 687 MB RSS and 1:57, so the observed growth is expensive transient
-transport, not evidence of a recurrent obstruction.
+`(5,1)`, `(5,2)`, `(5,3)`, `(5,4)`, and `(6,1)` at 8,307, 67,007, 792,212,
+1,201,687, and 188,545 nodes respectively. A larger exact run closes
+`(6,2)` at 4,914,771 nodes (9,802,230 boundary edges), taking 12:56 and
+peaking at 4.91 GB RSS. Thus the previously inconclusive 500,009-node probe
+was a resource-bound observation, not an obstruction: this instance is a
+mid-single-million, finite transport cloud. The large closed runs remain
+expensive transient transport, not evidence of a recurrent obstruction.

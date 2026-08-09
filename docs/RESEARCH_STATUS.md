@@ -85,12 +85,13 @@ The same test invokes the symbolic general-m scheduler, so these are paired
 instances rather than separate experiments. This is evidence for the bridge
 contract, not yet a uniform all-`d,m` theorem: the remaining task is to turn
 the finite transport growth pattern into a parameterized rank or adelic bound.
-An opt-in extended regression now closes `(5,1)`, `(5,2)`, `(5,3)`, and
-`(6,1)` (8,307; 67,007; 792,212; and 188,545 nodes). The `(6,2)` partial
-search reaches 500,009 nodes at depth 14 with zero partial nonzero
-back-edges, but remains explicitly inconclusive. This is the first evidence
-that the high-dimensional growth is large-but-harmless transient transport;
-it is not yet a proof of the missing uniform bound.
+An opt-in extended regression now closes `(5,1)`, `(5,2)`, `(5,3)`, `(5,4)`,
+and `(6,1)` (8,307; 67,007; 792,212; 1,201,687; and 188,545 nodes). A larger
+exact run closes `(6,2)` at 4,914,771 nodes (9,802,230 boundary edges), in
+12:56 with 4.91 GB peak RSS. The earlier 500,009-node result was therefore a
+resource-bound partial search, not an obstruction. The high-dimensional
+growth is large-but-harmless finite transport, though still not a proof of the
+missing uniform bound.
 The exact digit/transition identity is now checked by
 `generalized_multinacci_affine_transport.hpp`: `delta(0^k)=k*beta` and
 `gamma' = beta^(-1)gamma+k`. This isolates the future rank problem into the
