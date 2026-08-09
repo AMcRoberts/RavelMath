@@ -212,6 +212,12 @@ substituted edges respectively). The backward-closure membership table was
 also changed to a structural hash set, retaining sorted output while reducing
 tree-allocation overhead for larger exploratory frontiers.
 
+The contact report now has an opt-in `retain_boundary_matrix` switch. The
+theta5 growth probe disables the dense `|G_B|²` matrix/eigenvalue summary while
+retaining all boundary nodes and cap flags; at the 5,000/50,000 exploratory
+caps this reduced the measured peak from about 1.47 GB / 65 s to 0.81 GB /
+22 s. This is an exploratory resource guard, not a spectral theorem result.
+
 This reframes the parallel question: stop searching Pisot numbers below 2
 for a fourth generator via this construction. The two remaining routes are
 (a) `beta >= 2`, where a digit value of `2` opens a third prefix `[0,0]`

@@ -55,6 +55,9 @@ int main() {
     limits.closure_cap = 500;
     limits.corona_cap = 2000;
     limits.max_corona_rounds = 3;
+    // This probe audits contact growth and cap behavior, not the dense
+    // spectral summary; keep it safe for larger exploratory frontiers.
+    limits.retain_boundary_matrix = false;
     const auto report = compute_contact_boundary_from_subst_dispatch(
         rule, midpoint(interval), 0.9, 1, limits);
     assert(report.d_cont_size > 0);

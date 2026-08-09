@@ -109,6 +109,11 @@ struct ContactBoundaryLimits {
     // generous headroom for the (very rare) slow-converging
     // case.  Historical 8.
     int max_corona_rounds = 8;
+
+    // Dense G_B spectral data is useful for settled small runs but scales as
+    // |G_B|^2. Exploratory high-dimensional probes may retain only the node
+    // set and cap evidence, avoiding a multi-gigabyte dense allocation.
+    bool retain_boundary_matrix = true;
 };
 
 // Build a Substitution<d> from a SubstitutionRule + the dominant
@@ -150,6 +155,7 @@ struct ContactBoundaryReport {
     bool converged = false;            // true iff algorithm2 hit fixed point
     bool closure_stopped_early = false; // true iff backward_closure hit limits.closure_cap
     bool corona_capped = false;        // true iff corona iteration hit limits.corona_cap
+    bool boundary_spectral_skipped = false;
     std::size_t max_a_size_reached = 0; // largest |A_p| observed (if corona capped)
 
     // The cap set the implementing layer actually used for this
@@ -764,10 +770,12 @@ ContactBoundaryReport compute_contact_boundary(
             if (gb.count(dest) > 0) gb_edges.push_back({n, dest});
         }
     }
-    auto A = gb_adjacency_matrix<d>(gb, gb_edges);
-    rep.boundary_eigenvalue = dominant_eigenvalue<d>(A);
-    // Also store the integer matrix (for downstream Q(beta) analysis).
-    {
+    if (!limits.retain_boundary_matrix) {
+        rep.boundary_spectral_skipped = true;
+    } else {
+        auto A = gb_adjacency_matrix<d>(gb, gb_edges);
+        rep.boundary_eigenvalue = dominant_eigenvalue<d>(A);
+        // Also store the integer matrix (for downstream Q(beta) analysis).
         std::vector<SNode<d>> nodes(gb.begin(), gb.end());
         std::map<SNode<d>, std::size_t> idx;
         for (std::size_t i = 0; i < nodes.size(); ++i) idx[nodes[i]] = i;
