@@ -4685,6 +4685,36 @@ inline std::string render_property_f_graph_instances(const mathlib::reflection::
         out << "    (" << node->nonzero_cycle_components << " ≥ 0) := by\n";
         out << "  decide\n\n";
 
+        const std::size_t node_count = node->gamma_keys.size();
+        const std::size_t scc_count = node->scc_sizes.size();
+        if (node_count > 0 && node->scc_labels.size() == node_count && scc_count > 0) {
+            out << "def " << stem << "_nodeZero : Fin " << node_count << " → Bool := ![";
+            for (std::size_t i = 0; i < node->zero_nodes.size(); ++i) {
+                if (i) out << ", ";
+                out << (node->zero_nodes[i] ? "true" : "false");
+            }
+            out << "]\n";
+            out << "def " << stem << "_sccLabel : Fin " << node_count << " → Fin " << scc_count << " := ![";
+            for (std::size_t i = 0; i < node->scc_labels.size(); ++i) {
+                if (i) out << ", ";
+                out << node->scc_labels[i];
+            }
+            out << "]\n";
+            out << "def " << stem << "_edgesFin : List (Fin " << node_count << " × Fin " << node_count << ") := [";
+            for (std::size_t i = 0; i < edges.size(); ++i) {
+                if (i) out << ", ";
+                out << "((" << edges[i].first << " : Fin " << node_count << "), ("
+                    << edges[i].second << " : Fin " << node_count << "))";
+            }
+            out << "]\n";
+            out << "def " << stem << "_safeNonzeroEdge (e : Fin " << node_count << " × Fin " << node_count << ") : Bool :=\n"
+                << "  if " << stem << "_nodeZero e.1 || " << stem << "_nodeZero e.2 then true\n"
+                << "  else decide (" << stem << "_sccLabel e.1 ≠ " << stem << "_sccLabel e.2)\n";
+            out << "theorem " << stem << "_no_nonzero_internal_scc_edge :\n"
+                << "    (" << stem << "_edgesFin.all " << stem << "_safeNonzeroEdge) = true := by\n"
+                << "  decide\n\n";
+        }
+
         const long long degree = static_cast<long long>(node->characteristic_polynomial.size()) - 1;
         if (degree > 0 && node->beta_inverse_matrix.size() == static_cast<std::size_t>(degree) &&
             emitted_degree != degree) {

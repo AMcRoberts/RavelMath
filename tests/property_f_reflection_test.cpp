@@ -67,6 +67,7 @@ int main() {
         assert(lean3.find("property_f_graph_0_charpoly") != std::string::npos);
         assert(lean3.find("propertyFQ3Step") != std::string::npos);
         assert(lean3.find("property_f_graph_0_edge_0_0") != std::string::npos);
+        assert(lean3.find("no_nonzero_internal_scc_edge") != std::string::npos);
         if (const char* dump_path3 = std::getenv("RAVEL_PROPERTY_F_LEAN_Q3_OUT")) {
             std::ofstream dump3(dump_path3);
             dump3 << lean3;

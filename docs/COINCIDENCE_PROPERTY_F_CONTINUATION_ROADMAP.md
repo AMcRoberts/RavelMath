@@ -149,3 +149,7 @@ The graph certificate now also exports SCC labels, SCC sizes, and the
 nonzero-cycle count. The generated finite Lean artifact checks that the SCC
 size list sums to the node count, while the C++ staging validator checks the
 partition and exact recurrence data before serialization.
+The Lean artifact now additionally checks the finite obstruction predicate that
+no edge between two nonzero nodes remains inside one SCC. Since every directed
+cycle lies inside an SCC, this is the concrete decidable form of the corrected
+property-(F) cycle criterion for the exported run.
