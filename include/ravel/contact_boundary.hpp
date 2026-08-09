@@ -691,7 +691,8 @@ ContactBoundaryReport compute_contact_boundary(
         // many unnecessary candidates and obscures the layer induction.
         bool corona_projection_capped = false;
         std::set<SNode<d>> corona_nodes;
-        if (limits.corona_cap == 0) {
+        if (limits.corona_cap == 0 ||
+            default_corona_execution_mode() == CoronaExecutionMode::legacy_materialized) {
             corona_nodes = c_corona<d>(subst, A_prev, pmC);
         } else {
             std::size_t accepted = 0;
