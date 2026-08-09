@@ -70,12 +70,12 @@ void run(const std::string& name, std::vector<long long> low_first, std::size_t 
 }
 
 void inspect_forest(const std::string& name, std::vector<long long> low_first,
-                    std::size_t word_cap = 10) {
+                    std::size_t word_cap = 10, std::size_t radius = 3) {
     auto R = ring_from_low_first(low_first);
     auto beta_I = isolate_beta(R);
     const auto forest = ravel::proof::derive_canonical_parent_role_catalogue(R, beta_I);
     const auto holonomy = ravel::proof::derive_parent_role_holonomy(forest);
-    const auto closure = ravel::proof::derive_parent_role_word_closure(forest, word_cap, 3);
+    const auto closure = ravel::proof::derive_parent_role_word_closure(forest, word_cap, radius);
     assert(forest.proved && holonomy.proved && closure.proved);
     std::cout << name << ": alphabet=" << forest.alphabet_size
               << " roles=" << forest.role_count
@@ -85,8 +85,8 @@ void inspect_forest(const std::string& name, std::vector<long long> low_first,
               << " zero_pairs@" << word_cap << "=" << closure.zero_net_pairs << "/"
               << forest.role_count * forest.role_count
               << " max_zero_word=" << closure.maximum_zero_net_word_length
-              << " integer_window@3=" << closure.integer_window_pairs << "/"
-              << forest.role_count * forest.role_count * 7 << "\n";
+              << " integer_window@" << radius << "=" << closure.integer_window_pairs << "/"
+              << forest.role_count * forest.role_count * (2 * radius + 1) << "\n";
 }
 
 int main() {
@@ -108,10 +108,10 @@ int main() {
 
     // Higher canonical families: inspect the finite forest without launching
     // the much larger Property-(F) node search.
-    inspect_forest("theta7 forest", {-1, -1, 0, 0, 1, 0, -1}, 30);
-    inspect_forest("theta8 forest", {-2, 1, 0, -1, 1, -1}, 30);
-    inspect_forest("theta9 forest", {-1, 0, -1, 0, -1}, 30);
-    inspect_forest("theta10 forest", {-1, -1, 0, 0, 0, 1, 0, -1}, 30);
+    inspect_forest("theta7 forest", {-1, -1, 0, 0, 1, 0, -1}, 30, 3);
+    inspect_forest("theta8 forest", {-2, 1, 0, -1, 1, -1}, 30, 3);
+    inspect_forest("theta9 forest", {-1, 0, -1, 0, -1}, 30, 3);
+    inspect_forest("theta10 forest", {-1, -1, 0, 0, 0, 1, 0, -1}, 30, 3);
 
     std::cout << "\nALL PASS: one call, no case split, correct in every case -- terminating "
                  "or eventually periodic, padded or not, unit or not.\n";

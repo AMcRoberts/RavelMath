@@ -876,6 +876,9 @@ The bounded quotient reaches every ordered role pair at zero net defect by
 length 10 in the current families; this suggests proving that the
 zero-holonomy kernel is the connected textile fibre before studying its
 integer quotient.
+The next wider `-5..+5` audit is deliberately not treated as closed: theta10
+misses 168 states at word cap 30. Use that finite counterexample to separate
+the robust `±3` kernel signature from the still-open asymptotic growth law.
 The same finite audit now reaches complete zero-net connectivity for the
 higher theta7--theta10 forests by word length 30, including the 11-letter
 theta7 and 12-letter theta10 cases. This is the first evidence that the

@@ -3995,3 +3995,7 @@ The same replayed witnesses cover the full integer window `-3..+3` for every
 ordered role pair in theta7--theta10 at word length 30 (7 times the role-pair
 counts, with no missing states). This is the first finite signature of an
 actual integer extension rather than only a connected zero fibre.
+The same cap does not yet certify the wider `-5..+5` window uniformly:
+theta10 misses 168 of 228,096 ordered-pair/displacement states there. This is
+the useful finite counterexample to over-reading the `±3` pattern and marks a
+real scale question for the general proof.
