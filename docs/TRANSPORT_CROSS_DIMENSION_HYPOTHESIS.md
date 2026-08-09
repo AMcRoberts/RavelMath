@@ -33,6 +33,17 @@ live in the newly added top-height or new-color channels.  Therefore a
 parameter-uniform proof should consist of a rank on the graded fiber, with
 the sofic phase as a finite base and the affine endpoint maps as its cocycle.
 
+## What a new dimension fiber can do
+
+For a `d -> d+1` lift, the new height channels all have the same linear
+endpoint part `A^d`, where `A` is multiplication by `beta^(-1)`. Their offsets
+differ by `k A^(d-1)e_0`, so the carry color changes translation only. The new
+terminal channel has linear part `A^(d+1)`: it is one extra forced-descent
+step followed by the terminal carry. Thus the new dimension fiber adds affine
+translates and one extra power of the existing linear generator; it does not
+introduce a new matrix generator. The cross-dimension certificate checks these
+identities in addition to the channel injection law.
+
 ## Evidence
 
 - The symbolic dimension-free suspension certificate passes all 42 points with

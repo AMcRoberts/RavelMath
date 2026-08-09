@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "adelic/generalized_multinacci_block_transport.hpp"
+#include "adelic/generalized_multinacci_block_affine.hpp"
 
 namespace adelic {
 
@@ -23,6 +24,9 @@ struct GeneralizedMultinacciDimensionLiftProof {
     bool old_channels_embed = false;
     bool old_terminal_becomes_zero_height_new_channel = false;
     bool new_terminal_is_one_level_extension = false;
+    bool new_height_channels_share_linear_part = false;
+    bool new_height_offsets_are_carry_translates = false;
+    bool new_terminal_has_one_extra_linear_step = false;
     bool proved = false;
     std::string obstruction;
 };
@@ -90,11 +94,43 @@ derive_generalized_multinacci_dimension_lift(std::size_t dimension,
         expected_terminal.push_back(static_cast<long long>(multiplicity));
     out.new_terminal_is_one_level_extension =
         new_terminal.carry_word == expected_terminal;
+    const auto new_maps = derive_generalized_multinacci_block_affine_maps(
+        dimension + 1, multiplicity);
+    const std::size_t top_base = (dimension - 1) * multiplicity;
+    out.new_height_channels_share_linear_part = true;
+    for (std::size_t k = 1; k < multiplicity; ++k)
+        out.new_height_channels_share_linear_part =
+            out.new_height_channels_share_linear_part &&
+            new_maps[top_base + k].linear == new_maps[top_base].linear;
+    const auto beta_inverse = generalized_multinacci_beta_inverse_matrix(
+        dimension + 1, multiplicity);
+    IntegerMatrix power(dimension + 1, IntegerVector(dimension + 1, 0));
+    for (std::size_t i = 0; i <= dimension; ++i) power[i][i] = 1;
+    for (std::size_t i = 0; i + 1 < dimension; ++i)
+        power = multiply(beta_inverse, power);
+    // The first coordinate is the only injected carry coordinate; construct
+    // A^(d-1)e_0 rather than A^(d-1)(1,...,1).
+    IntegerVector e0(dimension + 1, 0);
+    e0[0] = 1;
+    const auto carry_direction = multiply(power, e0);
+    out.new_height_offsets_are_carry_translates = true;
+    for (std::size_t k = 1; k < multiplicity; ++k) {
+        for (std::size_t i = 0; i <= dimension; ++i)
+            if (new_maps[top_base + k].offset[i] - new_maps[top_base].offset[i] !=
+                static_cast<long long>(k) * carry_direction[i])
+                out.new_height_offsets_are_carry_translates = false;
+    }
+    const auto extra_linear = multiply(beta_inverse, new_maps[top_base].linear);
+    out.new_terminal_has_one_extra_linear_step =
+        extra_linear == new_maps.back().linear;
     out.proved = out.old_channel_count == (dimension - 1) * multiplicity + 1 &&
                  out.new_channel_count == dimension * multiplicity + 1 &&
                  out.added_channels == multiplicity && out.old_channels_embed &&
                  out.old_terminal_becomes_zero_height_new_channel &&
-                 out.new_terminal_is_one_level_extension;
+                 out.new_terminal_is_one_level_extension &&
+                 out.new_height_channels_share_linear_part &&
+                 out.new_height_offsets_are_carry_translates &&
+                 out.new_terminal_has_one_extra_linear_step;
     if (!out.proved) out.obstruction = "dimension lift law failed";
     return out;
 }

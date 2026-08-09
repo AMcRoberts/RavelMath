@@ -139,6 +139,12 @@ dimension lifts (`2->3` and `3->4` for all `m=1..6`, plus `4->5` for
 `m=1..3`). Every pair closes with zero nonzero SCCs and zero partial nonzero
 back-edges; the lifted channel increment is exactly `m` in every case. This
 is evidence for obstruction localization, not yet an induction theorem.
+The new-height endpoint maps narrow the possible effect further: all carry
+colors share the same linear part `A^d` and differ only by offsets
+`k A^(d-1)e_0`; the terminal is one extra `A` step. Hence a dimension lift
+adds translations and one existing-generator power, not a new linear
+generator. This is the strongest current restriction on what a new fiber can
+do.
 Each channel is now compiled to an exact integer affine endpoint map on the
 `d`-coordinate coefficient lattice; all 19 `(4,6)` maps are replay-checked
 against `Q(beta)`, while the 42-point sweep checks the parameterized map shape.
