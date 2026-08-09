@@ -96,10 +96,11 @@ void classify(const char* name,
               : "archimedean + combined p-adic bound across multiple primes, VALIDATED shape (unified local_field.hpp)");
     (void)bound_descriptor;  // we still print the unified line below
 
-    std::printf("Strong coincidence: %s (depth reached: %lld%s)\n",
+    std::printf("Strong coincidence: %s (depth reached: %lld, engine=%s%s)\n",
                 cls.strong_coincidence_holds ? "HOLDS"
                     : cls.strong_coincidence_inconclusive ? "INCONCLUSIVE" : "FAILS",
                 cls.strong_coincidence_depth,
+                cls.strong_coincidence_closure_used ? "exact closure" : "bounded word search",
                 cls.strong_coincidence_inconclusive ? ", cutoff hit before resolving" : "");
     std::printf("Geometric property (F) [%s]: %s (nodes explored: %lld%s)\n\n",
                 primes_dividing_det.empty() ? "archimedean-only, VALIDATED shape (unit case)"

@@ -188,6 +188,13 @@ none violates the closure shape precondition. This is regression evidence,
 not a probabilistic theorem, but it materially broadens confidence in the
 finite invariant.
 
+The shared adelic `classify_tiling` entry point now uses the full closure as
+its first strong-coincidence engine (with the existing bounded word checker
+as an explicit fallback for unsupported or inconclusive shapes). The worked
+example and `rnd13` drivers report `engine=exact closure`; the classification
+regression asserts that both use this route. This turns the closure from a
+parallel research certificate into the live finite classifier path.
+
 The staging operation now reconstructs every exported source/target/digit
 triple in the supplied `QBetaRing` and rejects any edge whose exact identity
 `gamma' = beta⁻¹ (gamma + delta)` fails. Fibonacci includes a tampering

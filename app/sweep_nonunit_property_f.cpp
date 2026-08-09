@@ -139,10 +139,11 @@ const char* classify(const char* name,
     // Emit the strong-coincidence / property-(F) / verdict lines
     // in the sweep's compact format.  (The shared header doesn't
     // print these on its own -- it returns the values.)
-    std::printf("  Strong coincidence: %s (depth %lld%s)\n",
+    std::printf("  Strong coincidence: %s (depth %lld, engine=%s%s)\n",
                 cls.strong_coincidence_holds ? "HOLDS"
                     : cls.strong_coincidence_inconclusive ? "INCONCLUSIVE" : "FAILS",
                 cls.strong_coincidence_depth,
+                cls.strong_coincidence_closure_used ? "exact closure" : "bounded word search",
                 cls.strong_coincidence_inconclusive ? " [cutoff]" : "");
     std::printf("  Property (F) [%s]: %s (%lld nodes%s)\n",
                 primes_dividing_det.empty() ? "unit, VALIDATED"

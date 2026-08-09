@@ -25,6 +25,7 @@
 
 #include <array>
 #include <cstdio>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -34,6 +35,7 @@
 #include "adelic/ideal_arithmetic.hpp"
 #include "adelic/prefix_automaton.hpp"
 #include "adelic/coincidence_and_property_f.hpp"
+#include "ravel/proof/coincidence_closure.hpp"
 
 namespace adelic {
 
@@ -82,6 +84,7 @@ struct TilingClassification {
     bool strong_coincidence_holds;
     bool strong_coincidence_inconclusive;
     long long strong_coincidence_depth;
+    bool strong_coincidence_closure_used;
 
     // Property (F) under the combined p-adic bound.
     bool property_f_holds;
@@ -117,6 +120,7 @@ TilingClassification classify_tiling(
 
     TilingClassification out;
     out.name = name;
+    out.strong_coincidence_closure_used = false;
 
     // Step 1: factor each prime dividing |det M|, cross-checked.
     out.any_non_maximal = false;
@@ -147,8 +151,38 @@ TilingClassification classify_tiling(
         return out;
     }
 
-    // Step 3: strong coincidence.
-    auto coin = adelic::check_strong_coincidence<d>(images);
+    // Step 3: strong coincidence.  For primitive expanding instances whose
+    // deterministic-chain shape closes, the exact landmark closure avoids
+    // exponential word materialization.  Unsupported or inconclusive closure
+    // runs fall back to the established bounded word checker, preserving the
+    // prior verdict semantics while making the fast path explicit in output.
+    StrongCoincidenceResult coin{};
+    out.strong_coincidence_closure_used = false;
+    try {
+        std::array<std::array<long long, d>, d> matrix{};
+        for (std::size_t column = 0; column < d; ++column)
+            for (long long letter : images[column]) {
+                if (letter < 0 || static_cast<std::size_t>(letter) >= d)
+                    throw std::invalid_argument("classify_tiling: invalid substitution letter");
+                ++matrix[static_cast<std::size_t>(letter)][column];
+            }
+        const auto closure = ravel::proof::check_strong_coincidence_closure<d>(
+            images, matrix, 20, 1'000'000);
+        if (closure.holds) {
+            coin.holds = true;
+            coin.inconclusive = false;
+            coin.depth_reached = closure.depth_reached;
+            coin.unresolved_pairs = closure.unresolved_pairs;
+            coin.pair_resolution_depths = closure.pair_resolution_depths;
+            out.strong_coincidence_closure_used = true;
+        } else {
+            coin = adelic::check_strong_coincidence<d>(images);
+        }
+    } catch (const std::invalid_argument&) {
+        coin = adelic::check_strong_coincidence<d>(images);
+    } catch (const std::overflow_error&) {
+        coin = adelic::check_strong_coincidence<d>(images);
+    }
     out.strong_coincidence_holds = coin.holds;
     out.strong_coincidence_inconclusive = coin.inconclusive;
     out.strong_coincidence_depth = coin.depth_reached;

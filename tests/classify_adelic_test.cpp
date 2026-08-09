@@ -59,6 +59,8 @@ void test_worked_example_tiles() {
           "worked example: strong coin + prop F both hold, expect TILES");
     CHECK(cls.property_f_holds, "worked example: property F holds");
     CHECK(cls.strong_coincidence_holds, "worked example: strong coin holds");
+    CHECK(cls.strong_coincidence_closure_used,
+          "worked example: shared classifier used exact closure strong coincidence");
     CHECK(cls.property_f_nodes >= 0, "worked example: prop F node count is non-negative");
     CHECK(!cls.any_non_maximal, "worked example: charpoly is Z[beta]-maximal");
 }
@@ -89,6 +91,8 @@ void test_rnd13_tiles() {
           "rnd13: strong coin + prop F both hold, expect TILES");
     CHECK(cls.property_f_holds, "rnd13: property F holds");
     CHECK(cls.strong_coincidence_holds, "rnd13: strong coin holds");
+    CHECK(cls.strong_coincidence_closure_used,
+          "rnd13: shared classifier used exact closure strong coincidence");
     CHECK(!cls.any_non_maximal, "rnd13: charpoly is Z[beta]-maximal");
 }
 
