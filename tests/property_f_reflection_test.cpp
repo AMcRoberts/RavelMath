@@ -65,6 +65,12 @@ int main() {
         assert(!trace3.find<mathlib::reflection::PropertyFGraphCertificate>().empty());
         const std::string lean3 = ravel::proof::render_reflective_lean_module(trace3);
         assert(lean3.find("property_f_graph_0_charpoly") != std::string::npos);
+        assert(lean3.find("propertyFQ3Step") != std::string::npos);
+        assert(lean3.find("property_f_graph_0_edge_0_0") != std::string::npos);
+        if (const char* dump_path3 = std::getenv("RAVEL_PROPERTY_F_LEAN_Q3_OUT")) {
+            std::ofstream dump3(dump_path3);
+            dump3 << lean3;
+        }
     }
     auto certificates = trace.find<mathlib::reflection::PropertyFFiniteRunCertificate>();
     assert(certificates.size() == 1);

@@ -345,6 +345,7 @@ struct PropertyFGraphNode {
 
 struct PropertyFGraph {
     std::vector<std::string> characteristic_polynomial;
+    std::vector<std::vector<std::pair<std::string, std::string>>> beta_inverse_matrix;
     std::vector<PropertyFGraphNode> nodes;
 };
 
@@ -1023,6 +1024,19 @@ PropertyFResult check_property_f(
         const auto& charpoly = R.charpoly();
         for (long long i = 0; i <= charpoly.degree(); ++i)
             out_graph->characteristic_polynomial.push_back(mathlib::str(charpoly.coeff(static_cast<std::size_t>(i))));
+        out_graph->beta_inverse_matrix.clear();
+        out_graph->beta_inverse_matrix.resize(R.degree());
+        for (std::size_t row = 0; row < R.degree(); ++row) {
+            out_graph->beta_inverse_matrix[row].resize(R.degree());
+            for (std::size_t column = 0; column < R.degree(); ++column) {
+                mathlib::QElem basis = R.from_int(0);
+                basis.coeff(column) = mathlib::Rat(1, 1);
+                const mathlib::QElem image = R.mul(inv_beta, basis);
+                out_graph->beta_inverse_matrix[row][column] = {
+                    mathlib::str(mathlib::num(image.coeff(row))),
+                    mathlib::str(mathlib::den(image.coeff(row)))};
+            }
+        }
         out_graph->nodes.clear();
         out_graph->nodes.reserve(node_gamma.size());
         for (std::size_t i = 0; i < node_gamma.size(); ++i) {

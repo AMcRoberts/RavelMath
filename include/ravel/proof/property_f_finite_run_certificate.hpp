@@ -97,6 +97,22 @@ inline bool stage_property_f_graph(const adelic::PropertyFResult& result,
     beta.coeff(1) = mathlib::Rat(1, 1);
     const auto inverse = mathlib::invert_in_qbeta(beta, ring);
     if (!inverse.invertible) throw std::invalid_argument("property-F beta is not invertible");
+    if (graph.beta_inverse_matrix.size() != ring.degree())
+        throw std::invalid_argument("property-F beta-inverse matrix has the wrong row count");
+    for (std::size_t row = 0; row < ring.degree(); ++row) {
+        if (graph.beta_inverse_matrix[row].size() != ring.degree())
+            throw std::invalid_argument("property-F beta-inverse matrix has the wrong column count");
+        for (std::size_t column = 0; column < ring.degree(); ++column) {
+            mathlib::QElem basis = ring.from_int(0);
+            basis.coeff(column) = mathlib::Rat(1, 1);
+            const auto image = ring.mul(inverse.inverse, basis);
+            const auto observed = property_f_parse_rat(
+                graph.beta_inverse_matrix[row][column].first,
+                graph.beta_inverse_matrix[row][column].second);
+            if (mathlib::cmp(observed, image.coeff(row)) != 0)
+                throw std::invalid_argument("property-F beta-inverse matrix disagrees with Q(beta)");
+        }
+    }
     for (std::size_t source = 0; source < graph.nodes.size(); ++source) {
         const auto gamma = property_f_parse_qelem(graph.nodes[source].gamma_coefficients, ring);
         for (std::size_t edge = 0; edge < graph.nodes[source].successors.size(); ++edge) {
@@ -112,6 +128,14 @@ inline bool stage_property_f_graph(const adelic::PropertyFResult& result,
     if (!mathlib::reflection::enabled()) return false;
     mathlib::reflection::PropertyFGraphCertificate node;
     node.characteristic_polynomial = graph.characteristic_polynomial;
+    node.beta_inverse_matrix.reserve(graph.beta_inverse_matrix.size());
+    for (const auto& row : graph.beta_inverse_matrix) {
+        std::vector<mathlib::reflection::ExactRationalCoefficient> converted;
+        converted.reserve(row.size());
+        for (const auto& [numerator, denominator] : row)
+            converted.push_back({numerator, denominator});
+        node.beta_inverse_matrix.push_back(std::move(converted));
+    }
     node.gamma_keys.reserve(graph.nodes.size());
     node.gamma_coefficients.reserve(graph.nodes.size());
     node.letters.reserve(graph.nodes.size());

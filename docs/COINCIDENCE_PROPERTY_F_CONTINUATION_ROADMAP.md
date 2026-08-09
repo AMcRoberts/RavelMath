@@ -141,3 +141,7 @@ text generation.
 The exact C++ recurrence validator is already degree-independent and now runs
 on a Tribonacci degree-3 graph as well; only the Lean arithmetic renderer is
 currently specialized to the quadratic case.
+That specialization is now removed: the renderer generates a coefficient
+structure and linear beta-inverse operator from the exported transition matrix
+for any finite degree. A Tribonacci degree-3 artifact, including every edge
+recurrence, kernel-checks successfully.
