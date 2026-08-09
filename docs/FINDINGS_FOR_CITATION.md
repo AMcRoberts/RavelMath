@@ -4009,6 +4009,10 @@ at role 0 there is a three-edge `0,0,+1` cycle and a three-edge `0,0,-1`
 cycle. Their concatenations are an explicit local source of arbitrary integer
 displacement; the remaining theorem work is transporting these cycles through
 the zero-net textile fibre.
+The new integer-transport certificate explicitly constructs every bounded
+word as source-to-root zero path, repeated unit cycle, and root-to-target zero
+path, then replays every edge. It transports all 850,176 theta10 states in
+the `±20` window; the longest constructed word has 78 edges.
 At word cap 100, theta10 realizes the complete `-20..+20` window
 (850,176/850,176 states), again with all zero-net witnesses replay-checked.
 The reusable window profile at word cap 30 gives largest complete radii 5,

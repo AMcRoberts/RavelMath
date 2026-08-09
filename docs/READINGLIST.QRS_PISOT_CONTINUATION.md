@@ -907,3 +907,7 @@ the first two-scale data point for a linear displacement-window hypothesis.
 The extracted local cycles are uniform across the current families: role 0
 has replayable defect words `0,0,+1` and `0,0,-1`. Formalize these as the
 primitive integer-cocycle generators, then transport them through the kernel.
+That transport is now executable and replay-checked: source-to-root and
+root-to-target zero paths surround the required cycle power. The theta10 cap-
+100 `±20` certificate transports all 850,176 states, with maximum word length
+78.

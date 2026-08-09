@@ -80,11 +80,14 @@ void inspect_forest(const std::string& name, std::vector<long long> low_first,
     const auto profile = ravel::proof::derive_parent_role_window_profile(
         forest, word_cap, std::max<std::size_t>(10, radius));
     const auto cycles = ravel::proof::derive_parent_role_unit_cycles(forest, word_cap);
+    const auto transport = ravel::proof::derive_parent_role_integer_transport(
+        forest, word_cap, radius);
     assert(forest.proved && holonomy.proved && closure.proved);
     assert(profile.proved);
     assert(cycles.proved && cycles.positive_cycle_found && cycles.negative_cycle_found);
     assert(cycles.positive_roles.size() == cycles.positive_defects.size() + 1);
     assert(cycles.negative_roles.size() == cycles.negative_defects.size() + 1);
+    assert(transport.proved);
     std::cout << name << ": alphabet=" << forest.alphabet_size
               << " roles=" << forest.role_count
               << " defects=" << forest.defects.size()
@@ -104,7 +107,9 @@ void inspect_forest(const std::string& name, std::vector<long long> low_first,
     for (const auto d : cycles.positive_defects) std::cout << d << ",";
     std::cout << "/";
     for (const auto d : cycles.negative_defects) std::cout << d << ",";
-    std::cout << "\n";
+    std::cout << " transport=" << transport.transported_words
+              << " max_transport_word=" << transport.maximum_transport_word_length
+              << "\n";
 }
 
 int main() {

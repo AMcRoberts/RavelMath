@@ -316,6 +316,90 @@ inline ParentRoleUnitCycleReport derive_parent_role_unit_cycles(
     return out;
 }
 
+struct ParentRoleIntegerTransportReport {
+    bool proved{};
+    std::size_t root_role{};
+    std::size_t displacement_radius{};
+    std::size_t zero_word_cap{};
+    std::size_t transported_words{};
+    std::size_t failed_words{};
+    std::size_t maximum_transport_word_length{};
+    bool every_word_replayed{};
+};
+
+// Builds the finite transport theorem explicitly: zero-kernel witness
+// source -> root, a power of the common +/-1 unit cycle, then a zero-kernel
+// witness root -> target.  This is the constructive integer extension at a
+// bounded displacement radius; no infinite or asymptotic claim is hidden in
+// the report.
+inline ParentRoleIntegerTransportReport derive_parent_role_integer_transport(
+    const CanonicalParentRoleCatalogue& catalogue, std::size_t zero_word_cap,
+    std::size_t displacement_radius, std::size_t root_role = 0) {
+    ParentRoleIntegerTransportReport out;
+    out.root_role = root_role;
+    out.displacement_radius = displacement_radius;
+    out.zero_word_cap = zero_word_cap;
+    if (!catalogue.proved || root_role >= catalogue.role_count || zero_word_cap == 0) return out;
+    const auto closure = derive_parent_role_word_closure(catalogue, zero_word_cap, 0);
+    const auto cycles = derive_parent_role_unit_cycles(catalogue, zero_word_cap, root_role);
+    if (!closure.zero_net_role_graph_complete || !closure.zero_net_witnesses_verified ||
+        !cycles.positive_cycle_found || !cycles.negative_cycle_found) return out;
+    using Key = std::pair<std::size_t,std::size_t>;
+    std::map<Key, ParentRoleWordClosureReport::ZeroNetWitness> zero_paths;
+    for (const auto& witness : closure.zero_net_witnesses)
+        zero_paths[{witness.source_role, witness.target_role}] = witness;
+    std::set<std::tuple<std::size_t,std::size_t,long long>> direct;
+    for (const auto& edge : catalogue.edges)
+        direct.insert({edge.source_role, edge.target_role, edge.defect});
+    auto append_segment = [](std::vector<std::size_t>& roles,
+                             std::vector<long long>& defects,
+                             const std::vector<std::size_t>& next_roles,
+                             const std::vector<long long>& next_defects) {
+        if (next_roles.empty() || next_roles.size() != next_defects.size() + 1) return false;
+        if (roles.empty()) {
+            roles = next_roles;
+            defects = next_defects;
+            return true;
+        }
+        if (roles.back() != next_roles.front()) return false;
+        defects.insert(defects.end(), next_defects.begin(), next_defects.end());
+        roles.insert(roles.end(), next_roles.begin() + 1, next_roles.end());
+        return true;
+    };
+    out.every_word_replayed = true;
+    for (std::size_t source = 0; source < catalogue.role_count; ++source)
+        for (std::size_t target = 0; target < catalogue.role_count; ++target)
+            for (long long displacement = -static_cast<long long>(displacement_radius);
+                 displacement <= static_cast<long long>(displacement_radius); ++displacement) {
+                std::vector<std::size_t> roles;
+                std::vector<long long> defects;
+                const auto& left = zero_paths.at({source, root_role});
+                const auto& right = zero_paths.at({root_role, target});
+                bool ok = append_segment(roles, defects, left.roles, left.defects);
+                const auto& cycle = displacement >= 0 ? cycles.positive_roles : cycles.negative_roles;
+                const auto& cycle_defects = displacement >= 0 ? cycles.positive_defects : cycles.negative_defects;
+                const auto repetitions = static_cast<std::size_t>(
+                    displacement >= 0 ? displacement : -displacement);
+                for (std::size_t r = 0; r < repetitions && ok; ++r)
+                    ok = append_segment(roles, defects, cycle, cycle_defects);
+                ok = ok && append_segment(roles, defects, right.roles, right.defects);
+                long long sum = 0;
+                if (ok) {
+                    for (std::size_t k = 0; k < defects.size(); ++k) {
+                        sum += defects[k];
+                        if (!direct.count({roles[k], roles[k + 1], defects[k]})) { ok = false; break; }
+                    }
+                    ok = ok && roles.front() == source && roles.back() == target && sum == displacement;
+                }
+                ++out.transported_words;
+                if (!ok) { ++out.failed_words; out.every_word_replayed = false; }
+                else out.maximum_transport_word_length =
+                    std::max(out.maximum_transport_word_length, defects.size());
+            }
+    out.proved = out.every_word_replayed;
+    return out;
+}
+
 // Profiles the finite displacement window without extrapolating past the
 // supplied word cap.  Each entry is independently witness-replayed by the
 // underlying closure operation; the profile only summarizes those finite
