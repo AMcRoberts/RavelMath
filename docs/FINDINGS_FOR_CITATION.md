@@ -3919,8 +3919,7 @@ at `d=2`). Rendered and kernel-checked with zero errors and zero
 
 ## Finding 43 — Stage-2 property-(F) probe on canonical Q/R/S families
 
-**Status: EXACT FINITE COMPUTATIONS, with one explicit cyclotomic limitation
-(2026-08-09).**
+**Status: EXACT FINITE COMPUTATIONS, with cyclotomic reduction (2026-08-09).**
 
 `app/probe_canonical_property_f.cpp` runs the independent prefix-automaton
 property-(F) checker on four canonical substitutions derived or preserved by
@@ -3928,9 +3927,10 @@ the exact beta-expansion machinery. Supergolden (`x^3-x^2-1`) closes with
 strong coincidence at depth 2 and property (F) at 124 nodes; plastic
 (`x^3-x-1`) closes with coincidence depth 13 and property (F) at 205 nodes;
 the first eventually-periodic witness (`x^3-2x^2-x+1`) closes with depth 2
-and property (F) at 52 nodes. The third-smallest Pisot canonical lift is
-reported separately: its incidence polynomial has a `Phi_4` cyclotomic
-factor, and the current full-incidence `QBetaRing` property-(F) path rejects
-the neutral secondary roots (`secondary root modulus >= 1`) before graph
-construction. That is an implementation boundary, not a FAIL verdict; the
-minimal-field/cyclotomic-sector reduction remains the next needed operation.
+and property (F) at 52 nodes. The third-smallest Pisot canonical lift has
+incidence polynomial `(x^2+1)(x^5-x^4-x^3+x^2-1)`; a reduced-field solve of
+the 7-dimensional left Perron eigenvector over the degree-5 Pisot factor
+removes the neutral `Phi_4` sector and closes property (F) at 93,408 nodes,
+with strong coincidence at depth 3. The unreduced full-incidence path still
+rejects the neutral roots, so the reduced-field route is now the required
+one for cyclotomic lifts rather than an optional diagnostic.

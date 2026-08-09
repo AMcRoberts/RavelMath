@@ -840,9 +840,9 @@ small independent probe (`app/probe_canonical_property_f.cpp`) now runs
 the actual prefix-automaton property-(F) checker on canonical Q/R/S
 families. Supergolden closes at 124 nodes, plastic at 205, and the first
 eventually-periodic fourth-generator witness at 52; all three also have
-strong coincidence. The third-smallest Pisot lift is intentionally not
-classified: its `Phi_4` incidence sector makes the current full-incidence
-root filter reject neutral roots before the finite graph is built. This is
-the next concrete engineering target—factor out the minimal Pisot field
-from cyclotomic incidence sectors—rather than treating the neutral-sector
-exception as a property-(F) failure.
+strong coincidence. The third-smallest lift initially exposed the expected
+neutral-root problem in the full incidence ring; the probe now solves its
+7-dimensional Perron eigenvector over the degree-5 minimal Pisot field and
+closes property (F) at 93,408 nodes (coincidence depth 3). This turns the
+cyclotomic-sector issue into a concrete reusable reduction target for the
+next property-(F) cases.
