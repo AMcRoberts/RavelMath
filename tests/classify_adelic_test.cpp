@@ -79,6 +79,17 @@ void test_worked_example_tiles() {
     auto shape = adelic::compare_first_order_padic_shapes(charpoly, 2, 30);
     CHECK(shape.dedekind_order_maximal && shape.first_order_shapes_match,
           "worked example: certified first-order Newton/Dedekind shapes agree");
+    auto worked_segments = adelic::newton_polygon(
+        adelic::zp_poly_from_polyz(charpoly, 2, 30));
+    CHECK(!worked_segments.empty(), "worked example: Newton polygon is non-empty");
+    if (!worked_segments.empty()) {
+        auto residual = adelic::newton_residual_diagnostic(
+            adelic::zp_poly_from_polyz(charpoly, 2, 30), worked_segments.front());
+        CHECK(residual.supported && residual.factors.size() == 1 &&
+                  residual.factors[0].mult == 1 &&
+                  static_cast<long long>(residual.factors[0].g.c.size()) - 1 == 1,
+              "worked example: e=2 residual refines to a linear factor");
+    }
 }
 
 // rnd13: charpoly x^4 - 4x^3 - 8x^2 - 6x - 2, |det|=2 with (2)=p^4
