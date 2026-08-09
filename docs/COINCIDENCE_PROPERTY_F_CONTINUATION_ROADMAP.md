@@ -161,3 +161,6 @@ explicit directed cycle containing a nonzero node, validates every edge
 against the actual adjacency, and renders a separate Lean counterexample
 artifact. A synthetic self-loop exercises and kernel-checks the path; no
 historical case is being mislabeled as a failure.
+The witness is reconstructed from the real Tarjan SCC graph, not from a
+reimplemented abstract automaton, so the failure branch preserves the same
+instance-data discipline as the successful certificate path.
