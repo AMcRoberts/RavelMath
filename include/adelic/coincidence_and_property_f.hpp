@@ -344,6 +344,7 @@ struct PropertyFGraphNode {
 };
 
 struct PropertyFGraph {
+    std::vector<std::string> characteristic_polynomial;
     std::vector<PropertyFGraphNode> nodes;
 };
 
@@ -1018,6 +1019,10 @@ PropertyFResult check_property_f(
         *out_adjacency = adj;
     }
     if (out_graph != nullptr) {
+        out_graph->characteristic_polynomial.clear();
+        const auto& charpoly = R.charpoly();
+        for (long long i = 0; i <= charpoly.degree(); ++i)
+            out_graph->characteristic_polynomial.push_back(mathlib::str(charpoly.coeff(static_cast<std::size_t>(i))));
         out_graph->nodes.clear();
         out_graph->nodes.reserve(node_gamma.size());
         for (std::size_t i = 0; i < node_gamma.size(); ++i) {

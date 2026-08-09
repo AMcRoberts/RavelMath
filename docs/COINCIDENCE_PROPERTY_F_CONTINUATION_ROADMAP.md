@@ -127,3 +127,5 @@ the recurrence on every serialized edge.
 The export now carries each edge's exact digit coefficient vector as well;
 the remaining step is to include the characteristic polynomial and a generic
 Lean Q(beta) recurrence checker.
+The exact characteristic polynomial is now exported too; only the generic
+recurrence checker remains on this sub-route.

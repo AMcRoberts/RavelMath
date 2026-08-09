@@ -65,6 +65,7 @@ inline bool stage_property_f_graph(const adelic::PropertyFResult& result,
     }
     if (!mathlib::reflection::enabled()) return false;
     mathlib::reflection::PropertyFGraphCertificate node;
+    node.characteristic_polynomial = graph.characteristic_polynomial;
     node.gamma_keys.reserve(graph.nodes.size());
     node.gamma_coefficients.reserve(graph.nodes.size());
     node.letters.reserve(graph.nodes.size());

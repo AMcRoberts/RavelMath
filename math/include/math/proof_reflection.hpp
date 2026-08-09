@@ -567,6 +567,7 @@ struct PropertyFFiniteRunCertificate {
 // checker; Lean-side rendering checks the finite topology and partition data
 // without pretending that a string key is a real-number proof.
 struct PropertyFGraphCertificate {
+    std::vector<std::string> characteristic_polynomial;
     std::vector<std::string> gamma_keys;
     std::vector<std::vector<ExactRationalCoefficient>> gamma_coefficients;
     std::vector<long long> letters;
