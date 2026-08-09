@@ -133,6 +133,10 @@ The graph export now also serializes the per-source successor rows and emits a
 kernel-checked topology theorem for every digit edge. Thus each Q(beta)
 recurrence corollary is tied to the actual graph target, rather than only to a
 target coefficient literal selected by the renderer.
+The recurrence bridge now uses the serialized successor lookup directly: each
+edge theorem applies the generic Q(β) step to the source node and equates it to
+the typed destination node selected from the graph row. This makes topology
+and algebra one kernel-checked statement rather than two adjacent facts.
 
 **2026-08-08 finite-classifier increment.** `check_strong_coincidence` now
 returns a lexicographically indexed resolution profile for every unordered
