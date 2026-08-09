@@ -193,6 +193,11 @@ no further round is necessary. This does not yet repair the p-adic bound,
 because the factorization still has to be transported from `Z[beta]` into the
 enlarged order; that basis-aware prime-ideal step is the next order-theory
 target rather than an assumption hidden in the classifier.
+An attempted route through `ore_padic_factorization` currently reaches the
+same boundary: its repeated-factor branch delegates to the cofactor lift and
+rejects this quartic's ambiguous mod-2 factor. That is a useful negative
+diagnostic, not a reason to weaken the trust guard; the next implementation
+must perform a genuine repeated-factor p-adic/Montes lift.
 
 **2026-08-08 finite-classifier increment.** `check_strong_coincidence` now
 returns a lexicographically indexed resolution profile for every unordered
