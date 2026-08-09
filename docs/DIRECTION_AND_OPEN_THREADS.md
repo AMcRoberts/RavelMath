@@ -154,11 +154,13 @@ itself. This is a settled point; mentioned here for completeness.
   `set_precision`/`extend_to`/`truncate_to` methods) closed the
   heap-buffer-overflow that was intermittently crashing
   `make_combined_padic_bound`. ASan run clean.
-- A fresh non-unimodular Pisot survey (`app/sweep_nonunit_property_f.cpp`,
-  24 candidates, seed=11) gives **24/24 ESTABLISHED, 0
-  INCONCLUSIVE, 0 FAILED, 0 skipped** — the multi-prime skip is
-  gone (multi-PRIME cases now go through the unified combined
-  bound, which has been correct since the 3-bug close-out).
+- A historical non-unimodular Pisot survey (`app/sweep_nonunit_property_f.cpp`,
+  24 candidates, seed=11) gave **24/24 ESTABLISHED, 0
+  INCONCLUSIVE, 0 FAILED, 0 skipped** under the then-current local-order
+  path. The current trust-aware classifier preserves those finite graph
+  results but only promotes p-maximal, Dedekind-cross-checked orders; the
+  non-maximal cases are now reported as exploratory/inconclusive until their
+  prime-ideal data is transported into the maximal order.
   Corrected here (2026-08-01, re-ran the app directly rather than
   trusting this line): the batch is **3-letter** (cubic charpolys,
   explicit 3x3 determinant in the source), not 4x4 as previously
