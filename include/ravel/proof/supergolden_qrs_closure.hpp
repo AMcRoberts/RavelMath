@@ -13,6 +13,7 @@
 #include "ravel/supergolden_pisot_substitution.hpp"
 #include "ravel/proof/supergolden_three_generator_intertwiner.hpp"
 #include "ravel/proof/cyclotomic_obstruction.hpp"
+#include "ravel/proof/condition_f_cyclic_voltage_fourier.hpp"
 namespace ravel::proof {
 
 // Supergolden number: dominant root of x^3-x^2-1, the fourth-smallest
@@ -39,6 +40,8 @@ struct SupergoldenQRSClosureCertificate {
  bool incidence_polynomial_matches_minpoly_exactly{};
  CyclotomicObstructionCertificate incidence_cyclotomic;
  bool incidence_has_no_cyclotomic_factor{};
+ std::array<ConditionFCyclicVoltageFourierProof,3> pair_fourier_audits;
+ bool all_pair_fourier_sectors_certified{};
  bool every_boundary_edge_forced_into_qrs{};
  bool universal_parent_role_intertwiner_schema{};
  bool contact_boundary_complete{};
@@ -125,13 +128,40 @@ inline SupergoldenQRSClosureCertificate derive_supergolden_qrs_closure(){
      intertwiner.finite_positive_grammar_ready;
  c.boundary_states = intertwiner.boundary_states;
  c.boundary_edges = intertwiner.boundary_edges;
+ // Audit the three unordered generator pairs independently.  Each pair is
+ // treated as a two-channel cyclic-voltage lift over the same 9-role base;
+ // this checks the nontrivial character sector without conflating it with the
+ // three-generator positive grammar itself.
+ c.all_pair_fourier_sectors_certified = true;
+ for (std::size_t pair = 0; pair < 3; ++pair) {
+     const std::size_t g = pair == 0 ? 0 : (pair == 1 ? 0 : 1);
+     const std::size_t h = pair == 0 ? 1 : 2;
+     std::vector<ConditionFCyclicVoltageChannel> channels;
+     for (std::size_t s = 0; s < 9; ++s) {
+         for (std::size_t t = 0; t < 9; ++t) {
+             const auto add = [&](std::size_t generator, std::size_t channel) {
+                 const auto m = intertwiner.universal_generators[generator][s][t];
+                 if (m != 0) channels.push_back({s, t, channel, 0,
+                                                  static_cast<std::size_t>(m)});
+             };
+             add(g, 0);
+             add(h, 1);
+         }
+     }
+     c.pair_fourier_audits[pair] =
+         derive_condition_f_cyclic_voltage_fourier(9, 2, channels);
+     c.all_pair_fourier_sectors_certified &=
+         c.pair_fourier_audits[pair].proved &&
+         c.pair_fourier_audits[pair].every_twisted_sector_below_untwisted;
+ }
  c.no_fourth_generator = c.every_boundary_edge_forced_into_qrs &&
      c.contact_boundary_complete;
  c.proved = c.incidence_polynomial_matches_minpoly_exactly &&
      c.incidence_has_no_cyclotomic_factor && c.total_parent_decompositions==4 &&
      c.distinct_prefixes==2 && c.defect_classes==3 &&
      c.universal_parent_role_intertwiner_schema && c.contact_boundary_complete &&
-     c.simultaneous_three_generator_intertwiner;
+     c.simultaneous_three_generator_intertwiner &&
+     c.all_pair_fourier_sectors_certified;
  return c;
 }
 }

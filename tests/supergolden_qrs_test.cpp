@@ -13,6 +13,7 @@ int main(){
  assert(c.incidence_polynomial_matches_minpoly_exactly);
  assert(c.incidence_cyclotomic.proved);
  assert(c.incidence_has_no_cyclotomic_factor);
+ assert(c.all_pair_fourier_sectors_certified);
  assert(c.no_fourth_generator);
  assert(c.contact_boundary_complete);
  assert(c.simultaneous_three_generator_intertwiner);

@@ -143,8 +143,11 @@ objects and Lean emission/actual kernel acceptance. Since there is no
 cyclotomic cofactor at the substitution level, the raw substitution audit is
 now explicit: the incidence characteristic polynomial is passed through the
 exact cyclotomic factor certificate and has no cyclotomic factor. Boundary and
-twisted sectors still require explicit checking, followed by Lean emission and
-actual kernel acceptance.
+twisted sectors are now also checked pairwise: each of the three unordered
+generator pairs is passed through the exact cyclic-voltage Fourier comparison,
+and every nontrivial two-sheet sector is certified below its untwisted sector.
+The remaining work is Lean emission and actual kernel acceptance for this
+combined certificate.
 
 ## Parallel question kept in the wings
 
