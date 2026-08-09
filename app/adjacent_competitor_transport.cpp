@@ -2077,6 +2077,19 @@ bool dispatch(std::size_t n, const Options& options) {
     }
 }
 
+bool build_cache_only(std::size_t n) {
+    switch (n) {
+        case 6:
+            (void)load_or_build_full_graph<6>();
+            (void)load_or_build_full_graph<7>();
+            return true;
+        default:
+            std::fprintf(stderr,
+                         "cache-only mode currently supports n=6 (and its n=7 upper cache)\n");
+            return false;
+    }
+}
+
 }  // namespace
 
 int main(int argc, char** argv) {
@@ -2085,12 +2098,15 @@ int main(int argc, char** argv) {
     std::setvbuf(stderr, nullptr, _IOLBF, 0);
     std::size_t n = 4;
     CoronaExecutionMode mode = default_corona_execution_mode();
+    bool cache_only = false;
     for (int arg = 1; arg < argc; ++arg) {
         const std::string value = argv[arg];
         if (value == "--legacy-corona")
             mode = CoronaExecutionMode::legacy_materialized;
         else if (value == "--projected-corona")
             mode = CoronaExecutionMode::projected_surface;
+        else if (value == "--cache-only")
+            cache_only = true;
         else
             n = static_cast<std::size_t>(std::stoul(value));
     }
@@ -2098,6 +2114,7 @@ int main(int argc, char** argv) {
         mode == CoronaExecutionMode::projected_surface
             ? "projected" : "legacy");
     try {
+        if (cache_only) return build_cache_only(n) ? 0 : 2;
         switch (n) {
             case 3: return run_adjacent_competitor_transport<3>(mode) ? 0 : 1;
             case 4: return run_adjacent_competitor_transport<4>(mode) ? 0 : 1;

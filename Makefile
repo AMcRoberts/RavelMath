@@ -2875,7 +2875,7 @@ $(RECURRENT_FAMILY_EXHAUSTION_REAL_TEST_BIN): $(TESTDIR)/recurrent_family_exhaus
 
 out/corona_truth_n6.bin: $(ADJACENT_COMPETITOR_TRANSPORT_BIN)
 	@mkdir -p out
-	./$(ADJACENT_COMPETITOR_TRANSPORT_BIN) --legacy-corona 6
+	./$(ADJACENT_COMPETITOR_TRANSPORT_BIN) --legacy-corona --cache-only 6
 
 TEST_BIN_RECURRENT_FAMILY_EXHAUSTION_REFLECTION_TEST := $(BUILDDIR)/recurrent_family_exhaustion_reflection_test
 $(TEST_BIN_RECURRENT_FAMILY_EXHAUSTION_REFLECTION_TEST): $(TESTDIR)/recurrent_family_exhaustion_reflection_test.cpp | $(BUILDDIR) $(MATH_LIB)

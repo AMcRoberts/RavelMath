@@ -190,6 +190,11 @@ boundary. The capped corona path now streams candidates before insertion;
 the same probe completes in about 1.4 seconds with peak RSS about 18 MB,
 instead of materializing the multi-gigabyte uncapped intermediate layer.
 
+The adjacent-competitor truth-cache recipe also has an explicit
+`--cache-only` mode. Cache construction is now independent of the separate
+n=6→7 family-transport verdict, so a visible `NO_UPPER_FAMILY` classification
+does not make the cache artifact itself fail.
+
 This reframes the parallel question: stop searching Pisot numbers below 2
 for a fourth generator via this construction. The two remaining routes are
 (a) `beta >= 2`, where a digit value of `2` opens a third prefix `[0,0]`
