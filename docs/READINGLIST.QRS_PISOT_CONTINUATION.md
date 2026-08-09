@@ -852,5 +852,6 @@ canonical lift (`x^4-x^3-1`): property (F) closes at 693 nodes and
 coincidence depth 3.
 The terminating `theta5` lift is now handled by dynamic alphabet dispatch;
 at 3,000,000 nodes it is still explicitly INCONCLUSIVE (3,000,002 nodes,
-2.90 GB peak RSS), identifying the next scaling target rather than a
-property-(F) counterexample.
+2.90 GB peak RSS), even with optional boundary-sink elision. The bounded
+state table is the dominant cost, identifying the next scaling target rather
+than a property-(F) counterexample.

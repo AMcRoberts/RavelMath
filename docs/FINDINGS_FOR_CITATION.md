@@ -3943,5 +3943,7 @@ The exact terminating `theta5` lift (`x^6-x^5-x^4+x^2-1`) is the first
 honest scale warning: at a 3,000,000-node budget it remains INCONCLUSIVE
 after exploring 3,000,002 nodes, with measured peak RSS 2.90 GB and no
 failure cycle. This is a budget boundary, not a negative result; the
-dynamic derived probe now handles its seven-state canonical alphabet
+run used optional boundary-sink elision (the default reflected graph
+semantics are unchanged), and the bounded-state table is now the dominant
+cost. The dynamic derived probe handles its seven-state canonical alphabet
 without the earlier hard-coded-dimension crash.

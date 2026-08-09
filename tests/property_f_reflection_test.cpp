@@ -55,6 +55,9 @@ int main() {
     adelic::PropertyFGraph graph;
     auto result = adelic::check_property_f<2>(automaton, 300000, nullptr, nullptr, nullptr, nullptr, &graph);
     assert(result.holds && !result.inconclusive);
+    const auto elided_result = adelic::check_property_f<2>(
+        automaton, 300000, nullptr, nullptr, nullptr, nullptr, nullptr, false);
+    assert(elided_result.holds && !elided_result.inconclusive);
 
     mathlib::reflection::Trace trace("property_f_reflection_test");
     {

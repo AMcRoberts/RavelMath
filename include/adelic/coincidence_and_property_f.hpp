@@ -812,7 +812,8 @@ PropertyFResult check_property_f(
     // so that claim can be checked against the real, trusted
     // computation rather than a re-implemented copy.
     long long* out_zero_nodes_beyond_frontier = nullptr,
-    PropertyFGraph* out_graph = nullptr) {
+    PropertyFGraph* out_graph = nullptr,
+    bool retain_boundary_sinks = true) {
     const mathlib::QBetaRing& R = automaton.ring;
     mathlib::QElem beta = R.from_int(0);
     beta.coeff(1) = mathlib::Rat(1, 1);
@@ -965,6 +966,15 @@ PropertyFResult check_property_f(
                 // zero can pass through an unboundedly-expanding
                 // branch, so it's safe to stop following it.
                 double norm = archimedean_norm(gamma_prime, secondary_roots);
+                bool within_bound = norm < bound_M && (!extra_bound || extra_bound(gamma_prime));
+                // Boundary sinks cannot participate in a cycle returning to
+                // zero. Exploratory callers may elide them to keep the
+                // finite-state search memory proportional to the bounded
+                // region; the historical/default graph payload retains them.
+                if (!within_bound && !retain_boundary_sinks) {
+                    ++boundary_edges;
+                    continue;
+                }
                 long long v = get_or_create(gamma_prime, static_cast<long long>(b));
                 adj[static_cast<std::size_t>(u)].push_back(v);
                 // Edge digit coefficients are only needed by the optional
@@ -981,7 +991,6 @@ PropertyFResult check_property_f(
                 } else {
                     edge_digits[static_cast<std::size_t>(u)].push_back({});
                 }
-                bool within_bound = norm < bound_M && (!extra_bound || extra_bound(gamma_prime));
                 if (!within_bound) ++boundary_edges;
                 if (within_bound && !enqueued[static_cast<std::size_t>(v)]) {
                     enqueued[static_cast<std::size_t>(v)] = true;
