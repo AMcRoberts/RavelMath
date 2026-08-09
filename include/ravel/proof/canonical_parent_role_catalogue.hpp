@@ -232,6 +232,37 @@ inline ParentRoleWordClosureReport derive_parent_role_word_closure(
     return out;
 }
 
+struct ParentRoleWindowProfile {
+    bool proved{};
+    std::size_t max_word_length{};
+    std::size_t max_radius_tested{};
+    std::size_t largest_complete_radius{};
+    std::vector<std::size_t> missing_by_radius;
+};
+
+// Profiles the finite displacement window without extrapolating past the
+// supplied word cap.  Each entry is independently witness-replayed by the
+// underlying closure operation; the profile only summarizes those finite
+// certificates and records the first scale at which a state is missing.
+inline ParentRoleWindowProfile derive_parent_role_window_profile(
+    const CanonicalParentRoleCatalogue& catalogue,
+    std::size_t max_word_length, std::size_t max_radius) {
+    ParentRoleWindowProfile out;
+    out.max_word_length = max_word_length;
+    out.max_radius_tested = max_radius;
+    if (!catalogue.proved || max_word_length == 0) return out;
+    out.missing_by_radius.reserve(max_radius + 1);
+    for (std::size_t radius = 0; radius <= max_radius; ++radius) {
+        const auto closure = derive_parent_role_word_closure(
+            catalogue, max_word_length, radius);
+        out.missing_by_radius.push_back(closure.integer_window_missing_pairs);
+        if (closure.integer_window_complete)
+            out.largest_complete_radius = radius;
+    }
+    out.proved = true;
+    return out;
+}
+
 // Checks whether the one-step relation is already closed under composition.
 // Usually it is not: generator words are expected to create longer paths.
 // Recording the first missing composite makes that distinction explicit and

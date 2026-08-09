@@ -896,3 +896,6 @@ this as its finite target when proving the full integer quotient.
 The composition audit finds many two-step paths with no direct one-step
 representative at the summed defect, so the intended closure is genuinely by
 words in the relation. The next proof should formalize that word closure.
+The profile operation records largest complete radii 5, 7, 9, and 4 for
+theta7--theta10 at word cap 30. Its non-monotonicity warns that the eventual
+displacement law is geometric, not a simple function of alphabet size.

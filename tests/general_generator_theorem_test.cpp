@@ -76,7 +76,9 @@ void inspect_forest(const std::string& name, std::vector<long long> low_first,
     const auto forest = ravel::proof::derive_canonical_parent_role_catalogue(R, beta_I);
     const auto holonomy = ravel::proof::derive_parent_role_holonomy(forest);
     const auto closure = ravel::proof::derive_parent_role_word_closure(forest, word_cap, radius);
+    const auto profile = ravel::proof::derive_parent_role_window_profile(forest, word_cap, 10);
     assert(forest.proved && holonomy.proved && closure.proved);
+    assert(profile.proved);
     std::cout << name << ": alphabet=" << forest.alphabet_size
               << " roles=" << forest.role_count
               << " defects=" << forest.defects.size()
@@ -87,6 +89,9 @@ void inspect_forest(const std::string& name, std::vector<long long> low_first,
               << " max_zero_word=" << closure.maximum_zero_net_word_length
               << " integer_window@" << radius << "=" << closure.integer_window_pairs << "/"
               << forest.role_count * forest.role_count * (2 * radius + 1) << "\n";
+    std::cout << "  window_profile largest_complete_radius="
+              << profile.largest_complete_radius << " missing@10="
+              << profile.missing_by_radius.back() << "\n";
 }
 
 int main() {
