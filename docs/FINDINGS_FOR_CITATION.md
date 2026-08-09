@@ -4072,3 +4072,19 @@ boundary-to-universal-role intertwiner, every boundary edge has a catalogue
 witness, and the finite-positive-grammar majorant is ready. This closes the
 geometric validation gap for the first known fourth/fifth primitive-generator
 example, while remaining a finite instance rather than a family theorem.
+
+## Finding 46 — The second interior-zero witness is resource-bounded, not yet closed
+
+**Status: EXACT INCONCLUSIVE FINITE PROBE (2026-08-09).**
+
+The generic contact-boundary intertwiner now accepts the five-letter canonical
+substitution `0->001, 1->2, 2->03, 3->4, 4->00` for
+`x^3-x^2-2x-2`. With explicit exploratory caps of 20,000 backward-closure
+states and 100,000 corona candidates, the run reaches 20,001 pre-contact
+states, 19,993 contact states, and 38,644 partial boundary candidates before
+both caps fire. It is therefore recorded as **INCONCLUSIVE**, with no
+generator or geometric claim extracted from the partial graph. A larger
+200,000/1,000,000 run remained CPU-bound for more than seven minutes at about
+379 MB RSS and was stopped without being treated as evidence. The first
+witness remains the only geometrically closed fourth-generator instance so
+far; this probe identifies the next resource/algorithm boundary honestly.

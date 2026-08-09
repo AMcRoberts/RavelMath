@@ -944,3 +944,8 @@ The concrete contact-boundary gap for the first genuine fourth-generator
 witness is now closed as a finite computation: `x^3-2x^2-2` has a 387-state,
 751-edge boundary graph containing both `+2` and `-2` edges, with all five
 defect channels satisfying the simultaneous finite intertwiner.
+The second witness `x^3-x^2-2x-2` is now covered by the same generic operation,
+but its five-letter boundary probe is explicitly inconclusive at the
+20,000/100,000 caps (20,001 pre-contact states and 38,644 partial boundary
+candidates). Do not infer geometric survival from that partial run; the next
+step is either a more efficient closure or a larger bounded computation.

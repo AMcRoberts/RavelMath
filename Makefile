@@ -3229,6 +3229,19 @@ first_genuine_fourth_generator_intertwiner_test: $(FIRST_GENUINE_FOURTH_GENERATO
 $(FIRST_GENUINE_FOURTH_GENERATOR_INTERTWINER_TEST_BIN): \
 		$(TESTDIR)/first_genuine_fourth_generator_intertwiner_test.cpp \
 		$(INCDIR)/ravel/proof/first_genuine_fourth_generator_intertwiner.hpp \
+		$(INCDIR)/ravel/proof/contact_boundary_generator_intertwiner.hpp \
+		| $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) -Iinclude -Imath/include -Imath/include/mini-gmp $< \
+		-o $@ $(MATH_LIB)
+
+.PHONY: second_genuine_fourth_generator_intertwiner_probe
+SECOND_GENUINE_FOURTH_GENERATOR_INTERTWINER_PROBE_BIN := $(BUILDDIR)/second_genuine_fourth_generator_intertwiner_probe
+second_genuine_fourth_generator_intertwiner_probe: $(SECOND_GENUINE_FOURTH_GENERATOR_INTERTWINER_PROBE_BIN)
+	./$(SECOND_GENUINE_FOURTH_GENERATOR_INTERTWINER_PROBE_BIN)
+$(SECOND_GENUINE_FOURTH_GENERATOR_INTERTWINER_PROBE_BIN): \
+		$(TESTDIR)/second_genuine_fourth_generator_intertwiner_test.cpp \
+		$(INCDIR)/ravel/proof/second_genuine_fourth_generator_intertwiner.hpp \
+		$(INCDIR)/ravel/proof/contact_boundary_generator_intertwiner.hpp \
 		| $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) -Iinclude -Imath/include -Imath/include/mini-gmp $< \
 		-o $@ $(MATH_LIB)
