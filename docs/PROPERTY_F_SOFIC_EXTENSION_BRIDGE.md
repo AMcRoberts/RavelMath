@@ -84,3 +84,13 @@ parameter-uniform adelic closure argument.
 3. Build the contact-to-adelic edge simulation for one closed representative.
 4. Promote that simulation to a parameterized transport lemma.
 5. Only then attempt the all-`n,m` theorem and reflective certificate.
+
+## First bridge result
+
+The first representative edge-label bridge is now executable in
+`property_f_contact_transport_bridge.hpp`. On the `x^3-2x^2-2` witness it
+replays 1,215 contact-boundary edges and 3 distinct contact prefixes against
+the exact prefix automaton. Every contact prefix is present in the adelic
+label alphabet and its digit is recomputed in `Q(beta)`. This is label
+compatibility, not yet a full state simulation; the next obligation is to
+show that the contact edge map commutes with the adelic transport transition.

@@ -99,7 +99,7 @@ TRANSITION_FILES := $(addprefix $(TRANSITIONS_DIR)/spectre_transitions_,$(addsuf
 .PHONY: csy_finite_carry_automaton_test
 .PHONY: lean_class_ii_catalogue_cross_check_test
 .PHONY: supergolden_qrs_audit
-.PHONY: theta5_contact_boundary_probe property_f_family_autopsy property_f_family_artifact property_f_transport_certificate_test
+.PHONY: theta5_contact_boundary_probe property_f_family_autopsy property_f_family_artifact property_f_transport_certificate_test property_f_contact_transport_bridge_test
 
 all: build data apps tests
 build: $(LIB)
@@ -816,6 +816,7 @@ TESTS_DEFAULT := \
 	second_genuine_fourth_generator_property_f_test \
 	property_f_family_autopsy \
 	property_f_transport_certificate_test \
+	property_f_contact_transport_bridge_test \
 	local_field_test \
 	graph_divisor_test \
 	maximal_order_test \
@@ -2301,6 +2302,13 @@ $(TEST_BIN_PROPERTY_F_TRANSPORT_CERTIFICATE): $(TESTDIR)/property_f_transport_ce
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 property_f_transport_certificate_test: $(TEST_BIN_PROPERTY_F_TRANSPORT_CERTIFICATE)
 	./$(TEST_BIN_PROPERTY_F_TRANSPORT_CERTIFICATE)
+
+TEST_BIN_PROPERTY_F_CONTACT_TRANSPORT_BRIDGE := $(BUILDDIR)/property_f_contact_transport_bridge_test
+$(TEST_BIN_PROPERTY_F_CONTACT_TRANSPORT_BRIDGE): $(TESTDIR)/property_f_contact_transport_bridge_test.cpp \
+		$(INCDIR)/adelic/property_f_contact_transport_bridge.hpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+property_f_contact_transport_bridge_test: $(TEST_BIN_PROPERTY_F_CONTACT_TRANSPORT_BRIDGE)
+	./$(TEST_BIN_PROPERTY_F_CONTACT_TRANSPORT_BRIDGE)
 
 PROPERTY_F_FAMILY_ARTIFACT_BIN := $(BUILDDIR)/property_f_family_artifact
 property_f_family_artifact: $(PROPERTY_F_FAMILY_ARTIFACT_BIN)
