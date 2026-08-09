@@ -154,7 +154,10 @@ certificate rather than only their exact finite summary. `make lean-check`
 now regenerates this artifact before checking the enrolled Lean files, so the
 finite summary is not a stale hand-maintained snapshot. Its characteristic,
 cyclotomic flag, and three pair-sector flags are serialized from the live
-certificate rather than duplicated constants.
+certificate rather than duplicated constants. The same artifact now serializes
+the three exact rectangular matrix products and Lean checks every entry of all
+three inequalities; a future generic matrix theorem would be a further
+abstraction, not an unchecked gap in this finite instance.
 
 ## Parallel question kept in the wings
 

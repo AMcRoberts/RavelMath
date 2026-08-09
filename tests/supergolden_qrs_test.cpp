@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include "ravel/proof/supergolden_qrs_closure.hpp"
+#include "ravel/proof/condition_f_pair_boundary_substitution.hpp"
 int main(){
  auto c=ravel::proof::derive_supergolden_qrs_closure();
  assert(c.proved);
@@ -42,6 +43,26 @@ int main(){
  for (std::size_t i = 0; i < pair_fourier.size(); ++i)
      pair_fourier[i] = c.pair_fourier_audits[i].proved &&
          c.pair_fourier_audits[i].every_twisted_sector_below_untwisted;
+ auto intertwiner = ravel::proof::derive_supergolden_three_generator_intertwiner();
+ std::array<std::vector<std::vector<long long>>, 3> lhs_products;
+ std::array<std::vector<std::vector<long long>>, 3> rhs_products;
+ for (std::size_t g = 0; g < 3; ++g) {
+     lhs_products[g] = ravel::proof::condition_f_pair_boundary_detail::rectangular_product(
+         intertwiner.boundary_generators[g], intertwiner.intertwiner);
+     rhs_products[g] = ravel::proof::condition_f_pair_boundary_detail::rectangular_product(
+         intertwiner.intertwiner, intertwiner.universal_generators[g]);
+ }
+ const auto emit_flat_matrix = [](std::ostream& stream,
+                                  const std::vector<std::vector<long long>>& matrix) {
+     stream << "[";
+     bool first = true;
+     for (const auto& row : matrix) for (const auto value : row) {
+         if (!first) stream << ", ";
+         first = false;
+         stream << value;
+     }
+     stream << "]";
+ };
  std::ofstream out("lean/generated/supergolden_qrs_audit.lean");
  out << "import Mathlib\n\nnamespace RavelGenerated\n\n"
         "def supergoldenBoundaryStates : Nat := " << c.boundary_states << "\n"
@@ -54,6 +75,28 @@ int main(){
      << (c.incidence_has_no_cyclotomic_factor ? "true" : "false") << "\n"
         "def supergoldenPairFourierCertified : List Bool := ";
  emit_bool_list(out, pair_fourier);
+ out << "\n"
+        "def supergoldenAllLe : List Int → List Int → Bool\n"
+        "  | [], [] => true\n"
+        "  | a :: as, b :: bs => decide (a ≤ b) && supergoldenAllLe as bs\n"
+        "  | _, _ => false\n\n"
+        "def supergoldenG0Lhs : List Int := ";
+ emit_flat_matrix(out, lhs_products[0]);
+ out << "\n"
+        "def supergoldenG0Rhs : List Int := ";
+ emit_flat_matrix(out, rhs_products[0]);
+ out << "\n"
+        "def supergoldenG1Lhs : List Int := ";
+ emit_flat_matrix(out, lhs_products[1]);
+ out << "\n"
+        "def supergoldenG1Rhs : List Int := ";
+ emit_flat_matrix(out, rhs_products[1]);
+ out << "\n"
+        "def supergoldenG2Lhs : List Int := ";
+ emit_flat_matrix(out, lhs_products[2]);
+ out << "\n"
+        "def supergoldenG2Rhs : List Int := ";
+ emit_flat_matrix(out, rhs_products[2]);
  out << "\n\n"
         "theorem supergolden_qrs_audit_valid :\n"
         "    supergoldenBoundaryStates = 20 ∧\n"
@@ -62,6 +105,11 @@ int main(){
         "    supergoldenRawIncidenceCharacteristic = [-1, 0, -1, 1] ∧\n"
         "    supergoldenIncidenceCyclotomicFree = true ∧\n"
         "    supergoldenPairFourierCertified = [true, true, true] := by\n"
+        "  native_decide\n\n"
+        "theorem supergolden_matrix_intertwining_entries :\n"
+        "    supergoldenAllLe supergoldenG0Lhs supergoldenG0Rhs = true ∧\n"
+        "    supergoldenAllLe supergoldenG1Lhs supergoldenG1Rhs = true ∧\n"
+        "    supergoldenAllLe supergoldenG2Lhs supergoldenG2Rhs = true := by\n"
         "  native_decide\n\n"
         "theorem supergolden_all_pair_twisted_sectors_certified :\n"
         "    ∀ b ∈ supergoldenPairFourierCertified, b = true := by\n"
