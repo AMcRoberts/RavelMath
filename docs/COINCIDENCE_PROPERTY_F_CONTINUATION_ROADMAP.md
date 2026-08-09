@@ -153,6 +153,12 @@ integer arithmetic and reject overflow. This is a prefix-half classifier,
 not yet the full suffix-inclusive theorem, but it removes exponential word
 materialization from the next strong-coincidence search path.
 
+The live closure invocation now searches to depth 64 (with a one-million
+outcome budget) instead of inheriting the legacy word check's depth-20 cap.
+The worked example and `rnd13` remain at depths 4 and 1 respectively, with a
+measured driver peak of only about 38 MB RSS; the bounded word fallback stays
+at its original limits.
+
 The prefix closure now also has a typed reflection certificate and renderer.
 The staging operation derives the incidence matrix from the supplied images,
 rejects invalid shapes, inconclusive cutoffs, and arithmetic overflow, and

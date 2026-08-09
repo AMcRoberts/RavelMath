@@ -166,8 +166,12 @@ TilingClassification classify_tiling(
                     throw std::invalid_argument("classify_tiling: invalid substitution letter");
                 ++matrix[static_cast<std::size_t>(letter)][column];
             }
+        // The closure state space is deduplicated and no longer scales with
+        // |sigma^K|, so it can search substantially deeper than the legacy
+        // word-materialization fallback while retaining an explicit outcome
+        // budget.
         const auto closure = ravel::proof::check_strong_coincidence_closure<d>(
-            images, matrix, 20, 1'000'000);
+            images, matrix, 64, 1'000'000);
         if (closure.holds) {
             coin.holds = true;
             coin.inconclusive = false;
