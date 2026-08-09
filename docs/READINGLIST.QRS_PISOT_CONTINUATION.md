@@ -855,3 +855,6 @@ The earlier 3,000,000-node run was an explicit 2.90 GB INCONCLUSIVE cap;
 with optional boundary-sink elision and an 8,000,000-node budget it closes
 at 4,993,494 nodes (5.01 GB RSS, 5m30s), with coincidence depth 5 and
 Property (F) HOLDS. This remains finite evidence, not a universal theorem.
+The next terminating lift, `theta6` (`x^5-x^3-x^2-x-1`), closes at 743,931
+nodes (coincidence depth 4, 0.64 GB RSS, 36.9s); an environment-only mode
+reproduces it without rerunning theta5.

@@ -4,6 +4,7 @@
 // automaton on the same substitutions.
 
 #include <array>
+#include <cstdlib>
 #include <cstdio>
 #include <stdexcept>
 #include <vector>
@@ -133,6 +134,7 @@ void run_derived_terminating_case_dynamic(const char* name,
         case 6: run_reduced_field_case<6>(name, source, ring.charpoly_, node_budget, retain_boundary_sinks); break;
         case 7: run_reduced_field_case<7>(name, source, ring.charpoly_, node_budget, retain_boundary_sinks); break;
         case 8: run_reduced_field_case<8>(name, source, ring.charpoly_, node_budget, retain_boundary_sinks); break;
+        case 9: run_reduced_field_case<9>(name, source, ring.charpoly_, node_budget, retain_boundary_sinks); break;
         default: throw std::runtime_error("derived probe: unsupported canonical alphabet size");
     }
 }
@@ -140,6 +142,11 @@ void run_derived_terminating_case_dynamic(const char* name,
 }  // namespace
 
 int main() {
+    if (std::getenv("RAVEL_CANONICAL_ONLY_THETA6") != nullptr) {
+        run_derived_terminating_case_dynamic("theta6 canonical x^5-x^3-x^2-x-1",
+                                             {0, -1, -1, -1, -1}, 2000000, false);
+        return 0;
+    }
     run_case<3>("supergolden x^3-x^2-1", {{0, 1}, {2}, {0}});
     run_case<3>("plastic x^3-x-1", {{1}, {2}, {0, 1}});
     const mathlib::PolyZ third_minpoly = {-1, 0, 1, -1, -1, 1};
@@ -150,4 +157,6 @@ int main() {
     run_derived_terminating_case<4>("theta2 canonical x^4-x^3-1", {-1, 0, 0, -1}, 1000000);
     run_derived_terminating_case_dynamic("theta5 canonical x^6-x^5-x^4+x^2-1",
                                          {-1, -1, 0, 1, 0, -1}, 8000000, false);
+    run_derived_terminating_case_dynamic("theta6 canonical x^5-x^3-x^2-x-1",
+                                         {0, -1, -1, -1, -1}, 2000000, false);
 }

@@ -3922,7 +3922,7 @@ at `d=2`). Rendered and kernel-checked with zero errors and zero
 **Status: EXACT FINITE COMPUTATIONS, with cyclotomic reduction (2026-08-09).**
 
 `app/probe_canonical_property_f.cpp` runs the independent prefix-automaton
-property-(F) checker on six canonical substitutions derived or preserved by
+property-(F) checker on seven canonical substitutions derived or preserved by
 the exact beta-expansion machinery. Supergolden (`x^3-x^2-1`) closes with
 strong coincidence at depth 2 and property (F) at 124 nodes; plastic
 (`x^3-x-1`) closes with coincidence depth 13 and property (F) at 205 nodes;
@@ -3947,4 +3947,8 @@ at 4,993,494 nodes: strong coincidence depth 5 and Property (F) HOLDS,
 with measured peak RSS 5.01 GB and elapsed time 5m30s. The dynamic derived
 probe handles its seven-state canonical alphabet without the earlier
 hard-coded-dimension crash. This is a finite certificate, not a theorem
-for all canonical Pisot substitutions.
+for all canonical Pisot substitutions. The terminating `theta6` lift
+(`x^5-x^3-x^2-x-1`) closes at 743,931 nodes with strong coincidence depth
+4 and Property (F) HOLDS; its isolated run used 0.64 GB RSS and 36.9
+seconds. The probe now has an environment switch for this case so it can
+be reproduced without rerunning the larger theta5 case.
