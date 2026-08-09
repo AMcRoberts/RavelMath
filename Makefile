@@ -98,6 +98,7 @@ TRANSITION_FILES := $(addprefix $(TRANSITIONS_DIR)/spectre_transitions_,$(addsuf
 .PHONY: csy_carry_automaton_test
 .PHONY: csy_finite_carry_automaton_test
 .PHONY: lean_class_ii_catalogue_cross_check_test
+.PHONY: supergolden_qrs_audit
 
 all: build data apps tests
 build: $(LIB)
@@ -111,7 +112,7 @@ math: $(MATH_LIB)
 	$(MAKE) -C $(MATH_DIR) check
 
 LEAN_ENV ?= ../LEAN/projects/nbonacci_charmpoly
-lean-check: nbonacci_charmpoly_proof_probe
+lean-check: nbonacci_charmpoly_proof_probe supergolden_qrs_audit
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/free_involution_perron_core.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/return_contact_lift.lean)
 	cd $(LEAN_ENV) && lake env lean $(abspath lean/bp_correction_determinant.lean)
@@ -3177,6 +3178,9 @@ supergolden_three_generator_intertwiner_test: math/out/libmath.a
 supergolden_qrs_test: math/out/libmath.a
 	mkdir -p out
 	$(CXX) $(CXXFLAGS) -Iinclude -Imath/include -Imath/include/mini-gmp tests/supergolden_qrs_test.cpp -o out/supergolden_qrs_test math/out/libmath.a
+
+supergolden_qrs_audit: supergolden_qrs_test
+	cd $(CURDIR) && ./out/supergolden_qrs_test
 
 shift_branch_three_generator_continuation_test: math/out/libmath.a
 	mkdir -p out

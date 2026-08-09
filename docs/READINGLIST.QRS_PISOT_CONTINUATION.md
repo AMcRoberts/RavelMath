@@ -149,7 +149,9 @@ and every nontrivial two-sheet sector is certified below its untwisted sector.
 The regression now emits `lean/generated/supergolden_qrs_audit.lean`, whose
 finite summary is accepted by the actual Lean/Mathlib environment. The
 remaining work is to connect richer boundary matrices to a kernel-level
-certificate rather than only their exact finite summary.
+certificate rather than only their exact finite summary. `make lean-check`
+now regenerates this artifact before checking the enrolled Lean files, so the
+finite summary is not a stale hand-maintained snapshot.
 
 ## Parallel question kept in the wings
 
