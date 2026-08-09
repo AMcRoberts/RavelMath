@@ -140,8 +140,9 @@ The companion `generalized_multinacci_block_affine.hpp` now turns each block
 into an exact integer affine endpoint map on the `d`-coordinate coefficient
 lattice. Its linear part is the appropriate power of
 `beta^(-1) = beta^(d-1) - m(1+...+beta^(d-2))`, and its offset is the carried
-initial digit. The affine test replays these maps against exact `Q(beta)`
-arithmetic across the 42-point structural sweep. This is the concrete object
+initial digit. The affine test checks map shapes across the 42-point structural
+sweep and replays all 19 `(4,6)` maps against exact `Q(beta)` arithmetic. This
+is the concrete object
 for the remaining rank proof: bound the reachable coefficient vectors under
 these finitely many endpoint maps, rather than enumerate the raw graph.
 

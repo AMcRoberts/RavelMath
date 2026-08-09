@@ -110,7 +110,8 @@ The return-to-zero block quotient is also explicit: exactly `(d-1)m+1`
 channels, each of length at most `d`, with words `[k,m,...,m]`. This is the
 finite forest on which the remaining reachability/rank proof should operate.
 Each channel is now compiled to an exact integer affine endpoint map on the
-`d`-coordinate coefficient lattice and replay-checked against `Q(beta)`.
+`d`-coordinate coefficient lattice; all 19 `(4,6)` maps are replay-checked
+against `Q(beta)`, while the 42-point sweep checks the parameterized map shape.
 The endpoint-map layer makes the rank obligation explicit: bound the set of
 reachable coefficient vectors under this finite affine family, rather than
 enumerating the raw zero-expansion graph.
