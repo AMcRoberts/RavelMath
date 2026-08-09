@@ -57,7 +57,7 @@ inline FirstGenuineFourthGeneratorIntertwinerCertificate
     // do not silently inherit the dense-matrix memory cost.
     lim.retain_boundary_matrix = false;
     const auto generic = derive_contact_boundary_generator_intertwiner<3>(
-        rule, beta, b2, 2, lim);
+        rule, beta, b2, 2, lim, 3);
     out.boundary_states = generic.boundary_states;
     out.boundary_edges = generic.boundary_edges;
     out.universal_edges = generic.universal_edges;

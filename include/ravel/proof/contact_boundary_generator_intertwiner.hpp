@@ -76,7 +76,8 @@ template <std::size_t Alphabet>
 ContactBoundaryGeneratorIntertwinerCertificate<Alphabet>
 derive_contact_boundary_generator_intertwiner(
     const SubstitutionRule& rule, double beta, double beta_conjugate,
-    std::size_t max_defect, const ContactBoundaryLimits& limits) {
+    std::size_t max_defect, const ContactBoundaryLimits& limits,
+    long long search_bound = 2) {
     using namespace contact_boundary_generator_intertwiner_detail;
     using Certificate = ContactBoundaryGeneratorIntertwinerCertificate<Alphabet>;
     Certificate out;
@@ -91,7 +92,7 @@ derive_contact_boundary_generator_intertwiner(
     }
 
     const auto report = compute_contact_boundary_from_subst<Alphabet>(
-        rule, beta, beta_conjugate, Alphabet, limits);
+        rule, beta, beta_conjugate, search_bound, limits);
     out.boundary_complete = report.converged && !report.closure_stopped_early &&
         !report.corona_capped;
     out.closure_stopped_early = report.closure_stopped_early;
