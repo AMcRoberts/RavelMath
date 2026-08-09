@@ -946,7 +946,8 @@ witness is now closed as a finite computation: `x^3-2x^2-2` has a 387-state,
 defect channels satisfying the simultaneous finite intertwiner.
 The second witness `x^3-x^2-2x-2` is now covered by the same generic operation,
 but its five-letter boundary probe is explicitly inconclusive at the
-100,000/600,000 caps (100,001 pre-contact states and 193,832 partial boundary
-candidates). Prefix caching improved runtime substantially, but do not infer
-geometric survival from this partial run; the next step is either a more
-efficient closure or a larger bounded computation.
+200,000/1,000,000 caps (200,001 pre-contact states and 387,982 partial
+boundary states). Prefix caching makes this larger run reproducible in about
+10:26 at 830 MB RSS, but do not infer geometric survival from this partial
+run; the next step is either a more efficient closure or a larger bounded
+computation.
