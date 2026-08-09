@@ -222,14 +222,15 @@ structure QuasiSturmSeq (ps : List (Polynomial ℝ)) : Prop where
 `quasi_sturm_seq`): additionally, `p` is the FIRST polynomial; at any
 root `x` of `p`, the second polynomial `p₂` has the opposite sign
 immediately left of `x` and the SAME sign immediately right of `x`
-(the derivative-like separating property); and `p`, `p₂` share no
+(the derivative-like separating property, stated on the punctured
+neighbourhood because the product is zero at the root itself); and `p`, `p₂` share no
 common roots (so the sequence doesn't degenerate at the very start). -/
 structure SturmSeq (p : Polynomial ℝ) (ps : List (Polynomial ℝ)) : Prop extends
     QuasiSturmSeq ps where
   length_ge_two : 2 ≤ ps.length
   head_eq_p : ps.head (by rintro rfl; simp at length_ge_two) = p
   deriv_sign : ∀ x0 : ℝ, p.eval x0 = 0 →
-    ∀ᶠ x in nhds x0, SignType.sign ((p * ps[1]'(by omega)).eval x) =
+    ∀ᶠ x in nhdsWithin x0 {x0}ᶜ, SignType.sign ((p * ps[1]'(by omega)).eval x) =
       if x > x0 then 1 else -1
   squarefree_pair : ∀ x : ℝ, ¬(p.eval x = 0 ∧ (ps[1]'(by omega)).eval x = 0)
 
@@ -722,9 +723,8 @@ theorem SturmSeq.p_zero {p : Polynomial ℝ} {ps : List (Polynomial ℝ)} (hss :
   have hderiv := hss.deriv_sign x0 hx0
   have hpnz := eventually_ne_zero_nhdsWithin p hpne x0
   have hqrconst' := hqrconst.filter_mono (nhdsWithin_le_nhds (s := ({x0}ᶜ : Set ℝ)))
-  have hderiv' := hderiv.filter_mono (nhdsWithin_le_nhds (s := ({x0}ᶜ : Set ℝ)))
   have hxne := self_mem_nhdsWithin (α := ℝ) (a := x0) (s := {x0}ᶜ)
-  filter_upwards [hqrconst', hderiv', hpnz, hxne] with x hqr hsgn hpx hxne0
+  filter_upwards [hqrconst', hderiv, hpnz, hxne] with x hqr hsgn hpx hxne0
   have hxne0' : x ≠ x0 := hxne0
   have hsgn' : SignType.sign ((p * (p :: q :: rest)[1]'(by simp)).eval x) =
       (if x > x0 then 1 else -1 : SignType) := hsgn
