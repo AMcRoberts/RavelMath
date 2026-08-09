@@ -1634,28 +1634,54 @@ inline std::vector<OreFactor> ore_padic_factorization(const ZpPoly& f, long long
     }
     charpoly.trim();
     long long p = f.p;
+    FpPoly f_p = reduce_z_to_fp(charpoly, p);
     for (const auto& seg : segs) {
-        OreFactor of;
-        of.segment = seg;
-        long long a = 0;
-        FpPoly f_p = reduce_z_to_fp(charpoly, p);
-        auto factors = factor_fp(f_p);
-        bool matched_first_order_factor = false;
-        for (const auto& fac : factors) {
-            if (fac.mult == seg.e && static_cast<long long>(fac.g.c.size()) - 1 == seg.f) {
-                matched_first_order_factor = true;
-                if (seg.f == 1) {
-                    a = ((-fac.g.c[0]) % p + p) % p;
-                }
-                break;
+        struct TargetShape { long long e; long long f; FpPoly g; };
+        std::vector<TargetShape> targets;
+        auto residual = newton_residual_diagnostic(f, seg);
+        if (residual.supported) {
+            for (const auto& fac : residual.factors) {
+                targets.push_back({seg.e * fac.mult,
+                                   static_cast<long long>(fac.g.c.size()) - 1,
+                                   fac.g});
+            }
+        } else {
+            // Preserve the explicit boundary for unsupported residual fields.
+            auto factors = factor_fp(f_p);
+            for (const auto& fac : factors) {
+                if (fac.mult == seg.e &&
+                    static_cast<long long>(fac.g.c.size()) - 1 == seg.f)
+                    targets.push_back({seg.e, seg.f, fac.g});
             }
         }
-        if (!matched_first_order_factor) {
+        if (targets.empty()) {
             throw std::runtime_error(
-                "ore_padic_factorization: Newton segment has no matching "
-                "first-order Dedekind factor; higher-order/Montes lift required");
+                "ore_padic_factorization: Newton segment has no refined "
+                "residual factor; higher-order/Montes lift required");
         }
-        of.a = a;
+        for (const auto& target : targets) {
+            OreFactor of;
+            of.segment = seg;
+            long long a = 0;
+            // The residue of β is read from the global Dedekind factor,
+            // not from the residual polynomial's auxiliary variable.
+            // (For the worked ramified segment the latter is x+1 while
+            // β ≡ 0 mod p.)
+            auto global_factors = factor_fp(f_p);
+            bool residue_found = false;
+            for (const auto& fac : global_factors) {
+                if (fac.mult == seg.e * seg.f &&
+                    static_cast<long long>(fac.g.c.size()) - 1 == seg.f &&
+                    !fac.g.c.empty()) {
+                    a = ((-fac.g.c[0]) % p + p) % p;
+                    residue_found = true;
+                    break;
+                }
+            }
+            if (!residue_found && target.f == 1 && !target.g.c.empty()) {
+                a = ((-target.g.c[0]) % p + p) % p;
+            }
+            of.a = a;
         // Use ORE'S ALGORITHM (not the cofactor approach).  The
         // implementation in local_polynomial_ore currently delegates
         // to the cofactor approach for the cases that arise in this
@@ -1665,10 +1691,11 @@ inline std::vector<OreFactor> ore_padic_factorization(const ZpPoly& f, long long
         // uniformizer-based iteration when needed (the heavy machinery
         // for the e>1 ramified case is documented inline in that
         // function).
-        OreLocalPoly ore = local_polynomial_ore(charpoly, p, a, seg.slope_num,
-                                                seg.e, seg.f, precision);
-        of.m_k = ore.m_k;
-        result.push_back(of);
+            OreLocalPoly ore = local_polynomial_ore(charpoly, p, a, seg.slope_num,
+                                                    target.e, target.f, precision);
+            of.m_k = ore.m_k;
+            result.push_back(of);
+        }
     }
     return result;
 }

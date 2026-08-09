@@ -230,6 +230,18 @@ void test_nonmaximal_order_is_not_trusted() {
         const std::vector<std::pair<long long, long long>> quartic_expected_shapes = {{1, 1}, {3, 1}};
         CHECK(refined.complete && refined.shapes == quartic_expected_shapes,
               "non-maximal quartic: refined Newton shapes recover (1,1)+(3,1)");
+        auto ore_factors = adelic::ore_padic_factorization(
+            adelic::zp_poly_from_polyz(R.charpoly(), 2, 30), 30);
+        CHECK(ore_factors.size() == 2,
+              "non-maximal quartic: Ore path emits both residual-refined local factors");
+        if (ore_factors.size() == 2) {
+            std::vector<long long> degrees;
+            for (const auto& factor : ore_factors)
+                degrees.push_back(adelic::zp_poly_degree(factor.m_k));
+            std::sort(degrees.begin(), degrees.end());
+            CHECK((degrees == std::vector<long long>{1, 3}),
+                  "non-maximal quartic: Ore local degrees are 1 and 3");
+        }
     }
     auto shape = adelic::compare_first_order_padic_shapes(R.charpoly(), 2, 30);
     CHECK(!shape.dedekind_order_maximal,
@@ -238,16 +250,9 @@ void test_nonmaximal_order_is_not_trusted() {
           "non-maximal quartic: shape diagnostic exposes first-order mismatch");
     CHECK(shape.newton_shapes.size() == 2 && shape.dedekind_shapes.size() == 2,
           "non-maximal quartic: shape diagnostic records both decompositions");
-    bool higher_order_boundary = false;
-    try {
-        (void)adelic::ore_padic_factorization(
-            adelic::zp_poly_from_polyz(R.charpoly(), 2, 30), 30);
-    } catch (const std::runtime_error& ex) {
-        higher_order_boundary =
-            std::string(ex.what()).find("higher-order/Montes lift required") != std::string::npos;
-    }
-    CHECK(higher_order_boundary,
-          "non-maximal quartic: Ore path reports explicit higher-order boundary");
+    CHECK(adelic::ore_padic_factorization(
+              adelic::zp_poly_from_polyz(R.charpoly(), 2, 30), 30).size() == 2,
+          "non-maximal quartic: residual-refined Ore path avoids the old first-order rejection");
 }
 
 // verdict_label() should give a non-empty string for every enum value.
