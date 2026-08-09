@@ -194,6 +194,9 @@ for this ramified maximal order, so `-21580` is the current certified order
 boundary; the factorization still has to be transported into that closed order.
 That basis-aware prime-ideal step remains the next order-theory target rather
 than an assumption hidden in the classifier.
+As an independent corroboration (not a replacement for the exact in-repo
+checks), SymPy's implementation of Zassenhaus Round 2 returns the same
+index-2 basis and discriminant `-21580` for this polynomial.
 An attempted route through `ore_padic_factorization` currently reaches the
 same boundary: its repeated-factor branch delegates to the cofactor lift and
 rejects this quartic's ambiguous mod-2 factor. That is a useful negative
