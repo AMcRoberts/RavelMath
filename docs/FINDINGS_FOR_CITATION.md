@@ -3922,7 +3922,7 @@ at `d=2`). Rendered and kernel-checked with zero errors and zero
 **Status: EXACT FINITE COMPUTATIONS, with cyclotomic reduction (2026-08-09).**
 
 `app/probe_canonical_property_f.cpp` runs the independent prefix-automaton
-property-(F) checker on four canonical substitutions derived or preserved by
+property-(F) checker on six canonical substitutions derived or preserved by
 the exact beta-expansion machinery. Supergolden (`x^3-x^2-1`) closes with
 strong coincidence at depth 2 and property (F) at 124 nodes; plastic
 (`x^3-x-1`) closes with coincidence depth 13 and property (F) at 205 nodes;
