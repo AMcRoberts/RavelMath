@@ -7,6 +7,30 @@
 
 namespace ravel::proof {
 
+inline const char* strong_coincidence_path_semantics_lean() {
+    return
+        "structure SCClosureEdge where\n"
+        "  from_junction : Int\n"
+        "  to_junction : Int\n"
+        "  jump_size : Int\n"
+        "  child_index : Int\n"
+        "  landmark : List Int\n"
+        "  chain : List Int\n\n"
+        "def sc_checkPath : List SCClosureEdge → List Int → Int → Int → Int → Bool\n"
+        "  | _, [], cursor, remaining, terminal => cursor = terminal && remaining = 0\n"
+        "  | edges, index :: rest, cursor, remaining, terminal =>\n"
+        "      if index < 0 then false else\n"
+        "      match edges[index.toNat]? with\n"
+        "      | none => false\n"
+        "      | some edge =>\n"
+        "          if edge.from_junction ≠ cursor then false\n"
+        "          else if edge.jump_size ≤ remaining then\n"
+        "            sc_checkPath edges rest edge.to_junction (remaining - edge.jump_size) terminal\n"
+        "          else\n"
+        "            rest = [] ∧ remaining > 0 ∧\n"
+        "              edge.chain[(remaining - 1).toNat]? = some terminal\n\n";
+}
+
 inline void render_closure_path_lists(
     std::ostringstream& out, const std::string& stem,
     const std::vector<std::vector<long long>>& first,
@@ -39,25 +63,52 @@ inline void render_closure_int_list(std::ostringstream& out, const std::string& 
     out << "]\n";
 }
 
+inline void render_closure_path_checks(
+    std::ostringstream& out, const std::string& edge_stem, const std::string& side,
+    const std::vector<long long>& terminals,
+    const std::vector<std::vector<long long>>& paths,
+    const std::vector<long long>& junctions,
+    const std::vector<long long>& remaining_depths,
+    const std::vector<bool>* from_suffix = nullptr) {
+    for (std::size_t i = 0; i < paths.size(); ++i) {
+        if (i >= terminals.size() || i >= junctions.size() ||
+            i >= remaining_depths.size() || paths[i].empty() ||
+            junctions[i] < 0 || remaining_depths[i] <= 0) continue;
+        const std::string selected_edges =
+            from_suffix && i < from_suffix->size() && (*from_suffix)[i]
+                ? edge_stem + "_suffix_edges" : edge_stem + "_edges";
+        out << "theorem " << edge_stem << "_" << side << "_path_check_" << i << " :\n"
+            << "    sc_checkPath " << selected_edges << " [";
+        for (std::size_t j = 0; j < paths[i].size(); ++j) {
+            if (j) out << ", ";
+            out << paths[i][j];
+        }
+        out << "] " << junctions[i] << " " << remaining_depths[i]
+            << " " << terminals[i] << " = true := by decide\n\n";
+    }
+}
+
 template <typename Edge>
 inline void render_closure_edges(std::ostringstream& out, const std::string& stem,
                                  const std::vector<Edge>& edges) {
-    out << "def " << stem << "_edges : List (Int × Int × Int × Int × List Int × List Int) := [";
+    out << "def " << stem << "_edges : List SCClosureEdge := [";
     for (std::size_t i = 0; i < edges.size(); ++i) {
         if (i) out << ", ";
         const auto& edge = edges[i];
-        out << "(" << edge.from_junction << ", " << edge.to_junction << ", "
-            << edge.jump_size << ", " << edge.child_index << ", [";
+        out << "{from_junction := " << edge.from_junction
+            << ", to_junction := " << edge.to_junction
+            << ", jump_size := " << edge.jump_size
+            << ", child_index := " << edge.child_index << ", landmark := [";
         for (std::size_t j = 0; j < edge.landmark.size(); ++j) {
             if (j) out << ", ";
             out << edge.landmark[j];
         }
-        out << "], [";
+        out << "], chain := [";
         for (std::size_t j = 0; j < edge.chain.size(); ++j) {
             if (j) out << ", ";
             out << edge.chain[j];
         }
-        out << "])";
+        out << "]}";
     }
     out << "]\n";
 }
@@ -160,6 +211,12 @@ inline std::string render_strong_coincidence_prefix_closure_instances(
                                 node->pair_first_remaining_depths);
         render_closure_int_list(out, stem + "_second_remaining_depths",
                                 node->pair_second_remaining_depths);
+        render_closure_path_checks(out, stem, "first", node->pair_terminal_letters,
+                                   node->pair_first_paths, node->pair_first_junctions,
+                                   node->pair_first_remaining_depths);
+        render_closure_path_checks(out, stem, "second", node->pair_terminal_letters,
+                                   node->pair_second_paths, node->pair_second_junctions,
+                                   node->pair_second_remaining_depths);
         out << "def " << stem << "_first_positions : List Int := [";
         for (std::size_t i = 0; i < node->pair_first_positions.size(); ++i) {
             if (i) out << ", ";
@@ -217,6 +274,7 @@ inline std::string render_strong_coincidence_closure_instances(
         const std::string stem = "strong_coincidence_closure_" + std::to_string(counter++);
         out << "/-- Concrete finite full strong-coincidence closure run. -/\n";
         render_closure_edges(out, stem, node->edges);
+        render_closure_edges(out, stem + "_suffix", node->suffix_edges);
         out << "def " << stem << "_images : List (List Nat) := [";
         for (std::size_t i = 0; i < node->images.size(); ++i) {
             if (i) out << ", ";
@@ -259,6 +317,12 @@ inline std::string render_strong_coincidence_closure_instances(
                                 node->pair_first_remaining_depths);
         render_closure_int_list(out, stem + "_second_remaining_depths",
                                 node->pair_second_remaining_depths);
+        render_closure_path_checks(out, stem, "first", node->pair_terminal_letters,
+                                   node->pair_first_paths, node->pair_first_junctions,
+                                   node->pair_first_remaining_depths, &node->pair_from_suffix);
+        render_closure_path_checks(out, stem, "second", node->pair_terminal_letters,
+                                   node->pair_second_paths, node->pair_second_junctions,
+                                   node->pair_second_remaining_depths, &node->pair_from_suffix);
         out << "def " << stem << "_from_suffix : List Bool := [";
         for (std::size_t i = 0; i < node->pair_from_suffix.size(); ++i) {
             if (i) out << ", ";
@@ -286,6 +350,8 @@ inline std::string render_strong_coincidence_closure_instances(
         out << "theorem " << stem << "_summary :\n"
             << "    " << stem << "_images.length = " << node->images.size() << " ∧\n"
             << "    " << stem << "_edges.length = " << node->edges.size() << " ∧\n"
+            << "    " << stem << "_suffix_edges.length = "
+            << node->suffix_edges.size() << " ∧\n"
             << "    " << stem << "_resolution_depths.length = "
             << node->pair_resolution_depths.size() << " ∧\n"
             << "    " << stem << "_terminal_letters.length = "

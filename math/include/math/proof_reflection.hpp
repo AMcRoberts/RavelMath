@@ -378,6 +378,7 @@ struct StrongCoincidenceClosureCertificate {
     std::vector<std::vector<long long>> images;
     std::vector<long long> matrix;
     std::vector<Edge> edges;
+    std::vector<Edge> suffix_edges;
     std::vector<long long> pair_resolution_depths;
     std::vector<long long> pair_terminal_letters;
     std::vector<std::vector<long long>> pair_vectors;

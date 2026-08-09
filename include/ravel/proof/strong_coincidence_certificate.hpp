@@ -114,19 +114,19 @@ inline bool validate_closure_pair_witness_against_words(
                                            max_word_len).has_value();
 }
 
-template <std::size_t d, typename Node>
+template <std::size_t d, typename Edge>
 inline void serialize_closure_edges(
-    const std::array<std::vector<long long>, d>& images, Node& node) {
-    node.edges.clear();
+    const std::array<std::vector<long long>, d>& images, std::vector<Edge>& destination) {
+    destination.clear();
     for (const auto& edge : build_junction_graph<d>(images)) {
-        typename Node::Edge serialized;
+        Edge serialized;
         serialized.from_junction = edge.from_junction;
         serialized.to_junction = edge.to_junction;
         serialized.jump_size = edge.jump_size;
         serialized.child_index = edge.child_index;
         serialized.landmark.assign(edge.landmark.begin(), edge.landmark.end());
         serialized.chain = edge.chain;
-        node.edges.push_back(std::move(serialized));
+        destination.push_back(std::move(serialized));
     }
 }
 
@@ -184,7 +184,7 @@ inline StrongCoincidencePrefixClosureStageResult stage_strong_coincidence_prefix
 
     mathlib::reflection::StrongCoincidencePrefixClosureCertificate node;
     node.images.assign(images.begin(), images.end());
-    serialize_closure_edges<d>(images, node);
+    serialize_closure_edges<d>(images, node.edges);
     node.pair_resolution_depths = result.pair_resolution_depths;
     node.pair_terminal_letters = result.pair_terminal_letters;
     node.pair_vectors = result.pair_vectors;
@@ -281,7 +281,8 @@ inline StrongCoincidenceClosureStageResult stage_strong_coincidence_closure(
 
     mathlib::reflection::StrongCoincidenceClosureCertificate node;
     node.images.assign(images.begin(), images.end());
-    serialize_closure_edges<d>(images, node);
+    serialize_closure_edges<d>(images, node.edges);
+    serialize_closure_edges<d>(reverse_substitution_images<d>(images), node.suffix_edges);
     node.pair_resolution_depths = result.pair_resolution_depths;
     node.pair_terminal_letters = result.pair_terminal_letters;
     node.pair_vectors = result.pair_vectors;

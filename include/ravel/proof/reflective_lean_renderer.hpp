@@ -4767,6 +4767,9 @@ inline std::string render_reflective_lean_module(const mathlib::reflection::Trac
     out << render_property_f_graph_instances(trace);
     out << render_property_f_violation_instances(trace);
     out << render_strong_coincidence_run_instances(trace);
+    if (!trace.find<mathlib::reflection::StrongCoincidencePrefixClosureCertificate>().empty() ||
+        !trace.find<mathlib::reflection::StrongCoincidenceClosureCertificate>().empty())
+        out << strong_coincidence_path_semantics_lean();
     out << render_strong_coincidence_prefix_closure_instances(trace);
     out << render_strong_coincidence_closure_instances(trace);
     out << render_strong_coincidence_pair_witness_instances(trace);

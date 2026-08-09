@@ -294,3 +294,9 @@ opaque integers.
 The payload also records each side's post-deterministic-chain junction and
 remaining depth, so a Lean recurrence checker has all of the state needed to
 interpret a path without reconstructing the skipped singleton chain.
+The generated artifact now has a small structural `sc_checkPath` interpreter
+and a `by decide` theorem for each nontrivial exported path, checking edge
+indices, junction continuity, jump-budget consumption, and terminal-chain
+cutoffs. Full certificates serialize a separate reversed-edge table for
+suffix witnesses, so the suffix route is not accidentally checked against the
+original orientation.
