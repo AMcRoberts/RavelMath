@@ -911,3 +911,7 @@ That transport is now executable and replay-checked: source-to-root and
 root-to-target zero paths surround the required cycle power. The theta10 cap-
 100 `±20` certificate transports all 850,176 states, with maximum word length
 78.
+The reusable scheme certificate packages the logical implication: complete
+zero-kernel coverage plus the two root cycles yields arbitrary integer
+displacement on that finite catalogue. The remaining family theorem is to
+prove those hypotheses uniformly.

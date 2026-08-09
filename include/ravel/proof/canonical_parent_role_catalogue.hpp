@@ -327,6 +327,41 @@ struct ParentRoleIntegerTransportReport {
     bool every_word_replayed{};
 };
 
+struct ParentRoleIntegerSchemeReport {
+    bool proved{};
+    bool arbitrary_integer_displacement{};
+    std::size_t root_role{};
+    std::size_t zero_kernel_pairs{};
+    std::size_t maximum_zero_path_length{};
+    std::size_t positive_cycle_length{};
+    std::size_t negative_cycle_length{};
+};
+
+// A finite catalogue-level theorem scheme.  The hypotheses are all
+// replay-checked finite facts: every ordered role pair has a zero-defect path,
+// and one common role has +/-1 closed walks.  Repeating those closed walks
+// then constructs a path of any integer net defect between any two roles.
+// This does not assert the same hypotheses for an unbounded Pisot family; it
+// isolates exactly what the family theorem must establish.
+inline ParentRoleIntegerSchemeReport derive_parent_role_integer_scheme(
+    const CanonicalParentRoleCatalogue& catalogue, std::size_t zero_word_cap,
+    std::size_t cycle_word_cap, std::size_t root_role = 0) {
+    ParentRoleIntegerSchemeReport out;
+    out.root_role = root_role;
+    if (!catalogue.proved) return out;
+    const auto closure = derive_parent_role_word_closure(catalogue, zero_word_cap, 0);
+    const auto cycles = derive_parent_role_unit_cycles(catalogue, cycle_word_cap, root_role);
+    if (!closure.zero_net_role_graph_complete || !closure.zero_net_witnesses_verified ||
+        !cycles.positive_cycle_found || !cycles.negative_cycle_found) return out;
+    out.zero_kernel_pairs = closure.zero_net_pairs;
+    out.maximum_zero_path_length = closure.maximum_zero_net_word_length;
+    out.positive_cycle_length = cycles.positive_defects.size();
+    out.negative_cycle_length = cycles.negative_defects.size();
+    out.arbitrary_integer_displacement = true;
+    out.proved = true;
+    return out;
+}
+
 // Builds the finite transport theorem explicitly: zero-kernel witness
 // source -> root, a power of the common +/-1 unit cycle, then a zero-kernel
 // witness root -> target.  This is the constructive integer extension at a

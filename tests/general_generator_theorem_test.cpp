@@ -82,12 +82,15 @@ void inspect_forest(const std::string& name, std::vector<long long> low_first,
     const auto cycles = ravel::proof::derive_parent_role_unit_cycles(forest, word_cap);
     const auto transport = ravel::proof::derive_parent_role_integer_transport(
         forest, word_cap, radius);
+    const auto scheme = ravel::proof::derive_parent_role_integer_scheme(
+        forest, word_cap, word_cap);
     assert(forest.proved && holonomy.proved && closure.proved);
     assert(profile.proved);
     assert(cycles.proved && cycles.positive_cycle_found && cycles.negative_cycle_found);
     assert(cycles.positive_roles.size() == cycles.positive_defects.size() + 1);
     assert(cycles.negative_roles.size() == cycles.negative_defects.size() + 1);
     assert(transport.proved);
+    assert(scheme.proved && scheme.arbitrary_integer_displacement);
     std::cout << name << ": alphabet=" << forest.alphabet_size
               << " roles=" << forest.role_count
               << " defects=" << forest.defects.size()
@@ -109,6 +112,7 @@ void inspect_forest(const std::string& name, std::vector<long long> low_first,
     for (const auto d : cycles.negative_defects) std::cout << d << ",";
     std::cout << " transport=" << transport.transported_words
               << " max_transport_word=" << transport.maximum_transport_word_length
+              << " arbitrary_integer_scheme=" << scheme.arbitrary_integer_displacement
               << "\n";
 }
 

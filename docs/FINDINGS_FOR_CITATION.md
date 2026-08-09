@@ -4013,6 +4013,11 @@ The new integer-transport certificate explicitly constructs every bounded
 word as source-to-root zero path, repeated unit cycle, and root-to-target zero
 path, then replays every edge. It transports all 850,176 theta10 states in
 the `±20` window; the longest constructed word has 78 edges.
+The catalogue-level scheme now packages the implication itself: complete
+zero-kernel coverage plus the two root unit cycles yields arbitrary integer
+displacement on that finite catalogue. This is a constructive per-catalogue
+Z-extension certificate, not a claim that the hypotheses hold uniformly for
+all Pisot substitutions.
 At word cap 100, theta10 realizes the complete `-20..+20` window
 (850,176/850,176 states), again with all zero-net witnesses replay-checked.
 The reusable window profile at word cap 30 gives largest complete radii 5,
