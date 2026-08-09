@@ -569,6 +569,9 @@ struct PropertyFFiniteRunCertificate {
 struct PropertyFGraphCertificate {
     std::vector<std::string> characteristic_polynomial;
     std::vector<std::vector<ExactRationalCoefficient>> beta_inverse_matrix;
+    std::vector<long long> scc_labels;
+    std::vector<long long> scc_sizes;
+    long long nonzero_cycle_components = 0;
     std::vector<std::string> gamma_keys;
     std::vector<std::vector<ExactRationalCoefficient>> gamma_coefficients;
     std::vector<long long> letters;

@@ -145,3 +145,7 @@ That specialization is now removed: the renderer generates a coefficient
 structure and linear beta-inverse operator from the exported transition matrix
 for any finite degree. A Tribonacci degree-3 artifact, including every edge
 recurrence, kernel-checks successfully.
+The graph certificate now also exports SCC labels, SCC sizes, and the
+nonzero-cycle count. The generated finite Lean artifact checks that the SCC
+size list sums to the node count, while the C++ staging validator checks the
+partition and exact recurrence data before serialization.

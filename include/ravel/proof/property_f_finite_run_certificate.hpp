@@ -97,6 +97,19 @@ inline bool stage_property_f_graph(const adelic::PropertyFResult& result,
     beta.coeff(1) = mathlib::Rat(1, 1);
     const auto inverse = mathlib::invert_in_qbeta(beta, ring);
     if (!inverse.invertible) throw std::invalid_argument("property-F beta is not invertible");
+    if (graph.scc_labels.size() != graph.nodes.size())
+        throw std::invalid_argument("property-F graph SCC labels have the wrong length");
+    if (graph.scc_sizes.empty() && !graph.nodes.empty())
+        throw std::invalid_argument("property-F graph has no SCC size data");
+    long long size_sum = 0;
+    for (const long long size : graph.scc_sizes) {
+        if (size < 0) throw std::invalid_argument("property-F graph has a negative SCC size");
+        size_sum += size;
+    }
+    if (size_sum != static_cast<long long>(graph.nodes.size()))
+        throw std::invalid_argument("property-F graph SCC sizes do not partition the nodes");
+    if (graph.nonzero_cycle_components < 0)
+        throw std::invalid_argument("property-F graph has a negative nonzero-cycle count");
     if (graph.beta_inverse_matrix.size() != ring.degree())
         throw std::invalid_argument("property-F beta-inverse matrix has the wrong row count");
     for (std::size_t row = 0; row < ring.degree(); ++row) {
@@ -128,6 +141,9 @@ inline bool stage_property_f_graph(const adelic::PropertyFResult& result,
     if (!mathlib::reflection::enabled()) return false;
     mathlib::reflection::PropertyFGraphCertificate node;
     node.characteristic_polynomial = graph.characteristic_polynomial;
+    node.scc_labels = graph.scc_labels;
+    node.scc_sizes = graph.scc_sizes;
+    node.nonzero_cycle_components = graph.nonzero_cycle_components;
     node.beta_inverse_matrix.reserve(graph.beta_inverse_matrix.size());
     for (const auto& row : graph.beta_inverse_matrix) {
         std::vector<mathlib::reflection::ExactRationalCoefficient> converted;

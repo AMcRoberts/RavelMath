@@ -346,6 +346,9 @@ struct PropertyFGraphNode {
 struct PropertyFGraph {
     std::vector<std::string> characteristic_polynomial;
     std::vector<std::vector<std::pair<std::string, std::string>>> beta_inverse_matrix;
+    std::vector<long long> scc_labels;
+    std::vector<long long> scc_sizes;
+    long long nonzero_cycle_components = 0;
     std::vector<PropertyFGraphNode> nodes;
 };
 
@@ -1175,6 +1178,10 @@ PropertyFResult check_property_f(
         if (is_zero_node[static_cast<std::size_t>(v)]) scc_has_zero[static_cast<std::size_t>(s)] = true;
         else scc_has_nonzero[static_cast<std::size_t>(s)] = true;
     }
+    if (out_graph != nullptr) {
+        out_graph->scc_labels = scc_of;
+        out_graph->scc_sizes = scc_size;
+    }
     std::vector<bool> scc_has_self_loop(static_cast<std::size_t>(scc_count), false);
     for (long long v = 0; v < n; ++v) {
         for (long long w : adj[static_cast<std::size_t>(v)]) {
@@ -1205,6 +1212,7 @@ PropertyFResult check_property_f(
             has_nonzero_cycle = true;
         }
     }
+    if (out_graph != nullptr) out_graph->nonzero_cycle_components = nonzero_cycle_components;
     if (out_zero_nodes_beyond_frontier) *out_zero_nodes_beyond_frontier = zero_nodes_beyond_frontier;
     PropertyFResult out;
     out.holds = !has_nonzero_cycle;
