@@ -87,6 +87,12 @@ inline FirstGenuineFourthGeneratorIntertwinerCertificate
     lim.closure_cap = 40000;
     lim.corona_cap = 200000;
     lim.max_corona_rounds = 14;
+    // This certificate consumes only the exact boundary graph.  Retaining
+    // the dense boundary adjacency/spectral matrix would add O(|B|^2)
+    // storage without contributing to the intertwiner or grammar checks.
+    // Keep the graph-only path enabled so larger fourth-generator candidates
+    // do not silently inherit the dense-matrix memory cost.
+    lim.retain_boundary_matrix = false;
     const auto report = compute_contact_boundary_from_subst<3>(rule,beta,b2,3,lim);
     const auto subst = make_substitution<3>(rule,beta);
 
