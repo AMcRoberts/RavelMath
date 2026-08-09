@@ -967,12 +967,20 @@ PropertyFResult check_property_f(
                 double norm = archimedean_norm(gamma_prime, secondary_roots);
                 long long v = get_or_create(gamma_prime, static_cast<long long>(b));
                 adj[static_cast<std::size_t>(u)].push_back(v);
-                std::vector<std::pair<std::string, std::string>> digit_coefficients;
-                for (const auto& coefficient : delta_p.coeffs_) {
-                    digit_coefficients.emplace_back(mathlib::str(mathlib::num(coefficient)),
-                                                    mathlib::str(mathlib::den(coefficient)));
+                // Edge digit coefficients are only needed by the optional
+                // reflected graph payload. Ordinary classification consumes
+                // adjacency/SCC data only; avoid allocating millions of
+                // diagnostic strings in that hot path.
+                if (out_graph != nullptr) {
+                    std::vector<std::pair<std::string, std::string>> digit_coefficients;
+                    for (const auto& coefficient : delta_p.coeffs_) {
+                        digit_coefficients.emplace_back(mathlib::str(mathlib::num(coefficient)),
+                                                        mathlib::str(mathlib::den(coefficient)));
+                    }
+                    edge_digits[static_cast<std::size_t>(u)].push_back(std::move(digit_coefficients));
+                } else {
+                    edge_digits[static_cast<std::size_t>(u)].push_back({});
                 }
-                edge_digits[static_cast<std::size_t>(u)].push_back(std::move(digit_coefficients));
                 bool within_bound = norm < bound_M && (!extra_bound || extra_bound(gamma_prime));
                 if (!within_bound) ++boundary_edges;
                 if (within_bound && !enqueued[static_cast<std::size_t>(v)]) {

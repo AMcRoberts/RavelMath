@@ -398,3 +398,8 @@ identity or the certified adjacency; it removes unnecessary logarithmic lookup
 and tree-allocation overhead in million-node quartic runs. On `rndW5_6` the
 same 3,799,168-node closure still passes the focused regressions, with a
 measured peak RSS of about 3.96 GB at a 4M cap.
+
+The ordinary classifier path now also skips reflected edge-digit strings
+unless a `PropertyFGraph` payload was explicitly requested. On the same
+`rndW5_6` outlier at the former 1M cap this reduced measured peak RSS to about
+0.75 GB; reflection tests still receive the complete digit payload.
