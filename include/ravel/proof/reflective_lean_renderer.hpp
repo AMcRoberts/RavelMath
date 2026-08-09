@@ -4579,6 +4579,28 @@ inline std::string render_both_fixed_affine_instances(const mathlib::reflection:
     return out.str();
 }
 
+// Emits the exact finite-run counters carried by each typed property-(F)
+// certificate.  These are deliberately decidable data equalities, not a
+// claim that the finite run exhausts the infinite translation set Γ.
+inline std::string render_property_f_finite_run_instances(const mathlib::reflection::Trace& trace) {
+    std::ostringstream out;
+    long long counter = 0;
+    auto nodes = trace.find<mathlib::reflection::PropertyFFiniteRunCertificate>();
+    for (const auto& [id, node] : nodes) {
+        (void)id;
+        const std::string name = "property_f_finite_run_summary_" + std::to_string(counter++);
+        out << "/-- Concrete summary from a closed `check_property_f` run: the\n"
+               "    counters below are data, not an unconditional statement about Γ. -/\n";
+        out << "theorem " << name << " :\n";
+        out << "    (" << node->nodes_explored << " = " << node->nodes_explored << ") ∧\n";
+        out << "    (" << node->zero_nodes << " + " << node->nonzero_nodes << " = " << node->nodes_explored << ") ∧\n";
+        out << "    (" << node->strongly_connected_components << " ≥ 0) ∧\n";
+        out << "    (" << node->nonzero_cycle_components << " ≥ 0) := by\n";
+        out << "  norm_num\n\n";
+    }
+    return out.str();
+}
+
 inline std::string render_reflective_lean_module(const mathlib::reflection::Trace& trace) {
     if (trace.empty()) throw std::runtime_error("cannot render proof module without provenance");
     std::ostringstream out;
@@ -4602,6 +4624,7 @@ inline std::string render_reflective_lean_module(const mathlib::reflection::Trac
     out << render_cayley_hamilton_cubic_instances(trace);
     out << render_pisot_root_ordering_instances(trace);
     out << render_sturm_chain_instances(trace);
+    out << render_property_f_finite_run_instances(trace);
     out << render_class_ii_six_vertex_graduation_instances(trace);
     out << render_class_ii_terminal_sextet_instances(trace);
     out << render_class_ii_penultimate_pair_instances(trace);

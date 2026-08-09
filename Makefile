@@ -78,7 +78,7 @@ TRANSITION_FILES := $(addprefix $(TRANSITIONS_DIR)/spectre_transitions_,$(addsuf
 
 .PHONY: all build check clean shoot-the-moon ravel_proof_runner
 .PHONY: math apps tests lua data tables lean-check
-.PHONY: d_cont_check_test tile_faces_test number_field_parity_test poly_discriminant_bigint_test ambient_graph_test corona_test
+.PHONY: d_cont_check_test tile_faces_test number_field_parity_test poly_discriminant_bigint_test ambient_graph_test corona_test property_f_reflection_test
 .PHONY: contact_boundary_test exact_pisot_test spectral_general_test
 .PHONY: survey_test qbeta_eigenvalue_test qbeta_eigenvalue
 .PHONY: rational_transcendentals_test gkw_sturm_certify gkw_fully_rigorous
@@ -1284,6 +1284,15 @@ COINCIDENCE_PROPERTY_F_TEST_BIN := $(BUILDDIR)/coincidence_and_property_f_test
 coincidence_and_property_f_test: $(COINCIDENCE_PROPERTY_F_TEST_BIN)
 $(COINCIDENCE_PROPERTY_F_TEST_BIN): $(TESTDIR)/coincidence_and_property_f_test.cpp \
 		$(INCDIR)/adelic/coincidence_and_property_f.hpp $(INCDIR)/adelic/prefix_automaton.hpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+PROPERTY_F_REFLECTION_TEST_BIN := $(BUILDDIR)/property_f_reflection_test
+property_f_reflection_test: $(PROPERTY_F_REFLECTION_TEST_BIN)
+	./$(PROPERTY_F_REFLECTION_TEST_BIN)
+$(PROPERTY_F_REFLECTION_TEST_BIN): $(TESTDIR)/property_f_reflection_test.cpp \
+		$(INCDIR)/adelic/coincidence_and_property_f.hpp \
+		$(INCDIR)/ravel/proof/property_f_finite_run_certificate.hpp \
+		$(INCDIR)/ravel/proof/reflective_lean_renderer.hpp | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
 # local_field_test: tests for include/adelic/local_field.hpp -- the

@@ -548,6 +548,20 @@ struct SturmChainCertificate {
     std::string description;
 };
 
+// A closed finite run of the property-(F) graph checker.  This is deliberately
+// a summary certificate, not a claim about the infinite translation set Γ:
+// the graph construction and its bounds remain the mathematical inputs, while
+// these counters preserve the exact result that the checker actually returned.
+struct PropertyFFiniteRunCertificate {
+    long long nodes_explored = 0;
+    long long zero_nodes = 0;
+    long long nonzero_nodes = 0;
+    long long strongly_connected_components = 0;
+    long long nonzero_cycle_components = 0;
+    bool holds = false;
+    std::string description;
+};
+
 // `class_ii_neighbor2_penultimate_promoted_states(a)`/`_survivor_
 // transfer(a)` at a CONCRETE `a` -- carries the CONCRETE 6 promoted
 // nodes and the 1 transferred node, so the renderer decides them
@@ -924,7 +938,7 @@ using Payload = std::variant<MatrixFamily, MatrixInstance, EraseIndexMap,
                              ClassIIShellRoundCertificate, ClassIIFixedTableCertificate,
                              ClassIITerminalShellCertificate, ClassIINeighborDSupportCertificate,
                              CayleyHamiltonCubicCertificate, PisotRootOrderingCertificate,
-                             SturmChainCertificate,
+                             SturmChainCertificate, PropertyFFiniteRunCertificate,
                              ClassIISixVertexGraduationCertificate, ClassIITerminalSextetCertificate,
                              ClassIIPenultimatePairCertificate, ClassIIInteriorTipCertificate,
                              ClassIIGlobalRoundPhaseCertificate, BothFixedAffineCertificate,
@@ -1239,6 +1253,7 @@ inline std::string payload_name(const Payload& payload) {
         else if constexpr (std::is_same_v<T, CayleyHamiltonCubicCertificate>) return "lean.cayley_hamilton_cubic_certificate";
         else if constexpr (std::is_same_v<T, PisotRootOrderingCertificate>) return "lean.pisot_root_ordering_certificate";
         else if constexpr (std::is_same_v<T, SturmChainCertificate>) return "lean.sturm_chain_certificate";
+        else if constexpr (std::is_same_v<T, PropertyFFiniteRunCertificate>) return "lean.property_f_finite_run_certificate";
         else if constexpr (std::is_same_v<T, ClassIISixVertexGraduationCertificate>) return "lean.class_ii_six_vertex_graduation_certificate";
         else if constexpr (std::is_same_v<T, ClassIITerminalSextetCertificate>) return "lean.class_ii_terminal_sextet_certificate";
         else if constexpr (std::is_same_v<T, ClassIIPenultimatePairCertificate>) return "lean.class_ii_penultimate_pair_certificate";
@@ -1353,6 +1368,12 @@ inline std::string payload_detail(const Payload& payload) {
                 << " V(lo)=" << value.variations_lo << " V(hi)=" << value.variations_hi
                 << " roots=" << value.root_count
                 << " classifier_pisot=" << (value.classifier_is_pisot ? "true" : "false");
+        } else if constexpr (std::is_same_v<T, PropertyFFiniteRunCertificate>) {
+            out << value.description << " -- nodes=" << value.nodes_explored
+                << " zero=" << value.zero_nodes << " nonzero=" << value.nonzero_nodes
+                << " scc=" << value.strongly_connected_components
+                << " nonzero_cycles=" << value.nonzero_cycle_components
+                << " holds=" << (value.holds ? "true" : "false");
         } else if constexpr (std::is_same_v<T, ClassIISixVertexGraduationCertificate>) {
             out << "a=" << value.a << " -- instantiates promotedNodes/transferredNode at q=" << (value.a - 1);
         } else if constexpr (std::is_same_v<T, ClassIITerminalSextetCertificate>) {
