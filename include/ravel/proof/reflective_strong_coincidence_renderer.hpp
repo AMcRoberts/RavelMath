@@ -9,6 +9,7 @@ namespace ravel::proof {
 
 inline const char* strong_coincidence_path_semantics_lean() {
     return
+        "set_option maxRecDepth 100000\n\n"
         "structure SCClosureEdge where\n"
         "  from_junction : Int\n"
         "  to_junction : Int\n"
@@ -48,7 +49,7 @@ inline const char* strong_coincidence_path_semantics_lean() {
         "def sc_rowMul (m n : List Int) (d row cols : Nat) : List Int :=\n"
         "  match cols with\n"
         "  | 0 => []\n"
-        "  | t + 1 => sc_rowMul m n d row t ++ [sc_dotMul m n d row t]\n\n"
+        "  | t + 1 => sc_rowMul m n d row t ++ [sc_dotMul m n d row t d]\n\n"
         "def sc_matMul (m n : List Int) (d rows cols : Nat) : List Int :=\n"
         "  match rows with\n"
         "  | 0 => []\n"
@@ -64,7 +65,7 @@ inline const char* strong_coincidence_path_semantics_lean() {
         "def sc_matPow (m : List Int) (d p : Nat) : List Int :=\n"
         "  match p with\n"
         "  | 0 => sc_identity d d\n"
-        "  | t + 1 => sc_matMul (sc_matPow m d t) m d d d\n\n"
+        "  | t + 1 => sc_matMul m (sc_matPow m d t) d d d\n\n"
         "def sc_matVecAux (m v : List Int) (d rows : Nat) : List Int :=\n"
         "  match rows with\n"
         "  | 0 => []\n"
@@ -173,6 +174,7 @@ inline void render_closure_derived_weight_checks(
     const std::vector<std::vector<long long>>& paths,
     const std::vector<long long>& junctions,
     const std::vector<long long>& remaining_depths,
+    std::size_t dimension,
     const std::vector<bool>* from_suffix = nullptr) {
     for (std::size_t i = 0; i < recorded.size(); ++i) {
         if (i >= paths.size() || i >= junctions.size() || i >= remaining_depths.size() ||
@@ -189,7 +191,7 @@ inline void render_closure_derived_weight_checks(
             out << paths[i][j];
         }
         out << "] " << junctions[i] << " " << remaining_depths[i] << " "
-            << paths[i].size() << " = [";
+            << dimension << " = [";
         for (std::size_t j = 0; j < recorded[i].size(); ++j) {
             if (j) out << ", ";
             out << "[";
@@ -198,6 +200,37 @@ inline void render_closure_derived_weight_checks(
                 out << recorded[i][j][k];
             }
             out << "]";
+        }
+        out << "] := by decide\n\n";
+    }
+}
+
+inline void render_closure_derived_sum_checks(
+    std::ostringstream& out, const std::string& stem,
+    const std::string& edge_stem, const std::string& matrix_stem,
+    const std::vector<std::vector<long long>>& targets,
+    const std::vector<std::vector<long long>>& paths,
+    const std::vector<long long>& junctions,
+    const std::vector<long long>& remaining_depths, std::size_t dimension,
+    const std::vector<bool>* from_suffix = nullptr) {
+    for (std::size_t i = 0; i < targets.size(); ++i) {
+        if (i >= paths.size() || i >= junctions.size() || i >= remaining_depths.size() ||
+            paths[i].empty() || junctions[i] < 0 || remaining_depths[i] <= 0) continue;
+        const std::string selected_edges =
+            from_suffix && i < from_suffix->size() && (*from_suffix)[i]
+                ? edge_stem + "_suffix_edges" : edge_stem + "_edges";
+        out << "theorem " << stem << "_derived_sum_check_" << i << " :\n"
+            << "    sc_sumVectors (sc_pathWeights " << selected_edges << " "
+            << matrix_stem << "_matrix [";
+        for (std::size_t j = 0; j < paths[i].size(); ++j) {
+            if (j) out << ", ";
+            out << paths[i][j];
+        }
+        out << "] " << junctions[i] << " " << remaining_depths[i] << " "
+            << dimension << ") = [";
+        for (std::size_t j = 0; j < targets[i].size(); ++j) {
+            if (j) out << ", ";
+            out << targets[i][j];
         }
         out << "] := by decide\n\n";
     }
@@ -388,11 +421,19 @@ inline std::string render_strong_coincidence_prefix_closure_instances(
         render_closure_derived_weight_checks(
             out, stem + "_first", stem, stem, node->pair_first_weighted_vectors,
             node->pair_first_paths, node->pair_first_junctions,
-            node->pair_first_remaining_depths);
+            node->pair_first_remaining_depths, node->images.size());
         render_closure_derived_weight_checks(
             out, stem + "_second", stem, stem, node->pair_second_weighted_vectors,
             node->pair_second_paths, node->pair_second_junctions,
-            node->pair_second_remaining_depths);
+            node->pair_second_remaining_depths, node->images.size());
+        render_closure_derived_sum_checks(
+            out, stem + "_first", stem, stem, node->pair_vectors,
+            node->pair_first_paths, node->pair_first_junctions,
+            node->pair_first_remaining_depths, node->images.size());
+        render_closure_derived_sum_checks(
+            out, stem + "_second", stem, stem, node->pair_vectors,
+            node->pair_second_paths, node->pair_second_junctions,
+            node->pair_second_remaining_depths, node->images.size());
         out << "theorem " << stem << "_summary :\n"
             << "    " << stem << "_images.length = " << node->images.size() << " ∧\n"
             << "    " << stem << "_edges.length = " << node->edges.size() << " ∧\n"
@@ -522,11 +563,19 @@ inline std::string render_strong_coincidence_closure_instances(
         render_closure_derived_weight_checks(
             out, stem + "_first", stem, stem, node->pair_first_weighted_vectors,
             node->pair_first_paths, node->pair_first_junctions,
-            node->pair_first_remaining_depths, &node->pair_from_suffix);
+            node->pair_first_remaining_depths, node->images.size(), &node->pair_from_suffix);
         render_closure_derived_weight_checks(
             out, stem + "_second", stem, stem, node->pair_second_weighted_vectors,
             node->pair_second_paths, node->pair_second_junctions,
-            node->pair_second_remaining_depths, &node->pair_from_suffix);
+            node->pair_second_remaining_depths, node->images.size(), &node->pair_from_suffix);
+        render_closure_derived_sum_checks(
+            out, stem + "_first", stem, stem, node->pair_vectors,
+            node->pair_first_paths, node->pair_first_junctions,
+            node->pair_first_remaining_depths, node->images.size(), &node->pair_from_suffix);
+        render_closure_derived_sum_checks(
+            out, stem + "_second", stem, stem, node->pair_vectors,
+            node->pair_second_paths, node->pair_second_junctions,
+            node->pair_second_remaining_depths, node->images.size(), &node->pair_from_suffix);
         out << "theorem " << stem << "_summary :\n"
             << "    " << stem << "_images.length = " << node->images.size() << " ∧\n"
             << "    " << stem << "_edges.length = " << node->edges.size() << " ∧\n"

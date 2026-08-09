@@ -310,3 +310,7 @@ implements matrix powers and applies the power dictated by each edge's
 remaining depth. A `sc_pathWeights` theorem now checks the entire structural
 path against the recorded weighted vectors, so the certificate no longer needs
 to treat the C++-computed edge weights as primitive data.
+The companion `sc_sumVectors (sc_pathWeights ...)` theorem now derives the
+common landmark vector itself from the matrix and path semantics. The recorded
+edge vectors remain available for diagnostics, while the kernel-visible
+coincidence equation is independently reconstructed.
