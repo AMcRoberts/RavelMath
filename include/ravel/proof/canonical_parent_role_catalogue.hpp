@@ -104,6 +104,63 @@ struct ParentRoleCompositionReport {
     ParentRoleCompositionWitness first_missing;
 };
 
+struct ParentRoleWordClosureReport {
+    bool proved{};
+    std::size_t max_word_length{};
+    std::size_t reachable_source_target_net_states{};
+    std::size_t zero_net_pairs{};
+    std::size_t zero_net_missing_pairs{};
+    bool zero_net_role_graph_complete{};
+};
+
+// Enumerates the finite prefix of the positive word closure.  The state is
+// (starting role, current role, accumulated defect); unlike a tree dump this
+// quotient deduplicates equal labelled states and therefore exposes the
+// actual finite-state cocycle.  The cap is explicit: an incomplete result is
+// still useful evidence and is never reported as an infinite theorem.
+inline ParentRoleWordClosureReport derive_parent_role_word_closure(
+    const CanonicalParentRoleCatalogue& catalogue, std::size_t max_word_length) {
+    ParentRoleWordClosureReport out;
+    out.max_word_length = max_word_length;
+    if (!catalogue.proved || max_word_length == 0) return out;
+    std::vector<std::vector<std::pair<std::size_t,long long>>> adj(catalogue.role_count);
+    for (const auto& edge : catalogue.edges)
+        adj[edge.source_role].push_back({edge.target_role, edge.defect});
+    const long long net_bound = catalogue.max_prefix_length *
+                                static_cast<long long>(max_word_length);
+    std::size_t zero_pairs = 0;
+    for (std::size_t source = 0; source < catalogue.role_count; ++source) {
+        std::set<std::pair<std::size_t,long long>> seen;
+        std::vector<std::pair<std::size_t,long long>> frontier;
+        seen.insert({source, 0});
+        frontier.push_back({source, 0});
+        for (std::size_t depth = 0; depth < max_word_length; ++depth) {
+            std::vector<std::pair<std::size_t,long long>> next;
+            for (const auto& [role, net] : frontier)
+                for (const auto& [target, label] : adj[role]) {
+                    const long long new_net = net + label;
+                    if (new_net < -net_bound || new_net > net_bound) continue;
+                    const auto state = std::make_pair(target, new_net);
+                    if (seen.insert(state).second) next.push_back(state);
+                }
+            frontier.swap(next);
+            if (frontier.empty()) break;
+        }
+        std::set<std::size_t> zero_targets;
+        for (const auto& [target, net] : seen) {
+            ++out.reachable_source_target_net_states;
+            if (net == 0) zero_targets.insert(target);
+        }
+        zero_pairs += zero_targets.size();
+    }
+    out.zero_net_pairs = zero_pairs;
+    const auto total_pairs = catalogue.role_count * catalogue.role_count;
+    out.zero_net_missing_pairs = total_pairs > zero_pairs ? total_pairs - zero_pairs : 0;
+    out.zero_net_role_graph_complete = (out.zero_net_missing_pairs == 0);
+    out.proved = true;
+    return out;
+}
+
 // Checks whether the one-step relation is already closed under composition.
 // Usually it is not: generator words are expected to create longer paths.
 // Recording the first missing composite makes that distinction explicit and

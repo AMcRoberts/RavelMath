@@ -3975,3 +3975,8 @@ group action.
 The composition audit also finds many composable two-step paths whose summed
 defect has no one-step edge, confirming that this is a finitely generated
 relation whose closure is by words, not a one-step finite group operation.
+The bounded positive-word quotient makes the next invariant visible: by word
+length 10, every tested family reaches every ordered pair of roles at net
+defect zero (16/16, 81/81, 625/625, or 2401/2401 depending on alphabet size).
+This is finite evidence for a connected zero-holonomy kernel, not an
+unbounded closure theorem.
