@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "adelic/coincidence_and_property_f.hpp"
+#include "ravel/proof/strong_coincidence_pair_witness.hpp"
 #include "math/proof_reflection.hpp"
 
 namespace ravel::proof {
@@ -33,6 +34,15 @@ inline StrongCoincidenceStageResult stage_strong_coincidence_run(
 
     mathlib::reflection::StrongCoincidenceRunCertificate node;
     node.images.assign(images.begin(), images.end());
+    for (std::size_t i = 0; i < d; ++i) {
+        for (std::size_t j = i + 1; j < d; ++j) {
+            const auto witness = find_strong_coincidence_pair_witness(
+                images, static_cast<long long>(i), static_cast<long long>(j),
+                max_depth, max_word_len);
+            if (!witness) return StrongCoincidenceStageResult::failed;
+            node.pair_depths.push_back(witness->depth);
+        }
+    }
     node.depth_reached = result.depth_reached;
     node.unresolved_pairs = result.unresolved_pairs;
     node.max_depth = max_depth;

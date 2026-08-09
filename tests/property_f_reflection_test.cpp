@@ -112,6 +112,7 @@ int main() {
     assert(coincidence_runs.size() == 1);
     assert(coincidence_runs.front().second->holds);
     assert(!coincidence_runs.front().second->inconclusive);
+    assert(coincidence_runs.front().second->pair_depths.size() == 1);
     const auto coincidence_witnesses =
         trace.find<mathlib::reflection::StrongCoincidencePairWitnessCertificate>();
     assert(coincidence_witnesses.size() == 1);

@@ -322,6 +322,7 @@ struct ConstantLastLetterCertificate {
 // all substitutions; the search limits and aggregate result remain explicit.
 struct StrongCoincidenceRunCertificate {
     std::vector<std::vector<long long>> images;
+    std::vector<long long> pair_depths;
     long long depth_reached = 0;
     long long unresolved_pairs = 0;
     long long max_depth = 0;
