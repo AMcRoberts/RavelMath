@@ -137,6 +137,10 @@ The recurrence bridge now uses the serialized successor lookup directly: each
 edge theorem applies the generic Q(β) step to the source node and equates it to
 the typed destination node selected from the graph row. This makes topology
 and algebra one kernel-checked statement rather than two adjacent facts.
+Successful Property-F graph staging now also rejects out-of-range SCC labels,
+and the reflected graph theorem proves the nonzero-cycle component count is
+exactly zero. The no-cycle conclusion is therefore carried as checked data,
+not just a nonnegative counter invariant.
 
 **2026-08-08 finite-classifier increment.** `check_strong_coincidence` now
 returns a lexicographically indexed resolution profile for every unordered

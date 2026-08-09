@@ -4597,6 +4597,8 @@ inline std::string render_property_f_graph_instances(const mathlib::reflection::
             out << node->scc_sizes[i];
         }
         out << "]\n";
+        out << "def " << stem << "_nonzero_cycle_components : Int := "
+            << node->nonzero_cycle_components << "\n";
         for (std::size_t i = 0; i < node->gamma_coefficients.size(); ++i) {
             out << "def " << stem << "_gamma_" << i << " : List (Int × Nat) := [";
             const auto& coefficients = node->gamma_coefficients[i];
@@ -4628,10 +4630,13 @@ inline std::string render_property_f_graph_instances(const mathlib::reflection::
         out << "    (" << stem << "_charpoly.length > 0) ∧\n";
         out << "    (" << stem << "_scc_labels.length = " << node->scc_labels.size() << ") ∧\n";
         out << "    (" << stem << "_scc_sizes.length = " << node->scc_sizes.size() << ") ∧\n";
+        out << "    (" << stem << "_nonzero_cycle_components = "
+            << node->nonzero_cycle_components << ") ∧\n";
+        out << "    (" << stem << "_nonzero_cycle_components = 0) ∧\n";
         long long scc_size_sum = 0;
         for (const long long size : node->scc_sizes) scc_size_sum += size;
         out << "    (" << stem << "_scc_sizes.sum = " << scc_size_sum << ") ∧\n";
-        out << "    (" << node->nonzero_cycle_components << " ≥ 0) := by\n";
+        out << "    (" << node->nonzero_cycle_components << " = 0) := by\n";
         out << "  decide\n\n";
 
         const std::size_t node_count = node->gamma_keys.size();
