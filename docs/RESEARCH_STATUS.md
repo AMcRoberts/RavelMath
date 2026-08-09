@@ -46,6 +46,23 @@ No case has a mixed or nonzero cyclic component. The current family therefore
 contains no holonomy that can bite Property F; any future bite would appear as
 a new mixed/nonzero SCC, which the artifact now detects directly.
 
+## Boundary-sink optimization and obstruction search (2026-08-09)
+
+The first large four-letter inconclusive (`rndW3_10`, 200,000-node cap) was
+diagnosed by rerunning the exact checker with boundary sinks elided. Retaining
+those sinks consumed 162,348 of the 200,000 nodes as one-step out-of-bound
+bookkeeping. The bounded interior then closed at 79,638 nodes, used about
+82 MB RSS, and Property (F) held. The shared `classify_tiling` verdict path
+now elides such sinks; callers requesting a diagnostic graph may still retain
+them explicitly. This converts the candidate from INCONCLUSIVE to an exact
+validated result without weakening the cycle criterion.
+Rerunning the same 25-candidate four-letter non-unit sample through the
+optimized path changes the tally from 17 established / 8 inconclusive to
+20 established / 5 inconclusive, with zero failures. The remaining three
+validated cases (`rndW3_21`, `rndW3_25`, `rndW3_26`) are genuine high-growth
+interior searches; two additional inconclusives (`rndW3_7`, `rndW3_18`) have
+untrusted non-maximal-order arithmetic and are not obstruction evidence.
+
 ## Verified engineering boundary
 
 Historical complete-tree validation passed `make check` and `make lean-check` with the enrolled Lean files sorry-free. The compressed handoff does not currently contain a complete executable Lean/Mathlib build, so this package must not repeat that claim until `scripts/safe_lean_check.sh` succeeds under the matching restored artifacts.

@@ -214,11 +214,18 @@ TilingClassification classify_tiling(
     adelic::PropertyFResult propf;
     bool property_f_bound_trusted = true;
     if (primes_dividing_det.empty()) {
-        propf = adelic::check_property_f<d>(automaton, property_f_node_budget);
+        // Boundary sinks cannot participate in a cycle returning to zero.
+        // Elide them in the verdict path; callers requesting a diagnostic
+        // graph can still call check_property_f directly with retention on.
+        propf = adelic::check_property_f<d>(automaton, property_f_node_budget,
+                                             nullptr, nullptr, nullptr, nullptr,
+                                             nullptr, false);
     } else {
         auto [combined_bound, trusted] = adelic::make_combined_padic_bound(
             primes_dividing_det, charpoly);
-        propf = adelic::check_property_f<d>(automaton, property_f_node_budget, combined_bound);
+        propf = adelic::check_property_f<d>(automaton, property_f_node_budget,
+                                             combined_bound, nullptr, nullptr,
+                                             nullptr, nullptr, false);
         property_f_bound_trusted = trusted;
         if (!trusted) {
             // Preserve the exploratory graph and node count, but do not
