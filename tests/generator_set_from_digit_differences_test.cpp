@@ -26,6 +26,8 @@ void check(const std::string& name, std::vector<long long> low_first) {
     auto beta_I = isolate_beta(R);
 
     auto ground_truth = ravel::proof::derive_canonical_substitution_generator_collapse(R, beta_I);
+    auto forest = ravel::proof::derive_canonical_parent_role_catalogue(R, beta_I);
+    auto integer_scheme = ravel::proof::derive_parent_role_integer_scheme(forest, 20, 20);
     auto predicted = ravel::proof::predict_generator_set_from_digits(ground_truth.digits);
 
     std::cout << name << ": predicted={";
@@ -33,8 +35,13 @@ void check(const std::string& name, std::vector<long long> low_first) {
     std::cout << "} (count=" << predicted.size() << ")  ground-truth primitive_generator_count="
               << ground_truth.primitive_generator_count
               << " (raw_defect_classes=" << ground_truth.raw_defect_classes << ")\n";
+    std::cout << "  integer_scheme=" << integer_scheme.proved
+              << " zero_kernel_pairs=" << integer_scheme.zero_kernel_pairs
+              << " cycle_lengths=" << integer_scheme.positive_cycle_length
+              << "/" << integer_scheme.negative_cycle_length << "\n";
 
     assert(ground_truth.proved);
+    assert(integer_scheme.proved);
     if (predicted.size() != ground_truth.primitive_generator_count) {
         std::cout << "  MISMATCH digits=";
         for (auto d : ground_truth.digits) std::cout << d << ",";

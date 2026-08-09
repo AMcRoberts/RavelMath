@@ -4034,6 +4034,10 @@ Despite those schema failures, the generic unit-cycle/zero-kernel transport
 scheme succeeds on every mixed regression case at its finite cap. The uniform
 target is therefore the existence of some opposite unit cycles plus a
 connected zero kernel, not the fixed role labels `2` and `2n`.
+The expanded theta1--theta10 plus silver/non-unit corpus now passes the
+generic integer scheme at cap 20: every case has complete zero-kernel coverage
+and opposite unit cycles, including the two genuine fourth-generator cases.
+This is the broadest finite support so far for the family-level conjecture.
 At word cap 100, theta10 realizes the complete `-20..+20` window
 (850,176/850,176 states), again with all zero-net witnesses replay-checked.
 The reusable window profile at word cap 30 gives largest complete radii 5,

@@ -929,3 +929,6 @@ The generic transport scheme nevertheless succeeds on every mixed regression
 case. The uniform theorem should quantify over the cycle locations and prove
 opposite unit holonomies plus a connected zero kernel, rather than assume the
 theta-specific role labels.
+The expanded theta1--theta10 and silver/non-unit corpus all passes the generic
+scheme at cap 20, including the genuine fourth-generator witnesses. Use this
+as the current finite stress set before attempting a uniform derivation.
