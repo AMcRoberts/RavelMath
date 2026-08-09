@@ -124,6 +124,15 @@ int main() {
         cycle_rejected = true;
     }
     assert(cycle_rejected);
+    auto tampered_matrix = matrix;
+    ++tampered_matrix[0][0];
+    bool matrix_rejected = false;
+    try {
+        (void)check_prefix_coincidence_closure<d>(images, tampered_matrix, 4, 100);
+    } catch (const std::invalid_argument&) {
+        matrix_rejected = true;
+    }
+    assert(matrix_rejected && "closure must reject an incidence matrix mismatched to images");
     mathlib::reflection::Trace rejected_trace("coincidence_closure_rejection");
     {
         mathlib::reflection::ScopedTrace scope(&rejected_trace);

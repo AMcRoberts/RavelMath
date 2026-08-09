@@ -284,6 +284,22 @@ inline PrefixClosureCoincidenceResult check_prefix_coincidence_closure(
     const std::array<std::array<long long, d>, d>& matrix,
     long long max_depth = 20,
     std::size_t outcome_budget = 1'000'000) {
+    // The matrix controls every landmark weighting, so accepting a caller's
+    // unchecked copy would let the closure certify a different substitution
+    // from the images it reports.  Reconstruct it at the trust boundary and
+    // reject malformed or mismatched input before any state is explored.
+    std::array<std::array<long long, d>, d> expected_matrix{};
+    for (std::size_t column = 0; column < d; ++column) {
+        for (const long long letter : images[column]) {
+            if (letter < 0 || static_cast<std::size_t>(letter) >= d)
+                throw std::invalid_argument(
+                    "check_prefix_coincidence_closure: substitution letter out of range");
+            ++expected_matrix[static_cast<std::size_t>(letter)][column];
+        }
+    }
+    if (matrix != expected_matrix)
+        throw std::invalid_argument(
+            "check_prefix_coincidence_closure: incidence matrix disagrees with images");
     std::vector<std::pair<long long, long long>> pairs;
     for (long long a = 0; a < static_cast<long long>(d); ++a)
         for (long long b = a + 1; b < static_cast<long long>(d); ++b)

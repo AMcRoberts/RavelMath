@@ -269,3 +269,8 @@ pair profiles, terminal letters, landmark vectors, orientation flags, and
 incidence matrix. This keeps the source substitution visible at the kernel
 artifact boundary and prevents a summary from silently becoming detached from
 the input instance.
+
+The closure API itself now reconstructs and checks the incidence matrix from
+the supplied images before exploring any states. A deliberately tampered
+matrix is rejected by the closure regression, so this input-consistency guard
+does not rely only on the production caller's construction discipline.
