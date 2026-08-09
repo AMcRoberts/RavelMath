@@ -66,6 +66,11 @@ int main() {
     check("x^2-2x-2", {-2, -2});
     check("x^3-2x^2-2", {-2, 0, -2});
     check("x^3-x^2-2x-2", {-1, -2, -2});
+    // Parameterized sigma_{a,1}: x^3-a x^2-(a+1)x-1.
+    check("sigma_{2,1}", {-2, -3, -1});
+    check("sigma_{3,1}", {-3, -4, -1});
+    check("sigma_{4,1}", {-4, -5, -1});
+    check("sigma_{5,1}", {-5, -6, -1});
     std::cout << "\nALL PASS: the digit-pairwise-difference prediction exactly matches "
                  "the expensive role-catalogue ground truth for every case, including "
                  "the two genuine-fourth-generator witnesses.\n";

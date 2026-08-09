@@ -4041,6 +4041,11 @@ This is the broadest finite support so far for the family-level conjecture.
 The scheme is now exposed through the general-theory entry point, so callers
 can request the same finite certificate without reconstructing the catalogue
 internals.
+The parameterized cubic family `sigma_{a,1}: x^3-a x^2-(a+1)x-1`, checked at
+`a=2,3,4,5`, also passes the same cap-20 certificate: each instance has a
+complete zero kernel and opposite unit cycles.  The expensive catalogue agrees
+with the digit-difference generator prediction in all four cases, extending
+the stress set beyond the previously sampled `sigma_{1,1}` instance.
 At word cap 100, theta10 realizes the complete `-20..+20` window
 (850,176/850,176 states), again with all zero-net witnesses replay-checked.
 The reusable window profile at word cap 30 gives largest complete radii 5,
