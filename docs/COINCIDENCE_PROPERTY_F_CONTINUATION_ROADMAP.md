@@ -129,3 +129,7 @@ the remaining step is to include the characteristic polynomial and a generic
 Lean Q(beta) recurrence checker.
 The exact characteristic polynomial is now exported too; only the generic
 recurrence checker remains on this sub-route.
+The staging operation now reconstructs every exported source/target/digit
+triple in the supplied `QBetaRing` and rejects any edge whose exact identity
+`gamma' = beta⁻¹ (gamma + delta)` fails. Fibonacci includes a tampering
+regression proving that invalid coefficient data is rejected before reflection.

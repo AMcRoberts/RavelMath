@@ -35,7 +35,18 @@ int main() {
     {
         mathlib::reflection::ScopedTrace scope(&trace);
         assert(ravel::proof::stage_property_f_finite_run(result, "Fibonacci"));
-        assert(ravel::proof::stage_property_f_graph(result, graph, "Fibonacci"));
+        assert(ravel::proof::stage_property_f_graph(result, graph, ring, "Fibonacci"));
+    }
+    {
+        auto tampered = graph;
+        tampered.nodes[1].gamma_coefficients[0].first = "1";
+        bool rejected = false;
+        try {
+            (void)ravel::proof::stage_property_f_graph(result, tampered, ring, "tampered");
+        } catch (const std::invalid_argument&) {
+            rejected = true;
+        }
+        assert(rejected);
     }
     auto certificates = trace.find<mathlib::reflection::PropertyFFiniteRunCertificate>();
     assert(certificates.size() == 1);

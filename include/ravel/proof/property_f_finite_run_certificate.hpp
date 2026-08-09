@@ -14,6 +14,27 @@
 
 namespace ravel::proof {
 
+inline mathlib::Rat property_f_parse_rat(const std::string& numerator,
+                                          const std::string& denominator) {
+    mathlib::Rat out;
+    const std::string encoded = numerator + "/" + denominator;
+    if (mpq_set_str(out.get(), encoded.c_str(), 10) != 0)
+        throw std::invalid_argument("property-F graph contains an invalid rational coefficient");
+    mpq_canonicalize(out.get());
+    return out;
+}
+
+inline mathlib::QElem property_f_parse_qelem(
+    const std::vector<std::pair<std::string, std::string>>& coefficients,
+    const mathlib::QBetaRing& ring) {
+    if (coefficients.size() != ring.degree())
+        throw std::invalid_argument("property-F graph coefficient vector has the wrong degree");
+    mathlib::QElem out(ring.degree());
+    for (std::size_t i = 0; i < coefficients.size(); ++i)
+        out.coeff(i) = property_f_parse_rat(coefficients[i].first, coefficients[i].second);
+    return out;
+}
+
 inline bool stage_property_f_finite_run(const adelic::PropertyFResult& result,
                                         std::string description = {}) {
     if (result.inconclusive) return false;
@@ -44,6 +65,7 @@ inline bool stage_property_f_finite_run(const adelic::PropertyFResult& result,
 
 inline bool stage_property_f_graph(const adelic::PropertyFResult& result,
                                    const adelic::PropertyFGraph& graph,
+                                   const mathlib::QBetaRing& ring,
                                    std::string description = {}) {
     if (result.inconclusive || graph.nodes.size() != static_cast<std::size_t>(result.nodes_explored)) return false;
     if (result.zero_nodes + result.nonzero_nodes != result.nodes_explored) return false;
@@ -62,6 +84,30 @@ inline bool stage_property_f_graph(const adelic::PropertyFResult& result,
     }
     if (zero_count != result.zero_nodes) {
         throw std::invalid_argument("property-F graph zero-node count disagrees with result");
+    }
+    if (graph.characteristic_polynomial.size() !=
+        static_cast<std::size_t>(ring.charpoly().degree() + 1)) {
+        throw std::invalid_argument("property-F graph characteristic polynomial has the wrong degree");
+    }
+    for (std::size_t i = 0; i < graph.characteristic_polynomial.size(); ++i) {
+        if (graph.characteristic_polynomial[i] != mathlib::str(ring.charpoly().coeff(i)))
+            throw std::invalid_argument("property-F graph characteristic polynomial disagrees with ring");
+    }
+    mathlib::QElem beta = ring.from_int(0);
+    beta.coeff(1) = mathlib::Rat(1, 1);
+    const auto inverse = mathlib::invert_in_qbeta(beta, ring);
+    if (!inverse.invertible) throw std::invalid_argument("property-F beta is not invertible");
+    for (std::size_t source = 0; source < graph.nodes.size(); ++source) {
+        const auto gamma = property_f_parse_qelem(graph.nodes[source].gamma_coefficients, ring);
+        for (std::size_t edge = 0; edge < graph.nodes[source].successors.size(); ++edge) {
+            const auto target = static_cast<std::size_t>(graph.nodes[source].successors[edge]);
+            const auto digit = property_f_parse_qelem(
+                graph.nodes[source].edge_digit_coefficients[edge], ring);
+            const auto target_gamma = property_f_parse_qelem(graph.nodes[target].gamma_coefficients, ring);
+            const auto expected = ring.mul(inverse.inverse, ring.add(gamma, digit));
+            if (expected != target_gamma)
+                throw std::invalid_argument("property-F graph contains an invalid beta-inverse edge");
+        }
     }
     if (!mathlib::reflection::enabled()) return false;
     mathlib::reflection::PropertyFGraphCertificate node;
