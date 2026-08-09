@@ -138,8 +138,9 @@ remaining a parallel test: the exact contact-boundary graph has 20 states and
 9-state universal catalogue, all three generator inequalities pass, and the
 finite-positive-grammar majorant is proved. The certificate now refuses to
 claim closure unless those independent boundary/intertwiner checks succeed.
-Remaining work is steps 11–12: cyclotomic-sector auditing for boundary/twisted
-objects and Lean emission/actual kernel acceptance. Since there is no
+Steps 11–12 are now substantially discharged: cyclotomic-sector auditing for
+boundary/twisted objects and Lean emission/actual kernel acceptance are all
+covered by the finite certificate pipeline. Since there is no
 cyclotomic cofactor at the substitution level, the raw substitution audit is
 now explicit: the incidence characteristic polynomial is passed through the
 exact cyclotomic factor certificate and has no cyclotomic factor. Boundary and
