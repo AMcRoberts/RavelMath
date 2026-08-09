@@ -168,6 +168,7 @@
 #include <queue>
 #include <set>
 #include <stdexcept>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -881,8 +882,14 @@ PropertyFResult check_property_f(
     // avoid spuriously excluding a boundary node due to rounding.
     bound_M *= 1.05;
 
-    // Node table: key ("gamma_key|letter") -> node id.
-    std::map<std::string, long long> node_id;
+    // Node identity is an exact serialized Q(beta)-key plus letter.  The
+    // traversal never needs ordering; an ordered tree made the million-node
+    // quartic cases pay an avoidable O(log n) lookup and one tree allocation
+    // per state.  A reserved hash table keeps the same identity semantics
+    // while making the finite search's cost proportional to its actual graph.
+    std::unordered_map<std::string, long long> node_id;
+    node_id.max_load_factor(0.70f);
+    node_id.reserve(1u << 20);
     std::vector<mathlib::QElem> node_gamma;
     std::vector<long long> node_letter;
     std::vector<std::vector<long long>> adj;  // adjacency: node -> successor node ids

@@ -389,3 +389,9 @@ silently through malformed metadata.
 The regression now renders and kernel-checks the genuine two-junction
 `sigma_{1,1}` certificate as well as the single-junction control, exercising the
 forced-letter route and suffix orientation in the same artifact path.
+The finite Property-F graph traversal now uses a reserved hash table for its
+exact Q(beta)-state keys instead of an ordered tree. This does not alter node
+identity or the certified adjacency; it removes unnecessary logarithmic lookup
+and tree-allocation overhead in million-node quartic runs. On `rndW5_6` the
+same 3,799,168-node closure still passes the focused regressions, with a
+measured peak RSS of about 3.96 GB at a 4M cap.
