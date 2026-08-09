@@ -867,3 +867,7 @@ component with gcd-1 integer defect holonomy across the current regression
 families. Treat this as the finite structural datum from which to derive the
 sofic/twisted-sector correspondence. The group-extension statement remains
 open until regularity of the fibre action and composition law are proved.
+The first finite audit already finds branching in every tested family, which
+is a concrete obstruction to treating the defect as a deterministic action;
+the target should therefore be a finite sofic/textile correspondence with a
+twisted cocycle, not an assumed group action on individual roles.

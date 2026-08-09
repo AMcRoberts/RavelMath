@@ -3967,3 +3967,7 @@ role graph is one strongly connected component and its holonomy subgroup is
 `Z` (gcd 1). This is evidence for a full integer defect cocycle, not yet a
 proof that the Pisot extension is a group extension; the catalogue now makes
 any failure of regularity a finite, inspectable counterexample.
+The first regularity audit finds labelled branching in every tested family
+(and multiplicity above one in several non-unit examples), so the next theorem
+must use a sofic/textile relation rather than assume a plain deterministic
+group action.

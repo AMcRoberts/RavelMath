@@ -5,12 +5,14 @@
 #pragma once
 
 #include <cstddef>
+#include <algorithm>
 #include <map>
 #include <numeric>
 #include <set>
 #include <stdexcept>
 #include <string>
 #include <functional>
+#include <tuple>
 #include <vector>
 
 #include "math/qbeta.hpp"
@@ -75,6 +77,50 @@ struct ParentRoleHolonomyReport {
     std::size_t nontrivial_holonomy_components{};
     bool proved{};
 };
+
+struct ParentRoleRegularityReport {
+    bool proved{};
+    bool label_single_valued{};
+    bool occurrence_single_valued{};
+    std::size_t max_targets_for_source_label{};
+    std::size_t max_occurrences_for_source_target_label{};
+    std::size_t branching_source_labels{};
+};
+
+// Tests the first possible group-extension obstruction: whether a defect
+// label acts as a function on pair roles.  Parent occurrences are retained,
+// so this distinguishes genuine multiplicity from merely having two target
+// roles.  A failure is useful data, not an implementation error: it says the
+// right theorem must use a relation/sofic correspondence rather than a plain
+// action.
+inline ParentRoleRegularityReport derive_parent_role_regularity(
+    const CanonicalParentRoleCatalogue& catalogue) {
+    ParentRoleRegularityReport out;
+    if (!catalogue.proved) return out;
+    std::map<std::pair<std::size_t,long long>, std::set<std::size_t>> targets;
+    std::map<std::tuple<std::size_t,std::size_t,long long>, std::size_t> occurrences;
+    for (const auto& edge : catalogue.edges) {
+        targets[{edge.source_role, edge.defect}].insert(edge.target_role);
+        ++occurrences[{edge.source_role, edge.target_role, edge.defect}];
+    }
+    out.label_single_valued = true;
+    out.occurrence_single_valued = true;
+    for (const auto& [key, destinations] : targets) {
+        out.max_targets_for_source_label =
+            std::max(out.max_targets_for_source_label, destinations.size());
+        if (destinations.size() > 1) {
+            out.label_single_valued = false;
+            ++out.branching_source_labels;
+        }
+    }
+    for (const auto& [_, count] : occurrences) {
+        out.max_occurrences_for_source_target_label =
+            std::max(out.max_occurrences_for_source_target_label, count);
+        if (count > 1) out.occurrence_single_valued = false;
+    }
+    out.proved = true;
+    return out;
+}
 
 inline ParentRoleHolonomyReport derive_parent_role_holonomy(
     const CanonicalParentRoleCatalogue& catalogue) {
