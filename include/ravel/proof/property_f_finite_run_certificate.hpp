@@ -67,7 +67,12 @@ inline bool stage_property_f_graph(const adelic::PropertyFResult& result,
                                    const adelic::PropertyFGraph& graph,
                                    const mathlib::QBetaRing& ring,
                                    std::string description = {}) {
-    if (result.inconclusive || graph.nodes.size() != static_cast<std::size_t>(result.nodes_explored)) return false;
+    // This renderer proves the no-obstruction branch only.  A definitive
+    // failure needs a separate typed witness path; never serialize it as if
+    // the finite graph satisfied the property.
+    if (result.inconclusive || !result.holds || result.nonzero_cycle_components != 0 ||
+        graph.nonzero_cycle_components != 0 ||
+        graph.nodes.size() != static_cast<std::size_t>(result.nodes_explored)) return false;
     if (result.zero_nodes + result.nonzero_nodes != result.nodes_explored) return false;
     long long zero_count = 0;
     for (std::size_t i = 0; i < graph.nodes.size(); ++i) {

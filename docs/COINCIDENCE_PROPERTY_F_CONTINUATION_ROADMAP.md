@@ -153,3 +153,6 @@ The Lean artifact now additionally checks the finite obstruction predicate that
 no edge between two nonzero nodes remains inside one SCC. Since every directed
 cycle lies inside an SCC, this is the concrete decidable form of the corrected
 property-(F) cycle criterion for the exported run.
+The staging API now refuses inconclusive or failing runs on this proof path;
+definitive failures remain reserved for a future explicit cycle-witness
+certificate rather than being serialized as false theorems.

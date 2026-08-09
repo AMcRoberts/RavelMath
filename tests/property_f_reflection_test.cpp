@@ -47,6 +47,9 @@ int main() {
             rejected = true;
         }
         assert(rejected);
+        auto failed_result = result;
+        failed_result.holds = false;
+        assert(!ravel::proof::stage_property_f_graph(failed_result, graph, ring, "failed"));
     }
     {
         std::array<std::vector<long long>, 3> images3 = {
