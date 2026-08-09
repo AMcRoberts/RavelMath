@@ -4630,10 +4630,20 @@ inline std::string render_property_f_graph_instances(const mathlib::reflection::
             out << zero_indices[i];
         }
         out << "]\n";
+        for (std::size_t i = 0; i < node->gamma_coefficients.size(); ++i) {
+            out << "def " << stem << "_gamma_" << i << " : List (Int × Nat) := [";
+            const auto& coefficients = node->gamma_coefficients[i];
+            for (std::size_t j = 0; j < coefficients.size(); ++j) {
+                if (j) out << ", ";
+                out << "(" << coefficients[j].numerator << ", " << coefficients[j].denominator << ")";
+            }
+            out << "]\n";
+        }
         out << "theorem " << stem << "_shape :\n";
         out << "    (" << stem << "_edges.length = " << edges.size() << ") ∧\n";
         out << "    (" << stem << "_zero_nodes.length = " << zero_indices.size() << ") ∧\n";
-        out << "    (" << node->gamma_keys.size() << " = " << node->letters.size() << ") := by\n";
+        out << "    (" << node->gamma_keys.size() << " = " << node->letters.size() << ") ∧\n";
+        out << "    (" << node->gamma_keys.size() << " = " << node->gamma_coefficients.size() << ") := by\n";
         out << "  decide\n\n";
     }
     return out.str();

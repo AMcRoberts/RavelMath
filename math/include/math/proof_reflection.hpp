@@ -568,6 +568,7 @@ struct PropertyFFiniteRunCertificate {
 // without pretending that a string key is a real-number proof.
 struct PropertyFGraphCertificate {
     std::vector<std::string> gamma_keys;
+    std::vector<std::vector<ExactRationalCoefficient>> gamma_coefficients;
     std::vector<long long> letters;
     std::vector<bool> zero_nodes;
     std::vector<std::vector<long long>> successors;

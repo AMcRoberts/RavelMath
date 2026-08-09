@@ -119,3 +119,8 @@ rendered and kernel-checked as a finite Lean artifact. The Lean bridge still
 checks topology/partition data rather than pretending string keys prove
 algebraic equality; a future increment can replace those opaque keys with a
 typed Q(beta) representation.
+The graph certificate now also carries each node's exact rational coefficient
+vector in the power basis, and the Fibonacci artifact renders those vectors
+as Lean `List (Int × Nat)` data. The remaining algebraic bridge is to export
+the edge digit/prefix data and characteristic polynomial so Lean can check
+the recurrence on every serialized edge.

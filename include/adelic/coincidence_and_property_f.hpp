@@ -336,6 +336,7 @@ struct PropertyFResult {
 // the reflection boundary.
 struct PropertyFGraphNode {
     std::string gamma_key;
+    std::vector<std::pair<std::string, std::string>> gamma_coefficients;
     long long letter = 0;
     bool zero = false;
     std::vector<long long> successors;
@@ -1013,6 +1014,10 @@ PropertyFResult check_property_f(
         for (std::size_t i = 0; i < node_gamma.size(); ++i) {
             PropertyFGraphNode node;
             node.gamma_key = qelem_key(node_gamma[i]);
+            for (const auto& coefficient : node_gamma[i].coeffs_) {
+                node.gamma_coefficients.emplace_back(mathlib::str(mathlib::num(coefficient)),
+                                                     mathlib::str(mathlib::den(coefficient)));
+            }
             node.letter = node_letter[i];
             node.zero = is_zero_node[i];
             node.successors = adj[i];

@@ -63,11 +63,17 @@ inline bool stage_property_f_graph(const adelic::PropertyFResult& result,
     if (!mathlib::reflection::enabled()) return false;
     mathlib::reflection::PropertyFGraphCertificate node;
     node.gamma_keys.reserve(graph.nodes.size());
+    node.gamma_coefficients.reserve(graph.nodes.size());
     node.letters.reserve(graph.nodes.size());
     node.zero_nodes.reserve(graph.nodes.size());
     node.successors.reserve(graph.nodes.size());
     for (const auto& source : graph.nodes) {
         node.gamma_keys.push_back(source.gamma_key);
+        std::vector<mathlib::reflection::ExactRationalCoefficient> coefficients;
+        coefficients.reserve(source.gamma_coefficients.size());
+        for (const auto& [numerator, denominator] : source.gamma_coefficients)
+            coefficients.push_back({numerator, denominator});
+        node.gamma_coefficients.push_back(std::move(coefficients));
         node.letters.push_back(source.letter);
         node.zero_nodes.push_back(source.zero);
         node.successors.push_back(source.successors);
