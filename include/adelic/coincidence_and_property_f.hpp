@@ -179,6 +179,7 @@
 #include "adelic/prefix_automaton.hpp"
 #include "adelic/padic.hpp"
 #include "adelic/local_field.hpp"
+#include "adelic/property_f_types.hpp"
 
 namespace adelic {
 
@@ -317,57 +318,6 @@ StrongCoincidenceResult check_strong_coincidence(
 // ===================================================================
 // Geometric property (F)
 // ===================================================================
-
-struct PropertyFResult {
-    bool holds = false;             // true iff the closed graph has no cycle containing a nonzero node
-    bool inconclusive = false;      // true iff the node budget was exhausted before the closure finished
-    long long nodes_explored = 0;
-    // Concrete finite-run evidence retained for later reflection.  These
-    // fields describe the graph actually constructed by this invocation;
-    // they are not claims about the infinite translation set Gamma.
-    long long zero_nodes = 0;
-    long long nonzero_nodes = 0;
-    long long strongly_connected_components = 0;
-    long long nonzero_cycle_components = 0;
-    // Populated only for a definitive failure: a closed directed cycle in
-    // the actual finite graph, with at least one nonzero-translation node.
-    std::vector<long long> violation_cycle_nodes;
-    std::vector<std::pair<long long, long long>> violation_cycle_edges;
-};
-
-// Optional exact finite graph export for reflection and diagnostics.  The
-// `gamma_key` is the same canonical Q(beta) key used by the checker itself;
-// retaining it avoids narrowing exact algebraic values to floating point at
-// the reflection boundary.
-struct PropertyFGraphNode {
-    std::string gamma_key;
-    std::vector<std::pair<std::string, std::string>> gamma_coefficients;
-    long long letter = 0;
-    bool zero = false;
-    std::vector<long long> successors;
-    std::vector<std::vector<std::pair<std::string, std::string>>> edge_digit_coefficients;
-};
-
-struct PropertyFGraph {
-    std::vector<std::string> characteristic_polynomial;
-    std::vector<std::vector<std::pair<std::string, std::string>>> beta_inverse_matrix;
-    std::vector<long long> scc_labels;
-    std::vector<long long> scc_sizes;
-    long long nonzero_cycle_components = 0;
-    std::vector<PropertyFGraphNode> nodes;
-};
-
-// Canonical string key for a QElem (its Rat coefficients are always
-// stored in reduced form by mini-gmp's mpq_t, so this is a faithful,
-// collision-free key).
-inline std::string qelem_key(const mathlib::QElem& x) {
-    std::string s;
-    for (const auto& c : x.coeffs_) {
-        s += mathlib::str(c);
-        s += ';';
-    }
-    return s;
-}
 
 // ===================================================================
 // Complex root finder (Durand-Kerner / Weierstrass method).
