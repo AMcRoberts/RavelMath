@@ -887,6 +887,9 @@ the general kernel proof.
 The zero-net witnesses are retained as explicit role paths and replayed
 against the catalogue, so the finite connectivity data can be inspected edge
 by edge while the general proof is developed.
+At word length 30 the higher forests also realize every displacement in the
+window `-3..+3` between every ordered role pair. The next theorem should use
+this as its finite target when proving the full integer quotient.
 The composition audit finds many two-step paths with no direct one-step
 representative at the summed defect, so the intended closure is genuinely by
 words in the relation. The next proof should formalize that word closure.

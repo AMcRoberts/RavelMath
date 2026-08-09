@@ -3991,3 +3991,7 @@ connectivity rather than only a yes/no reachability result.
 The catalogue retains each shortest role path and replays every edge and
 defect sum exactly; completeness is witness-checked rather than inferred from
 the count alone.
+The same replayed witnesses cover the full integer window `-3..+3` for every
+ordered role pair in theta7--theta10 at word length 30 (7 times the role-pair
+counts, with no missing states). This is the first finite signature of an
+actual integer extension rather than only a connected zero fibre.

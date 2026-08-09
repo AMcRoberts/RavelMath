@@ -111,6 +111,10 @@ struct ParentRoleWordClosureReport {
     std::size_t zero_net_pairs{};
     std::size_t zero_net_missing_pairs{};
     std::size_t maximum_zero_net_word_length{};
+    std::size_t integer_window_radius{};
+    std::size_t integer_window_pairs{};
+    std::size_t integer_window_missing_pairs{};
+    bool integer_window_complete{};
     struct ZeroNetWitness {
         std::size_t source_role{};
         std::size_t target_role{};
@@ -128,9 +132,11 @@ struct ParentRoleWordClosureReport {
 // actual finite-state cocycle.  The cap is explicit: an incomplete result is
 // still useful evidence and is never reported as an infinite theorem.
 inline ParentRoleWordClosureReport derive_parent_role_word_closure(
-    const CanonicalParentRoleCatalogue& catalogue, std::size_t max_word_length) {
+    const CanonicalParentRoleCatalogue& catalogue, std::size_t max_word_length,
+    std::size_t integer_window_radius = 0) {
     ParentRoleWordClosureReport out;
     out.max_word_length = max_word_length;
+    out.integer_window_radius = integer_window_radius;
     if (!catalogue.proved || max_word_length == 0) return out;
     std::vector<std::vector<std::pair<std::size_t,long long>>> adj(catalogue.role_count);
     for (const auto& edge : catalogue.edges)
@@ -139,6 +145,8 @@ inline ParentRoleWordClosureReport derive_parent_role_word_closure(
                                 static_cast<long long>(max_word_length);
     std::size_t zero_pairs = 0;
     std::size_t maximum_zero_length = 0;
+    const auto window_total = catalogue.role_count * catalogue.role_count *
+                              (2 * integer_window_radius + 1);
     for (std::size_t source = 0; source < catalogue.role_count; ++source) {
         std::set<std::pair<std::size_t,long long>> seen;
         std::map<std::pair<std::size_t,long long>, std::size_t> depth_of;
@@ -187,11 +195,18 @@ inline ParentRoleWordClosureReport derive_parent_role_word_closure(
             }
         }
         zero_pairs += zero_targets.size();
+        for (long long net = -static_cast<long long>(integer_window_radius);
+             net <= static_cast<long long>(integer_window_radius); ++net)
+            for (std::size_t target = 0; target < catalogue.role_count; ++target)
+                if (seen.count({target, net})) ++out.integer_window_pairs;
     }
     out.zero_net_pairs = zero_pairs;
     out.maximum_zero_net_word_length = maximum_zero_length;
     const auto total_pairs = catalogue.role_count * catalogue.role_count;
     out.zero_net_missing_pairs = total_pairs > zero_pairs ? total_pairs - zero_pairs : 0;
+    out.integer_window_missing_pairs = window_total > out.integer_window_pairs
+        ? window_total - out.integer_window_pairs : 0;
+    out.integer_window_complete = (out.integer_window_missing_pairs == 0);
     out.zero_net_role_graph_complete = (out.zero_net_missing_pairs == 0);
     out.zero_net_witnesses_verified = (out.zero_net_witnesses.size() == out.zero_net_pairs);
     for (const auto& witness : out.zero_net_witnesses) {

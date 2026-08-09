@@ -30,7 +30,7 @@ void run(const std::string& name, std::vector<long long> low_first, std::size_t 
     auto holonomy = ravel::proof::derive_parent_role_holonomy(forest);
     auto regularity = ravel::proof::derive_parent_role_regularity(forest);
     auto composition = ravel::proof::derive_parent_role_composition(forest);
-    auto closure = ravel::proof::derive_parent_role_word_closure(forest, 10);
+    auto closure = ravel::proof::derive_parent_role_word_closure(forest, 10, 2);
     std::cout << name << ": digits.size=" << c.digits.size()
               << " raw=" << c.raw_defect_classes << " primitive=" << c.primitive_generator_count
               << " proved=" << c.proved << "\n";
@@ -64,7 +64,9 @@ void run(const std::string& name, std::vector<long long> low_first, std::size_t 
               << " max_mult=" << regularity.max_occurrences_for_source_target_label
               << " composite_missing=" << composition.missing_pairs
               << " zero_pairs@10=" << closure.zero_net_pairs
-              << "/" << forest.role_count * forest.role_count;
+              << "/" << forest.role_count * forest.role_count
+              << " integer_window@2=" << closure.integer_window_pairs << "/"
+              << forest.role_count * forest.role_count * 5;
 }
 
 void inspect_forest(const std::string& name, std::vector<long long> low_first,
@@ -73,7 +75,7 @@ void inspect_forest(const std::string& name, std::vector<long long> low_first,
     auto beta_I = isolate_beta(R);
     const auto forest = ravel::proof::derive_canonical_parent_role_catalogue(R, beta_I);
     const auto holonomy = ravel::proof::derive_parent_role_holonomy(forest);
-    const auto closure = ravel::proof::derive_parent_role_word_closure(forest, word_cap);
+    const auto closure = ravel::proof::derive_parent_role_word_closure(forest, word_cap, 3);
     assert(forest.proved && holonomy.proved && closure.proved);
     std::cout << name << ": alphabet=" << forest.alphabet_size
               << " roles=" << forest.role_count
@@ -82,7 +84,9 @@ void inspect_forest(const std::string& name, std::vector<long long> low_first,
               << " gcd=" << holonomy.components.front().holonomy_gcd
               << " zero_pairs@" << word_cap << "=" << closure.zero_net_pairs << "/"
               << forest.role_count * forest.role_count
-              << " max_zero_word=" << closure.maximum_zero_net_word_length << "\n";
+              << " max_zero_word=" << closure.maximum_zero_net_word_length
+              << " integer_window@3=" << closure.integer_window_pairs << "/"
+              << forest.role_count * forest.role_count * 7 << "\n";
 }
 
 int main() {
