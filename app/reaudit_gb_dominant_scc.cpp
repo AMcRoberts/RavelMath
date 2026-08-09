@@ -628,6 +628,9 @@ int main(int argc, char** argv) {
     std::uint32_t seed = 11;
     std::uint32_t max_trials = 16000;
     int K_max = 3;
+    std::size_t closure_cap = 5000;
+    std::size_t corona_cap = 25000;
+    std::size_t max_corona_rounds = 8;
     std::string cache_dir_base;          // empty => no caching at all
     long long max_cache_MB = 2048;       // 2 GB default
     bool cache_clean_only = false;       // --cache-clean
@@ -651,6 +654,9 @@ int main(int argc, char** argv) {
         else if (a == "--seed" && i + 1 < argc) seed = std::atoll(argv[++i]);
         else if (a == "--trials" && i + 1 < argc) max_trials = std::atoi(argv[++i]);
         else if (a == "--K" && i + 1 < argc) K_max = std::atoi(argv[++i]);
+        else if (a == "--closure-cap" && i + 1 < argc) closure_cap = std::atoll(argv[++i]);
+        else if (a == "--corona-cap" && i + 1 < argc) corona_cap = std::atoll(argv[++i]);
+        else if (a == "--corona-rounds" && i + 1 < argc) max_corona_rounds = std::atoll(argv[++i]);
         else if (a == "--cache-dir") { ++i; }      // already parsed
         else if (a == "--max-cache-MB") { ++i; }  // already parsed
         else if (a == "--cache-clean") {}        // already parsed
@@ -716,8 +722,9 @@ int main(int argc, char** argv) {
         }
         std::fflush(stdout);
     }
-    std::printf("target=%zu, seed=%u, max_trials=%u, K_max=%d  readonly=%d\n\n",
-                target, seed, max_trials, K_max, cache_readonly ? 1 : 0);
+    std::printf("target=%zu, seed=%u, max_trials=%u, K_max=%d, closure_cap=%zu, corona_cap=%zu, corona_rounds=%zu  readonly=%d\n\n",
+                target, seed, max_trials, K_max, closure_cap, corona_cap,
+                max_corona_rounds, cache_readonly ? 1 : 0);
     print_mem("before any candidate");
 
     PisotGenerator gen;
@@ -773,9 +780,9 @@ int main(int argc, char** argv) {
             ContactBoundaryLimits audit_limits;
             audit_limits.max_rho_pairs = 8000;
             audit_limits.max_rho_len = 24000;
-            audit_limits.closure_cap = 5000;
-            audit_limits.corona_cap = 25000;
-            audit_limits.max_corona_rounds = 8;
+            audit_limits.closure_cap = closure_cap;
+            audit_limits.corona_cap = corona_cap;
+            audit_limits.max_corona_rounds = max_corona_rounds;
 
             // (A) Cache lookup before paying for the pipeline.  The
             // load returns a WeightedDigraph directly (either via
@@ -818,7 +825,13 @@ int main(int argc, char** argv) {
                 }
                 print_mem("after compute_contact_boundary_from_subst");
                 if (!rep.converged || rep.gb_matrix.empty()) {
-                    std::printf("  did not converge or empty matrix; skipping\n\n");
+                    std::printf("  did not converge or empty matrix; skipping "
+                                "(closure_stopped=%d corona_capped=%d "
+                                "pre_contact=%zu boundary=%zu max_A=%zu rounds=%d)\n\n",
+                                rep.closure_stopped_early ? 1 : 0,
+                                rep.corona_capped ? 1 : 0,
+                                rep.pre_contact_size, rep.boundary_size,
+                                rep.max_a_size_reached, rep.convergence_rounds);
                     continue;
                 }
                 std::vector<std::vector<long long>> cached_gb =
