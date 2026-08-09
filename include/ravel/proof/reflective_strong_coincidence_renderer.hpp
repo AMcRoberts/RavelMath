@@ -83,7 +83,47 @@ inline const char* strong_coincidence_path_semantics_lean() {
         "          let weighted := sc_matVec (sc_matPow m d.toNat (remaining - 1).toNat) edge.landmark d.toNat\n"
         "          if edge.jump_size ≤ remaining then\n"
         "            weighted :: sc_pathWeights edges m rest edge.to_junction (remaining - edge.jump_size) d\n"
-        "          else [weighted]\n\n";
+        "          else [weighted]\n\n"
+        "def sc_imageAt (images : List (List Nat)) (letter : Int) : List Nat :=\n"
+        "  images.getD letter.toNat []\n\n"
+        "def sc_reverseImages (images : List (List Nat)) : List (List Nat) :=\n"
+        "  images.map List.reverse\n\n"
+        "def sc_countPrefix (xs : List Nat) (limit letter : Nat) : Int :=\n"
+        "  match limit with\n"
+        "  | 0 => 0\n"
+        "  | t + 1 => sc_countPrefix xs t letter + if xs.getD t 0 = letter then 1 else 0\n\n"
+        "def sc_landmarkAux (images : List (List Nat)) (source child d : Nat) : List Int :=\n"
+        "  match d with\n"
+        "  | 0 => []\n"
+        "  | t + 1 => sc_landmarkAux images source child t ++\n"
+        "      [sc_countPrefix (sc_imageAt images source) child t]\n\n"
+        "def sc_chainTail (images : List (List Nat)) (letter steps : Nat) : List Nat :=\n"
+        "  match steps with\n"
+        "  | 0 => []\n"
+        "  | t + 1 =>\n"
+        "      match sc_imageAt images letter with\n"
+        "      | [next] => next :: sc_chainTail images next t\n"
+        "      | _ => []\n\n"
+        "def sc_expectedChain (images : List (List Nat)) (child steps : Nat) : List Nat :=\n"
+        "  child :: sc_chainTail images child steps\n\n"
+        "def sc_edgeValid (images : List (List Nat)) (dimension : Nat)\n"
+        "    (edge : SCClosureEdge) : Bool :=\n"
+        "  if edge.from_junction < 0 || edge.child_index < 0 || edge.jump_size ≤ 0 then false\n"
+        "  else\n"
+        "    let source := edge.from_junction.toNat\n"
+        "    let childIndex := edge.child_index.toNat\n"
+        "    let image := sc_imageAt images edge.from_junction\n"
+        "    if childIndex ≥ image.length then false\n"
+        "    else\n"
+        "      let child := image.getD childIndex 0\n"
+        "      let chain := sc_expectedChain images child (edge.jump_size - 1).toNat\n"
+        "      edge.landmark = sc_landmarkAux images source childIndex dimension &&\n"
+        "      edge.chain = chain &&\n"
+        "      edge.chain.getLast? = some edge.to_junction.toNat\n\n"
+        "def sc_allEdgesValid (images : List (List Nat)) (dimension : Nat)\n"
+        "    (edges : List SCClosureEdge) : Bool :=\n"
+        "  edges.all (sc_edgeValid images dimension)\n\n";
+
 }
 
 inline void render_closure_path_lists(
@@ -325,6 +365,16 @@ inline void render_closure_edges(std::ostringstream& out, const std::string& ste
     out << "]\n";
 }
 
+inline void render_closure_edge_validity_check(std::ostringstream& out,
+                                               const std::string& stem,
+                                               std::size_t dimension,
+                                               bool suffix = false) {
+    out << "theorem " << stem << (suffix ? "_suffix" : "") << "_edges_valid :\n"
+        << "    sc_allEdgesValid " << (suffix ? "(sc_reverseImages " + stem + "_images)" : stem + "_images")
+        << " " << dimension << " "
+        << stem << (suffix ? "_suffix" : "") << "_edges = true := by decide\n\n";
+}
+
 inline std::string render_strong_coincidence_run_instances(
     const mathlib::reflection::Trace& trace) {
     std::ostringstream out;
@@ -392,6 +442,7 @@ inline std::string render_strong_coincidence_prefix_closure_instances(
             out << "]";
         }
         out << "]\n";
+        render_closure_edge_validity_check(out, stem, node->images.size());
         out << "def " << stem << "_resolution_depths : List Int := [";
         for (std::size_t i = 0; i < node->pair_resolution_depths.size(); ++i) {
             if (i) out << ", ";
@@ -533,6 +584,8 @@ inline std::string render_strong_coincidence_closure_instances(
             out << "]";
         }
         out << "]\n";
+        render_closure_edge_validity_check(out, stem, node->images.size());
+        render_closure_edge_validity_check(out, stem, node->images.size(), true);
         out << "def " << stem << "_resolution_depths : List Int := [";
         for (std::size_t i = 0; i < node->pair_resolution_depths.size(); ++i) {
             if (i) out << ", ";

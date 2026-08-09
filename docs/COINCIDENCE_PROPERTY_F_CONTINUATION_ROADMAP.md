@@ -318,3 +318,8 @@ Finally, each resolved pair now receives a direct theorem equating the two
 matrix-derived path sums. This removes even the recorded common vector from
 the logical dependency of the coincidence claim; the vector remains only as a
 cross-check and readable diagnostic payload.
+The edge table is now independently validated in Lean as well: for each edge,
+the kernel reconstructs the prefix landmark, follows the forced singleton
+chain, checks its jump length, and checks the terminal junction. Suffix tables
+are checked against the reversed serialized images, so orientation is explicit
+rather than an unchecked convention.
