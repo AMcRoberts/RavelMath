@@ -99,7 +99,7 @@ TRANSITION_FILES := $(addprefix $(TRANSITIONS_DIR)/spectre_transitions_,$(addsuf
 .PHONY: csy_finite_carry_automaton_test
 .PHONY: lean_class_ii_catalogue_cross_check_test
 .PHONY: supergolden_qrs_audit
-.PHONY: theta5_contact_boundary_probe property_f_family_autopsy property_f_family_artifact property_f_transport_certificate_test property_f_contact_transport_bridge_test generalized_multinacci_property_f_transport_test generalized_multinacci_property_f_transport_extended_test generalized_multinacci_growth_profile_test generalized_multinacci_block_affine_test
+.PHONY: theta5_contact_boundary_probe property_f_family_autopsy property_f_family_artifact property_f_transport_certificate_test property_f_contact_transport_bridge_test generalized_multinacci_property_f_transport_test generalized_multinacci_property_f_transport_extended_test generalized_multinacci_growth_profile_test generalized_multinacci_block_affine_test generalized_multinacci_structural_sweep_test
 
 all: build data apps tests
 build: $(LIB)
@@ -2343,6 +2343,13 @@ $(TEST_BIN_GENERALIZED_MULTINACCI_BLOCK_AFFINE): $(TESTDIR)/generalized_multinac
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 generalized_multinacci_block_affine_test: $(TEST_BIN_GENERALIZED_MULTINACCI_BLOCK_AFFINE)
 	./$(TEST_BIN_GENERALIZED_MULTINACCI_BLOCK_AFFINE)
+
+TEST_BIN_GENERALIZED_MULTINACCI_STRUCTURAL_SWEEP := $(BUILDDIR)/generalized_multinacci_structural_sweep_test
+$(TEST_BIN_GENERALIZED_MULTINACCI_STRUCTURAL_SWEEP): $(TESTDIR)/generalized_multinacci_structural_sweep_test.cpp \
+		$(INCDIR)/adelic/generalized_multinacci_block_transport.hpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+generalized_multinacci_structural_sweep_test: $(TEST_BIN_GENERALIZED_MULTINACCI_STRUCTURAL_SWEEP)
+	./$(TEST_BIN_GENERALIZED_MULTINACCI_STRUCTURAL_SWEEP)
 
 PROPERTY_F_FAMILY_ARTIFACT_BIN := $(BUILDDIR)/property_f_family_artifact
 property_f_family_artifact: $(PROPERTY_F_FAMILY_ARTIFACT_BIN)

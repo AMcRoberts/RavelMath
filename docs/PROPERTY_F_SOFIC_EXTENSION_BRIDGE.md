@@ -196,6 +196,12 @@ For the profile-only rows above this is scale evidence, not a Property-F
 closure claim. The factors rise to 13.52 at `(6,3)`, 16.55 at `(7,2)`, and
 18.93 at `(8,1)`, so an unstructured exact BFS would likely exceed the 10 GB
 working envelope; the rank/cardinality proof is the correct next step there.
+The companion `generalized_multinacci_structural_sweep_test` checks the other
+finite obligations on the same 42 points: strong coincidence, the symbolic
+general-`m` scheduler, and the return-block schema all pass through
+`d=8,m=6`. Thus the profile-only rows are not extrapolated substitutions; they
+are structurally valid members of the same sofic/transport family, with only
+the expensive Property-F closure enumeration deferred.
 The profile also exposes the forward-contraction carry-radius proxy
 `m*rho/(1-rho)`: it is the radius outside which multiplication by `beta` in
 the secondary embeddings dominates one carried digit. This separates the

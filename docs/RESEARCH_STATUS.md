@@ -99,6 +99,10 @@ inconclusive. The new growth-profile test sweeps all 42 points through
 `rho<1`; its scale factors are 13.52 at `(6,3)`, 16.55 at `(7,2)`, and 18.93
 at `(8,1)`. These are profile-only rows, not closure claims, and identify the
 uniform reachable-vector rank bound as the next theorem-facing deliverable.
+The paired structural sweep now checks strong coincidence, the symbolic
+general-`m` scheduler, and the return-block schema on all 42 points through
+`d=8,m=6`; every point passes. The missing datum on profile-only rows is
+therefore only the expensive exact Property-F closure, not family validity.
 The profile's additional proxy `m*rho/(1-rho)` is the forward-contraction
 carry radius, separating the contraction threshold from the subsequent count
 of admissible coefficient vectors.
