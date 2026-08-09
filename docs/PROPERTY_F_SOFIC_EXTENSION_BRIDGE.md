@@ -133,6 +133,9 @@ there are exactly `(d-1)m+1` excursion channels, of lengths at most `d`;
 each word is `[k,m,...,m]`, with one initial `k<m` (plus the terminal
 `[0,m,...,m]` channel). Any future rank argument can therefore work on this
 finite block alphabet instead of the raw zero-expansion graph.
+The bridge test now replays every one of those channels against the concrete
+prefix automaton, including the terminal-image exception; this is an exact
+implementation cross-check for the block projection.
 
 An opt-in extended regression pushes beyond that rectangle
 (`generalized_multinacci_property_f_transport_extended_test`). It closes

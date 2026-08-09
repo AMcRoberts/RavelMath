@@ -5,6 +5,8 @@
 #include <utility>
 #include <vector>
 
+#include "adelic/prefix_automaton.hpp"
+
 namespace adelic {
 
 struct GeneralizedMultinacciBlockChannel {
@@ -82,6 +84,31 @@ derive_generalized_multinacci_block_transport(std::size_t dimension,
     if (!out.proved)
         out.obstruction = "generalized multinacci block schema failed";
     return out;
+}
+
+template <std::size_t d>
+bool verify_generalized_multinacci_block_transport(
+    const PrefixAutomaton<d>& automaton, std::size_t multiplicity) {
+    const auto schema = derive_generalized_multinacci_block_transport(d, multiplicity);
+    if (!schema.proved) return false;
+    auto has_edge = [&](std::size_t source, long long target, std::size_t prefix_length) {
+        const std::vector<long long> prefix(prefix_length, 0);
+        for (const auto& edge : automaton.by_source[source])
+            if (edge.first == target && edge.second == prefix) return true;
+        return false;
+    };
+    for (std::size_t b = 0; b + 1 < d; ++b) {
+        for (std::size_t k = 0; k < multiplicity; ++k) {
+            if (!has_edge(b, 0, k)) return false;
+            for (std::size_t j = 1; j <= b; ++j)
+                if (!has_edge(j - 1, static_cast<long long>(j), multiplicity))
+                    return false;
+        }
+    }
+    if (!has_edge(d - 1, 0, 0)) return false;
+    for (std::size_t j = 1; j < d; ++j)
+        if (!has_edge(j - 1, static_cast<long long>(j), multiplicity)) return false;
+    return true;
 }
 
 }  // namespace adelic

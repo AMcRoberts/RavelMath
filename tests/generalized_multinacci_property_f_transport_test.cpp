@@ -40,6 +40,8 @@ void check_case(std::size_t m) {
     mathlib::QBetaRing ring(ravel::generalized_multinacci_polynomial(d, m));
     const auto eigen = mathlib::left_eigenvector_via_qbeta_reduced_factor(dense, ring);
     const auto automaton = adelic::build_prefix_automaton<d>(images, eigen.v, ring);
+    if (!adelic::verify_generalized_multinacci_block_transport(automaton, m))
+        throw std::runtime_error("generalized multinacci block replay failed");
     if (!adelic::verify_generalized_multinacci_affine_transport(automaton, m))
         throw std::runtime_error("generalized multinacci affine transport law failed");
     const auto transport = adelic::derive_property_f_transport_certificate<d>(
