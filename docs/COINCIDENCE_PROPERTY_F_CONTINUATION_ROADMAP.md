@@ -254,3 +254,10 @@ historical case is being mislabeled as a failure.
 The witness is reconstructed from the real Tarjan SCC graph, not from a
 reimplemented abstract automaton, so the failure branch preserves the same
 instance-data discipline as the successful certificate path.
+
+The production tiling classifier now records closure provenance explicitly:
+whether the exact closure was attempted, whether it completed successfully,
+and whether a fallback was caused by an inconclusive budget/overflow or an
+unsupported substitution shape. The worked example and `rnd13` regression
+cases assert the completed supported state, so downstream reports can
+distinguish an exact closure verdict from the legacy bounded-word fallback.

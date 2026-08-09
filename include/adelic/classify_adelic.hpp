@@ -85,7 +85,10 @@ struct TilingClassification {
     bool strong_coincidence_inconclusive;
     long long strong_coincidence_depth;
     std::vector<long long> strong_coincidence_pair_resolution_depths;
+    bool strong_coincidence_closure_attempted;
     bool strong_coincidence_closure_used;
+    bool strong_coincidence_closure_inconclusive;
+    bool strong_coincidence_closure_unsupported;
 
     // Property (F) under the combined p-adic bound.
     bool property_f_holds;
@@ -122,6 +125,9 @@ TilingClassification classify_tiling(
     TilingClassification out;
     out.name = name;
     out.strong_coincidence_closure_used = false;
+    out.strong_coincidence_closure_attempted = false;
+    out.strong_coincidence_closure_inconclusive = false;
+    out.strong_coincidence_closure_unsupported = false;
     out.strong_coincidence_pair_resolution_depths.clear();
 
     // Step 1: factor each prime dividing |det M|, cross-checked.
@@ -160,7 +166,7 @@ TilingClassification classify_tiling(
     // runs fall back to the established bounded word checker, preserving the
     // prior verdict semantics while making the fast path explicit in output.
     StrongCoincidenceResult coin{};
-    out.strong_coincidence_closure_used = false;
+    out.strong_coincidence_closure_attempted = true;
     try {
         std::array<std::array<long long, d>, d> matrix{};
         for (std::size_t column = 0; column < d; ++column)
@@ -183,11 +189,14 @@ TilingClassification classify_tiling(
             coin.pair_resolution_depths = closure.pair_resolution_depths;
             out.strong_coincidence_closure_used = true;
         } else {
+            out.strong_coincidence_closure_inconclusive = closure.inconclusive;
             coin = adelic::check_strong_coincidence<d>(images);
         }
     } catch (const std::invalid_argument&) {
+        out.strong_coincidence_closure_unsupported = true;
         coin = adelic::check_strong_coincidence<d>(images);
     } catch (const std::overflow_error&) {
+        out.strong_coincidence_closure_inconclusive = true;
         coin = adelic::check_strong_coincidence<d>(images);
     }
     out.strong_coincidence_holds = coin.holds;

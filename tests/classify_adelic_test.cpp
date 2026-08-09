@@ -62,6 +62,10 @@ void test_worked_example_tiles() {
     CHECK(cls.strong_coincidence_holds, "worked example: strong coin holds");
     CHECK(cls.strong_coincidence_closure_used,
           "worked example: shared classifier used exact closure strong coincidence");
+    CHECK(cls.strong_coincidence_closure_attempted &&
+              !cls.strong_coincidence_closure_inconclusive &&
+              !cls.strong_coincidence_closure_unsupported,
+          "worked example: closure status records a completed supported run");
     CHECK(cls.strong_coincidence_pair_resolution_depths.size() == 3 &&
               std::all_of(cls.strong_coincidence_pair_resolution_depths.begin(),
                           cls.strong_coincidence_pair_resolution_depths.end(),
@@ -99,6 +103,10 @@ void test_rnd13_tiles() {
     CHECK(cls.strong_coincidence_holds, "rnd13: strong coin holds");
     CHECK(cls.strong_coincidence_closure_used,
           "rnd13: shared classifier used exact closure strong coincidence");
+    CHECK(cls.strong_coincidence_closure_attempted &&
+              !cls.strong_coincidence_closure_inconclusive &&
+              !cls.strong_coincidence_closure_unsupported,
+          "rnd13: closure status records a completed supported run");
     CHECK(cls.strong_coincidence_pair_resolution_depths == std::vector<long long>(6, 1),
           "rnd13: classifier exports six depth-1 pair resolutions");
     CHECK(!cls.any_non_maximal, "rnd13: charpoly is Z[beta]-maximal");
