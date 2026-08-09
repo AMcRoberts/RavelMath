@@ -902,3 +902,5 @@ displacement law is geometric, not a simple function of alphabet size.
 Increasing theta10's cap from 30 to 50 closes its full `-10..+10` window,
 showing that the earlier missing states were a word-length artifact. The open
 question is now the asymptotic word-length bound, not a fixed theta10 defect.
+At cap 100 the same theta10 forest realizes `-20..+20` completely, providing
+the first two-scale data point for a linear displacement-window hypothesis.

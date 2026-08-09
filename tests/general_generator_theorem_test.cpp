@@ -5,6 +5,7 @@
 // demonstrated directly, not asserted.
 
 #include <cassert>
+#include <algorithm>
 #include <iostream>
 #include <string>
 #include "math/qbeta.hpp"
@@ -76,7 +77,8 @@ void inspect_forest(const std::string& name, std::vector<long long> low_first,
     const auto forest = ravel::proof::derive_canonical_parent_role_catalogue(R, beta_I);
     const auto holonomy = ravel::proof::derive_parent_role_holonomy(forest);
     const auto closure = ravel::proof::derive_parent_role_word_closure(forest, word_cap, radius);
-    const auto profile = ravel::proof::derive_parent_role_window_profile(forest, word_cap, 10);
+    const auto profile = ravel::proof::derive_parent_role_window_profile(
+        forest, word_cap, std::max<std::size_t>(10, radius));
     assert(forest.proved && holonomy.proved && closure.proved);
     assert(profile.proved);
     std::cout << name << ": alphabet=" << forest.alphabet_size
@@ -90,7 +92,7 @@ void inspect_forest(const std::string& name, std::vector<long long> low_first,
               << " integer_window@" << radius << "=" << closure.integer_window_pairs << "/"
               << forest.role_count * forest.role_count * (2 * radius + 1) << "\n";
     std::cout << "  window_profile largest_complete_radius="
-              << profile.largest_complete_radius << " missing@10="
+              << profile.largest_complete_radius << " missing@profile_max="
               << profile.missing_by_radius.back() << "\n";
 }
 
@@ -116,7 +118,7 @@ int main() {
     inspect_forest("theta7 forest", {-1, -1, 0, 0, 1, 0, -1}, 30, 3);
     inspect_forest("theta8 forest", {-2, 1, 0, -1, 1, -1}, 30, 3);
     inspect_forest("theta9 forest", {-1, 0, -1, 0, -1}, 30, 3);
-    inspect_forest("theta10 forest", {-1, -1, 0, 0, 0, 1, 0, -1}, 50, 10);
+    inspect_forest("theta10 forest", {-1, -1, 0, 0, 0, 1, 0, -1}, 100, 20);
 
     std::cout << "\nALL PASS: one call, no case split, correct in every case -- terminating "
                  "or eventually periodic, padded or not, unit or not.\n";

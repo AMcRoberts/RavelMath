@@ -4004,6 +4004,8 @@ raising only theta10's word cap from 30 to 50 closes the full `-10..+10`
 window (435,456/435,456 states), with maximum shortest witness still 18.
 The finite data therefore supports growth with available word length, while
 leaving the asymptotic bound open.
+At word cap 100, theta10 realizes the complete `-20..+20` window
+(850,176/850,176 states), again with all zero-net witnesses replay-checked.
 The reusable window profile at word cap 30 gives largest complete radii 5,
 7, 9, and 4 for theta7, theta8, theta9, and theta10 respectively (testing
 radii through 10). The non-monotone sequence is evidence that the window is
