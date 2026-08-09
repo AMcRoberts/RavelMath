@@ -7,6 +7,28 @@
 
 namespace ravel::proof {
 
+inline void render_closure_path_lists(
+    std::ostringstream& out, const std::string& stem,
+    const std::vector<std::vector<long long>>& first,
+    const std::vector<std::vector<long long>>& second) {
+    auto render = [&out](const std::string& name,
+                         const std::vector<std::vector<long long>>& paths) {
+        out << "def " << name << " : List (List Int) := [";
+        for (std::size_t i = 0; i < paths.size(); ++i) {
+            if (i) out << ", ";
+            out << "[";
+            for (std::size_t j = 0; j < paths[i].size(); ++j) {
+                if (j) out << ", ";
+                out << paths[i][j];
+            }
+            out << "]";
+        }
+        out << "]\n";
+    };
+    render(stem + "_first_paths", first);
+    render(stem + "_second_paths", second);
+}
+
 inline std::string render_strong_coincidence_run_instances(
     const mathlib::reflection::Trace& trace) {
     std::ostringstream out;
@@ -96,6 +118,8 @@ inline std::string render_strong_coincidence_prefix_closure_instances(
             out << "]";
         }
         out << "]\n";
+        render_closure_path_lists(out, stem, node->pair_first_paths,
+                                  node->pair_second_paths);
         out << "def " << stem << "_first_positions : List Int := [";
         for (std::size_t i = 0; i < node->pair_first_positions.size(); ++i) {
             if (i) out << ", ";
@@ -121,6 +145,8 @@ inline std::string render_strong_coincidence_prefix_closure_instances(
             << "    " << stem << "_terminal_letters.length = "
             << node->pair_terminal_letters.size() << " ∧\n"
             << "    " << stem << "_vectors.length = " << node->pair_vectors.size() << " ∧\n"
+            << "    " << stem << "_first_paths.length = " << node->pair_first_paths.size() << " ∧\n"
+            << "    " << stem << "_second_paths.length = " << node->pair_second_paths.size() << " ∧\n"
             << "    " << stem << "_first_positions.length = "
             << node->pair_first_positions.size() << " ∧\n"
             << "    " << stem << "_second_positions.length = "
@@ -175,6 +201,8 @@ inline std::string render_strong_coincidence_closure_instances(
             out << "]";
         }
         out << "]\n";
+        render_closure_path_lists(out, stem, node->pair_first_paths,
+                                  node->pair_second_paths);
         out << "def " << stem << "_from_suffix : List Bool := [";
         for (std::size_t i = 0; i < node->pair_from_suffix.size(); ++i) {
             if (i) out << ", ";
@@ -206,6 +234,8 @@ inline std::string render_strong_coincidence_closure_instances(
             << "    " << stem << "_terminal_letters.length = "
             << node->pair_terminal_letters.size() << " ∧\n"
             << "    " << stem << "_vectors.length = " << node->pair_vectors.size() << " ∧\n"
+            << "    " << stem << "_first_paths.length = " << node->pair_first_paths.size() << " ∧\n"
+            << "    " << stem << "_second_paths.length = " << node->pair_second_paths.size() << " ∧\n"
             << "    " << stem << "_from_suffix.length = " << node->pair_from_suffix.size() << " ∧\n"
             << "    " << stem << "_first_positions.length = "
             << node->pair_first_positions.size() << " ∧\n"

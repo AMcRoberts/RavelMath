@@ -74,10 +74,24 @@ inline long long checked_exact_mul(long long a, long long b) {
     return value;
 }
 
+inline long long checked_exact_sub(long long a, long long b) {
+    long long value = 0;
+    if (__builtin_sub_overflow(a, b, &value))
+        throw std::overflow_error("coincidence closure vector subtraction overflow");
+    return value;
+}
+
 template <std::size_t d>
 inline ExactVec<d> exact_vec_add(const ExactVec<d>& a, const ExactVec<d>& b) {
     ExactVec<d> r{};
     for (std::size_t i = 0; i < d; ++i) r[i] = checked_exact_add(a[i], b[i]);
+    return r;
+}
+
+template <std::size_t d>
+inline ExactVec<d> exact_vec_sub(const ExactVec<d>& a, const ExactVec<d>& b) {
+    ExactVec<d> r{};
+    for (std::size_t i = 0; i < d; ++i) r[i] = checked_exact_sub(a[i], b[i]);
     return r;
 }
 
@@ -169,6 +183,7 @@ using OutcomeSet = std::set<std::pair<long long, ExactVec<d>>>;
 template <std::size_t d>
 class CoincidenceClosure {
 public:
+    using Path = std::vector<long long>;  // edge indices in the junction graph
     CoincidenceClosure(std::vector<JunctionEdge<d>> edges, std::array<std::array<long long, d>, d> M)
         : edges_(std::move(edges)), M_(M),
           closure_([this](const std::pair<long long, long long>& state,
@@ -178,6 +193,44 @@ public:
 
     const OutcomeSet<d>& reachable(long long junction, long long remaining_depth) {
         return closure_.get({junction, remaining_depth});
+    }
+
+    const std::vector<JunctionEdge<d>>& edges() const { return edges_; }
+
+    // Reconstruct one exact DAG path for an already-reachable outcome.  This
+    // preserves the recursive landmark derivation instead of collapsing the
+    // witness to a flat word-level occurrence check.
+    bool find_path(long long junction, long long remaining_depth, long long terminal,
+                   const ExactVec<d>& target, Path& path) {
+        if (!reachable(junction, remaining_depth).count({terminal, target})) return false;
+        if (remaining_depth <= 0)
+            return terminal == junction && target == ExactVec<d>{};
+        for (std::size_t index = 0; index < edges_.size(); ++index) {
+            const auto& edge = edges_[index];
+            if (edge.from_junction != junction) continue;
+            const ExactVec<d> weighted = exact_matvec<d>(power_cache(remaining_depth - 1), edge.landmark);
+            if (edge.jump_size <= remaining_depth) {
+                const ExactVec<d> residual = exact_vec_sub<d>(target, weighted);
+                if (!reachable(edge.to_junction, remaining_depth - edge.jump_size)
+                         .count({terminal, residual})) continue;
+                Path suffix;
+                if (find_path(edge.to_junction, remaining_depth - edge.jump_size,
+                              terminal, residual, suffix)) {
+                    path.clear();
+                    path.push_back(static_cast<long long>(index));
+                    path.insert(path.end(), suffix.begin(), suffix.end());
+                    return true;
+                }
+            } else {
+                const long long terminal_at_cutoff =
+                    edge.chain[static_cast<std::size_t>(remaining_depth - 1)];
+                if (terminal_at_cutoff == terminal && weighted == target) {
+                    path = {static_cast<long long>(index)};
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 private:
@@ -252,6 +305,8 @@ struct PrefixClosureCoincidenceResult {
     std::vector<long long> pair_resolution_depths;
     std::vector<long long> pair_terminal_letters;
     std::vector<std::vector<long long>> pair_vectors;
+    std::vector<std::vector<long long>> pair_first_paths;
+    std::vector<std::vector<long long>> pair_second_paths;
 };
 
 // Full finite strong-coincidence result obtained by running the exact
@@ -268,6 +323,8 @@ struct ClosureStrongCoincidenceResult {
     std::vector<long long> pair_terminal_letters;
     std::vector<std::vector<long long>> pair_vectors;
     std::vector<bool> pair_from_suffix;
+    std::vector<std::vector<long long>> pair_first_paths;
+    std::vector<std::vector<long long>> pair_second_paths;
 };
 
 template <std::size_t d>
@@ -308,6 +365,8 @@ inline PrefixClosureCoincidenceResult check_prefix_coincidence_closure(
     result.pair_resolution_depths.assign(pairs.size(), -1);
     result.pair_terminal_letters.assign(pairs.size(), -1);
     result.pair_vectors.resize(pairs.size());
+    result.pair_first_paths.resize(pairs.size());
+    result.pair_second_paths.resize(pairs.size());
     if (pairs.empty()) {
         result.holds = true;
         return result;
@@ -342,6 +401,20 @@ inline PrefixClosureCoincidenceResult check_prefix_coincidence_closure(
         auto const& reachable = closure.reachable(letter, remaining);
         outcomes.insert(reachable.begin(), reachable.end());
         return outcomes;
+    };
+
+    auto path_from_start = [&](long long start, long long depth, long long terminal,
+                               const ExactVec<d>& target, typename CoincidenceClosure<d>::Path& path) {
+        long long letter = start;
+        long long remaining = depth;
+        while (remaining > 0 && images[static_cast<std::size_t>(letter)].size() == 1) {
+            letter = images[static_cast<std::size_t>(letter)][0];
+            --remaining;
+        }
+        if (remaining == 0)
+            return terminal == letter && target == ExactVec<d>{};
+        if (images[static_cast<std::size_t>(letter)].size() < 2) return false;
+        return closure.find_path(letter, remaining, terminal, target, path);
     };
 
     for (long long depth = 1; depth <= max_depth; ++depth) {
@@ -379,6 +452,13 @@ inline PrefixClosureCoincidenceResult check_prefix_coincidence_closure(
                 result.pair_terminal_letters[active_slots[i]] = witness.first;
                 result.pair_vectors[active_slots[i]].assign(
                     witness.second.begin(), witness.second.end());
+                ExactVec<d> target = witness.second;
+                if (!path_from_start(active[i].first, depth, witness.first, target,
+                                     result.pair_first_paths[active_slots[i]]) ||
+                    !path_from_start(active[i].second, depth, witness.first, target,
+                                     result.pair_second_paths[active_slots[i]]))
+                    throw std::logic_error(
+                        "check_prefix_coincidence_closure: reachable witness has no reconstructed path");
             } else {
                 still_active.push_back(active[i]);
                 still_slots.push_back(active_slots[i]);
@@ -412,6 +492,8 @@ inline ClosureStrongCoincidenceResult check_strong_coincidence_closure(
     result.pair_terminal_letters.resize(result.pair_resolution_depths.size(), -1);
     result.pair_vectors.resize(result.pair_resolution_depths.size());
     result.pair_from_suffix.resize(result.pair_resolution_depths.size(), false);
+    result.pair_first_paths.resize(result.pair_resolution_depths.size());
+    result.pair_second_paths.resize(result.pair_resolution_depths.size());
     for (std::size_t i = 0; i < result.pair_resolution_depths.size(); ++i) {
         const long long p = prefix.pair_resolution_depths[i];
         const long long s = suffix.pair_resolution_depths[i];
@@ -424,6 +506,8 @@ inline ClosureStrongCoincidenceResult check_strong_coincidence_closure(
             result.pair_terminal_letters[i] = source.pair_terminal_letters[i];
             result.pair_vectors[i] = source.pair_vectors[i];
             result.pair_from_suffix[i] = use_suffix;
+            result.pair_first_paths[i] = source.pair_first_paths[i];
+            result.pair_second_paths[i] = source.pair_second_paths[i];
         }
     }
     result.depth_reached = std::max(prefix.depth_reached, suffix.depth_reached);

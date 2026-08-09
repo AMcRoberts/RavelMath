@@ -141,6 +141,9 @@ inline StrongCoincidencePrefixClosureStageResult stage_strong_coincidence_prefix
     }
     if (!result.holds || result.inconclusive)
         return StrongCoincidencePrefixClosureStageResult::inconclusive;
+    if (result.pair_first_paths.size() != result.pair_resolution_depths.size() ||
+        result.pair_second_paths.size() != result.pair_resolution_depths.size())
+        return StrongCoincidencePrefixClosureStageResult::witness_rejected;
     const auto pair_index = [](std::size_t i, std::size_t j) {
         return (i * (2 * d - i - 1)) / 2 + (j - i - 1);
     };
@@ -164,6 +167,8 @@ inline StrongCoincidencePrefixClosureStageResult stage_strong_coincidence_prefix
     node.pair_resolution_depths = result.pair_resolution_depths;
     node.pair_terminal_letters = result.pair_terminal_letters;
     node.pair_vectors = result.pair_vectors;
+    node.pair_first_paths = result.pair_first_paths;
+    node.pair_second_paths = result.pair_second_paths;
     node.pair_first_positions.resize(result.pair_resolution_depths.size());
     node.pair_second_positions.resize(result.pair_resolution_depths.size());
     for (std::size_t i = 0; i < d; ++i)
@@ -223,6 +228,9 @@ inline StrongCoincidenceClosureStageResult stage_strong_coincidence_closure(
     }
     if (!result.holds || result.inconclusive)
         return StrongCoincidenceClosureStageResult::inconclusive;
+    if (result.pair_first_paths.size() != result.pair_resolution_depths.size() ||
+        result.pair_second_paths.size() != result.pair_resolution_depths.size())
+        return StrongCoincidenceClosureStageResult::witness_rejected;
     const auto pair_index = [](std::size_t i, std::size_t j) {
         return (i * (2 * d - i - 1)) / 2 + (j - i - 1);
     };
@@ -248,6 +256,8 @@ inline StrongCoincidenceClosureStageResult stage_strong_coincidence_closure(
     node.pair_terminal_letters = result.pair_terminal_letters;
     node.pair_vectors = result.pair_vectors;
     node.pair_from_suffix = result.pair_from_suffix;
+    node.pair_first_paths = result.pair_first_paths;
+    node.pair_second_paths = result.pair_second_paths;
     node.pair_first_positions.resize(result.pair_resolution_depths.size());
     node.pair_second_positions.resize(result.pair_resolution_depths.size());
     for (std::size_t i = 0; i < d; ++i)

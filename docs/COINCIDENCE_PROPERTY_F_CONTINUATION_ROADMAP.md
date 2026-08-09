@@ -280,3 +280,10 @@ for every validated terminal/vector witness. Those positions are emitted in
 the typed prefix/full payloads and their Lean summaries, so the reflected
 artifact retains an occurrence-level witness rather than only an aggregate
 state match.
+
+The closure producer now also reconstructs one recursive junction-edge path
+for each side of every resolved pair. Each path is checked against the same
+memoized DAG outcome recurrence that produced the terminal/vector state, then
+serialized in the typed prefix/full certificates. This keeps the next Lean
+bridge structural: it can check edge choices and remaining-depth landmark
+recurrences without expanding the exponentially growing substitution words.
