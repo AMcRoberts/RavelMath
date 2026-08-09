@@ -159,6 +159,20 @@ void test_multi_prime_no_crash() {
     CHECK(valid_verdict, "multi-prime: classify_tiling returned a valid verdict enum");
 }
 
+// A quartic survey polynomial whose Dedekind order is not 2-maximal.  The
+// exploratory local-field predicate is still constructible, but the trust
+// flag must prevent it from being promoted to a certified Property-F bound.
+void test_nonmaximal_order_is_not_trusted() {
+    std::fprintf(stderr, "=== test_nonmaximal_order_is_not_trusted ===\n");
+    mathlib::QBetaRing R = mathlib::QBetaRing::from_low_first({-7, 5, -5, 2});
+    auto fac = adelic::factor_prime_in_qbeta(R.charpoly(), 2);
+    std::fprintf(stderr, "  diagnostic maximal=%d cross=%d\n", fac.maximal ? 1 : 0,
+                 adelic::cross_check_dedekind_factorization(fac, R.charpoly(), 4) ? 1 : 0);
+    auto [bound, trusted] = adelic::make_combined_padic_bound({2}, R.charpoly());
+    CHECK(!trusted, "non-maximal quartic: p-adic bound is not trusted");
+    CHECK(bound(R.from_int(0)), "non-maximal quartic: exploratory bound remains callable");
+}
+
 // verdict_label() should give a non-empty string for every enum value.
 void test_verdict_label_complete() {
     std::fprintf(stderr, "=== test_verdict_label_complete ===\n");
@@ -182,6 +196,7 @@ int main() {
     test_worked_example_tiles();
     test_rnd13_tiles();
     test_multi_prime_no_crash();
+    test_nonmaximal_order_is_not_trusted();
     test_verdict_label_complete();
     std::printf("%d passed, 0 failed\n", n_pass);
     return n_fail == 0 ? 0 : 1;
