@@ -888,7 +888,8 @@ TESTS_DEFAULT := \
 	defect_splice_step_reflection_test \
 	condition_f_joint_dominance_reflection_test \
 	finite_positive_grammar_majorant_reflection_test \
-	third_smallest_pisot_parry_factorization_reflection_test
+	third_smallest_pisot_parry_factorization_reflection_test \
+	first_genuine_fourth_generator_intertwiner_test
 
 tests: $(TESTS_DEFAULT)
 
@@ -3220,3 +3221,14 @@ quartic_fourth_generator_audit_test: math/out/libmath.a
 	@mkdir -p out
 	$(CXX) $(CXXFLAGS) -Iinclude -Imath/include -Imath/include/mini-gmp tests/quartic_fourth_generator_audit_test.cpp -o out/quartic_fourth_generator_audit_test math/out/libmath.a
 	./out/quartic_fourth_generator_audit_test
+
+.PHONY: first_genuine_fourth_generator_intertwiner_test
+FIRST_GENUINE_FOURTH_GENERATOR_INTERTWINER_TEST_BIN := $(BUILDDIR)/first_genuine_fourth_generator_intertwiner_test
+first_genuine_fourth_generator_intertwiner_test: $(FIRST_GENUINE_FOURTH_GENERATOR_INTERTWINER_TEST_BIN)
+	./$(FIRST_GENUINE_FOURTH_GENERATOR_INTERTWINER_TEST_BIN)
+$(FIRST_GENUINE_FOURTH_GENERATOR_INTERTWINER_TEST_BIN): \
+		$(TESTDIR)/first_genuine_fourth_generator_intertwiner_test.cpp \
+		$(INCDIR)/ravel/proof/first_genuine_fourth_generator_intertwiner.hpp \
+		| $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) -Iinclude -Imath/include -Imath/include/mini-gmp $< \
+		-o $@ $(MATH_LIB)
