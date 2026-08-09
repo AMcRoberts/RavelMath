@@ -858,3 +858,12 @@ Property (F) HOLDS. This remains finite evidence, not a universal theorem.
 The next terminating lift, `theta6` (`x^5-x^3-x^2-x-1`), closes at 743,931
 nodes (coincidence depth 4, 0.64 GB RSS, 36.9s); an environment-only mode
 reproduces it without rerunning theta5.
+### 2026-08-09 — Forest-level cocycle extraction
+
+The next operation is no longer a larger tree search. The reusable
+`CanonicalParentRoleCatalogue` records all parent fibres and defect-labelled
+role transitions; its holonomy diagnostic finds one strongly connected role
+component with gcd-1 integer defect holonomy across the current regression
+families. Treat this as the finite structural datum from which to derive the
+sofic/twisted-sector correspondence. The group-extension statement remains
+open until regularity of the fibre action and composition law are proved.

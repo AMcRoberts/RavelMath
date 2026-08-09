@@ -27,12 +27,16 @@ void run(const std::string& name, std::vector<long long> low_first, std::size_t 
     auto beta_I = isolate_beta(R);
     auto c = ravel::proof::derive_general_generator_theorem(R, beta_I);
     auto forest = ravel::proof::derive_canonical_parent_role_catalogue(R, beta_I);
+    auto holonomy = ravel::proof::derive_parent_role_holonomy(forest);
     std::cout << name << ": digits.size=" << c.digits.size()
               << " raw=" << c.raw_defect_classes << " primitive=" << c.primitive_generator_count
               << " proved=" << c.proved << "\n";
     assert(c.proved);
     assert(c.primitive_generator_count == expected_primitive);
     assert(forest.proved);
+    assert(holonomy.proved);
+    assert(holonomy.edge_count == forest.edges.size());
+    assert(!holonomy.components.empty());
     assert(forest.role_count == forest.alphabet_size * forest.alphabet_size);
     std::size_t parent_occurrences = 0;
     for (const auto& ps : forest.parents) parent_occurrences += ps.size();
@@ -44,6 +48,9 @@ void run(const std::string& name, std::vector<long long> low_first, std::size_t 
     std::size_t defect_edges = 0;
     for (const auto& [_, count] : forest.edge_count_by_defect) defect_edges += count;
     assert(defect_edges == forest.edges.size());
+    std::cout << " forest_scc=" << holonomy.components.size()
+              << " twisted_scc=" << holonomy.nontrivial_holonomy_components
+              << " holonomy_gcd=" << holonomy.components.front().holonomy_gcd;
 }
 
 int main() {
