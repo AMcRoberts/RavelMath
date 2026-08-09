@@ -187,14 +187,22 @@ void test_nonmaximal_order_is_not_trusted() {
                  mathlib::str(round.disc_before).c_str(), mathlib::str(round.disc_after).c_str(),
                  round.needs_another_round ? 1 : 0);
     bool round_basis_closed = true;
+    adelic::GeneralOrder first_enlarged_order;
     try {
         auto O = adelic::monogenic_structure_constants({1, -7, 5, -5, 2});
-        (void)adelic::structure_constants_from_basis_change(O, round.basis, 2);
+        first_enlarged_order = adelic::structure_constants_from_basis_change(O, round.basis, 2);
     } catch (const std::runtime_error&) {
         round_basis_closed = false;
     }
-    CHECK(!round_basis_closed,
-          "non-maximal quartic: one-round HNF candidate is not yet a closed maximal-order basis");
+    CHECK(round_basis_closed,
+          "non-maximal quartic: corrected one-round HNF basis is closed under multiplication");
+    CHECK(mathlib::cmp_si(round.disc_after, -21580) == 0,
+          "non-maximal quartic: one-round multiplier-ring discriminant is -21580");
+    auto round_again = adelic::enlarge_order_round2_bigint(first_enlarged_order, 2);
+    CHECK(round_again.enlarged,
+          "non-maximal quartic: general structure-constant round detects the next enlargement");
+    CHECK(mathlib::cmp_si(round_again.disc_after, -5395) == 0,
+          "non-maximal quartic: second round reaches discriminant -5395");
     auto segments = adelic::newton_polygon(adelic::zp_poly_from_polyz(R.charpoly(), 2, 30));
     CHECK(segments.size() == 2, "non-maximal quartic: Newton polygon has two segments");
     if (segments.size() == 2) {

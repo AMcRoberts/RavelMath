@@ -329,10 +329,9 @@ trace-form shortcut wouldn't even cover): exact agreement, `-2012 ->
 in that chain -- deriving a new `GeneralOrder`'s own structure constants
 from an enlarged order's HNF basis -- is now closed
 (`structure_constants_from_basis_change`), letting a caller chain
-rounds to a fixed point rather than compute one round at a time
-(validated only for a single-round-then-fixed-point case; a genuine
-2+-round worked example was not available to test against and remains
-open).
+rounds to a fixed point rather than compute one round at a time. A genuine
+two-round quartic regression now exercises that path (`-86320 -> -21580 ->
+-5395`); broader higher-degree stress testing remains open.
 
 An earlier task dependency wrongly assumed Golod-Shafarevich
 verification needed class number/class group computation first;

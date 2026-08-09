@@ -188,15 +188,13 @@ isolation without conflating a resource cutoff with a failed certificate.
 
 The representative non-maximal quartic (`x^4 - 7x^3 + 5x^2 - 5x + 2` at
 `p=2`) now has a concrete Round-2 diagnostic: the existing BigInt order
-enlargement changes the discriminant from `-86320` to `-5395` and reports that
-no further round is necessary by its discriminant divisibility heuristic. A
-direct structure-constant closure check now shows that this one-round HNF
-candidate is not itself closed under multiplication, so the discriminant
-quotient is evidence of the needed index correction, not a certified maximal
-order basis. This does not yet repair the p-adic bound, because the
-factorization still has to be transported into a genuinely closed enlarged
-order; that basis-aware prime-ideal step is the next order-theory target rather
-than an assumption hidden in the classifier.
+enlargement changes the discriminant from `-86320` to `-21580` and returns a
+closed index-2 multiplier-ring basis. The general structure-constant round then
+detects the second enlargement and reaches `-5395`; this is the first genuine
+multi-round quartic path in the project. This still does not repair the p-adic
+bound, because the factorization must now be transported into that final
+closed order; that basis-aware prime-ideal step is the next order-theory target
+rather than an assumption hidden in the classifier.
 An attempted route through `ore_padic_factorization` currently reaches the
 same boundary: its repeated-factor branch delegates to the cofactor lift and
 rejects this quartic's ambiguous mod-2 factor. That is a useful negative

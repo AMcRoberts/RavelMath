@@ -106,10 +106,8 @@ int main() {
               "round 2's discriminant is unchanged, as it must be when nothing enlarges");
     }
     fprintf(stderr,
-        "  NOTE: this demonstrates the chain correctly recognizes a fixed point after one\n"
-        "  round (the only case a textbook single-round example can exercise). It does NOT\n"
-        "  demonstrate a genuine 2-round enlargement -- no such worked example was available\n"
-        "  to test against, and none was constructed. That remains open.\n");
+        "  NOTE: this cubic is the fixed-point control; a genuine two-round quartic\n"
+        "  regression now lives in classify_adelic_test (disc -86320 -> -21580 -> -5395).\n");
 
     fprintf(stderr, "\n%d/%d checks passed\n", n_pass, n_pass + n_fail);
     return n_fail == 0 ? 0 : 1;
