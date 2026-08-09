@@ -457,3 +457,6 @@ The public `ore_factorization_reconstructs` helper independently multiplies
 the returned local polynomials back together at the working p-adic precision,
 making the finite factorization certificate explicit rather than implicit in
 the individual lift checks.
+`ore_padic_factorization` now enforces that certificate before returning, so a
+caller cannot accidentally consume a locally plausible but globally
+non-reconstructing factor list.

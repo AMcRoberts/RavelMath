@@ -1713,6 +1713,11 @@ inline std::vector<OreFactor> ore_padic_factorization(const ZpPoly& f, long long
             result.push_back(of);
         }
     }
+    if (!ore_factorization_reconstructs(f, result)) {
+        throw std::runtime_error(
+            "ore_padic_factorization: local factors do not reconstruct input "
+            "at the requested p-adic precision");
+    }
     return result;
 }
 
