@@ -40,10 +40,11 @@ nontrivial holonomy recurrence.  The sofic-twist analogy should be stated as
 a finite transport extension first, with genuine holonomy only a possible
 secondary layer.
 An explicit cycle classifier confirms the safety boundary: every closed case
-has exactly one cyclic SCC, it is zero-only, and it is a single allowed
-self-loop. No case has a mixed or nonzero cyclic component. The current family
-therefore contains no holonomy that can bite Property F; any future bite would
-appear as a new mixed/nonzero SCC, which the artifact now detects directly.
+has exactly one cyclic SCC and it is zero-only. Depending on letter ordering,
+that allowed recurrence appears as a self-loop or a small zero-only cycle.
+No case has a mixed or nonzero cyclic component. The current family therefore
+contains no holonomy that can bite Property F; any future bite would appear as
+a new mixed/nonzero SCC, which the artifact now detects directly.
 
 ## Verified engineering boundary
 
