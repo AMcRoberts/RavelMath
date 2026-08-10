@@ -574,6 +574,12 @@ and compare its channel rank with the existing contact-boundary generator
 intertwiner. This is small enough to fail quickly and informative enough that
 each failure selects the next representation layer.
 
+**One-million-length stress check (2026-08-09).** The enlarged suffix
+automaton scan now uses a 145,547,525-symbol prefix and verifies
+`p(n)=5n-5`, `LS=5`, and `RS=3` for every `4<=n<=1,000,000`. This still is
+not an all-(n) proof, but it eliminates another delayed finite-prefix
+transition and strengthens H1/H2's finite-core evidence.
+
 **Initial break-it pass (2026-08-09).** A finite predecessor scan already
 breaks the naive nested-branch model: for the stable `sigma_{0,1}` window,
 none of the left-special factors at lengths 8, 16, 32, or 64 has a one-letter

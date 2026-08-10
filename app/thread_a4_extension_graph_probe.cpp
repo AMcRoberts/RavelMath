@@ -176,7 +176,7 @@ private:
 };
 
 void report_fast_stability(const Word& orbit) {
-    const std::size_t max_n = std::min<std::size_t>(500000, orbit.size() / 8);
+    const std::size_t max_n = std::min<std::size_t>(1000000, orbit.size() / 8);
     const SuffixAutomaton forward(orbit);
     const auto complexity = forward.interval_counts(max_n, false);
     const auto right_special = forward.interval_counts(max_n, true);
@@ -290,9 +290,9 @@ void report(const char* name, const Sigma& sigma, std::size_t max_n = 20,
     // special-factor count needs a much larger boundary margin: on the base
     // 525456-symbol prefix the left-special count spuriously drops at n=55406,
     // while a large enough prefix restores all five branches far past that --
-    // checked to n=500000 on a 35676949-symbol prefix (2026-08-01, first
+// checked to n=500000 on a 35676949-symbol prefix (2026-08-01, first
     // cadence-loop cycle).
-    if (show_special_factors) report_fast_stability(orbit_prefix(rule, 1U << 25));
+    if (show_special_factors) report_fast_stability(orbit_prefix(rule, 1U << 27));
     std::printf("\n");
 }
 
