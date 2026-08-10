@@ -37,6 +37,7 @@ struct PropertyFClassIICollarGrammar {
     std::vector<PropertyFBirthRoundTransition> transitions;
     bool rank_valid = false;
     bool no_tail_reentry = false;
+    bool no_collar_internal_transport = false;
     bool height_support_valid = false;
     bool finite = false;
     bool valid = false;
@@ -70,6 +71,7 @@ inline PropertyFClassIICollarGrammar derive_property_f_class_ii_collar_grammar(
             ++out.tail_nodes;
     }
     out.no_tail_reentry = true;
+    out.no_collar_internal_transport = true;
     out.finite = true;
     out.transitions.reserve(out.collar_nodes);
     for (std::size_t source = 0; source < graph.nodes.size(); ++source) {
@@ -94,10 +96,12 @@ inline PropertyFClassIICollarGrammar derive_property_f_class_ii_collar_grammar(
                 std::max(out.maximum_target_height, target_height);
             const bool internal = graph.scc_labels[source] ==
                                   graph.scc_labels[target];
-            if (internal)
+            if (internal) {
                 ++out.collar_internal_edges;
-            else
+                out.no_collar_internal_transport = false;
+            } else {
                 ++out.collar_cross_scc_edges;
+            }
             if (target_height > PropertyFClassIICollarGrammar::collar_height) {
                 ++out.collar_to_tail_edges;
                 out.no_tail_reentry = false;
@@ -124,6 +128,7 @@ inline PropertyFClassIICollarGrammar derive_property_f_class_ii_collar_grammar(
                 out.height_support_valid = false;
     out.valid = out.rank_valid && out.finite && out.no_tail_reentry;
     if (a >= 4) out.valid = out.valid && out.height_support_valid;
+    if (a >= 4) out.valid = out.valid && out.no_collar_internal_transport;
     return out;
 }
 

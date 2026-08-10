@@ -107,6 +107,7 @@ int main() {
                 adelic::derive_property_f_class_ii_collar_grammar(graph, a);
             assert(collar.valid);
             assert(collar.no_tail_reentry);
+            assert(collar.no_collar_internal_transport);
             assert(collar.height_support_valid);
             assert(collar.collar_to_tail_edges == 0);
             assert(collar.maximum_target_height <=

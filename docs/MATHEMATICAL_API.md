@@ -824,8 +824,9 @@ contract, not the uniform upper-bound theorem.
 height-transition language and digit labels. For the checked `a>=4` members,
 the observed support is exactly
 `1->0; 2->{0,1}; 3->{0,1,2}; 4->{1,2,3}; 5->{2,3,4}`;
-there are no collar-to-tail edges. This is the finite symbolic grammar to be
-lifted into a parameterized upper-bound lemma, not that lemma itself.
+there are no collar-to-tail edges or same-SCC collar transports. This is the
+finite symbolic grammar to be lifted into a parameterized upper-bound lemma,
+not that lemma itself.
 
 ### General number fields and the class-field-tower initiative
 
