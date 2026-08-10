@@ -642,8 +642,8 @@ one has `sigma_{0,b}^2(0)=2^b0` and
 three powers. What remains numerical/structural is the finite collar bound
 and its refinement map, not the existence of a marker-proper power.
 
-**Refinement check (2026-08-09).** An exact finite composition test was added
-to the probe notebook: compose three successive full-collar transition maps,
+**Refinement check (2026-08-09).** An exact finite composition script was run:
+compose three successive full-collar transition maps,
 then project each target state to `(return-word,offset)`. For `b=1,2,3` at
 the stable radii `5,9,9`, every observed source state projects exactly to the
 phase image of `sigma^3`; the failure count was zero in all three cases. This
