@@ -132,6 +132,16 @@ acyclic condensation and explains why the finite rank behaves as a genuine
 boundary potential on this control. It is still an instance-level fact until
 the ordered-prefix grammar supplies the corresponding family argument.
 
+The finite derivation seam is now reusable in
+`include/adelic/property_f_birth_round_grammar.hpp`. It replays the exact SCC
+rank, records terminal-distance birth layers, separates internal transport
+from cross-SCC transitions, and emits the complete shell-drop histogram. The
+powered non-AR regression recovers seven layers with sizes
+`54,18,9,5,3,3,3` and the drop profile above. This is an auditable
+birth-round/transport grammar for a closed graph, not yet a uniform theorem
+for all ordered prefixes; the genuinely non-unit extension must add its
+valuation fibres explicitly rather than being inferred from this unit control.
+
 ## Effective-potential analogy (bounded modeling hypothesis, 2026-08-10)
 
 The observed “large, long-lived, then dispersing” cases invite a useful but

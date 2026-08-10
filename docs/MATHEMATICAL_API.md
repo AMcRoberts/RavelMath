@@ -787,6 +787,20 @@ The composed classifier reports hypotheses, caps, and inconclusive
 states separately. Use its `TilingVerdict`; do not infer a tiling
 theorem from a single successful subcheck.
 
+For a closed finite Property-(F) graph, the exact SCC rank can be exposed as
+an auditable birth-round/transport grammar:
+
+```cpp
+#include "adelic/property_f_birth_round_grammar.hpp"
+
+auto grammar = adelic::derive_property_f_birth_round_grammar(property_graph);
+```
+
+`grammar.layer_sizes` gives terminal-distance shells, while
+`grammar.transitions` and `grammar.drop_histogram` separate internal
+transport from strictly descending cross-SCC steps. This is a finite witness
+extractor; a non-unit theorem still needs explicit valuation fibres.
+
 ### General number fields and the class-field-tower initiative
 
 ```cpp

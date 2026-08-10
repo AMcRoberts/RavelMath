@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <functional>
 #include <limits>
+#include <map>
 #include <set>
 #include <string>
 #include <tuple>
@@ -17,6 +18,7 @@
 #include "adelic/coincidence_and_property_f.hpp"
 #include "adelic/property_f_role_digit_cocycle.hpp"
 #include "adelic/property_f_escape_rank.hpp"
+#include "adelic/property_f_birth_round_grammar.hpp"
 #include "adelic/return_phase_digit_cocycle.hpp"
 #include "adelic/return_contact_digit_holonomy.hpp"
 #include "adelic/return_contact_gamma_relation.hpp"
@@ -265,13 +267,15 @@ int main() {
         adelic::derive_property_f_escape_rank(property_graph);
     expect(gamma_escape_rank.valid && gamma_escape_rank.terminal_sccs > 0,
            "Property-F SCC condensation yields a finite boundary rank");
-    std::map<std::pair<long long, bool>, std::size_t> height_classes;
+    std::map<std::tuple<long long, bool, std::size_t>, std::size_t>
+        height_classes;
     std::map<std::size_t, std::size_t> edge_drop_histogram;
     std::size_t internal_edges = 0;
     std::size_t nondecreasing_cross_scc_edges = 0;
     for (std::size_t node = 0; node < property_graph.nodes.size(); ++node) {
         ++height_classes[{property_graph.nodes[node].letter,
-                          property_graph.nodes[node].zero}];
+                          property_graph.nodes[node].zero,
+                          gamma_escape_rank.node_height[node]}];
         for (const auto raw_target : property_graph.nodes[node].successors) {
             const auto target = static_cast<std::size_t>(raw_target);
             const auto source_height = gamma_escape_rank.node_height[node];
@@ -291,6 +295,20 @@ int main() {
     }
     expect(nondecreasing_cross_scc_edges == 0,
            "finite Property-F graph rank strictly decreases across SCC edges");
+    const auto birth_round =
+        adelic::derive_property_f_birth_round_grammar(property_graph);
+    expect(birth_round.valid && birth_round.layer_count == 7 &&
+               birth_round.terminal_layer_nodes == 54 &&
+               birth_round.internal_edges == internal_edges &&
+               birth_round.edge_rank_strictly_decreasing,
+           "birth-round grammar replays the powered non-AR boundary");
+    expect(birth_round.layer_sizes ==
+               std::map<std::size_t, std::size_t>{{0, 54}, {1, 18},
+                                                   {2, 9}, {3, 5}, {4, 3},
+                                                   {5, 3}, {6, 3}},
+           "powered non-AR birth rounds have the expected seven-layer profile");
+    expect(birth_round.drop_histogram == edge_drop_histogram,
+           "birth-round transport drops match the direct SCC replay");
     if (std::getenv("NONAR_RANK_SHAPE_PROBE")) {
         std::printf("rank-shape heights=%zu terminal_sccs=%zu max=%zu "
                     "internal_edges=%zu nondecreasing_cross_scc=%zu classes:",
@@ -299,8 +317,8 @@ int main() {
                     gamma_escape_rank.maximum_height,
                     internal_edges, nondecreasing_cross_scc_edges);
         for (const auto& [key, count] : height_classes)
-            std::printf(" letter%lld/%d=%zu", key.first, key.second ? 1 : 0,
-                        count);
+            std::printf(" letter%lld/%d/h%zu=%zu", std::get<0>(key),
+                        std::get<1>(key) ? 1 : 0, std::get<2>(key), count);
         std::printf(" drops:");
         for (const auto& [drop, count] : edge_drop_histogram)
             std::printf(" %zu:%zu", drop, count);
