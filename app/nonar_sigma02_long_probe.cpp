@@ -40,9 +40,9 @@ int main() {
     std::printf("sigma02: d_cont=%zu; starting boundary\n", d_cont.size());
 
     ravel::ContactBoundaryLimits limits;
-    limits.closure_cap = 100'000;
-    limits.corona_cap = 500'000;
-    limits.max_corona_rounds = 20;
+    limits.closure_cap = 1'000'000;
+    limits.corona_cap = 10'000'000;
+    limits.max_corona_rounds = 100;
     limits.retain_boundary_matrix = false;
     const auto boundary = ravel::compute_contact_boundary_dispatch(
         powered, spectral.beta, spectral.b2, d_cont);
