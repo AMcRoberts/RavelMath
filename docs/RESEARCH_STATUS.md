@@ -249,7 +249,9 @@ prefix has reduced label `beta^2-1 = U+a*beta`; after the inverse step its
 contribution is `a+beta^(-1)U = [a+1,a+1,-1]`. Thus the contact grammar adds
 one explicit Akiyama-unit correction and otherwise stays in the integer digit
 window. The remaining theorem is to propagate this finite correction through
-arbitrary branches and prove collar absorption.
+arbitrary branches and prove collar absorption. The symbolic role grammar also
+shows that the exceptional role cannot occur on the high letter-0 tail, so
+that induction genuinely has only the ordinary integer deviation cases.
 This closes the coordinate-level analogue, but not the beta-expansion
 inequalities or the literal prefix/contact-cocycle intertwiner.
 

@@ -24,6 +24,8 @@ struct PropertyFClassIIPrefixCorrectionCertificate {
     std::size_t exceptional_delta_mismatches = 0;
     std::size_t exceptional_contribution_mismatches = 0;
     std::size_t unit_decomposition_mismatches = 0;
+    std::size_t high_tail_steps_checked = 0;
+    std::size_t exceptional_high_tail_hits = 0;
     bool parameter_domain = false;
     bool ordinary_roles_valid = false;
     bool exceptional_role_valid = false;
@@ -85,11 +87,30 @@ derive_property_f_class_ii_prefix_correction(std::size_t a) {
     if (reconstructed_contribution != contribution)
         ++out.unit_decomposition_mismatches;
 
+    // The exceptional role targets letter 2.  Every state on the
+    // parameterized high tail after the seed/return has current letter 0,
+    // so the high-tail induction sees only ordinary integer digits.
+    const auto tail_count = 2 * a + 2 - 5;
+    for (std::size_t step = 2; step < tail_count; ++step) {
+        ++out.high_tail_steps_checked;
+        const auto current_letter = static_cast<long long>(
+            property_f_class_ii_spine_letter(step));
+        if (current_letter == 2) ++out.exceptional_high_tail_hits;
+        const auto roles_for_current =
+            property_f_class_ii_prefix_roles_for_target(a, current_letter);
+        const auto exceptional_parent = roles_for_current.find(0);
+        if (exceptional_parent != roles_for_current.end())
+            for (const auto position : exceptional_parent->second)
+                if (current_letter == 2 && position == a + 1)
+                    ++out.exceptional_high_tail_hits;
+    }
+
     out.exceptional_role_valid = out.exceptional_delta_mismatches == 0 &&
         out.exceptional_contribution_mismatches == 0;
     out.unit_decomposition_valid = out.unit_decomposition_mismatches == 0;
     out.valid = out.parameter_domain && out.ordinary_roles_valid &&
-        out.exceptional_role_valid && out.unit_decomposition_valid;
+        out.exceptional_role_valid && out.unit_decomposition_valid &&
+        out.exceptional_high_tail_hits == 0;
     return out;
 }
 

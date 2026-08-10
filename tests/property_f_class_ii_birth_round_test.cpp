@@ -370,6 +370,7 @@ int main() {
         assert(prefix_correction.exceptional_delta_mismatches == 0);
         assert(prefix_correction.exceptional_contribution_mismatches == 0);
         assert(prefix_correction.unit_decomposition_mismatches == 0);
+        assert(prefix_correction.exceptional_high_tail_hits == 0);
     }
     // The quotient identity is state-independent, not an artifact of the
     // observed spine.  Exercise arbitrary small integer coefficient states

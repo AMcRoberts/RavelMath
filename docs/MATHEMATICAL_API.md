@@ -909,7 +909,9 @@ literal prefix coefficient seam. All ordinary `0^j` roles contribute the
 integer constant `j`; the sole exceptional `0^a1` prefix has reduced digit
 `beta^2-1 = U+a*beta`, and its inverse-step contribution is
 `a+beta^(-1)U = [a+1,a+1,-1]`. This isolates the only non-integer prefix
-correction before attempting the global bounded-correction argument.
+correction before attempting the global bounded-correction argument. The
+certificate also verifies that this exceptional role cannot occur on the
+high tail, whose current letter is uniformly 0 after the seed/return.
 
 For the non-unit branch, `adelic_cocycle_extension.hpp` also exposes
 `derive_adelic_valuation_fibre_lemma`. It checks maximal Dedekind factorization,
