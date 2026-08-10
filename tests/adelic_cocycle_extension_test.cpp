@@ -51,5 +51,18 @@ int main() {
     assert(factored.local_fiber_count >= 1);
     assert(factored.local_bound_trusted);
     assert(factored.proved);
+
+    mathlib::PolyZ rnd13_poly;
+    rnd13_poly.ensure_size(5);
+    mathlib::set_si(rnd13_poly.coeff(0), -2);
+    mathlib::set_si(rnd13_poly.coeff(1), -6);
+    mathlib::set_si(rnd13_poly.coeff(2), -8);
+    mathlib::set_si(rnd13_poly.coeff(3), -4);
+    mathlib::set_si(rnd13_poly.coeff(4), 1);
+    const auto rnd13 = adelic::derive_adelic_cocycle_extension_from_charpoly(
+        2, rnd13_poly);
+    assert(rnd13.proved);
+    assert(rnd13.local_bound_trusted);
+    assert(rnd13.local_fiber_count == 1);
     std::cout << "adelic cocycle extension PASS\n";
 }
