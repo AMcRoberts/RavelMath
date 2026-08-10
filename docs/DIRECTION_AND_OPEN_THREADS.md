@@ -544,6 +544,16 @@ quotient. Falsifier: a predecessor decomposition of the actual language
 merges or splits these types indefinitely. Then the return core is only a
 coincidence device, and a separate branch groupoid is required.
 
+**H6 cheap falsifier (2026-08-09).** Classifying the five left-special
+factors at lengths 8, 16, 32, 64, and 128 by their containing return-word
+type, phase offset, and adjacent return types gives only 2--5 classes, with
+the partition changing at each length. Thus a static local return context is
+not the branch invariant. This is a useful failure, not a refutation of the
+full return-core hypothesis: the branch state must include derived
+special-factor history (a return-word transducer state), not merely the
+current interval and offset. The next representation layer is therefore a
+special-factor derivation automaton.
+
 **H7 — The all-n branch map is a finite transducer.** Once a factor is long
 enough to expose its marker-power collar, its left/right-special predecessor
 map should be recognized by a finite transducer over the return-phase core.
