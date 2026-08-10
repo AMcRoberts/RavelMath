@@ -1,11 +1,13 @@
 // Finite relation between the reachable return/contact lift and an exact
-// Property-F gamma graph.  This deliberately records a relation-valued
-// simulation: a lift state may correspond to several left/right gamma pairs.
+// Property-F gamma graph.  This deliberately records a partial,
+// relation-valued simulation: a lift state may correspond to several
+// left/right gamma pairs, and some lift states may have no synchronized pair.
 #pragma once
 
 #include <algorithm>
 #include <cstddef>
 #include <deque>
+#include <functional>
 #include <map>
 #include <set>
 #include <stdexcept>
@@ -14,11 +16,16 @@
 
 #include "adelic/property_f_types.hpp"
 #include "adelic/prefix_automaton.hpp"
+#include "ravel/proof/finite_graph_correspondence.hpp"
 #include "ravel/return_contact_lift.hpp"
 
 namespace adelic {
 
 struct ReturnContactGammaRelationCertificate {
+    // `exact` means exact closure of the explored relation away from retained
+    // terminal sinks.  It does not assert source-surjectivity onto the full
+    // contact lift; consult thread_source_path_surjective and the recurrent
+    // coverage fields for that stronger property.
     std::size_t lift_states = 0;
     std::size_t product_states = 0;
     std::size_t relation_pairs = 0;
@@ -30,6 +37,47 @@ struct ReturnContactGammaRelationCertificate {
     std::size_t prefix_edge_misses = 0;
     std::size_t terminal_sink_misses = 0;
     std::size_t nonterminal_misses = 0;
+    std::size_t product_edges = 0;
+    std::size_t cyclic_product_sccs = 0;
+    std::size_t cyclic_product_states = 0;
+    std::size_t cyclic_product_max_size = 0;
+    std::size_t cyclic_product_sccs_with_nonzero_image = 0;
+    std::size_t cyclic_product_sccs_with_terminal_escape = 0;
+    std::size_t recurrent_lift_states = 0;
+    std::size_t thread_lift_vertices = 0;
+    std::size_t lift_cyclic_sccs = 0;
+    std::size_t threaded_lift_cyclic_sccs = 0;
+    std::size_t unthreaded_lift_cyclic_sccs = 0;
+    std::size_t cyclic_lift_states = 0;
+    std::size_t threaded_cyclic_lift_states = 0;
+    std::size_t unthreaded_cyclic_lift_states = 0;
+    std::size_t relation_ambiguous_lift_states = 0;
+    std::size_t relation_ambiguous_cyclic_lift_states = 0;
+    std::size_t relation_ambiguous_left_lift_states = 0;
+    std::size_t relation_ambiguous_right_lift_states = 0;
+    std::size_t relation_ambiguous_left_cyclic_lift_states = 0;
+    std::size_t relation_ambiguous_right_cyclic_lift_states = 0;
+    std::size_t relation_ambiguous_both_lift_states = 0;
+    std::size_t relation_ambiguous_both_cyclic_lift_states = 0;
+    std::size_t relation_left_right_fibre_mismatch_states = 0;
+    std::size_t relation_left_right_fibre_mismatch_cyclic_lift_states = 0;
+    std::size_t relation_max_left_fibre = 0;
+    std::size_t relation_max_right_fibre = 0;
+    // Per recurrent lift component coverage.  The aggregate counts above
+    // are useful for bounds, but they can hide a small omitted recurrent
+    // piece behind a large component.
+    std::vector<std::size_t> cyclic_lift_component_sizes;
+    std::vector<std::size_t> threaded_cyclic_component_sizes;
+    std::vector<std::size_t> ambiguous_cyclic_component_sizes;
+    std::vector<std::size_t> unthreaded_cyclic_lift_state_indices;
+    bool all_cyclic_lift_states_threaded = false;
+    std::size_t thread_pair_vertices = 0;
+    std::size_t thread_lift_branching_components = 0;
+    std::size_t thread_pair_branching_components = 0;
+    bool thread_source_path_surjective = false;
+    bool thread_lift_finite_to_one = false;
+    bool thread_pair_finite_to_one = false;
+    bool thread_entropy_bound = false;
     std::string first_missing_left;
     std::string first_missing_right;
     std::string first_left_alternate_letters;
@@ -99,14 +147,42 @@ ReturnContactGammaRelationCertificate derive_return_contact_gamma_relation(
                                             node.gamma_coefficients[i].second);
         return out_gamma;
     };
-    struct LiftEdge { std::size_t to; std::size_t left; std::size_t right; };
+    struct LiftEdge {
+        std::size_t to;
+        std::size_t left;
+        std::size_t right;
+        std::size_t source_edge;
+    };
     std::vector<std::vector<LiftEdge>> edges(lift.states.size());
-    for (const auto& edge : lift.edges)
+    for (std::size_t source_edge = 0; source_edge < lift.edges.size(); ++source_edge) {
+        const auto& edge = lift.edges[source_edge];
         edges[edge.source].push_back({edge.destination, edge.left_position,
-                                      edge.right_position});
+                                      edge.right_position, source_edge});
+    }
     std::vector<std::set<std::pair<long long, long long>>> relation(lift.states.size());
-    std::set<std::tuple<std::size_t, long long, long long>> seen;
-    std::deque<Product> queue;
+    using ProductKey = std::tuple<std::size_t, long long, long long>;
+    std::map<ProductKey, std::size_t> product_index;
+    std::vector<Product> products;
+    struct ProductTransition {
+        std::size_t destination = 0;
+        std::size_t source_edge = 0;
+    };
+    std::vector<std::vector<ProductTransition>> product_adjacency;
+    std::vector<bool> product_terminal_escape;
+    std::deque<std::size_t> queue;
+    auto enqueue_product = [&](const Product& product) {
+        const ProductKey key = std::make_tuple(product.lift, product.left,
+                                                product.right);
+        const auto found = product_index.find(key);
+        if (found != product_index.end()) return found->second;
+        const std::size_t id = products.size();
+        product_index.emplace(key, id);
+        products.push_back(product);
+        product_adjacency.emplace_back();
+        product_terminal_escape.push_back(false);
+        queue.push_back(id);
+        return id;
+    };
     const auto zero = automaton.ring.zero();
     for (const auto& seed : seeds) {
         bool zero_contact = true;
@@ -122,12 +198,10 @@ ReturnContactGammaRelationCertificate derive_return_contact_gamma_relation(
             continue;
         }
         ++out.frontier_seeds;
-        const auto item = std::make_tuple(li->second, left->second, right->second);
-        if (seen.insert(item).second)
-            queue.push_back({li->second, left->second, right->second});
+        enqueue_product({li->second, left->second, right->second});
     }
     out.graph_closed = true;
-    if (seen.size() > product_cap) {
+    if (products.size() > product_cap) {
         out.cap_hit = true;
         out.graph_closed = false;
     }
@@ -136,8 +210,9 @@ ReturnContactGammaRelationCertificate derive_return_contact_gamma_relation(
         out.graph_closed = false;
     }
     while (!queue.empty() && !out.cap_hit) {
-        const auto current = queue.front();
+        const auto current_id = queue.front();
         queue.pop_front();
+        const auto current = products[current_id];
         ++out.product_states;
         relation[current.lift].insert({current.left, current.right});
         for (const auto& edge : edges[current.lift]) {
@@ -209,25 +284,236 @@ ReturnContactGammaRelationCertificate derive_return_contact_gamma_relation(
                 const bool right_terminal = right_node.successors.empty();
                 if (left_terminal || right_terminal) {
                     ++out.terminal_sink_misses;
+                    product_terminal_escape[current_id] = true;
                 } else {
                     ++out.nonterminal_misses;
                     out.graph_closed = false;
                 }
                 continue;
             }
-            if (seen.size() >= product_cap) {
+            if (products.size() >= product_cap) {
                 out.cap_hit = true;
                 out.graph_closed = false;
                 break;
             }
-            const auto item = std::make_tuple(edge.to, next_left, next_right);
-            if (seen.insert(item).second)
-                queue.push_back({edge.to, next_left, next_right});
+            const auto next_id = enqueue_product({edge.to, next_left, next_right});
+            product_adjacency[current_id].push_back({next_id, edge.source_edge});
+            ++out.product_edges;
         }
     }
     for (const auto& states : relation) {
         out.relation_pairs += states.size();
         out.max_relation_fibre = std::max(out.max_relation_fibre, states.size());
+    }
+    // Tarjan SCCs on the finite product relation.  A terminal sink can only
+    // be an outgoing frontier escape: it has no graph successor and therefore
+    // cannot itself lie in a cyclic product component.
+    const std::size_t product_count = products.size();
+    std::vector<int> index(product_count, -1), low(product_count, 0), stack;
+    std::vector<bool> active(product_count, false);
+    std::size_t next_index = 0;
+    std::size_t recurrent_lift_count = 0;
+    std::function<void(std::size_t)> visit = [&](std::size_t node) {
+        index[node] = low[node] = static_cast<int>(next_index++);
+        stack.push_back(static_cast<int>(node));
+        active[node] = true;
+        for (const auto transition : product_adjacency[node]) {
+            const auto successor = transition.destination;
+            if (index[successor] < 0) {
+                visit(successor);
+                low[node] = std::min(low[node], low[successor]);
+            } else if (active[successor]) {
+                low[node] = std::min(low[node], index[successor]);
+            }
+        }
+        if (low[node] != index[node]) return;
+        std::vector<std::size_t> component;
+        while (true) {
+            const auto member = static_cast<std::size_t>(stack.back());
+            stack.pop_back();
+            active[member] = false;
+            component.push_back(member);
+            if (member == node) break;
+        }
+        bool cyclic = component.size() > 1;
+        if (!cyclic && !component.empty()) {
+            const auto member = component.front();
+            cyclic = std::any_of(product_adjacency[member].begin(),
+                                 product_adjacency[member].end(),
+                                 [member](const auto& transition) {
+                                     return transition.destination == member;
+                                 });
+        }
+        if (!cyclic) return;
+        ++out.cyclic_product_sccs;
+        out.cyclic_product_states += component.size();
+        out.cyclic_product_max_size = std::max(out.cyclic_product_max_size,
+                                               component.size());
+        bool nonzero = false;
+        bool terminal_escape = false;
+        std::set<std::size_t> recurrent_lifts;
+        for (const auto member : component) {
+            const auto& product = products[member];
+            nonzero = nonzero || !property_graph.nodes[
+                static_cast<std::size_t>(product.left)].zero;
+            nonzero = nonzero || !property_graph.nodes[
+                static_cast<std::size_t>(product.right)].zero;
+            terminal_escape = terminal_escape || product_terminal_escape[member];
+            recurrent_lifts.insert(product.lift);
+        }
+        if (nonzero) ++out.cyclic_product_sccs_with_nonzero_image;
+        if (terminal_escape) ++out.cyclic_product_sccs_with_terminal_escape;
+        recurrent_lift_count += recurrent_lifts.size();
+    };
+    for (std::size_t node = 0; node < product_count; ++node)
+        if (index[node] < 0) visit(node);
+    out.recurrent_lift_states = recurrent_lift_count;
+
+    // Reuse the repository's finite-correspondence threading primitive.  The
+    // product relation projects to the concrete lift and to the paired gamma
+    // graph.  Its off-diagonal fibre products classify recurrent ambiguity:
+    // a finite permutation fibre is harmless, while a branching recurrent
+    // fibre would falsify the finite-threading hypothesis.
+    std::vector<std::pair<std::size_t, std::size_t>> lift_edges;
+    lift_edges.reserve(lift.edges.size());
+    for (const auto& edge : lift.edges)
+        lift_edges.push_back({edge.source, edge.destination});
+    std::vector<std::size_t> product_to_lift(product_count);
+    std::vector<std::vector<ravel::proof::CorrespondenceEdge>> to_lift(product_count);
+    for (std::size_t i = 0; i < product_count; ++i)
+        product_to_lift[i] = products[i].lift;
+    for (std::size_t source = 0; source < product_count; ++source)
+        for (const auto& transition : product_adjacency[source])
+            to_lift[source].push_back({transition.destination, transition.source_edge});
+
+    using GammaPair = std::pair<long long, long long>;
+    std::map<GammaPair, std::size_t> pair_index;
+    std::vector<GammaPair> pair_vertices;
+    for (const auto& product : products) {
+        const GammaPair key{product.left, product.right};
+        if (!pair_index.count(key)) {
+            pair_index.emplace(key, pair_vertices.size());
+            pair_vertices.push_back(key);
+        }
+    }
+    out.thread_pair_vertices = pair_vertices.size();
+    std::vector<std::size_t> product_to_pair(product_count);
+    for (std::size_t i = 0; i < product_count; ++i)
+        product_to_pair[i] = pair_index.at({products[i].left, products[i].right});
+
+    std::map<std::pair<std::size_t, std::size_t>, std::size_t> pair_edge_index;
+    std::vector<std::pair<std::size_t, std::size_t>> pair_edges;
+    std::vector<std::vector<ravel::proof::CorrespondenceEdge>> to_pair(product_count);
+    for (std::size_t source = 0; source < product_count; ++source) {
+        for (const auto& transition : product_adjacency[source]) {
+            const auto pair_edge = std::make_pair(
+                product_to_pair[source], product_to_pair[transition.destination]);
+            auto [it, inserted] = pair_edge_index.emplace(pair_edge, pair_edges.size());
+            if (inserted) pair_edges.push_back(pair_edge);
+            to_pair[source].push_back({transition.destination, it->second});
+        }
+    }
+    const auto lift_thread = ravel::proof::derive_finite_to_one_graph_map(
+        product_to_lift, lift.states.size(), to_lift, lift_edges);
+    const auto pair_thread = ravel::proof::derive_finite_to_one_graph_map(
+        product_to_pair, pair_vertices.size(), to_pair, pair_edges);
+    std::set<std::size_t> represented_lift_states(product_to_lift.begin(),
+                                                  product_to_lift.end());
+    out.thread_lift_vertices = represented_lift_states.size();
+    out.thread_source_path_surjective =
+        represented_lift_states.size() == lift.states.size();
+    out.thread_lift_branching_components = lift_thread.branching_recurrent_components;
+    out.thread_pair_branching_components = pair_thread.branching_recurrent_components;
+    out.thread_lift_finite_to_one = lift_thread.finite_to_one;
+    out.thread_pair_finite_to_one = pair_thread.finite_to_one;
+    out.thread_entropy_bound = out.thread_source_path_surjective &&
+        lift_thread.finite_to_one && pair_thread.finite_to_one;
+    std::vector<std::vector<std::size_t>> lift_adjacency(lift.states.size());
+    for (const auto& edge : lift.edges)
+        lift_adjacency[edge.source].push_back(edge.destination);
+    std::vector<bool> cyclic_lift_state(lift.states.size(), false);
+    for (const auto& component : ravel::proof::correspondence_detail::sccs(
+             lift_adjacency)) {
+        bool cyclic = component.size() > 1;
+        if (!cyclic && !component.empty()) {
+            const auto state = component.front();
+            cyclic = std::find(lift_adjacency[state].begin(),
+                               lift_adjacency[state].end(), state)
+                     != lift_adjacency[state].end();
+        }
+        if (!cyclic) continue;
+        for (const auto state : component) cyclic_lift_state[state] = true;
+        ++out.lift_cyclic_sccs;
+        bool represented = false;
+        std::size_t represented_count = 0;
+        std::size_t ambiguous_count = 0;
+        for (const auto state : component)
+            if (represented_lift_states.count(state) != 0) {
+                represented = true;
+                ++represented_count;
+            }
+        for (const auto state : component) {
+            std::set<long long> left_values;
+            std::set<long long> right_values;
+            for (const auto [left, right] : relation[state]) {
+                left_values.insert(left);
+                right_values.insert(right);
+            }
+            if (left_values.size() > 1 || right_values.size() > 1)
+                ++ambiguous_count;
+        }
+        out.cyclic_lift_states += component.size();
+        out.threaded_cyclic_lift_states += represented_count;
+        out.unthreaded_cyclic_lift_states += component.size() - represented_count;
+        out.cyclic_lift_component_sizes.push_back(component.size());
+        out.threaded_cyclic_component_sizes.push_back(represented_count);
+        out.ambiguous_cyclic_component_sizes.push_back(ambiguous_count);
+        if (represented) ++out.threaded_lift_cyclic_sccs;
+        else ++out.unthreaded_lift_cyclic_sccs;
+        for (const auto state : component)
+            if (represented_lift_states.count(state) == 0)
+                out.unthreaded_cyclic_lift_state_indices.push_back(state);
+    }
+    out.all_cyclic_lift_states_threaded =
+        out.cyclic_lift_states == out.threaded_cyclic_lift_states;
+    for (std::size_t state = 0; state < relation.size(); ++state) {
+        std::set<long long> left_values;
+        std::set<long long> right_values;
+        for (const auto [left, right] : relation[state]) {
+            left_values.insert(left);
+            right_values.insert(right);
+        }
+        out.relation_max_left_fibre = std::max(out.relation_max_left_fibre,
+                                               left_values.size());
+        out.relation_max_right_fibre = std::max(out.relation_max_right_fibre,
+                                               right_values.size());
+        const bool left_ambiguous = left_values.size() > 1;
+        const bool right_ambiguous = right_values.size() > 1;
+        if (left_ambiguous) {
+            ++out.relation_ambiguous_left_lift_states;
+            if (cyclic_lift_state[state])
+                ++out.relation_ambiguous_left_cyclic_lift_states;
+        }
+        if (right_ambiguous) {
+            ++out.relation_ambiguous_right_lift_states;
+            if (cyclic_lift_state[state])
+                ++out.relation_ambiguous_right_cyclic_lift_states;
+        }
+        if (left_ambiguous && right_ambiguous) {
+            ++out.relation_ambiguous_both_lift_states;
+            if (cyclic_lift_state[state])
+                ++out.relation_ambiguous_both_cyclic_lift_states;
+        }
+        if (left_values.size() != right_values.size()) {
+            ++out.relation_left_right_fibre_mismatch_states;
+            if (cyclic_lift_state[state])
+                ++out.relation_left_right_fibre_mismatch_cyclic_lift_states;
+        }
+        if (left_ambiguous || right_ambiguous) {
+            ++out.relation_ambiguous_lift_states;
+            if (cyclic_lift_state[state])
+                ++out.relation_ambiguous_cyclic_lift_states;
+        }
     }
     out.exact = !out.cap_hit && out.graph_closed && out.nonterminal_misses == 0;
     return out;

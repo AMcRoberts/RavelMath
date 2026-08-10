@@ -493,3 +493,15 @@ zero-expansion graph; they are not recurrent misses. The certificate separates
 terminal-sink misses, genuine nonterminal misses, and explicit product-cap
 termination. The next proof target is consequently the harmlessness of this
 finite correlated frontier relation.
+
+Threading audit correction: the relation is not yet a full-lift factor. Its
+explored product is exact away from terminal sinks and both projections are
+finite-to-one with zero recurrent branching, but only 2,855/3,306 lift states
+are represented; six omitted states are recurrent and all belong to the
+401-state component at contact `[1,(-1,1,0),1]`. The one-sided ambiguity is
+also recurrent (2,367 states total, 402 cyclic) and is perfectly paired
+left/right in fibre cardinality. The synchronized product has eight cyclic
+components, all zero-image and with no terminal escape. Therefore the next
+structural step is not to declare harmlessness globally: isolate the six
+phase-only recurrent states and prove (or refute) a completion theorem for
+the correlated partial textile.

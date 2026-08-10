@@ -4210,3 +4210,19 @@ terminal boundary sinks, which the bounded Property-F checker does not expand.
 Thus the surviving branching is a finite frontier relation, not a recurrent
 Property-F obstruction. The probe has explicit product-cap and terminal-sink
 diagnostics.
+
+Correction after the threading audit: “factors through” was too strong. The
+8,304-state relation is exact on its explored nonterminal domain and both
+generic projections are finite-to-one with zero recurrent branching, but it
+is not source-surjective onto the 3,306-state contact lift: 2,855 lift states
+are represented, including 451 of 457 cyclic states. The six omitted cyclic
+states all lie in the 401-state SCC and share contact node
+`[1,(-1,1,0),1]`, differing only in phase pair. Ambiguity is not merely a
+terminal transient: 2,367 lift states are ambiguous on each side, including
+402 cyclic states. Left and right ambiguity is synchronized (the counts and
+fibre cardinalities agree at every state; no left/right cardinality mismatch
+was observed). Thus the current result is a partial finite-to-one textile,
+not yet a full-lift entropy or Property-F theorem. The synchronized product
+cycles remain harmless in this family: all eight cyclic product SCCs have
+zero gamma image and no terminal escape. The six unthreaded recurrent states
+and the correlated recurrent ambiguity are the remaining structural bridge.

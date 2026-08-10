@@ -1099,6 +1099,18 @@ all originate at retained terminal Property-F boundary sinks. The contact lift
 therefore factors through a finite relation on every recurrent/nonterminal
 component; terminal-frontier branching is bookkeeping, not a Property-F
 failure. Product-cap termination is reported separately.
+
+Threading correction: the preceding sentence must not be read as a theorem
+about every lift state. Reusing the generic finite-correspondence primitive
+proves finite-to-one projections with no recurrent branching on the explored
+relation, but source-path surjectivity fails: 2,855 of 3,306 lift states are
+represented, and six states in the large 401-state cyclic component are
+unthreaded. The relation is two-sided multivalued on 2,367 states (402
+cyclic), with matching left/right fibre cardinalities and no observed
+asymmetric fibre-size leak. All cyclic product components still have zero
+gamma image and no terminal escape. This is evidence for a synchronized
+partial textile, not closure of the full non-AR bridge and not a Property-F
+obstruction theorem.
 The exact residual-subgroup ranks on that component are 1 for the difference
 cocycle and 1 for each one-sided prefix cocycle. No third independent
 `Q(β)`-linear actor is visible in this sample; the candidate is currently best

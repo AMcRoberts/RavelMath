@@ -226,6 +226,66 @@ int main() {
     std::printf("  terminal_sink_misses=%zu nonterminal_misses=%zu\n",
                 gamma_relation.terminal_sink_misses,
                 gamma_relation.nonterminal_misses);
+    std::printf("  product_edges=%zu cyclic_product_sccs=%zu cyclic_product_states=%zu "
+                "max_cyclic=%zu nonzero_sccs=%zu terminal_escape_sccs=%zu "
+                "recurrent_lift_states=%zu\n",
+                gamma_relation.product_edges,
+                gamma_relation.cyclic_product_sccs,
+                gamma_relation.cyclic_product_states,
+                gamma_relation.cyclic_product_max_size,
+                gamma_relation.cyclic_product_sccs_with_nonzero_image,
+                gamma_relation.cyclic_product_sccs_with_terminal_escape,
+                gamma_relation.recurrent_lift_states);
+    std::printf("  threaded_pair_vertices=%zu source_surjective=%d lift_finite_to_one=%d "
+                "pair_finite_to_one=%d lift_branching=%zu pair_branching=%zu entropy_bound=%d\n",
+                gamma_relation.thread_pair_vertices,
+                gamma_relation.thread_source_path_surjective ? 1 : 0,
+                gamma_relation.thread_lift_finite_to_one ? 1 : 0,
+                gamma_relation.thread_pair_finite_to_one ? 1 : 0,
+                gamma_relation.thread_lift_branching_components,
+                gamma_relation.thread_pair_branching_components,
+                gamma_relation.thread_entropy_bound ? 1 : 0);
+    std::printf("  threaded_lift_vertices=%zu lift_cyclic_sccs=%zu "
+                "threaded_cyclic_sccs=%zu unthreaded_cyclic_sccs=%zu\n",
+                gamma_relation.thread_lift_vertices,
+                gamma_relation.lift_cyclic_sccs,
+                gamma_relation.threaded_lift_cyclic_sccs,
+                gamma_relation.unthreaded_lift_cyclic_sccs);
+    std::printf("  cyclic_lift_states=%zu threaded=%zu unthreaded=%zu all_threaded=%d\n",
+                gamma_relation.cyclic_lift_states,
+                gamma_relation.threaded_cyclic_lift_states,
+                gamma_relation.unthreaded_cyclic_lift_states,
+                gamma_relation.all_cyclic_lift_states_threaded ? 1 : 0);
+    std::printf("  relation_ambiguous_states=%zu cyclic_ambiguous=%zu "
+                "left=%zu right=%zu cyclic_left=%zu cyclic_right=%zu "
+                "max_left_fibre=%zu max_right_fibre=%zu\n",
+                gamma_relation.relation_ambiguous_lift_states,
+                gamma_relation.relation_ambiguous_cyclic_lift_states,
+                gamma_relation.relation_ambiguous_left_lift_states,
+                gamma_relation.relation_ambiguous_right_lift_states,
+                gamma_relation.relation_ambiguous_left_cyclic_lift_states,
+                gamma_relation.relation_ambiguous_right_cyclic_lift_states,
+                gamma_relation.relation_max_left_fibre,
+                gamma_relation.relation_max_right_fibre);
+    std::printf("  ambiguity both=%zu cyclic_both=%zu fibre_mismatch=%zu "
+                "cyclic_mismatch=%zu\n",
+                gamma_relation.relation_ambiguous_both_lift_states,
+                gamma_relation.relation_ambiguous_both_cyclic_lift_states,
+                gamma_relation.relation_left_right_fibre_mismatch_states,
+                gamma_relation.relation_left_right_fibre_mismatch_cyclic_lift_states);
+    std::printf("  cyclic component sizes:");
+    for (std::size_t i = 0; i < gamma_relation.cyclic_lift_component_sizes.size(); ++i)
+        std::printf(" %zu/%zu/%zu", gamma_relation.cyclic_lift_component_sizes[i],
+                    gamma_relation.threaded_cyclic_component_sizes[i],
+                    gamma_relation.ambiguous_cyclic_component_sizes[i]);
+    std::printf("\n  unthreaded cyclic states:");
+    for (const auto state : gamma_relation.unthreaded_cyclic_lift_state_indices) {
+        const auto& s = lift.states[state];
+        std::printf(" %zu:[%lld,(%lld,%lld,%lld),%lld](%zu,%zu)", state,
+                    s.contact.i, s.contact.x[0], s.contact.x[1],
+                    s.contact.x[2], s.contact.j, s.left_phase, s.right_phase);
+    }
+    std::printf("\n");
     if (!gamma_relation.first_missing_left.empty()) {
         std::printf("  first_missing_left=%s right=%s\n",
                     gamma_relation.first_missing_left.c_str(),
@@ -240,6 +300,24 @@ int main() {
     expect(gamma_relation.exact && gamma_relation.frontier_seeds > 0 &&
                gamma_relation.max_relation_fibre > 1,
            "contact lift factors through a finite relation over gamma graph");
+    expect(gamma_relation.thread_lift_finite_to_one &&
+               gamma_relation.thread_pair_finite_to_one &&
+               gamma_relation.thread_lift_branching_components == 0 &&
+               gamma_relation.thread_pair_branching_components == 0,
+           "both finite relation projections have no recurrent branching");
+    expect(!gamma_relation.thread_source_path_surjective &&
+               gamma_relation.unthreaded_cyclic_lift_states > 0,
+           "relation remains a partial threading of the full lift");
+    expect(gamma_relation.cyclic_product_sccs_with_nonzero_image == 0 &&
+               gamma_relation.cyclic_product_sccs_with_terminal_escape == 0,
+           "synchronized recurrent threads have zero gamma image and no escape");
+    expect(gamma_relation.relation_ambiguous_left_cyclic_lift_states > 0 &&
+               gamma_relation.relation_ambiguous_right_cyclic_lift_states > 0,
+           "one-sided ambiguity persists on recurrent lift states");
+    expect(gamma_relation.relation_ambiguous_both_lift_states ==
+               gamma_relation.relation_ambiguous_lift_states &&
+               gamma_relation.relation_left_right_fibre_mismatch_states == 0,
+           "left/right ambiguity is synchronized rather than an asymmetric leak");
     const auto capped_relation = adelic::derive_return_contact_gamma_relation<3>(
         automaton_images, lift, automaton, property_graph, seeds, 1);
     expect(capped_relation.cap_hit && !capped_relation.exact,
