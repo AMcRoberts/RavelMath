@@ -18,6 +18,9 @@ struct PropertyFClassIIPhaseStripCertificate {
     std::size_t phase_mismatches = 0;
     std::size_t forced_steps = 0;
     std::size_t forced_mismatches = 0;
+    std::size_t quotient_identity_mismatches = 0;
+    std::size_t forced_digit_formula_mismatches = 0;
+    std::size_t forced_digit_range_mismatches = 0;
     std::size_t phase_preserving_steps = 0;
     std::size_t phase_preserving_digit_mismatches = 0;
     bool parameter_domain = false;
@@ -32,6 +35,17 @@ inline bool property_f_class_ii_phase_pair_valid(
     const auto eta = state[0] + state[2];
     const auto q = state[1] + (a + 1) * state[2];
     return (eta == 0 && q == 1) || (eta == 1 && q == 0);
+}
+
+// The affine carry map has a two-state quotient on the phase strip.  If
+// eta=c0+c2 and q=c1+(a+1)c2, then every digit satisfies q'=eta.  Preserving
+// the strip therefore forces eta'=1-eta, giving the unique digit below.  This
+// is the symbolic form of the exhaustive digit scan, and is useful in the
+// eventual parameter-uniform no-deviation proof.
+inline long long property_f_class_ii_phase_forced_digit(
+        const std::array<long long, 3>& state, long long a) {
+    const auto eta = state[0] + state[2];
+    return 1 - eta - state[1] + a * state[0];
 }
 
 inline PropertyFClassIIPhaseStripCertificate
@@ -68,6 +82,17 @@ derive_property_f_class_ii_phase_strip_certificate(std::size_t a) {
     out.unique_digit_valid = true;
     for (std::size_t step = 2; step < tail_count; ++step) {
         ++out.phase_preserving_steps;
+        const auto& state = states[step];
+        const auto eta = state[0] + state[2];
+        const auto zero_digit = property_f_class_ii_affine_tail_step(
+            state, aa, 0);
+        if (zero_digit[1] + (aa + 1) * zero_digit[2] != eta)
+            ++out.quotient_identity_mismatches;
+        const auto forced = property_f_class_ii_phase_forced_digit(state, aa);
+        if (forced < 0 || forced >= aa)
+            ++out.forced_digit_range_mismatches;
+        if (forced != digits[step])
+            ++out.forced_digit_formula_mismatches;
         std::size_t preserving = 0;
         std::size_t preserving_digit = 0;
         for (std::size_t digit = 0; digit < a; ++digit) {
@@ -85,7 +110,10 @@ derive_property_f_class_ii_phase_strip_certificate(std::size_t a) {
         }
     }
     out.valid = out.parameter_domain && out.phase_strip_valid &&
-                out.forced_seed_valid && out.unique_digit_valid;
+                out.forced_seed_valid && out.unique_digit_valid &&
+                out.quotient_identity_mismatches == 0 &&
+                out.forced_digit_formula_mismatches == 0 &&
+                out.forced_digit_range_mismatches == 0;
     return out;
 }
 

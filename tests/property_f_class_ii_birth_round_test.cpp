@@ -322,6 +322,9 @@ int main() {
             adelic::derive_property_f_class_ii_phase_strip_certificate(a);
         assert(phase.valid);
         assert(phase.phase_preserving_digit_mismatches == 0);
+        assert(phase.quotient_identity_mismatches == 0);
+        assert(phase.forced_digit_formula_mismatches == 0);
+        assert(phase.forced_digit_range_mismatches == 0);
     }
     assert(!adelic::derive_property_f_class_ii_affine_tail_certificate(
         adelic::property_f_class_ii_spine_max_safe_a + 1).parameter_domain);

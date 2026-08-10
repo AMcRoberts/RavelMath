@@ -858,6 +858,9 @@ affine predecessor, with no collar predecessor or alternate high predecessor.
 forcing invariant. With `eta=c0+c2` and `q=c1+(a+1)c2`, the high tail alternates
 between `(eta,q)=(0,1)` and `(1,0)`; among all zero-prefix digits, exactly one
 preserves that strip, and it is the affine schedule digit.
+The helper `property_f_class_ii_phase_forced_digit` exposes the closed formula
+`j = 1 - eta - c1 + a*c0`: the recurrence always satisfies `q'=eta`, so
+preservation of the two-state strip forces `eta'=1-eta`.
 
 `include/adelic/property_f_class_ii_phase_absorption.hpp` is the corresponding
 graph-level seam check. It classifies every realized node by the phase strip

@@ -215,8 +215,10 @@ The coefficient-level phase invariant is now executable in
 `eta=c0+c2` and `q=c1+(a+1)c2`, all high-spine states alternate between
 `(0,1)` and `(1,0)`. For each zero-letter tail state, exhaustive symbolic
 digit evaluation finds exactly one `j in [0,a)` preserving that strip, and it
-is the schedule digit. This is the algebraic forcing lemma needed before the
-remaining rank-absorption argument.
+is the schedule digit. The certificate now also checks the closed formula
+`j=1-eta-c1+a*c0`, derived from the exact identity `q'=eta`; this turns the
+forcing scan into a two-state quotient calculation. This is the algebraic
+forcing lemma needed before the remaining rank-absorption argument.
 
 The graph-level phase-absorption certificate now closes the finite version of
 that seam. In every checked Class-II graph, every off-strip node above the
