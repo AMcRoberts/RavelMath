@@ -665,7 +665,7 @@ look for in the Property-F lift: parameter-dependent collar multiplicity with
 parameter-independent transport types.
 
 The companion recurrent-exhaustion check makes the separation explicit: for
-For `a=7..20`, the total boundary sizes continue the affine law `20*a+38`
+`a=7..20`, the total boundary sizes continue the affine law `20*a+38`
 and transient counts continue `16*a+3`; every run has exactly `a+1` matched
 recurrent blocks, zero earlier-stratum returns, and eight cross-block
 recurrent edges. This is a concrete forest-level explanation for “large but
