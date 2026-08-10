@@ -171,6 +171,15 @@ can be organized as a finite collar grammar plus a deterministic tail
 recurrence, rather than as a cardinality estimate over the full expanding
 graph.
 
+The collar grammar is now explicit in
+`include/adelic/property_f_class_ii_collar_grammar.hpp`. Across the post-label
+`a=4..14` replay, its height support is exactly
+`1->0; 2->{0,1}; 3->{0,1,2}; 4->{1,2,3}; 5->{2,3,4}`, with zero collar-to-tail
+edges. The extractor retains the coefficient-string transport labels and
+counts branching nodes, internal edges, and height-pair multiplicities. This
+is the finite grammar premise for the upper-bound proof; it does not promote
+the observed support to a theorem for all `a`.
+
 ## Effective-potential analogy (bounded modeling hypothesis, 2026-08-10)
 
 The observed “large, long-lived, then dispersing” cases invite a useful but

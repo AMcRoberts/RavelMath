@@ -820,6 +820,13 @@ that, after internal SCC transport is removed, all tail-to-tail edges are
 consecutive spine links. Its `valid` flag is an instance-level census
 contract, not the uniform upper-bound theorem.
 
+`include/adelic/property_f_class_ii_collar_grammar.hpp` records the collar's
+height-transition language and digit labels. For the checked `a>=4` members,
+the observed support is exactly
+`1->0; 2->{0,1}; 3->{0,1,2}; 4->{1,2,3}; 5->{2,3,4}`;
+there are no collar-to-tail edges. This is the finite symbolic grammar to be
+lifted into a parameterized upper-bound lemma, not that lemma itself.
+
 ### General number fields and the class-field-tower initiative
 
 ```cpp

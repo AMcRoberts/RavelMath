@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "adelic/property_f_birth_round_grammar.hpp"
+#include "adelic/property_f_class_ii_collar_grammar.hpp"
 #include "adelic/property_f_class_ii_branch_census.hpp"
 #include "adelic/property_f_class_ii_rank_spine.hpp"
 #include "adelic/coincidence_and_property_f.hpp"
@@ -102,6 +103,36 @@ int main() {
             assert(census.tail_non_spine_nodes == 0);
             assert(census.tail_nonchain_edges == 0);
             assert(census.tail_nodes == grammar.layer_count - 1 - 5);
+            const auto collar =
+                adelic::derive_property_f_class_ii_collar_grammar(graph, a);
+            assert(collar.valid);
+            assert(collar.no_tail_reentry);
+            assert(collar.height_support_valid);
+            assert(collar.collar_to_tail_edges == 0);
+            assert(collar.maximum_target_height <=
+                   adelic::PropertyFClassIICollarGrammar::collar_height);
+            assert(collar.collar_nodes ==
+                   graph.nodes.size() - census.tail_nodes);
+            if (std::getenv("CLASSII_BIRTH_COLLAR_PROBE") != nullptr &&
+                a == max_a) {
+                std::cout << "collar a=" << a
+                          << " nodes=" << collar.collar_nodes
+                          << " edges=" << collar.collar_edges
+                          << " branching_nodes=" << collar.branching_nodes
+                          << " internal=" << collar.collar_internal_edges
+                          << " cross_scc=" << collar.collar_cross_scc_edges
+                          << " max_target_height="
+                          << collar.maximum_target_height << " layers=";
+                for (const auto& [height, count] : collar.layer_sizes)
+                    if (height <= adelic::PropertyFClassIICollarGrammar::collar_height)
+                        std::cout << height << ":" << count << ",";
+                std::cout << " transitions=";
+                for (const auto& [heights, count] :
+                     collar.height_transition_counts)
+                    std::cout << heights.first << "->" << heights.second
+                              << ":" << count << ",";
+                std::cout << "\n";
+            }
             if (a == 4) {
                 auto bad = graph;
                 bad.nodes[spine.node_ids.front()].successors.clear();
