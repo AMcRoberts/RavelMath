@@ -821,6 +821,8 @@ against the closed integer map
 `(c0,c1,c2) -> (c1-(a+1)c0+j, c2-a*c0, c0)`, independently of any finite
 graph. The graph spine certificate then checks that the generated Property-F
 graph realizes this symbolic recurrence.
+The family regression also sweeps this graph-independent recurrence through
+`a=256`; only the graph closure remains resource-bounded.
 
 `include/adelic/property_f_class_ii_branch_census.hpp` mechanically separates
 the deterministic high-rank tail from the finite height-5 collar and checks

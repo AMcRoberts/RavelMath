@@ -167,7 +167,8 @@ The recurrence itself is now isolated in
 `include/adelic/property_f_class_ii_affine_tail.hpp`: it independently checks
 the coefficient formulas and digit schedule under the exact integer
 beta-inverse carry map, before the graph replay is consulted. This separates
-the symbolic affine calculation from the finite Property-F enumeration.
+the symbolic affine calculation from the finite Property-F enumeration. The
+cheap recurrence sweep reaches `a=256`; graph closure remains capped separately.
 
 The branch census now makes that proof target explicit. In every checked
 `a=4..16` graph, every node above collar height 5 is one of the spine states,
