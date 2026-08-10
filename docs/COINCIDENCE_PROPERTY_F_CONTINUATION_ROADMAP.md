@@ -664,6 +664,13 @@ the non-growing part is a bounded correction grammar. This is the shape to
 look for in the Property-F lift: parameter-dependent collar multiplicity with
 parameter-independent transport types.
 
+The local verification boundary is now reusable as
+`derive_stratified_escape_certificate`: it accepts explicit component labels,
+recurrent-component flags, and birth rounds, then checks component-round
+consistency, recurrent earlier-stratum returns, and transient-group escape.
+The Class-II trace remains responsible for deriving its labels and rounds; the
+future adelic proof must supply an equally explicit symbolic derivation.
+
 The companion recurrent-exhaustion check makes the separation explicit: for
 `a=7..20`, the total boundary sizes continue the affine law `20*a+38`
 and transient counts continue `16*a+3`; every run has exactly `a+1` matched

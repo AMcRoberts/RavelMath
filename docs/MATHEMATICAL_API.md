@@ -625,6 +625,20 @@ This operation validates the supplied SCC labels, constructs the acyclic
 condensation, and computes the longest sink distance. A return-phase residual
 can then be used as a bounded tie-breaker inside one boundary layer.
 
+For a proposed shell/birth-round decomposition, the same correspondence header
+provides a structural contract:
+
+```cpp
+auto strata = ravel::proof::derive_stratified_escape_certificate(
+    adjacency, component_labels, recurrent_component, birth_round);
+// strata.valid requires consistent component rounds, no recurrent return to
+// an earlier transient round, and an escape from every transient round-group.
+```
+
+This checks the three local premises used by the Class-II round audit. It does
+not discover `component_labels` or `birth_round`; those remain explicit inputs
+so a future symbolic derivation cannot be hidden inside a verification loop.
+
 ## Class-II family
 
 The Class-II family is:

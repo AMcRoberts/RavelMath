@@ -169,6 +169,123 @@ struct FiniteEscapeHeightCertificate {
     bool proves_acyclic = false;
 };
 
+// Contract for a shell/birth-round stratification of a finite graph.  The
+// caller supplies the SCC (or recurrent-block) labels, a recurrent flag for
+// each component, and the proposed birth round of each node.  This operation
+// verifies the structural claims used by the Class-II round audit without
+// hiding the derivation of those labels or rounds in a probe.
+struct StratifiedEscapeCertificate {
+    std::size_t node_count = 0;
+    std::size_t component_count = 0;
+    std::size_t recurrent_components = 0;
+    std::size_t transient_nodes = 0;
+    std::size_t transient_groups = 0;
+    std::size_t transient_groups_with_escape = 0;
+    std::size_t recurrent_round_inconsistencies = 0;
+    std::size_t recurrent_to_earlier_transient_edges = 0;
+    std::size_t transient_escape_edges = 0;
+    std::vector<std::size_t> component_birth_round;
+    bool labels_valid = false;
+    bool component_rounds_consistent = false;
+    bool recurrent_no_earlier_return = false;
+    bool every_transient_group_escapes = false;
+    bool valid = false;
+};
+
+inline StratifiedEscapeCertificate derive_stratified_escape_certificate(
+    const std::vector<std::vector<std::size_t>>& adjacency,
+    const std::vector<long long>& component,
+    const std::vector<bool>& recurrent_component,
+    const std::vector<std::size_t>& birth_round) {
+    if (adjacency.size() != component.size() ||
+        component.size() != birth_round.size())
+        throw std::invalid_argument(
+            "stratified escape: graph/vector size mismatch");
+    StratifiedEscapeCertificate out;
+    out.node_count = adjacency.size();
+    for (const auto label : component) {
+        if (label < 0)
+            throw std::invalid_argument(
+                "stratified escape: negative component label");
+        out.component_count = std::max(
+            out.component_count, static_cast<std::size_t>(label) + 1);
+    }
+    out.labels_valid = recurrent_component.size() == out.component_count;
+    if (!out.labels_valid) return out;
+
+    std::vector<std::size_t> component_size(out.component_count, 0);
+    const auto unknown = std::numeric_limits<std::size_t>::max();
+    out.component_birth_round.assign(out.component_count, unknown);
+    std::vector<bool> component_round_consistent(out.component_count, true);
+    for (std::size_t u = 0; u < out.node_count; ++u) {
+        const auto c = static_cast<std::size_t>(component[u]);
+        ++component_size[c];
+        if (out.component_birth_round[c] == unknown)
+            out.component_birth_round[c] = birth_round[u];
+        else if (out.component_birth_round[c] != birth_round[u]) {
+            component_round_consistent[c] = false;
+            ++out.recurrent_round_inconsistencies;
+        }
+    }
+    out.labels_valid = std::all_of(
+        component_size.begin(), component_size.end(),
+        [](const auto size) { return size != 0; });
+    out.component_rounds_consistent =
+        out.labels_valid && std::all_of(
+            component_round_consistent.begin(),
+            component_round_consistent.end(), [](const bool okay) { return okay; });
+    for (std::size_t c = 0; c < out.component_count; ++c)
+        if (recurrent_component[c]) ++out.recurrent_components;
+
+    std::set<std::size_t> transient_rounds;
+    for (std::size_t u = 0; u < out.node_count; ++u) {
+        const auto c = static_cast<std::size_t>(component[u]);
+        if (recurrent_component[c]) continue;
+        ++out.transient_nodes;
+        transient_rounds.insert(birth_round[u]);
+    }
+    out.transient_groups = transient_rounds.size();
+
+    std::vector<bool> group_has_escape;
+    group_has_escape.assign(transient_rounds.size(), false);
+    std::map<std::size_t, std::size_t> group_index;
+    std::size_t next_group = 0;
+    for (const auto round : transient_rounds)
+        group_index.emplace(round, next_group++);
+
+    for (std::size_t u = 0; u < out.node_count; ++u) {
+        const auto source_component = static_cast<std::size_t>(component[u]);
+        for (const auto v : adjacency[u]) {
+            if (v >= out.node_count)
+                throw std::invalid_argument(
+                    "stratified escape: edge out of range");
+            const auto target_component =
+                static_cast<std::size_t>(component[v]);
+            if (recurrent_component[source_component]) {
+                if (!recurrent_component[target_component] &&
+                    birth_round[v] < out.component_birth_round[source_component])
+                    ++out.recurrent_to_earlier_transient_edges;
+                continue;
+            }
+            const auto source_round = birth_round[u];
+            const bool escapes = recurrent_component[target_component] ||
+                birth_round[v] > source_round;
+            if (!escapes) continue;
+            ++out.transient_escape_edges;
+            group_has_escape[group_index.at(source_round)] = true;
+        }
+    }
+    out.transient_groups_with_escape = static_cast<std::size_t>(
+        std::count(group_has_escape.begin(), group_has_escape.end(), true));
+    out.recurrent_no_earlier_return =
+        out.recurrent_to_earlier_transient_edges == 0;
+    out.every_transient_group_escapes =
+        out.transient_groups_with_escape == out.transient_groups;
+    out.valid = out.labels_valid && out.component_rounds_consistent &&
+        out.recurrent_no_earlier_return && out.every_transient_group_escapes;
+    return out;
+}
+
 inline FiniteEscapeHeightCertificate derive_finite_escape_height_certificate(
     const std::vector<std::vector<std::size_t>>& adjacency,
     const std::vector<bool>& live,
