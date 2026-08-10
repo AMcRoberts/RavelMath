@@ -91,6 +91,11 @@ derive an analogous birth-round/transport grammar for the adelic lift and
 compose it with the exact SCC rank, rather than treating the finite rank table
 as a universal theorem.
 
+The large rows also reject a single-chain interpretation: positive-height
+nodes are about 44% of each graph and have mean positive height about 4.8--5.0,
+despite maximum heights 55--59. The transient collar is broad and repeated,
+which is the structural feature the symbolic proof must capture.
+
 ## Generalized-multinacci bridge rectangle (2026-08-09)
 
 The common sofic/adelic certificate has now been run on all 18 points

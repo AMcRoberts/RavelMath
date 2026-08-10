@@ -671,3 +671,9 @@ recurrent blocks, zero earlier-stratum returns, and eight cross-block
 recurrent edges. This is a concrete forest-level explanation for “large but
 harmless”: repeated shell transport grows, while recurrent connectivity stays
 finite and sparsely coupled.
+
+The height profile also rejects a single-chain explanation. In the three large
+representative rows, positive-height nodes are about 44% of all nodes and
+their mean positive height is approximately 4.8--5.0, even though maximum
+height is 55--59. The cloud is broad and repeatedly shelled, not one unusually
+long path.
