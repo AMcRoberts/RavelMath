@@ -21,6 +21,7 @@ void run_case(std::initializer_list<long long> coefficients) {
     assert(certificate.characteristic_polynomial_matches);
     assert(certificate.monotone_condition_f);
     assert(certificate.nonunit);
+    assert(certificate.strong_coincidence);
     assert(certificate.local_factorization_trusted);
     assert(certificate.finite_graph_closed);
     assert(certificate.property_f_holds);

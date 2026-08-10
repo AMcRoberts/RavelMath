@@ -27,6 +27,7 @@
 #include "math/qbeta.hpp"
 #include "math/sturm.hpp"
 #include "ravel/canonical_beta_substitution.hpp"
+#include "ravel/proof/coincidence_closure.hpp"
 #include "ravel/proof/canonical_parent_role_catalogue.hpp"
 #include "ravel/proof/monotone_coefficient_cone.hpp"
 
@@ -41,6 +42,7 @@ struct CanonicalNonunitPropertyFCertificate {
     bool nonunit = false;
     bool local_factorization_trusted = false;
     bool parent_role_integer_scheme = false;
+    bool strong_coincidence = false;
     bool finite_graph_closed = false;
     bool property_f_holds = false;
     long long graph_nodes = 0;
@@ -114,6 +116,21 @@ derive_canonical_nonunit_property_f_certificate(
             }
             ++matrix[static_cast<std::size_t>(target)][source];
         }
+    }
+    // The geometric Property-F theorem is used here only after the canonical
+    // substitution's coincidence hypothesis has been discharged.  Keep this
+    // as an executable obligation rather than relying on the fact that the
+    // canonical examples are expected to coincide.
+    std::array<std::array<long long, d>, d> incidence{};
+    for (std::size_t source = 0; source < d; ++source)
+        for (const long long target : image_array[source])
+            ++incidence[static_cast<std::size_t>(target)][source];
+    const auto coincidence = check_strong_coincidence_closure<d>(
+        image_array, incidence, 32, 1'000'000);
+    out.strong_coincidence = coincidence.holds && !coincidence.inconclusive;
+    if (!out.strong_coincidence) {
+        out.obstruction = "canonical substitution strong coincidence did not close";
+        return out;
     }
     const auto characteristic = charpoly_faddeev_leverrier(matrix);
     for (long long i = 0; i <= characteristic.degree(); ++i)

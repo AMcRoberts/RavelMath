@@ -131,6 +131,22 @@ no surviving nonzero holonomy.
 
 ## Canonical non-unit theorem route
 
+### The theorem now discharged by the executable certificate
+
+Let `f(x)=x^d-a_(d-1)x^(d-1)-...-a_0` have a dominant Pisot root `beta`,
+with a terminating greedy expansion of `1` of length `d`,
+`a_(d-1) >= ... >= a_0 > 0`, and `a_0 > 1`.  Form the canonical Parry
+substitution from that expansion.  If its exact incidence matrix has
+characteristic polynomial `f`, its strong-coincidence closure terminates,
+Dedekind factorization is maximal and covers every prime over `a_0`, and the
+combined adelic zero-expansion graph closes with no nonzero recurrent SCC,
+then the associated non-unit beta system has geometric Property F.
+
+This is a conditional theorem with entirely explicit hypotheses: each is
+represented by a field in `CanonicalNonunitPropertyFCertificate`, and the
+certificate's `property_f_holds` bit is set only after all of them pass.  The
+quadratic instances `x^2-2x-2` and `x^2-3x-3` are the first checked examples.
+
 The canonical part of that boundary is now executable in
 `ravel/proof/canonical_nonunit_property_f.hpp`. For a terminating greedy
 expansion whose digit vector is positive and nonincreasing, it checks:
@@ -138,11 +154,12 @@ expansion whose digit vector is positive and nonincreasing, it checks:
 1. the Frougny--Solomyak monotone Condition-F premise;
 2. construction of the canonical Parry substitution and exact incidence
    characteristic polynomial identity;
-3. Dedekind maximal-order factorization at every prime in the determinant;
-4. the finite parent-role zero-kernel plus opposite-unit-cycle transport
+3. executable strong-coincidence closure for that substitution;
+4. Dedekind maximal-order factorization at every prime in the determinant;
+5. the finite parent-role zero-kernel plus opposite-unit-cycle transport
    scheme;
-5. the combined adelic bound and finite zero-expansion graph; and
-6. absence of nonzero recurrent components.
+6. the combined adelic bound and finite zero-expansion graph; and
+7. absence of nonzero recurrent components.
 
 This is the finite-expansion form of the paper's Proposition 9.4: the exact
 graph closure is the unique-finite-expansion check in the non-unit
