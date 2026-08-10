@@ -6,6 +6,8 @@ int main() {
     adelic::PropertyFGraph graph;
     graph.nodes.resize(4);
     graph.nodes[0].successors = {1, 3};
+    graph.nodes[0].edge_digit_coefficients = {
+        {{"1", "2"}}, {{"-3", "1"}}};
     graph.nodes[1].successors = {0, 1, 2};
     graph.nodes[2].successors = {3};
     graph.nodes[3].successors = {};
@@ -25,6 +27,8 @@ int main() {
     assert(grammar.cross_scc_edges == 3);
     assert(grammar.drop_histogram.at(1) == 2);
     assert(grammar.drop_histogram.at(2) == 1);
+    assert(grammar.transitions[0].transport_label == "1/2;");
+    assert(grammar.transitions[1].transport_label == "-3/1;");
 
     adelic::PropertyFGraph bad = graph;
     bad.nodes[3].successors = {2};

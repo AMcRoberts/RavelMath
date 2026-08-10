@@ -103,7 +103,7 @@ inline PropertyFClassIIBranchCensus derive_property_f_class_ii_branch_census(
         if (!spine_tail.count(node)) ++out.tail_non_spine_nodes;
     out.valid = out.rank_valid && out.spine_valid &&
                 out.tail_layers_unique && out.tail_is_spine &&
-                out.tail_chain_replayed;
+                out.tail_chain_replayed && out.tail_nonchain_edges == 0;
     return out;
 }
 

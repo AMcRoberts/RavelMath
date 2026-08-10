@@ -798,8 +798,11 @@ auto grammar = adelic::derive_property_f_birth_round_grammar(property_graph);
 
 `grammar.layer_sizes` gives terminal-distance shells, while
 `grammar.transitions` and `grammar.drop_histogram` separate internal
-transport from strictly descending cross-SCC steps. This is a finite witness
-extractor; a non-unit theorem still needs explicit valuation fibres.
+transport from strictly descending cross-SCC steps. Each transition also
+carries a canonical coefficient-string label for its digit transport, so the
+finite grammar can be compared with a symbolic branch catalogue. This is a
+finite witness extractor; a non-unit theorem still needs explicit valuation
+fibres.
 
 `tests/property_f_class_ii_birth_round_test.cpp` replays the extractor over
 the three-letter Class-II `sigma_{a,1}` family. Its default exact range is

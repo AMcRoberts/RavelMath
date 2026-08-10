@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <map>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -25,6 +26,7 @@ struct PropertyFBirthRoundTransition {
     std::size_t target_round = 0;
     std::size_t drop = 0;
     bool internal_scc = false;
+    std::string transport_label;
 };
 
 struct PropertyFBirthRoundGrammar {
@@ -44,6 +46,18 @@ struct PropertyFBirthRoundGrammar {
     bool edge_rank_strictly_decreasing = false;
     bool valid = false;
 };
+
+inline std::string property_f_birth_round_digit_key(
+        const std::vector<std::pair<std::string, std::string>>& coefficients) {
+    std::string key;
+    for (const auto& [numerator, denominator] : coefficients) {
+        key += numerator;
+        key += '/';
+        key += denominator;
+        key += ';';
+    }
+    return key;
+}
 
 inline PropertyFBirthRoundGrammar derive_property_f_birth_round_grammar(
         const PropertyFGraph& graph) {
@@ -67,27 +81,36 @@ inline PropertyFBirthRoundGrammar derive_property_f_birth_round_grammar(
 
     for (std::size_t source = 0; source < graph.nodes.size(); ++source) {
         out.edge_count += graph.nodes[source].successors.size();
-        for (const auto raw_target : graph.nodes[source].successors) {
+        for (std::size_t edge = 0;
+             edge < graph.nodes[source].successors.size(); ++edge) {
+            const auto raw_target = graph.nodes[source].successors[edge];
             const auto target = static_cast<std::size_t>(raw_target);
+            const auto label = edge < graph.nodes[source].edge_digit_coefficients.size()
+                ? property_f_birth_round_digit_key(
+                      graph.nodes[source].edge_digit_coefficients[edge])
+                : std::string{};
             const bool internal = graph.scc_labels[source] ==
                                   graph.scc_labels[target];
             if (internal) {
                 ++out.internal_edges;
                 out.transitions.push_back({source, target,
-                    out.node_round[source], out.node_round[target], 0, true});
+                    out.node_round[source], out.node_round[target], 0, true,
+                    label});
                 continue;
             }
             ++out.cross_scc_edges;
             if (out.node_round[source] <= out.node_round[target]) {
                 ++out.nondecreasing_cross_scc_edges;
                 out.transitions.push_back({source, target,
-                    out.node_round[source], out.node_round[target], 0, false});
+                    out.node_round[source], out.node_round[target], 0, false,
+                    label});
                 continue;
             }
             const auto drop = out.node_round[source] - out.node_round[target];
             ++out.drop_histogram[drop];
             out.transitions.push_back({source, target,
-                out.node_round[source], out.node_round[target], drop, false});
+                out.node_round[source], out.node_round[target], drop, false,
+                label});
         }
     }
     out.edge_rank_strictly_decreasing =
