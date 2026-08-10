@@ -27,6 +27,7 @@
 #include "math/qbeta.hpp"
 #include "math/sturm.hpp"
 #include "ravel/canonical_beta_substitution.hpp"
+#include "ravel/proof/canonical_parent_role_catalogue.hpp"
 #include "ravel/proof/monotone_coefficient_cone.hpp"
 
 namespace ravel::proof {
@@ -39,6 +40,7 @@ struct CanonicalNonunitPropertyFCertificate {
     bool monotone_condition_f = false;
     bool nonunit = false;
     bool local_factorization_trusted = false;
+    bool parent_role_integer_scheme = false;
     bool finite_graph_closed = false;
     bool property_f_holds = false;
     long long graph_nodes = 0;
@@ -73,6 +75,15 @@ derive_canonical_nonunit_property_f_certificate(
         return out;
     }
     out.greedy_digits = expansion.digits;
+    const auto catalogue = derive_canonical_parent_role_catalogue(
+        ring, beta_interval);
+    const auto integer_scheme = derive_parent_role_integer_scheme(
+        catalogue, 24, 24);
+    out.parent_role_integer_scheme = integer_scheme.proved;
+    if (!out.parent_role_integer_scheme) {
+        out.obstruction = "parent-role zero-kernel/integer transport scheme did not close";
+        return out;
+    }
     const auto cone = derive_monotone_coefficient_cone_certificate(
         expansion.digits);
     out.monotone_condition_f = cone.condition_f_applies;

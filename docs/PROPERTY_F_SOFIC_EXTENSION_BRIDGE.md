@@ -139,13 +139,16 @@ expansion whose digit vector is positive and nonincreasing, it checks:
 2. construction of the canonical Parry substitution and exact incidence
    characteristic polynomial identity;
 3. Dedekind maximal-order factorization at every prime in the determinant;
-4. the combined adelic bound and finite zero-expansion graph; and
-5. absence of nonzero recurrent components.
+4. the finite parent-role zero-kernel plus opposite-unit-cycle transport
+   scheme;
+5. the combined adelic bound and finite zero-expansion graph; and
+6. absence of nonzero recurrent components.
 
 This is the finite-expansion form of the paper's Proposition 9.4: the exact
 graph closure is the unique-finite-expansion check in the non-unit
 representation space. The quadratic canonical family `x^2-qx-q`, tested at
-`q=2,3`, closes with 9 and 13 graph nodes respectively. The route is a
+`q=2,3`, closes with 9 and 13 graph nodes respectively, and its parent-role
+integer-transport scheme closes at the same finite cap. The route is a
 theorem for this canonical monotone class; it deliberately does not promote
 an arbitrary substitution with the same spectrum until the contact cocycle
 cohomology/holonomy bridge is proved.

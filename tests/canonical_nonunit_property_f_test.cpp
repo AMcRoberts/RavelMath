@@ -4,10 +4,16 @@
 
 #include "math/qbeta.hpp"
 #include "ravel/proof/canonical_nonunit_property_f.hpp"
+#include "ravel/proof/canonical_parent_role_catalogue.hpp"
 
 void run_case(std::initializer_list<long long> coefficients) {
     const auto ring = mathlib::QBetaRing::from_low_first(coefficients);
     const auto interval = mathlib::isolate_beta(ring);
+    const auto catalogue = ravel::proof::derive_canonical_parent_role_catalogue(
+        ring, interval);
+    const auto integer_scheme = ravel::proof::derive_parent_role_integer_scheme(
+        catalogue, 24, 24);
+    assert(integer_scheme.proved);
     const auto certificate =
         ravel::proof::derive_canonical_nonunit_property_f_certificate<2>(
             ring, interval, 100'000);
