@@ -101,6 +101,7 @@ struct ReturnContactGammaRelationCertificate {
     std::size_t completion_two_sided_terminal_witnesses = 0;
     bool completion_source_surjective = false;
     bool completion_product_acyclic = false;
+    bool completion_finite_escape = false;
     bool completion_cap_hit = false;
     bool all_cyclic_lift_states_threaded = false;
     std::size_t thread_pair_vertices = 0;
@@ -722,6 +723,8 @@ ReturnContactGammaRelationCertificate derive_return_contact_gamma_relation(
             out.completion_live_products_without_terminal_route =
                 escape.live_vertices_without_terminal_route;
             out.completion_max_terminal_distance = escape.max_terminal_distance;
+            out.completion_finite_escape =
+                escape.acyclic && escape.every_live_vertex_reaches_terminal;
             out.completion_min_terminal_distance_by_lift.assign(
                 lift.states.size(), no_distance);
             out.completion_min_terminal_witness_by_lift.assign(

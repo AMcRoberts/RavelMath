@@ -341,6 +341,8 @@ int main() {
                         gamma_relation.completion_cyclic_product_terminal_escape_sccs);
             std::printf("  completion live products without terminal route=%zu\n",
                         gamma_relation.completion_live_products_without_terminal_route);
+            std::printf("  completion finite_escape=%d\n",
+                        gamma_relation.completion_finite_escape ? 1 : 0);
             std::printf("  completion boundary witnesses zero/nonzero=%zu "
                         "nonzero/zero=%zu two-sided=%zu\n",
                         gamma_relation.completion_zero_nonzero_terminal_witnesses,
@@ -459,7 +461,8 @@ int main() {
         expect(recurrent_completion && omitted_cyclic_have_terminal_route &&
                    gamma_relation.completion_product_acyclic &&
                    gamma_relation.completion_cyclic_product_nonzero_sccs == 0 &&
-                   gamma_relation.completion_live_products_without_terminal_route == 0,
+                   gamma_relation.completion_live_products_without_terminal_route == 0 &&
+                   gamma_relation.completion_finite_escape,
                "permissive terminal completion reaches every recurrent lift state without a recurrent gamma cycle");
         expect(gamma_relation.completion_zero_nonzero_terminal_witnesses >=
                    gamma_relation.unthreaded_cyclic_lift_state_indices.size(),
