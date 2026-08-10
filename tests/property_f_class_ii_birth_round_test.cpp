@@ -326,6 +326,38 @@ int main() {
         assert(phase.forced_digit_formula_mismatches == 0);
         assert(phase.forced_digit_range_mismatches == 0);
     }
+    // The quotient identity is state-independent, not an artifact of the
+    // observed spine.  Exercise arbitrary small integer coefficient states
+    // and a digit window, including negative/non-admissible digits as a
+    // negative control for the uniqueness formula.
+    for (long long a = 4; a <= 32; ++a) {
+        for (long long c0 = -3; c0 <= 3; ++c0)
+            for (long long c1 = -3; c1 <= 3; ++c1)
+                for (long long c2 = -3; c2 <= 3; ++c2) {
+                    const std::array<long long, 3> state{c0, c1, c2};
+                    const auto eta = c0 + c2;
+                    const auto zero_next =
+                        adelic::property_f_class_ii_affine_tail_step(
+                            state, a, 0);
+                    assert(zero_next[1] + (a + 1) * zero_next[2] == eta);
+                    if (!adelic::property_f_class_ii_phase_pair_valid(
+                            state, a))
+                        continue;
+                    const auto forced =
+                        adelic::property_f_class_ii_phase_forced_digit(
+                            state, a);
+                    for (long long digit = -a - 2; digit <= 2 * a + 2;
+                         ++digit) {
+                        const auto candidate =
+                            adelic::property_f_class_ii_affine_tail_step(
+                                state, a, digit);
+                        const bool preserves =
+                            adelic::property_f_class_ii_phase_pair_valid(
+                                candidate, a);
+                        assert(preserves == (digit == forced));
+                    }
+                }
+    }
     assert(!adelic::derive_property_f_class_ii_affine_tail_certificate(
         adelic::property_f_class_ii_spine_max_safe_a + 1).parameter_domain);
     std::cout << "property_f_class_ii_birth_round: PASS family_size="
