@@ -4244,3 +4244,8 @@ The completion certificate was strengthened after this observation: all
 1,444,738 live terminal-aware products have a finite route to an accepted
 terminal boundary, with maximum route length 2. This closes the finite-family
 escape audit while leaving the symbolic, uniform-in-family boundary lemma open.
+
+The finite DAG/terminal-distance calculation has been factored into the shared
+`finite_graph_correspondence.hpp` proof utility and independently tested on
+both an acyclic two-step route and a recurrent two-cycle. This makes the
+boundary layer a reusable contract rather than a one-off diagnostic loop.

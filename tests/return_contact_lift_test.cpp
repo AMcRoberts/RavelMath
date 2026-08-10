@@ -7,6 +7,7 @@
 #include "ravel/contact_boundary.hpp"
 #include "ravel/d_cont_check.hpp"
 #include "ravel/return_contact_lift.hpp"
+#include "ravel/proof/finite_graph_correspondence.hpp"
 #include "ravel/spectral.hpp"
 #include "ravel/survey.hpp"
 
@@ -186,6 +187,21 @@ int main() {
         }
     }
     expect(bad_seed_rejected, "out-of-range seed phase is rejected");
+
+    const auto escape = ravel::proof::derive_finite_escape_boundary_certificate(
+        {{1}, {2}, {}, {0}},
+        {true, true, true, false},
+        {false, false, true, false});
+    expect(escape.acyclic && escape.every_live_vertex_reaches_terminal &&
+               escape.max_terminal_distance == 2 &&
+               escape.live_vertices_without_terminal_route == 0,
+           "finite escape certificate proves a bounded route to the terminal boundary");
+    const auto cyclic_escape =
+        ravel::proof::derive_finite_escape_boundary_certificate(
+            {{1}, {0}}, {true, true}, {false, false});
+    expect(!cyclic_escape.acyclic &&
+               cyclic_escape.live_vertices_without_terminal_route == 2,
+           "finite escape certificate rejects a recurrent boundary obstruction");
 
     std::printf(
         "  lift: %zu sparse states, %zu edges, %zu/%zu projected nodes\n",

@@ -142,6 +142,7 @@ For invocation and operating procedure, read `MATHEMATICAL_API.md` → `Reflecti
 | `include/ravel/bp_dump_analysis.hpp` | Bounded sparse analysis of serialized balanced-pair core data. |
 | `include/ravel/return_substitution.hpp` | Return-word discovery, factorization, induced substitution, and return-phase system. |
 | `include/ravel/return_contact_lift.hpp` | Reachable product of a contact graph with a prefix/return-phase system. |
+| `include/ravel/proof/finite_graph_correspondence.hpp` | Finite-to-one graph correspondences and iterative finite escape-boundary certificates for live relations reaching terminal states. |
 | `include/ravel/substitution_neighborhood.hpp` | Generic adjacent unequal-letter swaps and incidence-matrix/Parikh-fiber comparison. |
 | `include/ravel/family_closed_forms.hpp` | Closed-form Class-II and n-bonacci adjacent-swap counts plus executable certificates against the generic generator. |
 | `include/ravel/pisot_substitution_properties.hpp` | Frequencies, common factors/finals, dual substitution, return words, rotation data, complexity, and carry sequences. |

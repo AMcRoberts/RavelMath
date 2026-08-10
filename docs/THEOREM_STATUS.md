@@ -1166,3 +1166,10 @@ terminal-aware products, none lacks a finite terminal route. Thus the current
 family has a verified bounded escape certificate (maximum route length 2),
 although the acceptance rule still depends on the retained terminal boundary
 and is not yet a universal symbolic lemma.
+
+The escape calculation is now a shared iterative proof utility,
+`derive_finite_escape_boundary_certificate`, rather than a private loop in
+the non-AR probe. Its standalone regression proves both a two-step acyclic
+route and rejection of a two-vertex recurrent cycle (19/19 return/contact
+tests pass). This isolates the remaining work to the symbolic premises that
+feed the certificate.

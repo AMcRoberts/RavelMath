@@ -716,39 +716,29 @@ ReturnContactGammaRelationCertificate derive_return_contact_gamma_relation(
                 }
             }
             const auto no_distance = std::numeric_limits<std::size_t>::max();
-            std::vector<std::size_t> product_distance(candidates.size(), no_distance);
+            const auto escape = ravel::proof::derive_finite_escape_boundary_certificate(
+                adjacency, live, terminal_escape);
+            out.completion_product_acyclic = escape.acyclic;
+            out.completion_live_products_without_terminal_route =
+                escape.live_vertices_without_terminal_route;
+            out.completion_max_terminal_distance = escape.max_terminal_distance;
             out.completion_min_terminal_distance_by_lift.assign(
                 lift.states.size(), no_distance);
             out.completion_min_terminal_witness_by_lift.assign(
                 lift.states.size(), {no_distance, no_distance});
-            for (const auto node : order) {
-                if (terminal_escape[node]) {
-                    product_distance[node] = 0;
-                } else {
-                    for (const auto next : adjacency[node]) {
-                        if (!live[next] || product_distance[next] == no_distance)
-                            continue;
-                        product_distance[node] = std::min(
-                            product_distance[node], product_distance[next] + 1);
-                    }
-                }
-                if (product_distance[node] != no_distance) {
+            for (std::size_t node = 0; node < live.size(); ++node) {
+                const auto product_distance = escape.terminal_distance[node];
+                if (live[node] && product_distance != no_distance) {
                     auto& distance = out.completion_min_terminal_distance_by_lift[
                         candidates[node].lift];
-                    if (product_distance[node] < distance) {
-                        distance = product_distance[node];
+                    if (product_distance < distance) {
+                        distance = product_distance;
                         out.completion_min_terminal_witness_by_lift[
                             candidates[node].lift] =
                             {candidates[node].left, candidates[node].right};
                     }
-                    out.completion_max_terminal_distance = std::max(
-                        out.completion_max_terminal_distance,
-                        product_distance[node]);
                 }
             }
-            for (std::size_t node = 0; node < live.size(); ++node)
-                if (live[node] && product_distance[node] == no_distance)
-                    ++out.completion_live_products_without_terminal_route;
             for (std::size_t state = 0; state < lift.states.size(); ++state) {
                 const auto witness =
                     out.completion_min_terminal_witness_by_lift[state];
@@ -766,7 +756,6 @@ ReturnContactGammaRelationCertificate derive_return_contact_gamma_relation(
                 else if (!left.zero && right.zero)
                     ++out.completion_nonzero_zero_terminal_witnesses;
             }
-            out.completion_product_acyclic = true;
             std::vector<int> component(candidates.size(), -1);
             std::size_t component_count = 0;
             for (auto it = order.rbegin(); it != order.rend(); ++it) {

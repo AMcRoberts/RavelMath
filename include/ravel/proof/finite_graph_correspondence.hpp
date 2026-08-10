@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <functional>
+#include <limits>
 #include <map>
 #include <queue>
 #include <set>
@@ -132,6 +133,85 @@ struct FiniteGraphCorrespondenceEntropyBound {
     bool entropy_source_at_most_target=false;
     std::string obstruction;
 };
+
+// A finite boundary/escape certificate for a directed relation.  `live`
+// selects the greatest surviving subrelation, while `terminal` marks vertices
+// accepted as boundary exits.  The certificate is intentionally iterative:
+// the completion relations used by the adelic bridge can have millions of
+// candidates, so recursion is not an acceptable proof-side implementation.
+struct FiniteEscapeBoundaryCertificate {
+    std::size_t live_vertices = 0;
+    std::size_t live_edges = 0;
+    std::size_t max_terminal_distance = 0;
+    std::size_t live_vertices_without_terminal_route = 0;
+    std::vector<std::size_t> terminal_distance;
+    bool acyclic = false;
+    bool every_live_vertex_reaches_terminal = false;
+};
+
+inline FiniteEscapeBoundaryCertificate derive_finite_escape_boundary_certificate(
+    const std::vector<std::vector<std::size_t>>& adjacency,
+    const std::vector<bool>& live,
+    const std::vector<bool>& terminal) {
+    if (adjacency.size() != live.size() || live.size() != terminal.size())
+        throw std::invalid_argument("escape boundary: graph/vector size mismatch");
+    const std::size_t n = adjacency.size();
+    FiniteEscapeBoundaryCertificate out;
+    out.terminal_distance.assign(n, std::numeric_limits<std::size_t>::max());
+    std::vector<std::size_t> indegree(n, 0);
+    std::size_t live_count = 0;
+    for (std::size_t u = 0; u < n; ++u) {
+        if (!live[u]) continue;
+        ++live_count;
+        for (const auto v : adjacency[u]) {
+            if (v >= n) throw std::invalid_argument("escape boundary: edge out of range");
+            if (!live[v]) continue;
+            ++out.live_edges;
+            ++indegree[v];
+        }
+    }
+    out.live_vertices = live_count;
+    std::queue<std::size_t> ready;
+    for (std::size_t u = 0; u < n; ++u)
+        if (live[u] && indegree[u] == 0) ready.push(u);
+    std::vector<std::size_t> order;
+    order.reserve(live_count);
+    while (!ready.empty()) {
+        const auto u = ready.front();
+        ready.pop();
+        order.push_back(u);
+        for (const auto v : adjacency[u]) {
+            if (!live[v]) continue;
+            if (--indegree[v] == 0) ready.push(v);
+        }
+    }
+    out.acyclic = order.size() == live_count;
+    for (auto it = order.rbegin(); it != order.rend(); ++it) {
+        const auto u = *it;
+        if (terminal[u]) {
+            out.terminal_distance[u] = 0;
+        } else {
+            for (const auto v : adjacency[u]) {
+                if (!live[v] || out.terminal_distance[v] ==
+                                   std::numeric_limits<std::size_t>::max())
+                    continue;
+                out.terminal_distance[u] = std::min(
+                    out.terminal_distance[u], out.terminal_distance[v] + 1);
+            }
+        }
+        if (out.terminal_distance[u] != std::numeric_limits<std::size_t>::max())
+            out.max_terminal_distance = std::max(
+                out.max_terminal_distance, out.terminal_distance[u]);
+    }
+    for (std::size_t u = 0; u < n; ++u) {
+        if (live[u] && out.terminal_distance[u] ==
+                           std::numeric_limits<std::size_t>::max())
+            ++out.live_vertices_without_terminal_route;
+    }
+    out.every_live_vertex_reaches_terminal =
+        out.live_vertices_without_terminal_route == 0;
+    return out;
+}
 
 inline FiniteGraphCorrespondenceEntropyBound compose_finite_correspondence_bound(
     FiniteToOneGraphMap to_source, FiniteToOneGraphMap to_target,

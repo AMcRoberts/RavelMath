@@ -584,6 +584,21 @@ auto lift = ravel::build_reachable_return_contact_lift(
 The lift state is `(contact state, return phase)`. It retains prefix
 information erased by the unlabelled contact graph.
 
+For a relation-valued lift whose exceptional transitions are allowed to exit
+through a finite terminal boundary, use the shared iterative certificate:
+
+```cpp
+#include "ravel/proof/finite_graph_correspondence.hpp"
+
+auto escape = ravel::proof::derive_finite_escape_boundary_certificate(
+    relation_adjacency, live_products, terminal_products);
+// escape.acyclic, escape.every_live_vertex_reaches_terminal,
+// escape.max_terminal_distance, and escape.terminal_distance are exact.
+```
+
+This is an escape-boundary certificate, not a source-surjective graph-factor
+claim. A total nonterminal factor must still be established separately.
+
 ## Class-II family
 
 The Class-II family is:

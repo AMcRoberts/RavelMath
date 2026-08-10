@@ -523,3 +523,10 @@ bounded terminal route and no recurrent nonzero image. A total graph-factor
 statement is the wrong target. The current experiment is determinant-1, so
 there is no p-adic place in this control; a future non-unit theorem must add
 the finite-place contraction hypothesis separately rather than infer it here.
+
+The escape calculation is now factored through the shared iterative
+`FiniteEscapeBoundaryCertificate` contract in
+`include/ravel/proof/finite_graph_correspondence.hpp`. Its premises are
+explicit: a live relation, a terminal predicate, acyclicity, and finite
+terminal distance for every live vertex. The non-AR data satisfy these finite
+premises; the open theorem is to derive them symbolically for the family.
