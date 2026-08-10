@@ -194,6 +194,15 @@ theorem for this canonical monotone class; it deliberately does not promote
 an arbitrary substitution with the same spectrum until the contact cocycle
 cohomology/holonomy bridge is proved.
 
+That restriction is substantive, not merely an implementation gap. The
+same-incidence literature emphasizes that the matrix does not determine a
+substitution's Rauzy geometry, and gives order-sensitive necessary conditions
+for geometric Property F; see Scheicher--Sirvent--Surer, especially their
+Proposition 2 and Theorem 2 ([paper](https://www.researchgate.net/publication/348841768_Measure-wise_disjoint_Rauzy_fractals_with_the_same_incidence_matrix)).
+Thus the strongest presently justified final theorem is the uniform
+number-system statement plus the canonical/variable-fibre realization
+certificates, not a spectrum-only substitution theorem.
+
 ## Current evidence sheet
 
 The fixed-spectrum fourth-generator family has nine exact instances. All close
