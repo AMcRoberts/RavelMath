@@ -1191,3 +1191,9 @@ return-word position: the exact `sigma_{a,1}` family probe has unique
 endpoint-plus-length signatures and maximum recurrent word length `a+4` for
 `1<=a<=4` (six states at `a=1`, eight for `a>=2`). This is a hypothesis for
 the symbolic proof, not a universal claim yet.
+
+The canonical balanced-pair family probe independently matches the recurrent
+eight-state transition grammar and its symmetric quotient characteristic
+polynomials through `a=64`; the only transient noncoincidence pair observed is
+`(01|10)`. This supports, but does not prove, a finite transient-collar
+decomposition of the non-AR boundary layer over the fixed recurrent grammar.

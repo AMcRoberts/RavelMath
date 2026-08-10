@@ -568,4 +568,14 @@ endpoint-plus-length signatures, with maximum word length `a+4` (the `a=1`
 case has the expected six-state degeneracy; `a>=2` has eight states). This
 does not prove that return-word length decreases along every escape, but it
 identifies a finite symbolic coordinate to test before introducing a larger
-state space.
+ state space.
+
+The wider canonical balanced-pair probe strengthens the structural guess:
+through `a=64`, the recurrent eight-state transition family and its symmetric
+quotient characteristic polynomials match the closed formulas exactly; the
+only observed transient noncoincidence pair is `(01|10)`. The proposed third
+plank is therefore a finite transient collar over a fixed recurrent grammar,
+with return-phase residual position supplying the collar height. A new
+recurrent balanced-pair state, a quotient-polynomial mismatch, or a second
+transient family would falsify this reduction before any Property-F claim is
+made.
