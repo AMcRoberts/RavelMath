@@ -8,6 +8,7 @@
 #include "adelic/prefix_automaton.hpp"
 #include "adelic/property_f_contact_transport_bridge.hpp"
 #include "adelic/coincidence_and_property_f.hpp"
+#include "ravel/proof/canonical_parent_role_catalogue.hpp"
 #include "math/linalg_qbeta.hpp"
 #include "math/poly_z.hpp"
 #include "math/qbeta.hpp"
@@ -49,6 +50,13 @@ void run_case(const std::array<std::vector<long long>, d>& images,
     assert(bridge.boundary_edges > 0);
     assert(bridge.distinct_contact_prefixes > 0);
     assert(bridge.distinct_difference_labels > 0);
+    const std::vector<std::vector<long long>> images_vec(
+        images.begin(), images.end());
+    const auto generic_catalogue =
+        ravel::proof::derive_parent_role_catalogue_from_substitution(images_vec);
+    const auto integer_scheme = ravel::proof::derive_parent_role_integer_scheme(
+        generic_catalogue, 24, 24);
+    assert(integer_scheme.proved);
     if (std::string(name) == "first_anchor") {
         auto [bound, trusted] = adelic::make_combined_padic_bound({2}, minpoly);
         assert(trusted);

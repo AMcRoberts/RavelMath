@@ -770,4 +770,55 @@ inline CanonicalParentRoleCatalogue derive_canonical_parent_role_catalogue(
     return out;
 }
 
+// The same labelled role forest for an externally supplied substitution.
+// This is the bridge needed when the substitution shares a spectrum with a
+// canonical representative but has different word ordering.  No canonical
+// digit hypothesis is assumed; all parent occurrences and defects are read
+// directly from the supplied images.
+inline CanonicalParentRoleCatalogue
+derive_parent_role_catalogue_from_substitution(
+    const std::vector<std::vector<long long>>& substitution) {
+    CanonicalParentRoleCatalogue out;
+    out.substitution = substitution;
+    out.alphabet_size = substitution.size();
+    if (out.alphabet_size == 0) {
+        out.obstruction = "generic parent-role catalogue requires a nonempty alphabet";
+        return out;
+    }
+    out.role_count = out.alphabet_size * out.alphabet_size;
+    out.parents.resize(out.alphabet_size);
+    for (std::size_t parent = 0; parent < substitution.size(); ++parent) {
+        const auto& image = substitution[parent];
+        for (std::size_t k = 0; k < image.size(); ++k) {
+            const long long inner = image[k];
+            if (inner < 0 || static_cast<std::size_t>(inner) >= out.alphabet_size) {
+                out.obstruction = "generic substitution image contains an out-of-range letter";
+                return out;
+            }
+            std::vector<long long> prefix(
+                image.begin(), image.begin() + static_cast<std::ptrdiff_t>(k));
+            out.parents[static_cast<std::size_t>(inner)].push_back(
+                {static_cast<long long>(parent), prefix});
+            out.prefixes.insert(prefix);
+            out.max_prefix_length = std::max(
+                out.max_prefix_length, static_cast<long long>(prefix.size()));
+        }
+    }
+    for (long long left = 0; left < static_cast<long long>(out.alphabet_size); ++left)
+        for (long long right = 0; right < static_cast<long long>(out.alphabet_size); ++right)
+            for (const auto& lp : out.parents[static_cast<std::size_t>(left)])
+                for (const auto& rp : out.parents[static_cast<std::size_t>(right)]) {
+                    const long long defect = static_cast<long long>(rp.prefix.size()) -
+                                             static_cast<long long>(lp.prefix.size());
+                    out.edges.push_back({out.role(left, right),
+                                         out.role(lp.parent_letter, rp.parent_letter),
+                                         defect, left, right, lp.parent_letter,
+                                         rp.parent_letter, lp.prefix, rp.prefix});
+                    out.defects.insert(defect);
+                    ++out.edge_count_by_defect[defect];
+                }
+    out.proved = true;
+    return out;
+}
+
 }  // namespace ravel::proof

@@ -193,6 +193,13 @@ exact paired displacement labels. The same transition check now passes across
 the first witness's radius-0/1/2 adjacent-ordering neighborhood: 1,215,
 1,322, and 1,348 contact edges respectively, with 5, 7, and 9 paired labels.
 
+The parent-role side is no longer canonical-only: the generic factory
+`derive_parent_role_catalogue_from_substitution` builds the same labelled
+forest directly from an arbitrary substitution. Its finite zero-kernel plus
+opposite-unit-cycle transport scheme passes on all three radius-0/1/2
+non-unit neighbors. This is the correct finite cohomology interface; it does
+not yet make the bounded word cap uniform in the substitution family.
+
 ## Generalized-multinacci sheet (2026-08-09)
 
 The first shared parameter sheet is now executable for every concrete point
