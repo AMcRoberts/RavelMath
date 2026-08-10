@@ -676,6 +676,15 @@ contact SCC to a recurrent nonzero Property-F component, or a future failure
 of the zero-frontier certificate. This is now the concrete third-plank
 question rather than a vague search for “more transport.”
 
+**Bridge resolution (2026-08-09).** The exact bridge test resolves that
+question for `sigma_{0,1}`: 185 contact edges replay exactly in the prefix
+automaton, with 3 distinct difference labels; the Property-F graph has 205
+nodes, `zero_nodes_beyond_frontier=0`, and the recurrence certificate reports
+no nonzero recurrent Property-F component. Thus the 401-state contact SCC is
+annihilated by the positive prefix quotient. This closes the non-AR control's
+contact-to-Property-F obstruction step and leaves the general transport lift
+as the next plank.
+
 The longer pass deliberately uses a separately enlarged orbit prefix. On the
 525456-symbol prefix, extending the requested length too far produces a first
 false loss of one left extension at `n=55406`; the 4-million-symbol prefix
