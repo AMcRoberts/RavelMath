@@ -4133,3 +4133,10 @@ quotient channel pairs are irregular (0 biregular and 0 permutation channels).
 The non-AR lift is therefore a relation-valued cocycle, not a finite covering
 with locally bijective transport. Any closure theorem must reason about the
 relation's admissible words, not only its cycle group.
+The full contact-edge prefixes give the decisive refinement: four cyclic SCCs
+are present in the 3,306-state lift, and one has non-coboundary exact `Q(β)`
+cycle residue. Thus the positional twist survives in the actual adelic digit
+cocycle on one recurrent component. This is a genuine obstruction candidate,
+not yet a Property-F counterexample: the remaining obligation is to identify
+whether that SCC is reachable from the zero frontier in the precise
+zero-expansion orientation.

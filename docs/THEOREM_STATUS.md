@@ -1075,3 +1075,8 @@ The exact contact-aware certificate finds 1,292 nonempty quotient channel
 pairs, all irregular (0 biregular, 0 permutation). The lift is relation-valued
 at every observed channel, so a future intertwiner must preserve admissible
 word relations rather than replace them by permutations.
+The full contact-edge prefix calculation finds four cyclic SCCs, with one
+carrying non-coboundary exact `Q(β)` holonomy. This is the first concrete
+recurrent obstruction candidate in the non-AR transport layer. It is not yet
+a Property-F failure, because reachability from the zero frontier in the
+zero-expansion orientation has not been established.

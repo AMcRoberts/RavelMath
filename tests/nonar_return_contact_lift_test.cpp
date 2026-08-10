@@ -12,6 +12,7 @@
 #include "adelic/prefix_automaton.hpp"
 #include "adelic/property_f_role_digit_cocycle.hpp"
 #include "adelic/return_phase_digit_cocycle.hpp"
+#include "adelic/return_contact_digit_holonomy.hpp"
 #include "math/charpoly.hpp"
 #include "math/linalg_qbeta.hpp"
 #include "ravel/return_contact_lift.hpp"
@@ -195,6 +196,16 @@ int main() {
         automaton_images[source] = powered_images[source];
     const auto automaton = adelic::build_prefix_automaton<3>(
         automaton_images, eigen.v, ring);
+    const auto contact_holonomy = adelic::derive_return_contact_digit_holonomy<3>(
+        automaton_images, lift, automaton);
+    std::printf("contact Q(beta) holonomy: cyclic_sccs=%zu nontrivial=%zu\n",
+                contact_holonomy.cyclic_sccs,
+                contact_holonomy.nontrivial_holonomy_sccs);
+    for (const auto& scc : contact_holonomy.sccs)
+        std::printf("  contact_scc nodes=%zu residual_edges=%zu coboundary=%d\n",
+                    scc.nodes, scc.residual_edges, scc.coboundary ? 1 : 0);
+    expect(contact_holonomy.exact && contact_holonomy.cyclic_sccs > 0,
+           "full contact lift has classified Q(beta) recurrent cycles");
     const auto digit_cocycle = adelic::derive_property_f_role_digit_cocycle<3>(
         automaton_images, automaton, 16, 1'000'000);
     std::printf("powered digit cocycle: zero_pairs=%zu missing=%zu "
