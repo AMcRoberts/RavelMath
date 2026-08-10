@@ -584,23 +584,32 @@ The next falsifier is a family whose minimal conflict-free collar radius is
 unbounded; that would require a genuine sofic/S-adic tower rather than a
 finite collared groupoid.
 
-**Run-length hypothesis (2026-08-09).** Extending the same probe through the
-non-left-proper family `sigma_{0,b}` gives minimal conflict-free collar
-radii `1,2,3,4,5` for `b=1,...,5`. The left-proper family remains radius 0.
-The natural explanation is recognizability: `sigma_{0,b}(0)=1^b2` hides the
-preimage marker behind a run of `b` identical letters, so `b` symbols of
-collar are needed to recover the cut. This is a concrete candidate theorem,
-not just a numerical pattern. Its falsifier is a value of `b` whose minimal
-radius is not `b`, or a different family with the same run-length defect but
-unbounded extra collars. The latter would indicate a genuinely new transport
-mechanism rather than ordinary recognizability growth.
+**Run-length hypothesis (revised 2026-08-09).** The first probe measured only
+source-side collars: for `sigma_{0,b}` it found radii `1,2,3,4,5` for
+`b=1,...,5`. The stronger endomorphism test collars both source and target
+phase states, and therefore falsifies the claim that those radii already
+close the groupoid. For example, `sigma_{0,1}` still has five transition
+conflicts at radius 2; a larger finite collar is needed. The robust idea that
+survives is weaker and more useful: the required radius is controlled by the
+run-length recognizability defect in `sigma_{0,b}(0)=1^b2`, and appears to
+grow only linearly in `b` in the tested range. A stable zero-conflict radius
+must be established separately for each member (or bounded symbolically).
 
-The conflict-free state counts for `b=1,...,5` are `45,89,143,209,288`.
-They grow much more slowly than the sampled orbit and are consistent with a
-quadratic collar expansion over a fixed return-channel set. A superquadratic
-growth law, or a nonzero recurrent component appearing only after collaring,
-would falsify the harmless-collar interpretation and reopen H3 as a genuine
-holonomy problem.
+This is a productive failure: the missing information is not another return
+letter, but the target-side collar transported through the substitution. A
+family with no stable zero-conflict radius, or superlinear state growth after
+both-side collaring, would falsify the harmless recognizability interpretation
+and reopen H3 as a genuine holonomy problem.
+
+The corrected probe now constructs the full directed phase graph. It finds
+zero-conflict radii `5,9,9,11,13` for `sigma_{0,b}`, `b=1,...,5`; each has a
+single large recurrent SCC (the small extra SCCs at `b=5` are boundary
+artefacts in the finite prefix). The left-proper controls remain one SCC at
+radius 0. Thus the current evidence is stronger than mere finite closure:
+the collared layer itself is recurrent and finite, with no observed
+nontrivial transient obstruction. The remaining proof task is to replace the
+prefix-dependent radius list by a symbolic recognizability bound and to show
+that the SCC is independent of the orbit margin.
 
 The longer pass deliberately uses a separately enlarged orbit prefix. On the
 525456-symbol prefix, extending the requested length too far produces a first
