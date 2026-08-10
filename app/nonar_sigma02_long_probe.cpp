@@ -44,6 +44,9 @@ int main() {
     limits.corona_cap = 10'000'000;
     limits.max_corona_rounds = 100;
     limits.retain_boundary_matrix = false;
+    std::printf("sigma02: requested closure_cap=%zu corona_cap=%zu rounds=%d\n",
+                limits.closure_cap, limits.corona_cap,
+                limits.max_corona_rounds);
     const auto boundary = ravel::compute_contact_boundary_dispatch(
         powered, spectral.beta, spectral.b2, d_cont);
     std::printf("sigma02: boundary converged=%d early_stop=%d corona_capped=%d "
