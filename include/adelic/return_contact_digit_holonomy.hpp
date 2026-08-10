@@ -16,9 +16,13 @@ namespace adelic {
 struct ReturnContactDigitHolonomyScc {
     std::size_t nodes = 0;
     std::size_t residual_edges = 0;
+    std::size_t left_residual_edges = 0;
+    std::size_t right_residual_edges = 0;
     std::size_t zero_contact_nodes = 0;
     std::size_t nonzero_contact_nodes = 0;
     bool coboundary = true;
+    bool left_coboundary = true;
+    bool right_coboundary = true;
 };
 
 struct ReturnContactDigitHolonomyCertificate {
@@ -40,7 +44,11 @@ ReturnContactDigitHolonomyCertificate derive_return_contact_digit_holonomy(
         const ravel::ReturnContactLift<d>& lift,
         const PrefixAutomaton<d>& automaton,
         const std::vector<ravel::ReturnContactState<d>>& seeds = {}) {
-    struct Edge { std::size_t to; mathlib::QElem label; };
+    struct Edge {
+        std::size_t to;
+        mathlib::QElem left_label;
+        mathlib::QElem right_label;
+    };
     const std::size_t n = lift.states.size();
     std::vector<std::vector<Edge>> graph(n);
     std::map<ravel::ReturnContactState<d>, std::size_t> state_index;
@@ -59,8 +67,7 @@ ReturnContactDigitHolonomyCertificate derive_return_contact_digit_holonomy(
         const auto& destination = lift.states.at(edge.destination).contact;
         const auto left = prefix_digit(destination.i, edge.left_position);
         const auto right = prefix_digit(destination.j, edge.right_position);
-        graph.at(edge.source).push_back({edge.destination,
-                                         automaton.ring.sub(right, left)});
+        graph.at(edge.source).push_back({edge.destination, left, right});
     }
 
     ReturnContactDigitHolonomyCertificate out;
@@ -97,9 +104,13 @@ ReturnContactDigitHolonomyCertificate derive_return_contact_digit_holonomy(
         std::vector<bool> in(n, false), assigned(n, false);
         for (const auto u : component) in[u] = true;
         std::vector<mathlib::QElem> potential(n, automaton.ring.zero());
+        std::vector<mathlib::QElem> left_potential(n, automaton.ring.zero());
+        std::vector<mathlib::QElem> right_potential(n, automaton.ring.zero());
         std::vector<std::size_t> todo{component.front()};
         assigned[component.front()] = true;
         std::size_t residuals = 0;
+        std::size_t left_residuals = 0;
+        std::size_t right_residuals = 0;
         const auto zero = automaton.ring.zero();
         while (!todo.empty()) {
             const auto u = todo.back(); todo.pop_back();
@@ -107,15 +118,29 @@ ReturnContactDigitHolonomyCertificate derive_return_contact_digit_holonomy(
                 if (!in[edge.to]) continue;
                 if (!assigned[edge.to]) {
                     potential[edge.to] = automaton.ring.add(
-                        potential[u], edge.label);
+                        potential[u], automaton.ring.sub(
+                            edge.right_label, edge.left_label));
+                    left_potential[edge.to] = automaton.ring.add(
+                        left_potential[u], edge.left_label);
+                    right_potential[edge.to] = automaton.ring.add(
+                        right_potential[u], edge.right_label);
                     assigned[edge.to] = true;
                     todo.push_back(edge.to);
                     continue;
                 }
                 const auto residual = automaton.ring.sub(
-                    automaton.ring.add(potential[u], edge.label),
+                    automaton.ring.add(potential[u], automaton.ring.sub(
+                        edge.right_label, edge.left_label)),
                     potential[edge.to]);
                 if (qelem_key(residual) != qelem_key(zero)) ++residuals;
+                const auto left_residual = automaton.ring.sub(
+                    automaton.ring.add(left_potential[u], edge.left_label),
+                    left_potential[edge.to]);
+                const auto right_residual = automaton.ring.sub(
+                    automaton.ring.add(right_potential[u], edge.right_label),
+                    right_potential[edge.to]);
+                if (qelem_key(left_residual) != qelem_key(zero)) ++left_residuals;
+                if (qelem_key(right_residual) != qelem_key(zero)) ++right_residuals;
             }
         }
         std::size_t zero_contact = 0;
@@ -126,10 +151,14 @@ ReturnContactDigitHolonomyCertificate derive_return_contact_digit_holonomy(
             if (!nonzero) ++zero_contact;
         }
         const bool coboundary = residuals == 0;
+        const bool left_coboundary = left_residuals == 0;
+        const bool right_coboundary = right_residuals == 0;
         nontrivial_scc.back() = !coboundary;
         for (const auto u : component) scc_of[u] = component_id;
-        out.sccs.push_back({component.size(), residuals, zero_contact,
-                            component.size() - zero_contact, coboundary});
+        out.sccs.push_back({component.size(), residuals, left_residuals,
+                            right_residuals, zero_contact,
+                            component.size() - zero_contact, coboundary,
+                            left_coboundary, right_coboundary});
         if (!coboundary) ++out.nontrivial_holonomy_sccs;
     };
     for (std::size_t v = 0; v < n; ++v) if (index[v] < 0) visit(v);

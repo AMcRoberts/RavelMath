@@ -10,6 +10,7 @@
 #include "ravel/d_cont_check.hpp"
 #include "ravel/marker_power_return_core.hpp"
 #include "adelic/prefix_automaton.hpp"
+#include "adelic/coincidence_and_property_f.hpp"
 #include "adelic/property_f_role_digit_cocycle.hpp"
 #include "adelic/return_phase_digit_cocycle.hpp"
 #include "adelic/return_contact_digit_holonomy.hpp"
@@ -196,6 +197,19 @@ int main() {
         automaton_images[source] = powered_images[source];
     const auto automaton = adelic::build_prefix_automaton<3>(
         automaton_images, eigen.v, ring);
+    long long zero_beyond_frontier = -1;
+    adelic::PropertyFGraph property_graph;
+    const auto property_f = adelic::check_property_f<3>(
+        automaton, 1'000'000, nullptr, nullptr, nullptr,
+        &zero_beyond_frontier, &property_graph, true);
+    std::printf("exact Property-F: holds=%d closed=%d nodes=%lld zero=%lld "
+                "nonzero=%lld zero_beyond=%lld\n",
+                property_f.holds ? 1 : 0, property_f.closure_reached ? 1 : 0,
+                property_f.nodes_explored, property_f.zero_nodes,
+                property_f.nonzero_nodes, zero_beyond_frontier);
+    expect(property_f.holds && property_f.closure_reached &&
+               zero_beyond_frontier == 0,
+           "powered non-AR exact zero-expansion graph closes");
     const auto contact_holonomy = adelic::derive_return_contact_digit_holonomy<3>(
         automaton_images, lift, automaton, seeds);
     std::printf("contact Q(beta) holonomy: cyclic_sccs=%zu nontrivial=%zu\n",
@@ -208,10 +222,14 @@ int main() {
                 contact_holonomy.zero_seed_reachable_nontrivial_nodes,
                 contact_holonomy.zero_seed_reaches_nontrivial_holonomy ? 1 : 0);
     for (const auto& scc : contact_holonomy.sccs)
-        std::printf("  contact_scc nodes=%zu residual_edges=%zu zero=%zu "
-                    "nonzero=%zu coboundary=%d\n", scc.nodes,
-                    scc.residual_edges, scc.zero_contact_nodes,
-                    scc.nonzero_contact_nodes, scc.coboundary ? 1 : 0);
+        std::printf("  contact_scc nodes=%zu residual_edges=%zu left=%zu "
+                    "right=%zu zero=%zu nonzero=%zu coboundary=%d "
+                    "left_cob=%d right_cob=%d\n", scc.nodes,
+                    scc.residual_edges, scc.left_residual_edges,
+                    scc.right_residual_edges, scc.zero_contact_nodes,
+                    scc.nonzero_contact_nodes, scc.coboundary ? 1 : 0,
+                    scc.left_coboundary ? 1 : 0,
+                    scc.right_coboundary ? 1 : 0);
     expect(contact_holonomy.exact && contact_holonomy.cyclic_sccs > 0,
            "full contact lift has classified Q(beta) recurrent cycles");
     expect(contact_holonomy.zero_seed_count > 0 &&

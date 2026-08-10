@@ -4156,3 +4156,13 @@ from the contact zero frontier. This is the strongest non-AR obstruction
 signal so far. It still falls short of a Property-F counterexample until the
 contact transport is shown to intertwine with the exact gamma-zero frontier
 of the adelic zero-expansion graph.
+Running the exact powered zero-expansion checker alongside this lift gives a
+closed 95-node graph (3 zero nodes, 92 nonzero nodes, and no zero nodes beyond
+the frontier). Splitting the contact cocycle into its two prefix coordinates
+shows that the 401-state candidate has 450 left and 449 right residual edges:
+both one-sided phase transports are themselves non-coboundary. The candidate
+therefore is not created merely by subtracting two individually trivial
+potentials. This still does not contradict Property F, because the phase /
+contact lift is a refinement of the 95-node gamma graph; the missing theorem
+is an exact projection or a proof that the refinement's extra holonomy is
+harmless.

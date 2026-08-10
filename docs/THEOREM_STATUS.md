@@ -1086,6 +1086,12 @@ The transport obstruction is therefore contact-frontier reachable. The
 remaining gap is exact: contact coordinate zero must be related to gamma = 0
 in the Property-F graph by a verified intertwiner before this becomes a
 Property-F failure theorem.
+The powered exact zero-expansion run closes at 95 nodes (3 zero, 92 nonzero)
+with zero nodes beyond the initial frontier. In the reachable 401-state
+contact SCC, the left and right prefix cocycles have 450 and 449 residual
+edges respectively, so the non-coboundary behavior is present on both sides,
+not just in their difference. The refinement-to-gamma projection remains the
+open obligation.
 The SCC census records 32 zero-contact states inside that 401-node
 non-coboundary component (369 nonzero-contact states). Hence it cannot be
 discarded as wholly detached from the zero-contact slice; the exact
