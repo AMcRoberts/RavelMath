@@ -25,6 +25,7 @@ struct PropertyFClassIIAkiyamaSpineCertificate {
     std::size_t identity_mismatches = 0;
     std::size_t residual_mismatches = 0;
     std::size_t spine_coordinate_mismatches = 0;
+    std::size_t companion_mismatches = 0;
     std::size_t forward_mismatches = 0;
     std::size_t backward_mismatches = 0;
     bool parameter_domain = false;
@@ -107,7 +108,8 @@ derive_property_f_class_ii_akiyama_spine(std::size_t a) {
     }
     out.fundamental_recurrence_valid = out.identity_mismatches == 0;
     out.spine_adapter_valid = out.residual_mismatches == 0 &&
-        out.spine_coordinate_mismatches == 0;
+        out.spine_coordinate_mismatches == 0 &&
+        out.companion_mismatches == 0;
 
     for (long long k = 1; k <= aa - 2; ++k) {
         const auto negative = property_f_class_ii_akiyama_residual(aa, k);
@@ -115,6 +117,14 @@ derive_property_f_class_ii_akiyama_spine(std::size_t a) {
             k + 1, k * (aa + 1), -k};
         const auto next_negative =
             property_f_class_ii_akiyama_residual(aa, k + 1);
+        const auto beta_squared = std::array<long long, 3>{0, 0, 1};
+        const auto companion = property_f_class_ii_coeff_add(
+            property_f_class_ii_coeff_add(
+                beta_squared,
+                property_f_class_ii_coeff_scale(
+                    property_f_class_ii_akiyama_unit(aa, k + 1), -1)),
+            property_f_class_ii_coeff_scale(beta, -(aa - k)));
+        if (companion != positive) ++out.companion_mismatches;
         const auto positive_index = static_cast<std::size_t>(2 * k + 1);
         if (positive_index >= spine.size() || spine[positive_index] != positive)
             ++out.spine_coordinate_mismatches;
@@ -128,6 +138,9 @@ derive_property_f_class_ii_akiyama_spine(std::size_t a) {
     }
     out.alternating_recurrence_valid = out.forward_mismatches == 0 &&
         out.backward_mismatches == 0;
+    out.spine_adapter_valid = out.residual_mismatches == 0 &&
+        out.spine_coordinate_mismatches == 0 &&
+        out.companion_mismatches == 0;
     out.valid = out.parameter_domain && out.fundamental_recurrence_valid &&
         out.spine_adapter_valid && out.alternating_recurrence_valid;
     return out;

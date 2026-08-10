@@ -235,7 +235,9 @@ The literature-to-spine coordinate adapter is now executable in
 `U=a+beta^(-1)` as `[-1,-a,1]`, verifies Akiyama's recursive identity for
 `kU`, and identifies `kU-(k-1)beta` with the negative spine state
 `[-k,-(k(a+1)-1),k]`. The two successive affine steps use digits `k` and
-`a-k`, reproducing the published alternating schedule through `a=256`.
+`a-k`, while the positive state is the corresponding residual of
+`beta^2-(k+1)U` after `(a-k)beta`; this reproduces both published expansion
+families and the alternating schedule through `a=256`.
 This closes the coordinate-level analogue, but not the beta-expansion
 inequalities or the literal prefix/contact-cocycle intertwiner.
 
