@@ -11,6 +11,7 @@
 #include "ravel/return_contact_lift.hpp"
 #include "ravel/return_history_factor.hpp"
 #include "ravel/return_offset_fibre_certificate.hpp"
+#include "ravel/return_offset_fibre_holonomy.hpp"
 #include "ravel/spectral.hpp"
 #include "ravel/substitution.hpp"
 #include "ravel/survey.hpp"
@@ -138,6 +139,17 @@ int main() {
                 fibre.largest_cyclic_scc);
     expect(fibre.finite && fibre.cyclic_sccs > 0,
            "offset fibre is finite and carries recurrent phase transport");
+    const auto holonomy = derive_return_offset_fibre_holonomy(lift, phases);
+    std::printf("holonomy recurrent_sccs=%zu gcd_one_sccs=%zu",
+                holonomy.recurrent_sccs, holonomy.gcd_one_sccs);
+    for (const auto& scc : holonomy.sccs)
+        std::printf(" [nodes=%zu gcd=%lld max=%lld]", scc.nodes,
+                    scc.gcd_cycle_residue, scc.max_abs_cycle_residue);
+    std::printf("\n");
+    expect(holonomy.finite && holonomy.recurrent_sccs > 0,
+           "finite offset quotient has classified recurrent holonomy");
+    expect(holonomy.gcd_one_sccs > 0,
+           "non-AR transport has a gcd-one integer cycle residue");
     const std::size_t nonzero_scc = largest_nonzero_recurrent_scc(lift);
     expect(nonzero_scc > 0,
            "non-AR contact lift exposes a recurrent nonzero transport component");

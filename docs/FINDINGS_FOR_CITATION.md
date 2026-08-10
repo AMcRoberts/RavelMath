@@ -4089,3 +4089,25 @@ about 830 MB RSS; the remaining cost is the size of the closure frontier,
 not repeated prefix arithmetic. The first witness remains the only
 geometrically closed fourth-generator instance so far; this probe identifies
 the next resource/algorithm boundary honestly.
+
+## Finding 47 — The non-AR return/contact quotient carries a genuine integer holonomy
+
+**Status: EXACT FINITE STRUCTURAL COMPUTATION (2026-08-09).**
+
+For `sigma_{0,1}^3`, the complete return/contact lift has 3,306 states and
+6,837 edges. Forgetting bare contact coordinates while retaining return-word
+identities, offsets, and endpoint letters gives a finite quotient with 256
+states, 1,292 edges, and one recurrent SCC of 248 states. The exact
+`return_offset_fibre_holonomy` certificate labels each quotient edge by the
+left/right occurrence-position defect and computes SCC-local cycle residues.
+The recurrent SCC has gcd of cycle residues **1** (maximum spanning-tree
+residual 13). Thus the recurrence is not merely a finite cyclotomic phase
+permutation: it supports a genuine integer transport direction over a finite
+base.
+
+This supports the working normal form “finite return/offset base × integer
+transport cocycle,” and explains why forgetting offsets was lossy. It does not
+yet prove that every non-AR substitution has this form, nor that integer
+holonomy cannot interact with a nonzero Property-F cycle. The next falsifier is
+an explicit cocycle-to-zero-expansion intertwiner; a nonzero recurrent image
+there would be the obstruction we have not found so far.
