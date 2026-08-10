@@ -694,6 +694,16 @@ attached after the symbolic/contact quotient and do not resurrect the
 annihilated holonomy. A non-unit example with a trusted p-adic bound and a
 surviving nonzero Property-F SCC is now the decisive falsifier.
 
+The existing family autopsy supplies a broader check: the determinant-2
+quintic rows `second_anchor`, `second_001_30`, `second_010_03`, and
+`second_010_30` all have trusted p-adic bounds, closed return transport, and
+zero nonzero Property-F cycles. Their Property-F closures range from 9 to
+5,505 nodes. Thus the large non-unit clouds vary substantially in size while
+the recurrent obstruction quotient remains empty. This supports the
+transient-fibre hypothesis beyond the quadratic example; the remaining
+falsifier is a trusted determinant-2 (or higher) row with a nonzero recurrent
+Property-F cycle.
+
 The longer pass deliberately uses a separately enlarged orbit prefix. On the
 525456-symbol prefix, extending the requested length too far produces a first
 false loss of one left extension at `n=55406`; the 4-million-symbol prefix
