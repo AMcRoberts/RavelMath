@@ -685,6 +685,15 @@ annihilated by the positive prefix quotient. This closes the non-AR control's
 contact-to-Property-F obstruction step and leaves the general transport lift
 as the next plank.
 
+**Non-unit lift check (2026-08-09).** The same exact bridge succeeds for the
+minimal non-unit rule `0->001, 1->00` with its p=2 bound: 70 contact edges,
+5 exact difference labels, 9 Property-F nodes, and
+`zero_nodes_beyond_frontier=0`. The recurrence certificate has no nonzero
+Property-F component. This supports the hypothesis that valuation fibres are
+attached after the symbolic/contact quotient and do not resurrect the
+annihilated holonomy. A non-unit example with a trusted p-adic bound and a
+surviving nonzero Property-F SCC is now the decisive falsifier.
+
 The longer pass deliberately uses a separately enlarged orbit prefix. On the
 525456-symbol prefix, extending the requested length too far produces a first
 false loss of one left extension at `n=55406`; the 4-million-symbol prefix
