@@ -200,6 +200,15 @@ opposite-unit-cycle transport scheme passes on all three radius-0/1/2
 non-unit neighbors. This is the correct finite cohomology interface; it does
 not yet make the bounded word cap uniform in the substitution family.
 
+The exact `Q(beta)` refinement exposed an important correction to the proposed
+uniform theorem. On the `first_100` ordering, the full digit-difference role
+cocycle misses 54 of 81 ordered zero-kernel pairs even at word cap 64, while
+the adelic Property-F graph still closes and has no nonzero recurrent SCC.
+Thus arbitrary contact cocycles are not literally cohomologous to the
+canonical pair-role cocycle. The final theorem must use a quotient/recurrence
+invariant weaker than global zero-kernel equivalence; the failed stronger
+hypothesis is now an executable negative regression, not an assumption.
+
 ## Generalized-multinacci sheet (2026-08-09)
 
 The first shared parameter sheet is now executable for every concrete point

@@ -1,4 +1,5 @@
 #include <array>
+#include <algorithm>
 #include <cassert>
 #include <cstdint>
 #include <iostream>
@@ -8,6 +9,7 @@
 #include "adelic/prefix_automaton.hpp"
 #include "adelic/property_f_contact_transport_bridge.hpp"
 #include "adelic/coincidence_and_property_f.hpp"
+#include "adelic/property_f_role_digit_cocycle.hpp"
 #include "ravel/proof/canonical_parent_role_catalogue.hpp"
 #include "math/linalg_qbeta.hpp"
 #include "math/poly_z.hpp"
@@ -57,6 +59,28 @@ void run_case(const std::array<std::vector<long long>, d>& images,
     const auto integer_scheme = ravel::proof::derive_parent_role_integer_scheme(
         generic_catalogue, 24, 24);
     assert(integer_scheme.proved);
+    const auto digit_cocycle =
+        adelic::derive_property_f_role_digit_cocycle<d>(
+            images, automaton, 64, 1'000'000);
+    assert(digit_cocycle.cocycle_edges_exact);
+    std::cout << name << ": digit zero-kernel pairs="
+              << digit_cocycle.zero_kernel_pairs << "/"
+              << d * d * d * d << " missing="
+              << digit_cocycle.zero_kernel_missing_pairs << "\n";
+    std::cout << name << ": recurrent digit-kernel missing="
+              << digit_cocycle.recurrent_zero_kernel_missing_pairs << "\n";
+    if (std::string(name) == "first_100")
+        assert(!digit_cocycle.proved);
+    else
+        assert(digit_cocycle.proved);
+    if (!digit_cocycle.missing_zero_pairs.empty()) {
+        std::cout << name << ": first missing digit-role pairs=";
+        for (std::size_t k = 0; k < std::min<std::size_t>(8,
+                 digit_cocycle.missing_zero_pairs.size()); ++k)
+            std::cout << " (" << digit_cocycle.missing_zero_pairs[k].first
+                      << "," << digit_cocycle.missing_zero_pairs[k].second << ")";
+        std::cout << "\n";
+    }
     if (std::string(name) == "first_anchor") {
         auto [bound, trusted] = adelic::make_combined_padic_bound({2}, minpoly);
         assert(trusted);
