@@ -261,6 +261,15 @@ The future composition lemma must quantify over this textile relation (or prove
 a section exists in a restricted family), rather than silently treating it as
 an ordinary graph morphism.
 
+The affine gauge test is already implemented in
+`return_contact_digit_holonomy.hpp`: it checks the full difference cocycle and
+the left- and right-sided affine coboundary equations independently, then
+records frontier ambiguity. Thus the missing composition premise is not an
+unimplemented algebraic identity. It is the finite theorem that consumes the
+coboundary/ambiguity certificate together with the relation-valued gamma
+closure, distinguishing harmless finite textile fibres from a recurrent
+nontrivial holonomy component.
+
 The parent-role side is no longer canonical-only: the generic factory
 `derive_parent_role_catalogue_from_substitution` builds the same labelled
 forest directly from an arbitrary substitution. Its finite zero-kernel plus
