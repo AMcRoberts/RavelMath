@@ -24,6 +24,9 @@ struct PropertyFClassIITailCandidateCensus {
     std::size_t alternate_collar_edges = 0;
     std::size_t alternate_high_edges = 0;
     std::size_t internal_edges = 0;
+    std::size_t expected_predecessor_edges = 0;
+    std::size_t alternate_high_predecessors = 0;
+    std::size_t collar_predecessors = 0;
     std::size_t malformed_edges = 0;
     std::map<std::size_t, std::set<std::string>> collar_labels_by_step;
     std::map<std::size_t, std::set<std::string>> high_labels_by_step;
@@ -32,6 +35,9 @@ struct PropertyFClassIITailCandidateCensus {
     bool no_alternate_high = false;
     bool digit_support_valid = false;
     bool role_grammar_valid = false;
+    bool predecessor_unique = false;
+    bool no_collar_predecessor = false;
+    bool no_alternate_high_predecessor = false;
     bool valid = false;
 };
 
@@ -98,6 +104,42 @@ derive_property_f_class_ii_tail_candidate_census(
         if (expected_count != 1) out.expected_successor_unique = false;
     }
     out.no_alternate_high = out.alternate_high_edges == 0;
+    out.predecessor_unique = true;
+    out.no_collar_predecessor = true;
+    out.no_alternate_high_predecessor = true;
+    for (const auto [target, target_step] : step_by_node) {
+        if (rank.node_height[target] <=
+            PropertyFClassIITailCandidateCensus::collar_height)
+            continue;
+        const auto expected_source = target_step > 0
+            ? spine.node_ids[target_step - 1] : graph.nodes.size();
+        std::size_t expected_count = 0;
+        for (std::size_t source = 0; source < graph.nodes.size(); ++source) {
+            for (const auto raw_target : graph.nodes[source].successors) {
+                if (raw_target < 0 ||
+                    static_cast<std::size_t>(raw_target) != target)
+                    continue;
+                if (source == expected_source) {
+                    ++expected_count;
+                    ++out.expected_predecessor_edges;
+                } else if (rank.node_height[source] >
+                           PropertyFClassIITailCandidateCensus::collar_height) {
+                    // Same-SCC recurrence at the top is explicitly allowed.
+                    if (graph.scc_labels[source] != graph.scc_labels[target])
+                        ++out.alternate_high_predecessors;
+                } else {
+                    ++out.collar_predecessors;
+                }
+            }
+        }
+        // The maximum state may have an internal self-loop, but no external
+        // predecessor; every lower tail state has one affine predecessor.
+        const std::size_t expected = expected_source == graph.nodes.size() ? 0 : 1;
+        if (expected_count != expected) out.predecessor_unique = false;
+    }
+    out.no_collar_predecessor = out.collar_predecessors == 0;
+    out.no_alternate_high_predecessor =
+        out.alternate_high_predecessors == 0;
     // The Class-II prefix automaton gives every letter-0 tail state the
     // complete zero-prefix digit family j=0..a-1.  Letter 1 has only its
     // forced return edge.  Keep this inexpensive role check bounded so the
@@ -123,7 +165,9 @@ derive_property_f_class_ii_tail_candidate_census(
     }
     out.valid = out.spine_valid && out.malformed_edges == 0 &&
                 out.expected_successor_unique && out.no_alternate_high &&
-                out.digit_support_valid && out.role_grammar_valid;
+                out.digit_support_valid && out.role_grammar_valid &&
+                out.predecessor_unique && out.no_collar_predecessor &&
+                out.no_alternate_high_predecessor;
     return out;
 }
 

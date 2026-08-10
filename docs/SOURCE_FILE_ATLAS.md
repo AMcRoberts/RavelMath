@@ -188,7 +188,7 @@ For invocation and operating procedure, read `MATHEMATICAL_API.md` → `Reflecti
 | `include/adelic/property_f_class_ii_affine_tail.hpp` | Parameterized integer beta-inverse recurrence certificate for the Class-II affine tail and its digit schedule, independent of graph enumeration. |
 | `include/adelic/property_f_class_ii_branch_census.hpp` | Separates the Class-II high-rank deterministic tail from the finite height-5 branching collar and checks the tail spine/edge census. |
 | `include/adelic/property_f_class_ii_collar_grammar.hpp` | Records the finite height-transition language, digit labels, and no-tail-reentry contract for the Class-II collar. |
-| `include/adelic/property_f_class_ii_tail_candidate_census.hpp` | Classifies every tail-state candidate edge, including zero-prefix digit support, forced letter-1 return, and alternate-high rejection. |
+| `include/adelic/property_f_class_ii_tail_candidate_census.hpp` | Classifies every tail-state candidate edge and predecessor, including zero-prefix digit support, forced letter-1 return, and alternate-high rejection. |
 | `include/adelic/property_f_class_ii_prefix_role_grammar.hpp` | Parameter-uniform word-level parent/prefix catalogue for the three-letter `sigma_{a,1}` substitution. |
 | `include/adelic/csy_carry_automaton.hpp` | Exact Pisot powers, CSY-style bounded prefix states, carry exploration, and memory accounting. |
 | `include/adelic/coincidence_and_property_f.hpp` | Strong coincidence and geometric property-(F) checks, including archimedean and non-archimedean bounds. |

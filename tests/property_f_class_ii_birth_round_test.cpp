@@ -130,6 +130,9 @@ int main() {
             assert(candidates.no_alternate_high);
             assert(candidates.alternate_high_edges == 0);
             assert(candidates.digit_support_valid);
+            assert(candidates.predecessor_unique);
+            assert(candidates.no_collar_predecessor);
+            assert(candidates.no_alternate_high_predecessor);
             if (std::getenv("CLASSII_BIRTH_TAIL_CANDIDATE_PROBE") != nullptr &&
                 a == max_a) {
                 std::cout << "tail_candidates a=" << a

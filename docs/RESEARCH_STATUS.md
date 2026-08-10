@@ -207,6 +207,8 @@ prefix lengths `0..a-1` and parent 2 at length 0; target 1 has only parent 0
 at length `a`; target 2 has parent 0 at `a+1` and parent 1 at `a`. The graph
 candidate census composes this role grammar with the affine tail and checks
 that the observed alternatives are precisely the collar exits.
+The same census now checks the reverse induction direction: every high-tail
+state has one affine predecessor, with no collar or alternate-high predecessor.
 
 ## Effective-potential analogy (bounded modeling hypothesis, 2026-08-10)
 

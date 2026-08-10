@@ -851,6 +851,8 @@ parameter-uniform word-level role catalogue for `sigma_{a,1}`: zero has the
 three parent channels with `0^j` prefixes, letter 1 has the single `0^a`
 channel, and letter 2 has the two channels at prefix lengths `a+1` and `a`.
 The tail census composes this symbolic catalogue with the realized graph.
+It also checks the reverse direction: each high-tail state has its unique
+affine predecessor, with no collar predecessor or alternate high predecessor.
 
 ### General number fields and the class-field-tower initiative
 
