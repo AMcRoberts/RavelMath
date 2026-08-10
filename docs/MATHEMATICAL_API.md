@@ -878,6 +878,11 @@ needs the separate argument that every off-spine branch is collar-absorbed.
 The implementation also reduces the exceptional `0^(a+1)` prefix to its exact
 `[-1,0,1]` coefficient label before applying the inverse map.
 
+`include/adelic/property_f_class_ii_phase_carrier.hpp` reduces the phase strip
+to the scalar odometer `(eta,c0)`: two zero-prefix steps move `c0` by one,
+with admissible intervals `[-a+1,0]` and `[2,a+1]`. It supplies the uniform
+`2a+2` spine-height mechanism before the fixed boundary corrections.
+
 For the non-unit branch, `adelic_cocycle_extension.hpp` also exposes
 `derive_adelic_valuation_fibre_lemma`. It checks maximal Dedekind factorization,
 the independent ideal-lattice identity, and the local degree partition

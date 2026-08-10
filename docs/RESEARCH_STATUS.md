@@ -238,6 +238,14 @@ The only degree-overflowing role, `0^(a+1)`, is handled through its reduced
 coefficient label `[-1,0,1]`, so the inverse check is using the actual cocycle
 and not a raw prefix-length surrogate.
 
+The remaining growing coordinate now has a closed carrier law. On the phase
+strip, the zero-prefix alphabet admits `eta=0` exactly for
+`c0 in [-a+1,0]` and `eta=1` exactly for `c0 in [2,a+1]`; two forced steps
+translate `c0` by one. The carrier contributes `2(a-1)` scalar steps, and the
+five fixed boundary corrections account for the observed height `2a+2`.
+This is the uniform height mechanism; the unresolved part is still proving
+that every off-carrier branch enters the finite collar.
+
 The non-unit side now has its explicit local-fibre premise as well. The
 valuation-fibre certificate checks, for every prime dividing the determinant,
 that the maximal Dedekind factors and independent ideal-lattice product agree

@@ -20,6 +20,7 @@
 #include "adelic/property_f_class_ii_prefix_role_grammar.hpp"
 #include "adelic/property_f_class_ii_phase_strip.hpp"
 #include "adelic/property_f_class_ii_phase_absorption.hpp"
+#include "adelic/property_f_class_ii_phase_carrier.hpp"
 #include "adelic/property_f_class_ii_rank_spine.hpp"
 #include "adelic/property_f_class_ii_symbolic_tail_grammar.hpp"
 #include "adelic/coincidence_and_property_f.hpp"
@@ -336,6 +337,11 @@ int main() {
         assert(symbolic_tail.reverse_missing_targets == 0);
         assert(symbolic_tail.forward_alternate_spine_hits == 0);
         assert(symbolic_tail.reverse_alternate_spine_hits == 0);
+        assert(adelic::derive_property_f_class_ii_phase_carrier(a).valid);
+        const auto carrier =
+            adelic::derive_property_f_class_ii_phase_carrier(a);
+        assert(carrier.valid);
+        assert(carrier.expected_spine_height == 2 * a + 2);
     }
     // The quotient identity is state-independent, not an artifact of the
     // observed spine.  Exercise arbitrary small integer coefficient states

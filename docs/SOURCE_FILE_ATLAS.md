@@ -193,6 +193,7 @@ For invocation and operating procedure, read `MATHEMATICAL_API.md` → `Reflecti
 | `include/adelic/property_f_class_ii_phase_strip.hpp` | Algebraic phase-strip invariant, the exact two-state quotient `q'=eta`, and the closed unique zero-prefix digit-forcing formula for the affine tail. |
 | `include/adelic/property_f_class_ii_phase_absorption.hpp` | Graph-level check that off-strip high-rank states are absorbed by the fixed collar, except for the distinguished top zero seed; finite premise for the uniform upper-bound lemma. |
 | `include/adelic/property_f_class_ii_symbolic_tail_grammar.hpp` | Parameter-uniform forward/inverse affine role enumeration proving unique spine continuation and predecessor with no alternate spine hit. |
+| `include/adelic/property_f_class_ii_phase_carrier.hpp` | Scalar eta/c0 odometer certificate for the phase strip, its admissible intervals, and the uniform `2a+2` spine-height mechanism. |
 | `include/adelic/adelic_cocycle_extension.hpp` | Shared sofic/transport/adelic cocycle contract plus the non-unit valuation-fibre lemma: maximal local factorization, ideal-lattice agreement, and `sum(e f)=degree` partition checks. |
 | `include/adelic/csy_carry_automaton.hpp` | Exact Pisot powers, CSY-style bounded prefix states, carry exploration, and memory accounting. |
 | `include/adelic/coincidence_and_property_f.hpp` | Strong coincidence and geometric property-(F) checks, including archimedean and non-archimedean bounds. |
