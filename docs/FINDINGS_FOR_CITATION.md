@@ -4240,6 +4240,8 @@ powered family is unimodular (determinant 1), there is no finite-place p-adic
 contraction to appeal to. The evidence narrows the
 open bridge to a finite Archimedean escape-boundary composition lemma; it does
 not establish a full factor theorem or a Property-F failure.
+The accepted boundary is the full finite terminal shell; the common sink in
+the six shortest witnesses must not be mistaken for a one-sink reduction.
 
 The completion certificate was strengthened after this observation: all
 1,444,738 live terminal-aware products have a finite route to an accepted

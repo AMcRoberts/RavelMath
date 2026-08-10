@@ -518,6 +518,9 @@ boundary in at most two steps. The six omitted cyclic states use the same
 one-sided zero-state/nonzero-terminal witness. The exact terminal catalogue
 has 54 retained sinks, all nonzero, so the escape orientation is from a zero
 interior state into a nonzero terminal boundary.
+The six omitted cyclic states share the displayed sink in their shortest
+witness, but the proof target should treat the full 54-node terminal shell as
+the accepted boundary unless a separate shell-reduction lemma is proved.
 
 The next theorem should therefore be stated as a boundary-composition lemma:
 the recurrent textile admits a finite escape completion, with a uniformly

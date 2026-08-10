@@ -1155,6 +1155,8 @@ zero gamma state `0;0;0;` on the left and the nonzero terminal sink
 `-6;5;-1;` on the right. The terminal-node catalogue contains 54 retained
 sinks, all nonzero; the witness orientation is therefore zero-state to
 nonzero-terminal, not terminal-zero to terminal-nonzero.
+The repeated sink is a shortest-witness fact for those six states, not a claim
+that the entire completion has only one accepted terminal node.
 
 The powered control has determinant 1, so there are no ramified finite places
 in this experiment. The existing combined p-adic predicate therefore cannot
