@@ -145,6 +145,11 @@ colors share the same linear part `A^d` and differ only by offsets
 adds translations and one existing-generator power, not a new linear
 generator. This is the strongest current restriction on what a new fiber can
 do.
+The graph-level interaction classifier confirms the corresponding direction:
+in every tested lifted graph, `new->new=0` and `top->new=0` in the backward
+orientation, while inherited states enter the new terminal class and new
+states descend to the old top class. The new fiber is therefore a one-way
+transit layer in the tested exact graphs, not an autonomous recurrent block.
 Each channel is now compiled to an exact integer affine endpoint map on the
 `d`-coordinate coefficient lattice; all 19 `(4,6)` maps are replay-checked
 against `Q(beta)`, while the 42-point sweep checks the parameterized map shape.

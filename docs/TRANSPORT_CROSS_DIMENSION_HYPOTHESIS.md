@@ -44,6 +44,14 @@ translates and one extra power of the existing linear generator; it does not
 introduce a new matrix generator. The cross-dimension certificate checks these
 identities in addition to the channel injection law.
 
+The graph-level interaction classifier gives the corresponding dynamical
+restriction. In the backward Property-F graph, new-terminal nodes have no
+new-terminal successors and no old-top predecessor can point back into the
+new-terminal class: `new->new = 0` and `top->new = 0` in every tested lift.
+They are entered from inherited states and then descend into the old top class
+(`inherited->new` and `new->top` are the observed crossings). Thus the new
+fiber is a one-way transit layer, not an autonomous recurrent subsystem.
+
 ## Evidence
 
 - The symbolic dimension-free suspension certificate passes all 42 points with
