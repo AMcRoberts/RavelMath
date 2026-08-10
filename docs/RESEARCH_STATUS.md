@@ -82,7 +82,7 @@ five. This supports a metastable shell-stack interpretation: the graph grows
 through transient transport, not a new recurrent obstruction.
 
 The existing Class-II neighbor-2 grammar supplies a concrete symbolic model
-for that stack. For `a=7..10`, round-stratified birth analysis gives one birth
+for that stack. For the extended `a=7..20` sweep, round-stratified birth analysis gives one birth
 round per recurrent block, zero returns from recurrence to an earlier transient
 stratum, and an escape from every transient group. The boundary size is
 `20*a+38`, transient count `16*a+3`, and the recurrent catalogue has `a+1`

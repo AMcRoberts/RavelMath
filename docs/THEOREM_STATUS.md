@@ -1244,7 +1244,7 @@ falsifiable diagnostic, not part of the theorem statement.
 
 The existing Class-II neighbor-2 proof machinery supplies a concrete symbolic
 template for that diagnostic. Its round-stratified transient check gives every
-state a first birth round; for `a=7..10`, all recurrent blocks have a unique
+state a first birth round; for the extended `a=7..20` sweep, all recurrent blocks have a unique
 birth round, recurrent-to-earlier-stratum violations are zero, and every
 transient group has an escape. Thus the long collar can be modeled as a finite
 stack of birth-round shells over a small recurrent core. The analogous
@@ -1257,6 +1257,7 @@ The likely Property-F analogue is therefore repeated parameterized shell cells
 plus a bounded correction grammar, not an expanding recurrent component.
 
 The recurrent-exhaustion data sharpen this: the neighbor-2 boundary sizes are
-`178,198,218,238` at `a=7..10`, transient counts follow `16*a+3`, and exactly
-`a+1` recurrent blocks are matched with eight cross-block edges. This is the
+`178,198,218,238` at the first four points and the full sweep follows
+`20*a+38`; transient counts follow `16*a+3`, and exactly `a+1` recurrent
+blocks are matched with eight cross-block edges throughout. This is the
 reference decomposition to seek in the adelic Property-F lift.

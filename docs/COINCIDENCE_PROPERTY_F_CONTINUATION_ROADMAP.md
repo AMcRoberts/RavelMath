@@ -646,7 +646,8 @@ proves the same separation.
 
 There is now an exact model for the proposed collar rank in the existing
 Class-II neighbor-2 grammar. The round-stratified transient check assigns each
-state its first birth round in the corona trace. For `a=7,8,9,10`, every
+state its first birth round in the corona trace. For the extended sweep
+`a=7..20`, every
 recurrent block has a single birth round, no recurrent edge returns to an
 earlier transient stratum, and every transient round-group has an escape
 (`ITEM4` violations `0`, with all `ITEM3` groups escaping). The resulting
@@ -664,9 +665,9 @@ look for in the Property-F lift: parameter-dependent collar multiplicity with
 parameter-independent transport types.
 
 The companion recurrent-exhaustion check makes the separation explicit: for
-`a=7,8,9,10`, total boundary sizes are `178,198,218,238`, transient counts
-are `115,131,147,163` (the affine law `16*a+3`), and the recurrent catalogue
-has exactly `a+1` matched blocks. Only eight cross-block recurrent edges remain
-in each case. This is a concrete forest-level explanation for “large but
+For `a=7..20`, the total boundary sizes continue the affine law `20*a+38`
+and transient counts continue `16*a+3`; every run has exactly `a+1` matched
+recurrent blocks, zero earlier-stratum returns, and eight cross-block
+recurrent edges. This is a concrete forest-level explanation for “large but
 harmless”: repeated shell transport grows, while recurrent connectivity stays
 finite and sparsely coupled.
