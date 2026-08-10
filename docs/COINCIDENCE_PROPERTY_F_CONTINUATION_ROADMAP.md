@@ -515,7 +515,9 @@ Property-F obstruction. The terminal-aware greatest subrelation is the useful
 replacement: it covers all 457 cyclic lift states, has no cyclic product SCC,
 and every one of its 1,444,738 live products reaches an accepted terminal
 boundary in at most two steps. The six omitted cyclic states use the same
-one-sided terminal-zero/terminal-nonzero witness.
+one-sided zero-state/nonzero-terminal witness. The exact terminal catalogue
+has 54 retained sinks, all nonzero, so the escape orientation is from a zero
+interior state into a nonzero terminal boundary.
 
 The next theorem should therefore be stated as a boundary-composition lemma:
 the recurrent textile admits a finite escape completion, with a uniformly

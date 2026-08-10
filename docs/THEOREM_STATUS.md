@@ -1151,7 +1151,10 @@ node is a retained terminal boundary node. Its greatest live subrelation has
 acyclic, has no recurrent nonzero SCC, and has maximum terminal distance 2.
 That result is deliberately not called a factor theorem: all six omitted
 cyclic states are covered at distance zero by the same one-sided witness,
-left terminal zero `0;0;0;` and right terminal nonzero `-6;5;-1;`.
+zero gamma state `0;0;0;` on the left and the nonzero terminal sink
+`-6;5;-1;` on the right. The terminal-node catalogue contains 54 retained
+sinks, all nonzero; the witness orientation is therefore zero-state to
+nonzero-terminal, not terminal-zero to terminal-nonzero.
 
 The powered control has determinant 1, so there are no ramified finite places
 in this experiment. The existing combined p-adic predicate therefore cannot

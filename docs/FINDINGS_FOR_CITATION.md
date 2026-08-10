@@ -4234,9 +4234,10 @@ have a nonterminal Property-F successor. A terminal-aware negative control does
 cover all 457 cyclic lift states with an acyclic synchronized product and no
 recurrent nonzero image, but it does so by accepting retained boundary sinks.
 The six previously omitted cyclic states all have the same distance-0
-one-sided witness: terminal zero gamma on the left and terminal nonzero gamma
-on the right. Since this powered family is unimodular (determinant 1), there
-is no finite-place p-adic contraction to appeal to. The evidence narrows the
+one-sided witness: zero gamma on the left and a nonzero terminal sink on the
+right. The retained terminal catalogue has 54 sinks, all nonzero. Since this
+powered family is unimodular (determinant 1), there is no finite-place p-adic
+contraction to appeal to. The evidence narrows the
 open bridge to a finite Archimedean escape-boundary composition lemma; it does
 not establish a full factor theorem or a Property-F failure.
 

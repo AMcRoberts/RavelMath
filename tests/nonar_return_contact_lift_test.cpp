@@ -243,6 +243,22 @@ int main() {
     const bool run_completion_probe = std::getenv("NONAR_COMPLETION_PROBE") != nullptr;
     const bool strict_completion_probe =
         std::getenv("NONAR_STRICT_COMPLETION_PROBE") != nullptr;
+    if (run_completion_probe && !strict_completion_probe) {
+        std::size_t terminal_nodes = 0;
+        std::size_t terminal_zero_nodes = 0;
+        std::printf("Property-F terminal nodes:");
+        for (std::size_t node = 0; node < property_graph.nodes.size(); ++node) {
+            const auto& terminal = property_graph.nodes[node];
+            if (!terminal.successors.empty()) continue;
+            ++terminal_nodes;
+            if (terminal.zero) ++terminal_zero_nodes;
+            std::printf(" %zu:%lld:%d:%s", node, terminal.letter,
+                        terminal.zero ? 1 : 0, terminal.gamma_key.c_str());
+        }
+        std::printf("\n");
+        expect(terminal_nodes == 54 && terminal_zero_nodes == 0,
+               "all retained Property-F terminal sinks are nonzero in the powered control");
+    }
     const auto gamma_relation = adelic::derive_return_contact_gamma_relation<3>(
         automaton_images, lift, automaton, property_graph, seeds,
         2'000'000, run_completion_probe || strict_completion_probe,
@@ -361,9 +377,12 @@ int main() {
                     gamma_relation.completion_min_terminal_witness_by_lift[state];
                 const auto& left = property_graph.nodes[witness.first];
                 const auto& right = property_graph.nodes[witness.second];
-                std::printf(" %zu:%zu(%s|%s;z=%d/%d)", state, distance,
-                            left.gamma_key.c_str(), right.gamma_key.c_str(),
-                            left.zero ? 1 : 0, right.zero ? 1 : 0);
+                std::printf(" %zu:%zu(%s|%s;z=%d/%d;t=%d/%d)", state,
+                            distance, left.gamma_key.c_str(),
+                            right.gamma_key.c_str(), left.zero ? 1 : 0,
+                            right.zero ? 1 : 0,
+                            left.successors.empty() ? 1 : 0,
+                            right.successors.empty() ? 1 : 0);
             }
         }
         std::printf("\n");
@@ -468,10 +487,10 @@ int main() {
                "permissive terminal completion reaches every recurrent lift state without a recurrent gamma cycle");
         expect(gamma_relation.completion_zero_nonzero_terminal_witnesses >=
                    gamma_relation.unthreaded_cyclic_lift_state_indices.size(),
-               "the omitted recurrent states are explicitly classified as one-sided terminal boundary witnesses");
+               "the omitted recurrent states are explicitly classified as one-sided boundary escapes");
         expect(gamma_relation.completion_nonzero_zero_terminal_witnesses == 0 &&
                    gamma_relation.completion_two_sided_terminal_witnesses == 0,
-               "the finite boundary escape has a single zero-to-nonzero orientation");
+               "the finite boundary escape has a single zero-state-to-nonzero-state orientation");
         }
     }
     const auto capped_relation = adelic::derive_return_contact_gamma_relation<3>(
