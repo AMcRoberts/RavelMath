@@ -116,6 +116,12 @@ or a family whose escape conductance tends to zero while recurrence appears,
 would falsify the harmless-metastable interpretation.  It is a diagnostic
 organizing principle only, not an additional Property-F argument.
 
+There is also a necessary caveat: the endpoint maps are unimodular on the
+coefficient lattice, so this is not literal volume-contracting gradient flow.
+The apparent attraction comes from contraction in the secondary embeddings,
+finite admissibility, and many-to-one graph incidence; the SCC height is a
+combinatorial potential layered over that arithmetic mechanism.
+
 ## Generalized-multinacci bridge rectangle (2026-08-09)
 
 The common sofic/adelic certificate has now been run on all 18 points
