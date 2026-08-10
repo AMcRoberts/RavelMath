@@ -19,6 +19,7 @@
 #include "adelic/property_f_class_ii_tail_candidate_census.hpp"
 #include "adelic/property_f_class_ii_prefix_role_grammar.hpp"
 #include "adelic/property_f_class_ii_phase_strip.hpp"
+#include "adelic/property_f_class_ii_phase_absorption.hpp"
 #include "adelic/property_f_class_ii_rank_spine.hpp"
 #include "adelic/coincidence_and_property_f.hpp"
 #include "adelic/prefix_automaton.hpp"
@@ -134,6 +135,11 @@ int main() {
             assert(candidates.predecessor_unique);
             assert(candidates.no_collar_predecessor);
             assert(candidates.no_alternate_high_predecessor);
+            const auto absorption =
+                adelic::derive_property_f_class_ii_phase_absorption(graph, a);
+            assert(absorption.valid);
+            assert(absorption.phase_seed_nodes == 1);
+            assert(absorption.phase_invalid_unexpected_high_nodes == 0);
             if (std::getenv("CLASSII_BIRTH_TAIL_CANDIDATE_PROBE") != nullptr &&
                 a == max_a) {
                 std::cout << "tail_candidates a=" << a

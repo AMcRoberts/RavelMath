@@ -859,6 +859,14 @@ forcing invariant. With `eta=c0+c2` and `q=c1+(a+1)c2`, the high tail alternates
 between `(eta,q)=(0,1)` and `(1,0)`; among all zero-prefix digits, exactly one
 preserves that strip, and it is the affine schedule digit.
 
+`include/adelic/property_f_class_ii_phase_absorption.hpp` is the corresponding
+graph-level seam check. It classifies every realized node by the phase strip
+and verifies that every off-strip node above the fixed height-5 collar is the
+distinguished top zero seed; all other off-strip states are collar-absorbed.
+This is the finite absorption premise for the uniform upper-bound lemma, not
+yet that lemma: the remaining work is to derive the same absorption from the
+ordered-prefix grammar for every parameter.
+
 ### General number fields and the class-field-tower initiative
 
 ```cpp

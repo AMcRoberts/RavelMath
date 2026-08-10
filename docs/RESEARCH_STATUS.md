@@ -218,6 +218,14 @@ digit evaluation finds exactly one `j in [0,a)` preserving that strip, and it
 is the schedule digit. This is the algebraic forcing lemma needed before the
 remaining rank-absorption argument.
 
+The graph-level phase-absorption certificate now closes the finite version of
+that seam. In every checked Class-II graph, every off-strip node above the
+height-5 collar is the single distinguished top zero seed; all other
+off-strip nodes are already collar states. Thus the high-rank tail is a forced
+affine carry ray with a finite absorbing collar, rather than a second family
+of high-rank branches. The uniform theorem still needs the symbolic step that
+derives this absorption directly from the parameter-uniform prefix roles.
+
 ## Effective-potential analogy (bounded modeling hypothesis, 2026-08-10)
 
 The observed “large, long-lived, then dispersing” cases invite a useful but
