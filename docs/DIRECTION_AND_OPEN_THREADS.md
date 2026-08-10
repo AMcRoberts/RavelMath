@@ -656,7 +656,8 @@ The marker-power mechanism is now packaged as
 `marker_power_return_core.hpp` with a regression test. It checks the first
 marker-proper power, return-word count, phase-state count, and single-SCC
 condition for `sigma_{0,1}`, `sigma_{0,2}`, a left-proper control, and the
-minimal non-unit rule. All seven checks pass. This is a reusable gate for the
+minimal non-unit rule and the `b<=5` run-length family. All twelve checks pass.
+This is a reusable gate for the
 third-plank lift: transport or p-adic fibres should be attached only after
 this finite symbolic core certificate succeeds.
 

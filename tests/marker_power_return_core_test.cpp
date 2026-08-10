@@ -29,6 +29,18 @@ int main() {
     expect(sibling.holds, "sigma_{0,2} has a finite recurrent return core");
     expect(sibling.power == 3, "sigma_{0,2} first marker-proper power is 3");
 
+    for (int b = 1; b <= 5; ++b) {
+        std::vector<std::vector<std::int8_t>> images(3);
+        for (int i = 0; i < b; ++i) images[0].push_back(1);
+        images[0].push_back(2);
+        images[1] = {2};
+        images[2] = {0};
+        const auto family = analyze_marker_power_return_core(
+            SubstitutionRule(images), 0);
+        expect(family.holds && family.power == 3,
+               "sigma_{0,b}, b<=5, has a power-3 recurrent core");
+    }
+
     const auto left_proper = analyze_marker_power_return_core(
         SubstitutionRule({{0, 1, 2}, {0, 2}, {0}}), 0);
     expect(left_proper.holds && left_proper.power == 1,
