@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "adelic/coincidence_and_property_f.hpp"
+#include "adelic/property_f_escape_rank.hpp"
 #include "adelic/prefix_automaton.hpp"
 #include "math/charpoly.hpp"
 #include "math/linalg_qbeta.hpp"
@@ -37,6 +38,8 @@ struct PropertyFFamilyObservation {
     long long property_f_zero_nodes = -1;
     long long property_f_nonzero_nodes = -1;
     long long property_f_sccs = -1;
+    long long property_f_terminal_sccs = -1;
+    long long property_f_max_escape_height = -1;
     long long property_f_nonzero_cycles = -1;
     long long property_f_boundary_edges = -1;
     long long property_f_cyclic_sccs = -1;
@@ -188,8 +191,10 @@ inline PropertyFFamilyObservation analyze_case(
     auto [padic_bound, trusted] = make_combined_padic_bound(primes, minpoly);
     const auto automaton = build_prefix_automaton<d>(images, eig.v, ring);
     std::vector<std::vector<long long>> property_graph;
+    PropertyFGraph property_graph_exact;
     const auto propf = check_property_f<d>(automaton, node_budget, padic_bound,
-                                           &property_graph);
+                                           &property_graph, nullptr, nullptr,
+                                           &property_graph_exact);
 
     PropertyFFamilyObservation out;
     out.name = name;
@@ -202,6 +207,13 @@ inline PropertyFFamilyObservation analyze_case(
     out.property_f_zero_nodes = propf.zero_nodes;
     out.property_f_nonzero_nodes = propf.nonzero_nodes;
     out.property_f_sccs = propf.strongly_connected_components;
+    if (propf.closure_reached) {
+        const auto rank = derive_property_f_escape_rank(property_graph_exact);
+        if (rank.valid) {
+            out.property_f_terminal_sccs = static_cast<long long>(rank.terminal_sccs);
+            out.property_f_max_escape_height = static_cast<long long>(rank.maximum_height);
+        }
+    }
     out.property_f_nonzero_cycles = propf.nonzero_cycle_components;
     out.property_f_boundary_edges = propf.boundary_edges;
     const auto cycles = classify_cycles(property_graph, d);
@@ -297,7 +309,7 @@ inline std::vector<PropertyFFamilyObservation> run_property_f_family(
 
 // Stable, header-only serialization contract used by the artifact generator.
 inline std::string property_f_family_tsv_header() {
-    return "name\timages\tprefix_states\tdistinct_prefixes\tcoincidence_depth\tcoincidence_unresolved\tproperty_f_nodes\tproperty_f_zero_nodes\tproperty_f_nonzero_nodes\tproperty_f_sccs\tproperty_f_nonzero_cycles\tproperty_f_boundary_edges\tproperty_f_cyclic_sccs\tproperty_f_zero_cycle_components\tproperty_f_mixed_cycle_components\tproperty_f_self_loops\treturn_words\treturn_phase_states\treturn_phase_edges\treturn_phase_sccs\treturn_phase_cycle_components\treturn_transport_closed\tcoincidence_holds\tproperty_f_holds\tinconclusive\ttrusted_padic\n";
+    return "name\timages\tprefix_states\tdistinct_prefixes\tcoincidence_depth\tcoincidence_unresolved\tproperty_f_nodes\tproperty_f_zero_nodes\tproperty_f_nonzero_nodes\tproperty_f_sccs\tproperty_f_terminal_sccs\tproperty_f_max_escape_height\tproperty_f_nonzero_cycles\tproperty_f_boundary_edges\tproperty_f_cyclic_sccs\tproperty_f_zero_cycle_components\tproperty_f_mixed_cycle_components\tproperty_f_self_loops\treturn_words\treturn_phase_states\treturn_phase_edges\treturn_phase_sccs\treturn_phase_cycle_components\treturn_transport_closed\tcoincidence_holds\tproperty_f_holds\tinconclusive\ttrusted_padic\n";
 }
 
 inline std::string property_f_family_tsv_row(const PropertyFFamilyObservation& r) {
@@ -306,7 +318,9 @@ inline std::string property_f_family_tsv_row(const PropertyFFamilyObservation& r
         << r.distinct_prefixes << '\t' << r.coincidence_depth << '\t'
         << r.coincidence_unresolved << '\t' << r.property_f_nodes << '\t'
         << r.property_f_zero_nodes << '\t' << r.property_f_nonzero_nodes << '\t'
-        << r.property_f_sccs << '\t' << r.property_f_nonzero_cycles << '\t'
+        << r.property_f_sccs << '\t' << r.property_f_terminal_sccs << '\t'
+        << r.property_f_max_escape_height << '\t'
+        << r.property_f_nonzero_cycles << '\t'
         << r.property_f_boundary_edges << '\t' << r.property_f_cyclic_sccs << '\t'
         << r.property_f_zero_cycle_components << '\t'
         << r.property_f_mixed_cycle_components << '\t' << r.property_f_self_loops << '\t'

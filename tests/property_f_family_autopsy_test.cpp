@@ -17,6 +17,8 @@ int main() {
         assert(row.property_f_holds);
         assert(row.trusted_padic);
         assert(row.property_f_nonzero_cycles == 0);
+        assert(row.property_f_terminal_sccs > 0);
+        assert(row.property_f_max_escape_height >= 0);
         assert(row.property_f_cyclic_sccs >= 0);
         assert(row.property_f_mixed_cycle_components == 0);
         assert(row.property_f_zero_cycle_components >= 0);
