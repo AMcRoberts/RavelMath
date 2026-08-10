@@ -568,6 +568,15 @@ single pair of factors with the same branch state but inequivalent junction
 labels would falsify this and explain why the current contact graph has extra
 recurrent holonomy.
 
+**H9 — The return substitution is the correct history automaton.** For
+`sigma_{0,1}^3`, the five return words induce the substitution
+`[1]`, `[2,0]`, `[2,3,4,0]`, `[2,4,0]`, `[3,0]` on a five-letter alphabet.
+Its derived language has `p(n)=5n` and exactly five left-special factors at
+every tested length `2,4,8,16,32,64,96`. This is substantially cleaner than
+the original `5n-5` language and supports using the induced substitution as
+the finite branch-history transducer. Falsifier: a later derived length that
+deviates from `5n`, or a predecessor graph with unbounded return states.
+
 The first experiment should attack H1 and H2 together: prove the all-length
 predecessor decomposition for `sigma_{0,1}`, build its finite seam grammar,
 and compare its channel rank with the existing contact-boundary generator
