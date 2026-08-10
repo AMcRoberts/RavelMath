@@ -1071,3 +1071,7 @@ product, not a letter-role or phase-only quotient.
 The quotient classes themselves have concrete fibre sizes ranging from 3 to
 21, falsifying a uniform permutation-cover model. The contact-aware object
 must therefore be treated as a finite branched relation/textile extension.
+The exact contact-aware certificate finds 1,292 nonempty quotient channel
+pairs, all irregular (0 biregular, 0 permutation). The lift is relation-valued
+at every observed channel, so a future intertwiner must preserve admissible
+word relations rather than replace them by permutations.

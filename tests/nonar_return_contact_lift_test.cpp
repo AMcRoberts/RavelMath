@@ -18,6 +18,7 @@
 #include "ravel/return_history_factor.hpp"
 #include "ravel/return_offset_fibre_certificate.hpp"
 #include "ravel/return_offset_fibre_holonomy.hpp"
+#include "ravel/return_contact_textile_certificate.hpp"
 #include "ravel/spectral.hpp"
 #include "ravel/substitution.hpp"
 #include "ravel/survey.hpp"
@@ -149,6 +150,15 @@ int main() {
            "offset fibre is finite and carries recurrent phase transport");
     expect(!fibre.uniform_class_sizes,
            "offset quotient is a relation, not a uniform permutation cover");
+    const auto textile = derive_return_contact_textile_certificate(lift, phases);
+    std::printf("textile pairs=%zu biregular=%zu permutation=%zu irregular=%zu "
+                "branching=%d\n", textile.nonempty_pairs,
+                textile.biregular_pairs, textile.permutation_pairs,
+                textile.irregular_pairs, textile.has_branching_channels ? 1 : 0);
+    expect(textile.finite && textile.nonempty_pairs > 0,
+           "contact-aware quotient has a finite textile relation");
+    expect(textile.irregular_pairs > 0 || textile.has_branching_channels,
+           "contact-aware relation retains branching or irregular channels");
     const auto holonomy = derive_return_offset_fibre_holonomy(lift, phases);
     std::printf("holonomy recurrent_sccs=%zu gcd_one_sccs=%zu",
                 holonomy.recurrent_sccs, holonomy.gcd_one_sccs);

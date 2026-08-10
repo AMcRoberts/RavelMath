@@ -4128,3 +4128,8 @@ role or phase extension.
 The 256 quotient classes have nonuniform concrete fibre sizes (3 through 21),
 so even a finite permutation-cover model is false: the correct abstraction is
 a finite branched relation/textile extension with parallel transport channels.
+The contact-aware certificate confirms the stronger statement: all 1,292
+quotient channel pairs are irregular (0 biregular and 0 permutation channels).
+The non-AR lift is therefore a relation-valued cocycle, not a finite covering
+with locally bijective transport. Any closure theorem must reason about the
+relation's admissible words, not only its cycle group.
