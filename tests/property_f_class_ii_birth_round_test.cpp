@@ -26,6 +26,7 @@
 #include "adelic/property_f_class_ii_prefix_correction.hpp"
 #include "adelic/property_f_class_ii_akiyama_window.hpp"
 #include "adelic/property_f_class_ii_akiyama_window_census.hpp"
+#include "adelic/property_f_class_ii_correction_absorption.hpp"
 #include "adelic/property_f_class_ii_rank_spine.hpp"
 #include "adelic/property_f_class_ii_symbolic_tail_grammar.hpp"
 #include "adelic/coincidence_and_property_f.hpp"
@@ -150,6 +151,38 @@ int main() {
                 assert(window_census.malformed_edges == 0);
                 assert(window_census.bounded_high_nonzero_deviations == 0);
                 assert(window_census.bounded_collar_edges > 0);
+                const auto correction_absorption =
+                    adelic::derive_property_f_class_ii_correction_absorption(
+                        graph, a);
+                if (std::getenv("CLASSII_CORRECTION_ABSORPTION_PROBE") != nullptr)
+                    std::cout << "correction_absorption a=" << a
+                              << " valid=" << correction_absorption.valid
+                              << " phase=" << correction_absorption.phase_deviation_valid
+                              << " invalid_sources="
+                              << correction_absorption.invalid_phase_sources
+                              << " phase_mismatch="
+                              << correction_absorption.phase_deviation_mismatches
+                              << " window=" << correction_absorption.window_valid
+                              << " phase_abs=" << correction_absorption.phase_absorption_valid
+                              << " collar_abs=" << correction_absorption.collar_absorption_valid
+                              << " high_seed="
+                              << correction_absorption.high_recurrence_is_seed_only
+                              << " seed_internal="
+                              << correction_absorption.bounded_seed_internal_edges
+                              << " unexpected_internal="
+                              << correction_absorption.unexpected_internal_high_edges
+                              << " unexpected_external="
+                              << correction_absorption.unexpected_external_high_edges
+                              << " malformed=" << correction_absorption.malformed_edges
+                              << " nonordinary=" << correction_absorption.nonordinary_edges
+                              << "\n";
+                assert(correction_absorption.valid);
+                assert(correction_absorption.phase_deviation_valid);
+                assert(correction_absorption.high_recurrence_is_seed_only);
+                assert(correction_absorption.bounded_deviations_absorbed);
+                assert(correction_absorption.bounded_seed_internal_edges == 1);
+                assert(correction_absorption.unexpected_external_high_edges == 0);
+                assert(correction_absorption.unexpected_internal_high_edges == 0);
                 if (std::getenv("CLASSII_AKIYAMA_WINDOW_PROBE") != nullptr &&
                     a == max_a) {
                     std::cout << "akiyama_window a=" << a

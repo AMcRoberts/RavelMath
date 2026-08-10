@@ -980,6 +980,26 @@ replace a graph-level collar observation with a symbolic bounded-correction
 lemma. The source is archived under `refs/FullText/`; the substitution
 contact/prefix intertwiner remains separate and is not claimed closed.
 
+## 2026-08-10 — Finite correction absorption bridge
+
+`include/adelic/property_f_class_ii_correction_absorption.hpp` now composes
+the next four local facts into one named certificate. On each realized
+`a>=7` Class-II graph it checks: (i) the phase identity makes a nonzero digit
+deviation leave the two-state strip; (ii) the Akiyama-window candidates have
+no non-seed high recurrence; (iii) the sole retained high correction is the
+zero-seed self-loop, hence internal SCC transport; and (iv) every other
+bounded correction enters the height-5 collar, whose grammar has no tail
+re-entry. The focused family test passes for `a=7..13`; an opt-in
+400,000-node run also passes at `a=14` (`362,050` nodes, `31` layers).
+
+This is the forest-level assembly rule we were missing: affine continuation
+is the recurrent spine, bounded deviations are a finite correction set, and
+the collar is a transient quotient. It remains a graph-level bridge, not a
+uniform Property-(F) theorem. The unresolved obligation is now sharply
+localized: derive the phase-absorption premise and the Akiyama-to-literal
+prefix/contact coordinate transport from the ordered-prefix grammar for all
+parameters, rather than replaying them on closed graphs.
+
 ## Validation commands
 
 ```sh

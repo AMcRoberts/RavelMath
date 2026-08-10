@@ -930,6 +930,16 @@ the finite branch cases still requiring a symbolic absorption proof. Set
 `property_f_class_ii_birth_round_test` to print the exact deviation histogram
 and coefficient labels for the final checked row.
 
+`include/adelic/property_f_class_ii_correction_absorption.hpp` composes the
+next layer of that argument. On every realized tail row it checks the exact
+phase equivalence “nonzero deviation iff the target leaves the two-state
+strip,” excludes any non-seed high correction recurrence, and invokes the
+collar's no-tail-reentry grammar. The only retained high correction is the
+distinguished zero-seed self-loop, which is internal SCC transport rather than
+a new escape branch. This is a finite graph-level bridge: it does not claim
+the missing uniform theorem that the phase-absorption premise and the
+Akiyama-to-prefix/contact coordinate transport hold for every parameter.
+
 For the non-unit branch, `adelic_cocycle_extension.hpp` also exposes
 `derive_adelic_valuation_fibre_lemma`. It checks maximal Dedekind factorization,
 the independent ideal-lattice identity, and the local degree partition
