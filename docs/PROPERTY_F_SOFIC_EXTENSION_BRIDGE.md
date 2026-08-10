@@ -202,8 +202,9 @@ not yet make the bounded word cap uniform in the substitution family.
 
 The exact `Q(beta)` refinement exposed an important correction to the proposed
 uniform theorem. On the `first_100` ordering, the full digit-difference role
-cocycle misses 54 of 81 ordered zero-kernel pairs even at word cap 64, while
-the adelic Property-F graph still closes and has no nonzero recurrent SCC.
+cocycle misses 54 of 81 ordered zero-kernel pairs even at word cap 64; all 54
+lie in recurrent contact-role components. Nevertheless the adelic Property-F
+graph still closes and has no nonzero recurrent SCC.
 Thus arbitrary contact cocycles are not literally cohomologous to the
 canonical pair-role cocycle. The final theorem must use a quotient/recurrence
 invariant weaker than global zero-kernel equivalence; the failed stronger

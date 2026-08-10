@@ -81,6 +81,37 @@ void run_case(const std::array<std::vector<long long>, d>& images,
                       << "," << digit_cocycle.missing_zero_pairs[k].second << ")";
         std::cout << "\n";
     }
+    if (std::string(name) == "first_100") {
+        const auto report = ravel::compute_contact_boundary_from_subst<d>(
+            rule, 2.3593040859717767, 0.0, 2, limits);
+        std::vector<std::vector<bool>> role_reach(d * d,
+            std::vector<bool>(d * d, false));
+        for (const auto& tuple : report.boundary_nodes) {
+            ravel::SNode<d> source;
+            source.i = std::get<0>(tuple);
+            source.j = std::get<2>(tuple);
+            const auto& coords = std::get<1>(tuple);
+            for (std::size_t q = 0; q < d; ++q) source.x[q] = coords[q];
+            const auto source_role = static_cast<std::size_t>(source.i) * d + source.j;
+            for (const auto& [target, _] : ravel::simple_forward_targets_exact<d>(
+                     ravel::make_substitution<d>(rule, 2.3593040859717767), source)) {
+                const auto target_role = static_cast<std::size_t>(target.i) * d + target.j;
+                role_reach[source_role][target_role] = true;
+            }
+        }
+        for (std::size_t k = 0; k < d * d; ++k)
+            for (std::size_t i = 0; i < d * d; ++i)
+                if (role_reach[i][k])
+                    for (std::size_t j = 0; j < d * d; ++j)
+                        role_reach[i][j] = role_reach[i][j] || role_reach[k][j];
+        std::size_t contact_recurrent_missing = 0;
+        for (const auto& missing : digit_cocycle.missing_zero_pairs)
+            if (role_reach[missing.first][missing.second] &&
+                role_reach[missing.second][missing.first])
+                ++contact_recurrent_missing;
+        std::cout << name << ": contact recurrent missing digit pairs="
+                  << contact_recurrent_missing << "\n";
+    }
     if (std::string(name) == "first_anchor") {
         auto [bound, trusted] = adelic::make_combined_padic_bound({2}, minpoly);
         assert(trusted);
