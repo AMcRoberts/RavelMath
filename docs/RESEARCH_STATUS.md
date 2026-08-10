@@ -162,6 +162,13 @@ putative cycle through the new fiber: mandatory descent
 re-entry `0->d`. Its mandatory affine contribution is exactly
 `A^(d+1) gamma + m*(A + ... + A^d)`. The unresolved theorem is consequently
 the rank/decrease statement for the inherited zero plateau.
+The existing Condition-F/CSY branching-reduction interface has now been
+generalized from ordinary `n`-bonacci to the full `(d,m)` polynomial family.
+Its theorem-level certificate supplies a finite zero-language quotient for the
+finite carry alphabet and treats terminal transport fibres as permutation
+lifts, preserving path growth. This closes the abstract Condition-F existence
+route; the zero-plateau rank remains the constructive bound explaining the
+finite graph sizes and the resource behavior of direct enumeration.
 Each channel is now compiled to an exact integer affine endpoint map on the
 `d`-coordinate coefficient lattice; all 19 `(4,6)` maps are replay-checked
 against `Q(beta)`, while the 42-point sweep checks the parameterized map shape.

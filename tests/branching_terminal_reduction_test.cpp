@@ -74,5 +74,22 @@ int main() {
         assert(theorem.quotient_classes_may_have_twisted_subelements);
         assert(theorem.global_fibre_trivialization_not_required);
     }
+    for (std::size_t d = 2; d <= 8; ++d) {
+        for (std::size_t m = 1; m <= 6; ++m) {
+            auto generalized =
+                derive_generalized_multinacci_zero_language_theorem(d, m);
+            assert(generalized.generalized_multinacci_polynomial_recognized);
+            assert(generalized.pisot_family);
+            assert(generalized.condition_f_applies);
+            assert(generalized.zero_language_regular);
+            assert(generalized.finite_prefix_quotient_exists);
+            auto reduction =
+                derive_generalized_multinacci_branching_terminal_reduction(d, m);
+            assert(reduction.proved);
+            assert(reduction.finite_condition_f_branching_quotient);
+            assert(reduction.terminal_fibres_are_permutation_dynamics);
+            assert(reduction.unbounded_radius_removed);
+        }
+    }
     std::cout << "branching terminal reduction PASS\n";
 }

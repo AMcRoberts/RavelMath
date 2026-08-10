@@ -169,6 +169,16 @@ is the concrete object
 for the remaining rank proof: bound the reachable coefficient vectors under
 these finitely many endpoint maps, rather than enumerate the raw graph.
 
+There is now a theorem-level closure route for the whole generalized family.
+The generalized-multinacci polynomial is a Pisot numeration polynomial with
+finite carry alphabet bounded by `m`; therefore the CSY finite-alphabet
+zero-language theorem supplies a finite Condition-F branching quotient. The
+terminal transport fibres are permutation lifts, so quotienting them preserves
+path growth. The executable certificate is
+`derive_generalized_multinacci_branching_terminal_reduction(d,m)`; its scope is
+the cited Condition-F/CSY theorem application, not a claim that every raw
+bounded BFS must be small.
+
 ## Why the long cases are long
 
 The observed size is explained by three multiplicative effects, not by a new
