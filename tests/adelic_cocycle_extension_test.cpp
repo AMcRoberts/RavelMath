@@ -4,6 +4,7 @@
 
 #include "adelic/adelic_cocycle_extension.hpp"
 #include "ravel/proof/monotone_coefficient_cone.hpp"
+#include "math/poly_z.hpp"
 
 int main() {
     const auto cone_unit =
@@ -38,5 +39,17 @@ int main() {
     assert(nonunit.local_fiber_count == 2);
     assert(nonunit.rational_prime_support == std::vector<long long>({2, 3}));
     assert(nonunit.projections_commute);
+
+    mathlib::PolyZ nonunit_poly;
+    nonunit_poly.ensure_size(3);
+    mathlib::set_si(nonunit_poly.coeff(0), -2);
+    mathlib::set_si(nonunit_poly.coeff(1), -2);
+    mathlib::set_si(nonunit_poly.coeff(2), 1);
+    const auto factored = adelic::derive_adelic_cocycle_extension_from_charpoly(
+        2, nonunit_poly);
+    assert(factored.local_bound_constructed);
+    assert(factored.local_fiber_count >= 1);
+    assert(factored.local_bound_trusted);
+    assert(factored.proved);
     std::cout << "adelic cocycle extension PASS\n";
 }

@@ -5,8 +5,12 @@
 
 #include <cstddef>
 #include <cstdlib>
+#include <functional>
 #include <string>
 #include <vector>
+
+#include "adelic/coincidence_and_property_f.hpp"
+#include "adelic/dedekind_factorization.hpp"
 
 namespace adelic {
 
@@ -28,6 +32,9 @@ struct AdelicCocycleExtensionCertificate {
     bool proved = false;
     std::size_t local_fiber_count = 0;
     std::vector<long long> rational_prime_support;
+    bool local_bound_constructed = false;
+    bool local_bound_trusted = false;
+    std::function<bool(const mathlib::QElem&)> combined_local_bound;
     std::string obstruction;
 };
 
@@ -80,6 +87,41 @@ derive_adelic_cocycle_extension(long long determinant,
                    out.local_fibers_are_prime_ideal_indexed));
     if (!out.proved)
         out.obstruction = "cocycle extension needs a unit fiber or valid prime-ideal fibers";
+    return out;
+}
+
+inline AdelicCocycleExtensionCertificate
+derive_adelic_cocycle_extension_from_charpoly(
+    long long determinant, const mathlib::PolyZ& charpoly,
+    bool prefix_labels_shared = true, long long precision = 30) {
+    const long long absolute_determinant = std::llabs(determinant);
+    std::vector<long long> primes;
+    long long remaining = absolute_determinant;
+    for (long long p = 2; p <= remaining / p; ++p) {
+        if (remaining % p != 0) continue;
+        primes.push_back(p);
+        while (remaining % p == 0) remaining /= p;
+    }
+    if (remaining > 1) primes.push_back(remaining);
+
+    std::vector<AdelicLocalFiberDescriptor> descriptors;
+    for (const long long p : primes) {
+        const auto factorization = factor_prime_in_qbeta(charpoly, p);
+        for (const auto& ideal : factorization.prime_ideals)
+            descriptors.push_back({ideal.p, ideal.e, ideal.f});
+    }
+    auto out = derive_adelic_cocycle_extension(
+        determinant, descriptors, prefix_labels_shared);
+    if (!primes.empty()) {
+        auto [bound, trusted] = make_combined_padic_bound(
+            primes, charpoly, precision);
+        out.combined_local_bound = std::move(bound);
+        out.local_bound_constructed = true;
+        out.local_bound_trusted = trusted;
+        out.proved = out.proved && trusted;
+        if (!trusted)
+            out.obstruction = "Dedekind/local-field bound is not certified";
+    }
     return out;
 }
 

@@ -2322,8 +2322,8 @@ generalized_multinacci_property_f_transport_test: $(TEST_BIN_GENERALIZED_MULTINA
 
 TEST_BIN_ADELIC_COCYCLE_EXTENSION := $(BUILDDIR)/adelic_cocycle_extension_test
 $(TEST_BIN_ADELIC_COCYCLE_EXTENSION): $(TESTDIR)/adelic_cocycle_extension_test.cpp \
-		$(INCDIR)/adelic/adelic_cocycle_extension.hpp | $(BUILDDIR)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) $< -o $@
+		$(INCDIR)/adelic/adelic_cocycle_extension.hpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 adelic_cocycle_extension_test: $(TEST_BIN_ADELIC_COCYCLE_EXTENSION)
 	./$(TEST_BIN_ADELIC_COCYCLE_EXTENSION)
 
