@@ -606,6 +606,12 @@ claim. The height certificate checks a proposed symbolic rank; it does not
 derive that rank. A total nonterminal factor must still be established
 separately.
 
+The adelic completion relation accepts an optional height callback with the
+signature `height(lift_state, left_gamma_id, right_gamma_id)`. When supplied,
+the relation certificate replays strict descent on its live product edges
+without changing pruning. This is the intended place to falsify candidate
+phase or boundary ranks; it is diagnostic input, not an implicit derivation.
+
 ## Class-II family
 
 The Class-II family is:
