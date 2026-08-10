@@ -238,6 +238,10 @@ int main() {
                     scc.right_coboundary ? 1 : 0);
     expect(contact_holonomy.exact && contact_holonomy.cyclic_sccs > 0,
            "full contact lift has classified Q(beta) recurrent cycles");
+    expect(contact_holonomy.nontrivial_holonomy_sccs == 2 &&
+               contact_holonomy.sccs.front().residual_rank == 3 &&
+               contact_holonomy.sccs.back().residual_rank == 3,
+           "affine holonomy exposes full-rank recurrent actors");
     expect(contact_holonomy.zero_seed_count > 0 &&
                contact_holonomy.zero_seed_reaches_nontrivial_holonomy,
            "zero-contact frontier reaches the recurrent holonomy candidate");

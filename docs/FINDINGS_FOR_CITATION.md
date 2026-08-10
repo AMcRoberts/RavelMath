@@ -4180,3 +4180,12 @@ reachable, but the induced left and right gamma potentials are multivalued on
 through a single-valued map into the closed 95-node gamma graph. This is the
 first concrete evidence for a third symbolic plank: not a new field rank, but
 a nontrivial synchronization/holonomy relation between actors.
+Correction to the preceding additive-cocycle reading: the exact transport is
+affine, `γ ↦ β⁻¹(γ + δ)`, so additive potentials were not the right invariant.
+Re-running the certificate with affine composition finds two non-coboundary
+cyclic SCCs (52 and 401 states). Both have residual rank 3 in the difference,
+left, and right `Q(β)` coefficient spaces. The corrected result is therefore
+stronger than the earlier rank-one note: the contact lift carries a full
+degree-three affine holonomy actor. The 95-node exact Property-F graph still
+closes, so this is an obstruction to the naive factor map, not yet a
+Property-F failure.

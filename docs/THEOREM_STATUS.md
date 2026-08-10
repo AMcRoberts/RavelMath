@@ -1100,6 +1100,12 @@ The frontier-seeded projection is nevertheless not single-valued: 1,639
 reachable states have ambiguous left gamma potentials and 1,679 have
 ambiguous right potentials. A proof must therefore model the refinement as a
 relation/textile over the gamma graph, not as an ordinary graph morphism.
+Correction: the earlier rank-one statement used additive path sums. The
+certificate now composes the actual affine zero-expansion maps. Under that
+correct invariant, two cyclic components (52 and 401 states) are
+non-coboundary, each with residual rank 3 on the difference, left, and right
+prefix transports. This is evidence for a full degree-three affine actor,
+while the exact 95-node gamma graph remains closed.
 The SCC census records 32 zero-contact states inside that 401-node
 non-coboundary component (369 nonzero-contact states). Hence it cannot be
 discarded as wholly detached from the zero-contact slice; the exact

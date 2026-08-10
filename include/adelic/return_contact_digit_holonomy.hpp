@@ -1,10 +1,13 @@
-// Exact Q(beta) holonomy of the full return/contact lift.
+// Exact affine Q(beta) holonomy of the full return/contact lift.
+// Each edge acts by gamma' = beta^{-1}(gamma + delta); all SCC and frontier
+// consistency checks below use that affine action, not plain additive sums.
 #pragma once
 
 #include <algorithm>
 #include <cstddef>
 #include <functional>
 #include <map>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -79,6 +82,16 @@ ReturnContactDigitHolonomyCertificate derive_return_contact_digit_holonomy(
     ReturnContactDigitHolonomyCertificate out;
     out.states = n;
     out.edges = lift.edges.size();
+    const auto inverse = mathlib::invert_in_qbeta(
+        automaton.ring.beta_k(1), automaton.ring);
+    if (!inverse.invertible)
+        throw std::runtime_error("return contact holonomy: beta is not invertible");
+    const auto inverse_beta = inverse.inverse;
+    auto affine_step = [&](const mathlib::QElem& value,
+                           const mathlib::QElem& label) {
+        return automaton.ring.mul(inverse_beta,
+            automaton.ring.add(value, label));
+    };
     auto exact_rank = [](const std::vector<mathlib::QElem>& values) {
         std::size_t dimension = 0;
         for (const auto& value : values) dimension = std::max(dimension, value.coeffs_.size());
@@ -165,30 +178,29 @@ ReturnContactDigitHolonomyCertificate derive_return_contact_digit_holonomy(
             for (const auto& edge : graph[u]) {
                 if (!in[edge.to]) continue;
                 if (!assigned[edge.to]) {
-                    potential[edge.to] = automaton.ring.add(
+                    potential[edge.to] = affine_step(
                         potential[u], automaton.ring.sub(
                             edge.right_label, edge.left_label));
-                    left_potential[edge.to] = automaton.ring.add(
+                    left_potential[edge.to] = affine_step(
                         left_potential[u], edge.left_label);
-                    right_potential[edge.to] = automaton.ring.add(
+                    right_potential[edge.to] = affine_step(
                         right_potential[u], edge.right_label);
                     assigned[edge.to] = true;
                     todo.push_back(edge.to);
                     continue;
                 }
                 const auto residual = automaton.ring.sub(
-                    automaton.ring.add(potential[u], automaton.ring.sub(
-                        edge.right_label, edge.left_label)),
-                    potential[edge.to]);
+                    affine_step(potential[u], automaton.ring.sub(
+                        edge.right_label, edge.left_label)), potential[edge.to]);
                 if (qelem_key(residual) != qelem_key(zero)) {
                     ++residuals;
                     residual_values.push_back(residual);
                 }
                 const auto left_residual = automaton.ring.sub(
-                    automaton.ring.add(left_potential[u], edge.left_label),
+                    affine_step(left_potential[u], edge.left_label),
                     left_potential[edge.to]);
                 const auto right_residual = automaton.ring.sub(
-                    automaton.ring.add(right_potential[u], edge.right_label),
+                    affine_step(right_potential[u], edge.right_label),
                     right_potential[edge.to]);
                 if (qelem_key(left_residual) != qelem_key(zero)) {
                     ++left_residuals;
@@ -255,9 +267,9 @@ ReturnContactDigitHolonomyCertificate derive_return_contact_digit_holonomy(
             ++out.zero_seed_reachable_nontrivial_nodes;
         }
         for (const auto& edge : graph[u]) {
-            const auto left_next = automaton.ring.add(
+            const auto left_next = affine_step(
                 left_frontier_potential[u], edge.left_label);
-            const auto right_next = automaton.ring.add(
+            const auto right_next = affine_step(
                 right_frontier_potential[u], edge.right_label);
             if (!reached[edge.to]) {
                 reached[edge.to] = true;
