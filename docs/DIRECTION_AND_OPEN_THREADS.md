@@ -635,6 +635,23 @@ in the marker-power phase system, or a member of the family requiring a
 different power. If neither occurs, this is the natural closure mechanism
 for the non-AR run-length family.
 
+The power bound itself is algebraic for the entire family, not empirical:
+`sigma_{a,b}(0)=0^a1^b2` starts with `0` when `a>=1`, while for `a=0`
+one has `sigma_{0,b}^2(0)=2^b0` and
+`sigma_{0,b}^3(0)=0^b1^b2`. Thus every member is marker-proper after at most
+three powers. What remains numerical/structural is the finite collar bound
+and its refinement map, not the existence of a marker-proper power.
+
+**Refinement check (2026-08-09).** An exact finite composition test was added
+to the probe notebook: compose three successive full-collar transition maps,
+then project each target state to `(return-word,offset)`. For `b=1,2,3` at
+the stable radii `5,9,9`, every observed source state projects exactly to the
+phase image of `sigma^3`; the failure count was zero in all three cases. This
+is the first direct evidence that the large collared graph is a refinement of
+the marker-power return system rather than a parallel coincidence. The
+remaining falsifier is a collared edge whose three-step projection disagrees
+with the return phase map at larger `b` or after increasing the orbit margin.
+
 The longer pass deliberately uses a separately enlarged orbit prefix. On the
 525456-symbol prefix, extending the requested length too far produces a first
 false loss of one left extension at `n=55406`; the 4-million-symbol prefix
