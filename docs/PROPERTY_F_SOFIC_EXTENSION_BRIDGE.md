@@ -122,6 +122,13 @@ against Dedekind factorization and constructs the combined local integrality
 predicate; the non-unit regression uses the quadratic witness
 `x^2-2x-2` at its prime `2`.
 
+The same header now exposes `derive_adelic_valuation_fibre_lemma`. Before a
+non-unit closure is treated as adelic evidence, it checks maximality and the
+independent ideal-lattice product at every supported prime, and verifies the
+local decomposition identity `sum_i e_i f_i = deg(f)`. Thus the extra
+valuation coordinates are an audited prime-ideal partition, not merely a
+list of rational primes.
+
 The first widening trunk is the monotone coefficient cone
 `a_(d-1) >= ... >= a_0 > 0`. The certificate in
 `monotone_coefficient_cone.hpp` simultaneously records the Condition-F

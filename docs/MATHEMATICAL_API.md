@@ -870,6 +870,13 @@ This is the finite absorption premise for the uniform upper-bound lemma, not
 yet that lemma: the remaining work is to derive the same absorption from the
 ordered-prefix grammar for every parameter.
 
+For the non-unit branch, `adelic_cocycle_extension.hpp` also exposes
+`derive_adelic_valuation_fibre_lemma`. It checks maximal Dedekind factorization,
+the independent ideal-lattice identity, and the local degree partition
+`sum(e_i f_i)=deg(f)` at every prime dividing the determinant, then composes
+the certified local-integrality predicate. This is the valuation-fibre
+premise; it is separate from the Class-II unit tail argument.
+
 ### General number fields and the class-field-tower initiative
 
 ```cpp

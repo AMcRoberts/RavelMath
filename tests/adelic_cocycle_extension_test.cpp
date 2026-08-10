@@ -50,6 +50,8 @@ int main() {
     assert(factored.local_bound_constructed);
     assert(factored.local_fiber_count >= 1);
     assert(factored.local_bound_trusted);
+    assert(factored.valuation_fibre_lemma_proved);
+    assert(factored.valuation_fibre_degree == 2);
     assert(factored.proved);
 
     mathlib::PolyZ rnd13_poly;
@@ -63,6 +65,8 @@ int main() {
         2, rnd13_poly);
     assert(rnd13.proved);
     assert(rnd13.local_bound_trusted);
+    assert(rnd13.valuation_fibre_lemma_proved);
+    assert(rnd13.valuation_fibre_degree == 4);
     assert(rnd13.local_fiber_count == 1);
     std::cout << "adelic cocycle extension PASS\n";
 }

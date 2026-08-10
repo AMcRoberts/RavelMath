@@ -228,6 +228,13 @@ affine carry ray with a finite absorbing collar, rather than a second family
 of high-rank branches. The uniform theorem still needs the symbolic step that
 derives this absorption directly from the parameter-uniform prefix roles.
 
+The non-unit side now has its explicit local-fibre premise as well. The
+valuation-fibre certificate checks, for every prime dividing the determinant,
+that the maximal Dedekind factors and independent ideal-lattice product agree
+and that their local degrees satisfy `sum(e_i f_i)=deg(f)`. The existing
+combined p-adic bound is accepted only when this partition is certified. This
+separates genuine valuation geometry from the unimodular Class-II phase tail.
+
 ## Effective-potential analogy (bounded modeling hypothesis, 2026-08-10)
 
 The observed “large, long-lived, then dispersing” cases invite a useful but
