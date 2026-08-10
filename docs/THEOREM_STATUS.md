@@ -1261,3 +1261,10 @@ The recurrent-exhaustion data sharpen this: the neighbor-2 boundary sizes are
 `20*a+38`; transient counts follow `16*a+3`, and exactly `a+1` recurrent
 blocks are matched with eight cross-block edges throughout. This is the
 reference decomposition to seek in the adelic Property-F lift.
+
+The local premises are now factored into the reusable
+`derive_stratified_escape_certificate` operation. Its synthetic regression
+rejects inconsistent component rounds, recurrent returns to earlier strata,
+and transient groups without escape; enrollment in `make tests` leaves the
+full native gate green. This is a proof interface, not a claim that the
+adelic birth rounds have already been derived.
