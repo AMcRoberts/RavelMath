@@ -599,6 +599,13 @@ auto height = ravel::proof::derive_finite_escape_height_certificate(
     relation_adjacency, live_products, terminal_products, symbolic_height);
 // height.proves_acyclic is exact when every nonterminal edge decreases the
 // supplied rank and terminal vertices have no live outgoing edge.
+
+auto ordered_height =
+    ravel::proof::derive_finite_escape_lexicographic_height_certificate(
+        relation_adjacency, live_products, terminal_products,
+        boundary_layer, phase_residual);
+// ordered_height separates primary-layer descent from fixed-layer
+// phase/carry descent; it does not require a caller-chosen scalar weight.
 ```
 
 This is an escape-boundary certificate, not a source-surjective graph-factor
@@ -611,6 +618,10 @@ signature `height(lift_state, left_gamma_id, right_gamma_id)`. When supplied,
 the relation certificate replays strict descent on its live product edges
 without changing pruning. This is the intended place to falsify candidate
 phase or boundary ranks; it is diagnostic input, not an implicit derivation.
+It also accepts an optional pair-valued callback with the same arguments,
+returning `(primary_layer, secondary_residual)`, and replays the ordered
+contract directly. The pair-valued result is the authoritative form when a
+scalar weighting could conceal a fixed-layer tie.
 
 The exact primary boundary coordinate is derived from the Property-F graph's
 SCC condensation:
