@@ -37,7 +37,11 @@ small integral correction (his Lemmas 4--6), and finally discharges the finite
 correction cases using the explicit expansions of Lemma 7. That is a direct
 candidate for replacing our graph-level “off-spine reaches the collar” premise:
 the collar should be the finite correction set after the leading coefficient
-is fixed. The paper is archived locally in `refs/FullText/` and its digest is
+is fixed. More concretely, Lemma 4 gives `|x_0+x_2|<=2` for `a>=7`, Lemma 5
+gives equal-leading-coordinate corrections `|Δx_1|<=2` and `|Δx_2|<=1` for
+`a>=12`, and the Section 4 reduction uses `|κ_1|<=2`, `|κ_2|<=1` before its
+finite case split (with the sharp critical-coordinate bound established for
+`a>=15`). The paper is archived locally in `refs/FullText/` and its digest is
 in `refs/FULLTEXT_MANIFEST.tsv`.
 
 This source is an exact analogue, not evidence that the arbitrary

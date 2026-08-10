@@ -913,7 +913,11 @@ structural analogy: Akiyama's Section 4 proof of Property (F) for
 `k, a-k` finite-expansion schedule as the observed Class-II affine rank spine.
 The paper's proof bounds the conjugate-coordinate critical set, proves a
 small integral correction bound for equal leading coordinate (Lemmas 4--6),
-and then resolves the finite correction cases by explicit expansions.
+and then resolves the finite correction cases by explicit expansions. The
+transfer constants are concrete: `|x_0+x_2|<=2` for `a>=7`, equal-leading
+corrections `|Delta x_1|<=2`, `|Delta x_2|<=1` for `a>=12`, and a finite
+correction window `|kappa_1|<=2`, `|kappa_2|<=1` (the sharp critical-coordinate
+bound is established for `a>=15`).
 
 This suggests a concrete acceleration path for the non-AR seam: identify our
 phase carrier with Akiyama's leading coefficient, transport the conjugate
