@@ -839,6 +839,7 @@ TESTS_DEFAULT := \
 	packed_binary_dynamics_test \
 	return_substitution_test \
 	marker_power_return_core_test \
+	return_core_spectral_certificate_test \
 	nonar_return_contact_lift_test \
 	nonar_property_f_bridge_test \
 	nonunit_property_f_bridge_test \
