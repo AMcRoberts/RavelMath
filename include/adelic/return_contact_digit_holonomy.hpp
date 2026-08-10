@@ -37,6 +37,9 @@ struct ReturnContactDigitHolonomyCertificate {
     std::size_t zero_seed_reachable_states = 0;
     std::size_t zero_seed_reachable_nontrivial_nodes = 0;
     bool zero_seed_reaches_nontrivial_holonomy = false;
+    std::size_t left_frontier_ambiguous_states = 0;
+    std::size_t right_frontier_ambiguous_states = 0;
+    bool single_valued_frontier_projection = true;
     std::vector<ReturnContactDigitHolonomyScc> sccs;
     bool exact = false;
 };
@@ -221,6 +224,12 @@ ReturnContactDigitHolonomyCertificate derive_return_contact_digit_holonomy(
     };
     for (std::size_t v = 0; v < n; ++v) if (index[v] < 0) visit(v);
     std::vector<bool> reached(n, false);
+    std::vector<bool> left_assigned(n, false), right_assigned(n, false);
+    std::vector<bool> left_ambiguous(n, false), right_ambiguous(n, false);
+    std::vector<mathlib::QElem> left_frontier_potential(
+        n, automaton.ring.zero());
+    std::vector<mathlib::QElem> right_frontier_potential(
+        n, automaton.ring.zero());
     std::vector<std::size_t> queue;
     for (const auto& seed : seeds) {
         bool zero = true;
@@ -232,6 +241,8 @@ ReturnContactDigitHolonomyCertificate derive_return_contact_digit_holonomy(
         ++out.zero_seed_count;
         if (!reached[it->second]) {
             reached[it->second] = true;
+            left_assigned[it->second] = true;
+            right_assigned[it->second] = true;
             queue.push_back(it->second);
         }
     }
@@ -244,12 +255,32 @@ ReturnContactDigitHolonomyCertificate derive_return_contact_digit_holonomy(
             ++out.zero_seed_reachable_nontrivial_nodes;
         }
         for (const auto& edge : graph[u]) {
+            const auto left_next = automaton.ring.add(
+                left_frontier_potential[u], edge.left_label);
+            const auto right_next = automaton.ring.add(
+                right_frontier_potential[u], edge.right_label);
             if (!reached[edge.to]) {
                 reached[edge.to] = true;
+                left_assigned[edge.to] = true;
+                right_assigned[edge.to] = true;
+                left_frontier_potential[edge.to] = left_next;
+                right_frontier_potential[edge.to] = right_next;
                 queue.push_back(edge.to);
+            } else {
+                if (qelem_key(left_frontier_potential[edge.to]) !=
+                    qelem_key(left_next)) left_ambiguous[edge.to] = true;
+                if (qelem_key(right_frontier_potential[edge.to]) !=
+                    qelem_key(right_next)) right_ambiguous[edge.to] = true;
             }
         }
     }
+    for (std::size_t i = 0; i < n; ++i) {
+        if (left_ambiguous[i]) ++out.left_frontier_ambiguous_states;
+        if (right_ambiguous[i]) ++out.right_frontier_ambiguous_states;
+    }
+    out.single_valued_frontier_projection =
+        out.left_frontier_ambiguous_states == 0 &&
+        out.right_frontier_ambiguous_states == 0;
     out.exact = true;
     return out;
 }

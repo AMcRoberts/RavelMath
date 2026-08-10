@@ -1096,6 +1096,10 @@ The exact residual-subgroup ranks on that component are 1 for the difference
 cocycle and 1 for each one-sided prefix cocycle. No third independent
 `Q(β)`-linear actor is visible in this sample; the candidate is currently best
 described as a rank-one adelic lift of the period-three transport core.
+The frontier-seeded projection is nevertheless not single-valued: 1,639
+reachable states have ambiguous left gamma potentials and 1,679 have
+ambiguous right potentials. A proof must therefore model the refinement as a
+relation/textile over the gamma graph, not as an ordinary graph morphism.
 The SCC census records 32 zero-contact states inside that 401-node
 non-coboundary component (369 nonzero-contact states). Hence it cannot be
 discarded as wholly detached from the zero-contact slice; the exact

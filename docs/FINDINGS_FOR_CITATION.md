@@ -4173,3 +4173,10 @@ rank-one adelic actor present on both prefix sides, synchronized with the
 already observed period-three integer transport. This links the contact
 phenomenon back to the evolving transport core while leaving open whether
 the synchronization itself is the “third plank” at the symbolic level.
+The explicit frontier projection test now separates the algebraic and symbolic
+questions. Starting from the 166 zero-contact seeds, 2,871 lift states are
+reachable, but the induced left and right gamma potentials are multivalued on
+1,639 and 1,679 states. Hence the contact/phase refinement does not factor
+through a single-valued map into the closed 95-node gamma graph. This is the
+first concrete evidence for a third symbolic plank: not a new field rank, but
+a nontrivial synchronization/holonomy relation between actors.
