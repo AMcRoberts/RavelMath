@@ -15,6 +15,8 @@ namespace adelic {
 struct ReturnContactDigitHolonomyScc {
     std::size_t nodes = 0;
     std::size_t residual_edges = 0;
+    std::size_t zero_contact_nodes = 0;
+    std::size_t nonzero_contact_nodes = 0;
     bool coboundary = true;
 };
 
@@ -104,8 +106,16 @@ ReturnContactDigitHolonomyCertificate derive_return_contact_digit_holonomy(
                 if (qelem_key(residual) != qelem_key(zero)) ++residuals;
             }
         }
+        std::size_t zero_contact = 0;
+        for (const auto u : component) {
+            bool nonzero = false;
+            for (const auto coordinate : lift.states[u].contact.x)
+                if (coordinate != 0) nonzero = true;
+            if (!nonzero) ++zero_contact;
+        }
         const bool coboundary = residuals == 0;
-        out.sccs.push_back({component.size(), residuals, coboundary});
+        out.sccs.push_back({component.size(), residuals, zero_contact,
+                            component.size() - zero_contact, coboundary});
         if (!coboundary) ++out.nontrivial_holonomy_sccs;
     };
     for (std::size_t v = 0; v < n; ++v) if (index[v] < 0) visit(v);

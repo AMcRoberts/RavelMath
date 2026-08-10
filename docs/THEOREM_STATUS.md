@@ -1080,3 +1080,7 @@ carrying non-coboundary exact `Q(β)` holonomy. This is the first concrete
 recurrent obstruction candidate in the non-AR transport layer. It is not yet
 a Property-F failure, because reachability from the zero frontier in the
 zero-expansion orientation has not been established.
+The SCC census records 32 zero-contact states inside that 401-node
+non-coboundary component (369 nonzero-contact states). Hence it cannot be
+discarded as wholly detached from the zero-contact slice; the exact
+zero-expansion reachability/intertwiner test is still required.

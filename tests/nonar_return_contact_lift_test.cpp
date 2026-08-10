@@ -202,8 +202,10 @@ int main() {
                 contact_holonomy.cyclic_sccs,
                 contact_holonomy.nontrivial_holonomy_sccs);
     for (const auto& scc : contact_holonomy.sccs)
-        std::printf("  contact_scc nodes=%zu residual_edges=%zu coboundary=%d\n",
-                    scc.nodes, scc.residual_edges, scc.coboundary ? 1 : 0);
+        std::printf("  contact_scc nodes=%zu residual_edges=%zu zero=%zu "
+                    "nonzero=%zu coboundary=%d\n", scc.nodes,
+                    scc.residual_edges, scc.zero_contact_nodes,
+                    scc.nonzero_contact_nodes, scc.coboundary ? 1 : 0);
     expect(contact_holonomy.exact && contact_holonomy.cyclic_sccs > 0,
            "full contact lift has classified Q(beta) recurrent cycles");
     const auto digit_cocycle = adelic::derive_property_f_role_digit_cocycle<3>(

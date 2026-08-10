@@ -4140,3 +4140,11 @@ cocycle on one recurrent component. This is a genuine obstruction candidate,
 not yet a Property-F counterexample: the remaining obligation is to identify
 whether that SCC is reachable from the zero frontier in the precise
 zero-expansion orientation.
+The follow-up contact-coordinate census sharpens the reachability question:
+the non-coboundary 401-node SCC contains 32 states with exactly zero contact
+coordinate and 369 nonzero-contact states. The three coboundary SCCs have
+zero-contact counts 0, 2, and 2 (the 52-node component is entirely nonzero).
+This means the candidate is not a purely detached nonzero-contact artifact;
+it intersects the zero-contact slice, although zero-contact is only a proxy
+for the exact zero-expansion frontier and does not by itself prove an
+obstruction.
