@@ -234,6 +234,9 @@ role enumeration both give exactly one spine continuation/predecessor and zero
 alternate spine hits through `a=256`. This removes graph enumeration from the
 spine-uniqueness half of the argument; the remaining uniform seam is strictly
 off-spine collar absorption.
+The only degree-overflowing role, `0^(a+1)`, is handled through its reduced
+coefficient label `[-1,0,1]`, so the inverse check is using the actual cocycle
+and not a raw prefix-length surrogate.
 
 The non-unit side now has its explicit local-fibre premise as well. The
 valuation-fibre certificate checks, for every prime dividing the determinant,

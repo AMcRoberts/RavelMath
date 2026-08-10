@@ -34,14 +34,37 @@ struct PropertyFClassIISymbolicTailGrammarCertificate {
 };
 
 inline std::array<long long, 3>
-property_f_class_ii_affine_tail_inverse_step(
+property_f_class_ii_role_contribution(std::size_t a,
+                                      long long current_letter,
+                                      long long parent,
+                                      std::size_t position) {
+    // The only prefix beyond degree two is 0^(a+1) in sigma(0), targeting
+    // letter 2.  In Q(beta), [-1,0,1] is its reduced digit label and
+    // beta^{-1}[-1,0,1] contributes [a+1,a+1,-1] to the carry state.
+    if (current_letter == 2 && parent == 0 && position == a + 1)
+        return {static_cast<long long>(a + 1),
+                static_cast<long long>(a + 1), -1};
+    return {static_cast<long long>(position), 0, 0};
+}
+
+inline std::array<long long, 3>
+property_f_class_ii_affine_tail_step_with_contribution(
+        const std::array<long long, 3>& state,
+        long long a, const std::array<long long, 3>& contribution) {
+    return {state[1] - (a + 1) * state[0] + contribution[0],
+            state[2] - a * state[0] + contribution[1],
+            state[0] + contribution[2]};
+}
+
+inline std::array<long long, 3>
+property_f_class_ii_affine_tail_inverse_with_contribution(
         const std::array<long long, 3>& target,
-        long long a, long long digit) {
-    // Invert (c0,c1,c2) ->
-    // (c1-(a+1)c0+j, c2-a*c0, c0).
-    return {target[2],
-            target[0] + (a + 1) * target[2] - digit,
-            target[1] + a * target[2]};
+        long long a, const std::array<long long, 3>& contribution) {
+    return {target[2] - contribution[2],
+            target[0] - contribution[0] + (a + 1) *
+                (target[2] - contribution[2]),
+            target[1] - contribution[1] + a *
+                (target[2] - contribution[2])};
 }
 
 inline std::size_t property_f_class_ii_spine_letter(std::size_t step) {
@@ -74,10 +97,12 @@ derive_property_f_class_ii_symbolic_tail_grammar(std::size_t a) {
         for (const auto& [parent, positions] : roles) {
             for (const auto position : positions) {
                 ++out.forward_candidates;
+                const auto contribution =
+                    property_f_class_ii_role_contribution(
+                        a, current_letter, parent, position);
                 const auto candidate =
-                    property_f_class_ii_affine_tail_step(
-                        states[step], aa,
-                        static_cast<long long>(position));
+                    property_f_class_ii_affine_tail_step_with_contribution(
+                        states[step], aa, contribution);
                 std::size_t matched = states.size();
                 for (std::size_t other = 0; other < states.size(); ++other) {
                     if (static_cast<long long>(parent) ==
@@ -117,10 +142,12 @@ derive_property_f_class_ii_symbolic_tail_grammar(std::size_t a) {
             if (parent_it == roles.end()) continue;
             for (const auto position : parent_it->second) {
                 ++out.reverse_candidates;
+                const auto contribution =
+                    property_f_class_ii_role_contribution(
+                        a, source_letter, target_letter, position);
                 const auto candidate =
-                    property_f_class_ii_affine_tail_inverse_step(
-                        states[target_step], aa,
-                        static_cast<long long>(position));
+                    property_f_class_ii_affine_tail_inverse_with_contribution(
+                        states[target_step], aa, contribution);
                 std::size_t matched = states.size();
                 for (std::size_t other = 0; other < states.size(); ++other) {
                     if (source_letter == static_cast<long long>(

@@ -875,6 +875,8 @@ prefix-role catalogue with the affine map in both directions. It checks that
 the explicit spine has exactly one expected continuation and predecessor and
 no alternate spine hit. This is the symbolic no-deviation premise; it still
 needs the separate argument that every off-spine branch is collar-absorbed.
+The implementation also reduces the exceptional `0^(a+1)` prefix to its exact
+`[-1,0,1]` coefficient label before applying the inverse map.
 
 For the non-unit branch, `adelic_cocycle_extension.hpp` also exposes
 `derive_adelic_valuation_fibre_lemma`. It checks maximal Dedekind factorization,
