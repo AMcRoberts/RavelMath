@@ -485,3 +485,6 @@ legacy scalar encoding: all 302,319 live edges decrease in the primary layer,
 there are no nondecreasing phase ties, and no terminal outgoing edge. The
 direct replay is the authoritative finite-instance check; the scalar weight
 is retained only for compatibility with older callers.
+The primary rank constructor independently replays the finite graph's SCC
+partition, so a coarser label table that merely produces an acyclic quotient
+is rejected rather than assigned an artificially short boundary height.

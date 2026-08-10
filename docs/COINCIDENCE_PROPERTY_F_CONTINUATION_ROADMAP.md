@@ -641,6 +641,12 @@ checks). The older scalar callback is therefore a compatibility projection,
 not the evidence for the rank; the remaining theorem work is still the
 family-level derivation of the pair.
 
+The rank constructor was also tightened after audit: it now independently
+recomputes the graph's SCC partition and rejects a supplied label table that
+merges distinct components, even if the resulting quotient is acyclic. The
+negative merged-label regression passes; the rebuilt non-AR default remains
+29/29.
+
 The same condensation operation was enrolled in the nine-row fixed-spectrum
 permutation-family autopsy. Every closed row has a valid finite boundary rank;
 the maximum sink distance ranges from 1 to 59 while the incidence polynomial

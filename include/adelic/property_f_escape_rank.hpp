@@ -11,6 +11,7 @@
 #include <cstddef>
 #include <deque>
 #include <stdexcept>
+#include <utility>
 #include <vector>
 
 #include "adelic/property_f_types.hpp"
@@ -27,6 +28,11 @@ struct PropertyFEscapeRankCertificate {
     std::vector<std::size_t> scc_height;
     std::vector<std::size_t> node_height;
     bool labels_replayed = false;
+    // Independent SCC replay prevents a coarser-than-SCC label table from
+    // being mistaken for a valid boundary quotient.  Acyclicity alone would
+    // not catch two distinct SCCs merged into one supplied label.
+    std::size_t recomputed_scc_count = 0;
+    bool scc_partition_replayed = false;
     bool condensation_acyclic = false;
     bool valid = false;
 };
@@ -58,12 +64,84 @@ inline PropertyFEscapeRankCertificate derive_property_f_escape_rank(
                 out.labels_replayed &=
                     graph.scc_sizes[scc] == static_cast<long long>(observed_sizes[scc]);
     }
+    // Recompute SCCs independently with iterative Kosaraju.  The Property-F
+    // search already stores labels, but a rank certificate must not trust
+    // those labels merely because their quotient happens to be acyclic.
+    std::vector<std::vector<std::size_t>> reverse(out.node_count);
     for (std::size_t source = 0; source < out.node_count; ++source) {
-        const auto from = static_cast<std::size_t>(graph.scc_labels[source]);
         for (const auto target : graph.nodes[source].successors) {
             if (target < 0 || static_cast<std::size_t>(target) >= out.node_count)
                 throw std::invalid_argument(
                     "Property-F escape rank: successor out of range");
+            reverse[static_cast<std::size_t>(target)].push_back(source);
+        }
+    }
+    std::vector<bool> visited(out.node_count, false);
+    std::vector<std::size_t> dfs_order;
+    dfs_order.reserve(out.node_count);
+    for (std::size_t root = 0; root < out.node_count; ++root) {
+        if (visited[root]) continue;
+        std::vector<std::pair<std::size_t, std::size_t>> stack;
+        stack.push_back({root, 0});
+        visited[root] = true;
+        while (!stack.empty()) {
+            auto& frame = stack.back();
+            const auto node = frame.first;
+            if (frame.second == graph.nodes[node].successors.size()) {
+                dfs_order.push_back(node);
+                stack.pop_back();
+                continue;
+            }
+            const auto target = static_cast<std::size_t>(
+                graph.nodes[node].successors[frame.second++]);
+            if (!visited[target]) {
+                visited[target] = true;
+                stack.push_back({target, 0});
+            }
+        }
+    }
+    std::vector<long long> recomputed_label(out.node_count, -1);
+    for (auto it = dfs_order.rbegin(); it != dfs_order.rend(); ++it) {
+        const auto root = *it;
+        if (recomputed_label[root] >= 0) continue;
+        const auto component = static_cast<long long>(out.recomputed_scc_count++);
+        std::vector<std::size_t> stack{root};
+        recomputed_label[root] = component;
+        while (!stack.empty()) {
+            const auto node = stack.back();
+            stack.pop_back();
+            for (const auto predecessor : reverse[node]) {
+                if (recomputed_label[predecessor] < 0) {
+                    recomputed_label[predecessor] = component;
+                    stack.push_back(predecessor);
+                }
+            }
+        }
+    }
+    std::vector<long long> supplied_to_recomputed(out.scc_count, -1);
+    std::vector<long long> recomputed_to_supplied(out.recomputed_scc_count, -1);
+    out.scc_partition_replayed = true;
+    for (std::size_t node = 0; node < out.node_count; ++node) {
+        const auto supplied = static_cast<std::size_t>(graph.scc_labels[node]);
+        const auto recomputed = static_cast<std::size_t>(recomputed_label[node]);
+        if (supplied_to_recomputed[supplied] < 0)
+            supplied_to_recomputed[supplied] =
+                static_cast<long long>(recomputed);
+        else if (supplied_to_recomputed[supplied] !=
+                 static_cast<long long>(recomputed))
+            out.scc_partition_replayed = false;
+        if (recomputed_to_supplied[recomputed] < 0)
+            recomputed_to_supplied[recomputed] =
+                static_cast<long long>(supplied);
+        else if (recomputed_to_supplied[recomputed] !=
+                 static_cast<long long>(supplied))
+            out.scc_partition_replayed = false;
+    }
+    out.scc_partition_replayed = out.scc_partition_replayed &&
+        out.recomputed_scc_count == out.scc_count;
+    for (std::size_t source = 0; source < out.node_count; ++source) {
+        const auto from = static_cast<std::size_t>(graph.scc_labels[source]);
+        for (const auto target : graph.nodes[source].successors) {
             const auto to = static_cast<std::size_t>(
                 graph.scc_labels[static_cast<std::size_t>(target)]);
             if (from != to) out.condensation[from].push_back(to);
@@ -113,7 +191,8 @@ inline PropertyFEscapeRankCertificate derive_property_f_escape_rank(
     for (std::size_t node = 0; node < out.node_count; ++node)
         out.node_height[node] = out.scc_height[
             static_cast<std::size_t>(graph.scc_labels[node])];
-    out.valid = out.labels_replayed && out.condensation_acyclic;
+    out.valid = out.labels_replayed && out.scc_partition_replayed &&
+                out.condensation_acyclic;
     return out;
 }
 

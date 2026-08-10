@@ -13,6 +13,8 @@ int main() {
     graph.scc_sizes = {2, 1};
     const auto rank = adelic::derive_property_f_escape_rank(graph);
     assert(rank.valid);
+    assert(rank.scc_partition_replayed);
+    assert(rank.recomputed_scc_count == 2);
     assert(rank.condensation_acyclic);
     assert(rank.terminal_sccs == 1);
     assert(rank.node_height == std::vector<std::size_t>({1, 1, 0}));
@@ -27,6 +29,14 @@ int main() {
         rejected = true;
     }
     assert(rejected);
+
+    adelic::PropertyFGraph merged_labels = graph;
+    merged_labels.scc_labels = {0, 0, 0};
+    merged_labels.scc_sizes.clear();
+    const auto merged_rank =
+        adelic::derive_property_f_escape_rank(merged_labels);
+    assert(!merged_rank.valid);
+    assert(!merged_rank.scc_partition_replayed);
 
     adelic::PropertyFGraph bad_edge = graph;
     bad_edge.nodes[2].successors = {9};
