@@ -475,10 +475,21 @@ int main() {
             gamma_relation.completion_live_cyclic_lift_states ==
             gamma_relation.completion_cyclic_lift_states;
         bool omitted_cyclic_have_terminal_route = true;
+        bool omitted_cyclic_have_zero_to_nonzero_terminal = true;
         for (const auto state : gamma_relation.unthreaded_cyclic_lift_state_indices)
+        {
             omitted_cyclic_have_terminal_route = omitted_cyclic_have_terminal_route &&
                 gamma_relation.completion_min_terminal_distance_by_lift[state] !=
                     std::numeric_limits<std::size_t>::max();
+            const auto witness =
+                gamma_relation.completion_min_terminal_witness_by_lift[state];
+            const auto& left = property_graph.nodes[witness.first];
+            const auto& right = property_graph.nodes[witness.second];
+            omitted_cyclic_have_zero_to_nonzero_terminal =
+                omitted_cyclic_have_zero_to_nonzero_terminal && left.zero &&
+                !right.zero && !left.successors.empty() &&
+                right.successors.empty();
+        }
         expect(recurrent_completion && omitted_cyclic_have_terminal_route &&
                    gamma_relation.completion_product_acyclic &&
                    gamma_relation.completion_cyclic_product_nonzero_sccs == 0 &&
@@ -491,6 +502,8 @@ int main() {
         expect(gamma_relation.completion_nonzero_zero_terminal_witnesses == 0 &&
                    gamma_relation.completion_two_sided_terminal_witnesses == 0,
                "the finite boundary escape has a single zero-state-to-nonzero-state orientation");
+        expect(omitted_cyclic_have_zero_to_nonzero_terminal,
+               "omitted cyclic states escape from zero interior to nonzero terminal sinks");
         }
     }
     const auto capped_relation = adelic::derive_return_contact_gamma_relation<3>(
