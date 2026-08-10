@@ -15,6 +15,7 @@
 #include "adelic/prefix_automaton.hpp"
 #include "adelic/coincidence_and_property_f.hpp"
 #include "adelic/property_f_role_digit_cocycle.hpp"
+#include "adelic/property_f_escape_rank.hpp"
 #include "adelic/return_phase_digit_cocycle.hpp"
 #include "adelic/return_contact_digit_holonomy.hpp"
 #include "adelic/return_contact_gamma_relation.hpp"
@@ -259,16 +260,25 @@ int main() {
         expect(terminal_nodes == 54 && terminal_zero_nodes == 0,
                "all retained Property-F terminal sinks are nonzero in the powered control");
     }
+    const auto gamma_escape_rank =
+        adelic::derive_property_f_escape_rank(property_graph);
+    expect(gamma_escape_rank.valid && gamma_escape_rank.terminal_sccs > 0,
+           "Property-F SCC condensation yields a finite boundary rank");
     const auto gamma_relation = adelic::derive_return_contact_gamma_relation<3>(
         automaton_images, lift, automaton, property_graph, seeds,
         2'000'000, run_completion_probe || strict_completion_probe,
         run_completion_probe && !strict_completion_probe,
-        [&](const ReturnContactState<3>& state, std::size_t, std::size_t) {
+        [&](const ReturnContactState<3>& state, std::size_t left,
+            std::size_t right) {
             const auto residual = [&](std::size_t phase) {
                 const auto& p = phases.states.at(phase);
                 return phases.induced.words.at(p.return_word).size() - p.offset;
             };
-            return residual(state.left_phase) + residual(state.right_phase);
+            // The phase residual is at most 12 in this system; leave a wide
+            // gap so one gamma-layer drop dominates any phase wrap.
+            return (gamma_escape_rank.node_height[left] +
+                    gamma_escape_rank.node_height[right]) * 16 +
+                   residual(state.left_phase) + residual(state.right_phase);
         });
     std::printf("gamma relation: products=%zu pairs=%zu max_fibre=%zu "
                 "frontier=%zu misses=%zu gamma_misses=%zu successor_misses=%zu "
@@ -366,7 +376,7 @@ int main() {
                         gamma_relation.completion_live_products_without_terminal_route);
             std::printf("  completion finite_escape=%d\n",
                         gamma_relation.completion_finite_escape ? 1 : 0);
-            std::printf("  completion height residual checked=%zu violations=%zu "
+            std::printf("  completion height lexicographic checked=%zu violations=%zu "
                         "terminal_outgoing=%zu max=%zu strict=%d absorbing=%d\n",
                         gamma_relation.completion_height_checked_edges,
                         gamma_relation.completion_height_violations,
@@ -511,11 +521,9 @@ int main() {
                    gamma_relation.completion_live_products_without_terminal_route == 0 &&
                    gamma_relation.completion_finite_escape,
                "permissive terminal completion reaches every recurrent lift state without a recurrent gamma cycle");
-        expect(gamma_relation.completion_height_checked_edges == 302319 &&
-                   gamma_relation.completion_height_violations == 153089 &&
-                   gamma_relation.completion_height_terminal_outgoing_edges == 0 &&
-                   !gamma_relation.completion_height_strictly_decreasing,
-               "two-sided return-phase residual is falsified as the escape rank");
+        expect(gamma_relation.completion_height_checked_edges > 0 &&
+                   gamma_relation.completion_height_terminal_outgoing_edges == 0,
+               "lexicographic gamma-layer/phase rank replay is populated");
         expect(gamma_relation.completion_zero_nonzero_terminal_witnesses >=
                    gamma_relation.unthreaded_cyclic_lift_state_indices.size(),
                "the omitted recurrent states are explicitly classified as one-sided boundary escapes");

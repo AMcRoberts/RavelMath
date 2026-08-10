@@ -612,6 +612,19 @@ the relation certificate replays strict descent on its live product edges
 without changing pruning. This is the intended place to falsify candidate
 phase or boundary ranks; it is diagnostic input, not an implicit derivation.
 
+The exact primary boundary coordinate is derived from the Property-F graph's
+SCC condensation:
+
+```cpp
+#include "adelic/property_f_escape_rank.hpp"
+auto boundary_rank = adelic::derive_property_f_escape_rank(property_graph);
+// boundary_rank.node_height[gamma_id] is the longest route to a sink SCC.
+```
+
+This operation validates the supplied SCC labels, constructs the acyclic
+condensation, and computes the longest sink distance. A return-phase residual
+can then be used as a bounded tie-breaker inside one boundary layer.
+
 ## Class-II family
 
 The Class-II family is:

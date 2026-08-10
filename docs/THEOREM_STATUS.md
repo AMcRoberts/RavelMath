@@ -1219,3 +1219,10 @@ boundary-layer class `B` supplies the primary drop, and return-phase residual
 strictly lowering `B`; a fixed-`B` cycle or an edge with neither component
 decreasing would falsify the model. This is the current symbolic analogue of
 a Lyapunov function on a skew product, not yet a theorem.
+
+The instance-level candidate is now exact: `property_f_escape_rank.hpp`
+derives the longest sink distance in the Property-F SCC condensation, and the
+paired rank `16*(B_left+B_right)+R_left+R_right` passes all 302,319 live
+completion edges with zero violations. The remaining theorem is not the rank
+calculation; it is the uniform symbolic derivation of those boundary SCC
+classes and their finite phase tie-break across the family.

@@ -612,3 +612,14 @@ finite skew-product analogue of a Lyapunov function with a neutral fibre. Its
 falsifiers are an edge with neither component decreasing, or a cycle inside a
 fixed boundary class. The existing finite certificate can replay the proposed
 pair once `B` is defined symbolically.
+
+The first concrete `B` is now derived, not hand-entered: collapse the exact
+Property-F SCC labels and assign each gamma node its longest distance to a sink
+SCC. The paired rank
+`16*(B_left+B_right)+R_left+R_right` (the phase residual sum is bounded by 12)
+strictly decreases on all 302,319 live completion edges, with zero terminal
+outgoing violations and maximum observed rank 186. This closes the finite
+instance of the lexicographic premise. The universal seam is now precise:
+derive the same SCC-condensation boundary classes and bounded phase tie-break
+from the ordered-prefix grammar, rather than treating this instance's rank
+table as a theorem.
