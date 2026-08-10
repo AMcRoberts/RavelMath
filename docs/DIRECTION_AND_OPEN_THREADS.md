@@ -577,6 +577,20 @@ the original `5n-5` language and supports using the induced substitution as
 the finite branch-history transducer. Falsifier: a later derived length that
 deviates from `5n`, or a predecessor graph with unbounded return states.
 
+**H10 — The return system is a cyclotomic lift of the expanding core.** The
+incidence matrix of that five-letter induced substitution has characteristic
+polynomial `(lambda+1)^2 * (lambda^3 - 3 lambda^2 + 2 lambda - 1)`. The
+cubic factor is the minimal polynomial of `beta^3` for the original
+plastic-type root `beta^3-beta-1=0`; the two `-1` factors therefore look like
+finite-order permutation fibres over an expanding cubic return core, rather
+than two new expanding directions. This is the spectral separation expected
+in derived substitutions and finite-rank symbolic models: growth lives in a
+Perron block, while cyclotomic modes record phase/ordering data. Falsifiers
+are an additional eigenvalue of modulus greater than one outside the cubic
+factor, or a non-cyclotomic recurrent fibre that survives after quotienting
+by return history. If neither appears, the useful target is a finite-rank
+return/cocycle extension theorem, not a new unconstrained expansion class.
+
 The first experiment should attack H1 and H2 together: prove the all-length
 predecessor decomposition for `sigma_{0,1}`, build its finite seam grammar,
 and compare its channel rank with the existing contact-boundary generator
