@@ -16,6 +16,7 @@
 #include "adelic/property_f_types.hpp"
 #include "math/qbeta.hpp"
 #include "ravel/contact_boundary.hpp"
+#include "ravel/proof/contact_boundary_generator_intertwiner.hpp"
 #include "ravel/substitution.hpp"
 
 namespace adelic {
@@ -43,6 +44,7 @@ struct PropertyFContactRecurrenceCertificate {
     bool graph_closed = false;
     bool no_nonzero_recurrent_component = false;
     bool recurrence_preserved = false;
+    bool universal_intertwiner_verified = false;
     long long graph_nodes = 0;
     long long nonzero_recurrent_components = 0;
     std::string obstruction;
@@ -82,6 +84,23 @@ derive_property_f_contact_recurrence_certificate(
         out.obstruction = "Property-F graph is not closed";
     else if (!out.no_nonzero_recurrent_component)
         out.obstruction = "non-zero recurrent holonomy remains";
+    return out;
+}
+
+template <std::size_t d>
+PropertyFContactRecurrenceCertificate
+derive_property_f_contact_recurrence_certificate(
+    const PropertyFContactTransportBridgeCertificate<d>& bridge,
+    const PropertyFResult& result,
+    const PropertyFGraph& graph,
+    const ravel::proof::ContactBoundaryGeneratorIntertwinerCertificate<d>&
+        intertwiner) {
+    auto out = derive_property_f_contact_recurrence_certificate(
+        bridge, result, graph);
+    out.universal_intertwiner_verified = intertwiner.proved;
+    out.recurrence_preserved = out.recurrence_preserved && intertwiner.proved;
+    if (!intertwiner.proved && out.obstruction.empty())
+        out.obstruction = "universal contact-role intertwiner is incomplete";
     return out;
 }
 

@@ -61,6 +61,14 @@ void run_case(const std::array<std::vector<long long>, d>& images,
                 bridge, propf, graph);
         assert(recurrence.recurrence_preserved);
         assert(recurrence.nonzero_recurrent_components == 0);
+        const auto intertwiner = ravel::proof::
+            derive_contact_boundary_generator_intertwiner<d>(
+                rule, 2.3593040859717767, 0.0, 2, limits, 2);
+        const auto paired_recurrence =
+            adelic::derive_property_f_contact_recurrence_certificate(
+                bridge, propf, graph, intertwiner);
+        assert(paired_recurrence.universal_intertwiner_verified);
+        assert(paired_recurrence.recurrence_preserved);
         std::cout << name << ": recurrence PASS graph_nodes="
                   << recurrence.graph_nodes << "\n";
     }
