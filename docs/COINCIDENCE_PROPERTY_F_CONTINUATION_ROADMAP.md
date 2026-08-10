@@ -655,3 +655,10 @@ linear stack of transient shells feeding a small recurrent core, followed by
 the terminal correction. The open Property-F step is to identify the analogous
 birth-round grammar for the adelic boundary lift, not to search for an
 unstructured global potential.
+
+The precedent is quantitatively shell-like: the neighbor-2 rank-one interior
+stratum has size `48*r - 8`, while the two higher fixed rank strata have sizes
+19 and 9. Thus the growing part is an affine number of repeated shell cells;
+the non-growing part is a bounded correction grammar. This is the shape to
+look for in the Property-F lift: parameter-dependent collar multiplicity with
+parameter-independent transport types.

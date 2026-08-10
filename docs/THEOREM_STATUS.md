@@ -1250,3 +1250,8 @@ transient group has an escape. Thus the long collar can be modeled as a finite
 stack of birth-round shells over a small recurrent core. The analogous
 birth-round/transport grammar for the adelic Property-F lift is the next
 symbolic derivation target.
+
+Quantitatively, the precedent has an affine collar: its rank-one interior
+stratum has `48*r - 8` states, while the two higher fixed strata have 19 and 9.
+The likely Property-F analogue is therefore repeated parameterized shell cells
+plus a bounded correction grammar, not an expanding recurrent component.
