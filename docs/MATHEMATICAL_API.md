@@ -632,6 +632,9 @@ auto boundary_rank = adelic::derive_property_f_escape_rank(property_graph);
 // boundary_rank.node_height[gamma_id] is the longest route to a sink SCC.
 // boundary_rank.scc_partition_replayed independently checks that the
 // supplied labels are the graph's maximal SCCs, not merely an acyclic merge.
+// boundary_rank.edge_rank_strictly_decreasing replays that every cross-SCC
+// node edge lowers the computed sink distance; the two counters expose any
+// malformed/nondecreasing projection.
 ```
 
 This operation validates the supplied SCC labels, constructs the acyclic

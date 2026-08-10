@@ -34,6 +34,12 @@ struct PropertyFEscapeRankCertificate {
     std::size_t recomputed_scc_count = 0;
     bool scc_partition_replayed = false;
     bool condensation_acyclic = false;
+    // Recheck the defining consequence of the longest-distance rank on the
+    // original node edges.  This catches malformed node/label projections
+    // even when the condensation calculation itself is well formed.
+    std::size_t cross_scc_edges = 0;
+    std::size_t cross_scc_nondecreasing_edges = 0;
+    bool edge_rank_strictly_decreasing = false;
     bool valid = false;
 };
 
@@ -191,6 +197,20 @@ inline PropertyFEscapeRankCertificate derive_property_f_escape_rank(
     for (std::size_t node = 0; node < out.node_count; ++node)
         out.node_height[node] = out.scc_height[
             static_cast<std::size_t>(graph.scc_labels[node])];
+    if (out.condensation_acyclic) {
+        for (std::size_t source = 0; source < out.node_count; ++source) {
+            for (const auto raw_target : graph.nodes[source].successors) {
+                const auto target = static_cast<std::size_t>(raw_target);
+                if (graph.scc_labels[source] == graph.scc_labels[target])
+                    continue;
+                ++out.cross_scc_edges;
+                if (out.node_height[source] <= out.node_height[target])
+                    ++out.cross_scc_nondecreasing_edges;
+            }
+        }
+        out.edge_rank_strictly_decreasing =
+            out.cross_scc_nondecreasing_edges == 0;
+    }
     out.valid = out.labels_replayed && out.scc_partition_replayed &&
                 out.condensation_acyclic;
     return out;

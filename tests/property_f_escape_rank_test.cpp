@@ -16,6 +16,9 @@ int main() {
     assert(rank.scc_partition_replayed);
     assert(rank.recomputed_scc_count == 2);
     assert(rank.condensation_acyclic);
+    assert(rank.cross_scc_edges == 1);
+    assert(rank.cross_scc_nondecreasing_edges == 0);
+    assert(rank.edge_rank_strictly_decreasing);
     assert(rank.terminal_sccs == 1);
     assert(rank.node_height == std::vector<std::size_t>({1, 1, 0}));
     assert(rank.maximum_height == 1);
