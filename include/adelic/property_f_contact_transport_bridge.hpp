@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "adelic/prefix_automaton.hpp"
+#include "adelic/coincidence_and_property_f.hpp"
 #include "adelic/property_f_types.hpp"
 #include "math/qbeta.hpp"
 #include "ravel/contact_boundary.hpp"
@@ -31,6 +32,58 @@ struct PropertyFContactTransportBridgeCertificate {
     long long distinct_adelic_prefixes = 0;
     std::string obstruction;
 };
+
+// A finite, recurrence-level certificate.  This is deliberately a
+// conditional statement about the supplied exact graph: it does not claim
+// that every substitution has Property (F).  It records the missing bridge
+// obligation in a checkable form: once the contact labels replay in the
+// adelic graph, a closed finite graph with no non-zero recurrent SCC has no
+// surviving holonomy obstruction.
+struct PropertyFContactRecurrenceCertificate {
+    bool graph_closed = false;
+    bool no_nonzero_recurrent_component = false;
+    bool recurrence_preserved = false;
+    long long graph_nodes = 0;
+    long long nonzero_recurrent_components = 0;
+    std::string obstruction;
+};
+
+template <std::size_t d>
+PropertyFContactRecurrenceCertificate
+derive_property_f_contact_recurrence_certificate(
+    const PropertyFContactTransportBridgeCertificate<d>& bridge,
+    const PropertyFResult& result, const PropertyFGraph& graph) {
+    PropertyFContactRecurrenceCertificate out;
+    out.graph_nodes = static_cast<long long>(graph.nodes.size());
+    out.nonzero_recurrent_components = result.nonzero_cycle_components;
+    out.graph_closed = !result.inconclusive && result.closure_reached;
+    for (const auto& node : graph.nodes) {
+        for (const long long successor : node.successors) {
+            if (successor < 0 || successor >= out.graph_nodes) {
+                out.graph_closed = false;
+                break;
+            }
+        }
+        if (!out.graph_closed) break;
+    }
+    out.no_nonzero_recurrent_component =
+        out.nonzero_recurrent_components == 0;
+    out.recurrence_preserved =
+        bridge.boundary_complete && bridge.contact_prefixes_in_adelic_alphabet &&
+        bridge.exact_digit_labels_replay && bridge.transition_labels_commute &&
+        out.graph_closed && out.no_nonzero_recurrent_component;
+    if (!bridge.boundary_complete)
+        out.obstruction = "contact boundary is not complete";
+    else if (!bridge.contact_prefixes_in_adelic_alphabet ||
+             !bridge.exact_digit_labels_replay ||
+             !bridge.transition_labels_commute)
+        out.obstruction = "contact cocycle does not replay exactly";
+    else if (!out.graph_closed)
+        out.obstruction = "Property-F graph is not closed";
+    else if (!out.no_nonzero_recurrent_component)
+        out.obstruction = "non-zero recurrent holonomy remains";
+    return out;
+}
 
 template <std::size_t d>
 PropertyFContactTransportBridgeCertificate<d>

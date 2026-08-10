@@ -2,10 +2,12 @@
 #include <cassert>
 #include <cstdint>
 #include <iostream>
+#include <string>
 #include <vector>
 
 #include "adelic/prefix_automaton.hpp"
 #include "adelic/property_f_contact_transport_bridge.hpp"
+#include "adelic/coincidence_and_property_f.hpp"
 #include "math/linalg_qbeta.hpp"
 #include "math/poly_z.hpp"
 #include "math/qbeta.hpp"
@@ -47,6 +49,21 @@ void run_case(const std::array<std::vector<long long>, d>& images,
     assert(bridge.boundary_edges > 0);
     assert(bridge.distinct_contact_prefixes > 0);
     assert(bridge.distinct_difference_labels > 0);
+    if (std::string(name) == "first_anchor") {
+        auto [bound, trusted] = adelic::make_combined_padic_bound({2}, minpoly);
+        assert(trusted);
+        adelic::PropertyFGraph graph;
+        const auto propf = adelic::check_property_f<d>(
+            automaton, 2'000'000, bound, nullptr, nullptr, nullptr,
+            &graph, true);
+        const auto recurrence =
+            adelic::derive_property_f_contact_recurrence_certificate(
+                bridge, propf, graph);
+        assert(recurrence.recurrence_preserved);
+        assert(recurrence.nonzero_recurrent_components == 0);
+        std::cout << name << ": recurrence PASS graph_nodes="
+                  << recurrence.graph_nodes << "\n";
+    }
     std::cout << name << ": PASS boundary_edges="
               << bridge.boundary_edges << " contact_prefixes="
               << bridge.distinct_contact_prefixes << " difference_labels="
