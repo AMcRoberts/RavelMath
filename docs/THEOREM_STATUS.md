@@ -1212,3 +1212,10 @@ strictly decrease. The accepted terminal products had no outgoing-edge
 violations, so the failure is specifically in the proposed phase coordinate,
 not in terminal absorption or the finite escape certificate. A uniform rank
 must add boundary/gamma data or a transition-dependent correction.
+
+The next structural hypothesis is therefore lexicographic: a finite
+boundary-layer class `B` supplies the primary drop, and return-phase residual
+`R` is used only within a fixed `B`. A transport wrap may increase `R` while
+strictly lowering `B`; a fixed-`B` cycle or an edge with neither component
+decreasing would falsify the model. This is the current symbolic analogue of
+a Lyapunov function on a skew product, not yet a theorem.

@@ -602,3 +602,13 @@ absorption itself had no outgoing violations. Thus the phase collar is a real
 coordinate but not, by itself, the escape rank; the missing term must include
 boundary/gamma data or a transition-dependent correction. This is a useful
 falsifier, not an obstruction to the finite escape certificate.
+
+The revised symbolic hypothesis is lexicographic rather than scalar phase
+descent. Let `B` be a finite boundary-layer class of the gamma/contact state,
+and let `R` be the return-phase residual. The target is: `B` strictly drops
+whenever transport wraps or the phase residual can increase; within a fixed
+`B`, `R` strictly drops; accepted shell classes are absorbing. This is the
+finite skew-product analogue of a Lyapunov function with a neutral fibre. Its
+falsifiers are an edge with neither component decreasing, or a cycle inside a
+fixed boundary class. The existing finite certificate can replay the proposed
+pair once `B` is defined symbolically.
