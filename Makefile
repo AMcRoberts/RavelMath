@@ -99,7 +99,7 @@ TRANSITION_FILES := $(addprefix $(TRANSITIONS_DIR)/spectre_transitions_,$(addsuf
 .PHONY: csy_finite_carry_automaton_test
 .PHONY: lean_class_ii_catalogue_cross_check_test
 .PHONY: supergolden_qrs_audit
-.PHONY: theta5_contact_boundary_probe property_f_family_autopsy property_f_family_artifact property_f_transport_certificate_test property_f_contact_transport_bridge_test generalized_multinacci_property_f_transport_test generalized_multinacci_property_f_transport_extended_test generalized_multinacci_growth_profile_test generalized_multinacci_block_affine_test generalized_multinacci_structural_sweep_test generalized_multinacci_cross_dimension_test generalized_multinacci_cross_dimension_property_f_test generalized_multinacci_fiber_interaction_test
+.PHONY: theta5_contact_boundary_probe property_f_family_autopsy property_f_family_artifact property_f_transport_certificate_test property_f_contact_transport_bridge_test generalized_multinacci_property_f_transport_test generalized_multinacci_property_f_transport_extended_test generalized_multinacci_growth_profile_test generalized_multinacci_block_affine_test generalized_multinacci_structural_sweep_test generalized_multinacci_cross_dimension_test generalized_multinacci_cross_dimension_property_f_test generalized_multinacci_fiber_interaction_test adelic_cocycle_extension_test
 
 all: build data apps tests
 build: $(LIB)
@@ -2319,6 +2319,13 @@ $(TEST_BIN_GENERALIZED_MULTINACCI_PROPERTY_F_TRANSPORT): $(TESTDIR)/generalized_
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 generalized_multinacci_property_f_transport_test: $(TEST_BIN_GENERALIZED_MULTINACCI_PROPERTY_F_TRANSPORT)
 	./$(TEST_BIN_GENERALIZED_MULTINACCI_PROPERTY_F_TRANSPORT)
+
+TEST_BIN_ADELIC_COCYCLE_EXTENSION := $(BUILDDIR)/adelic_cocycle_extension_test
+$(TEST_BIN_ADELIC_COCYCLE_EXTENSION): $(TESTDIR)/adelic_cocycle_extension_test.cpp \
+		$(INCDIR)/adelic/adelic_cocycle_extension.hpp | $(BUILDDIR)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< -o $@
+adelic_cocycle_extension_test: $(TEST_BIN_ADELIC_COCYCLE_EXTENSION)
+	./$(TEST_BIN_ADELIC_COCYCLE_EXTENSION)
 
 TEST_BIN_GENERALIZED_MULTINACCI_PROPERTY_F_TRANSPORT_EXTENDED := $(BUILDDIR)/generalized_multinacci_property_f_transport_extended_test
 $(TEST_BIN_GENERALIZED_MULTINACCI_PROPERTY_F_TRANSPORT_EXTENDED): $(TESTDIR)/generalized_multinacci_property_f_transport_extended_test.cpp \

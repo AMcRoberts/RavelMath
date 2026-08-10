@@ -139,6 +139,11 @@ local coordinate for each prime ideal above a divisor of `(beta)`. The current
 `make_combined_padic_bound` implements the product integrality predicate; the
 next implementation seam is a typed local-fiber wrapper that exposes those
 coordinates and their holonomy to the same recurrence classifier.
+The typed seam is now implemented in `adelic_cocycle_extension.hpp`: the unit
+case specializes to an empty local fiber, while the non-unit case requires
+prime-ideal descriptors and preserves the shared-prefix cocycle across all
+forgetful projections. This is the first concrete version of the expected
+third extension, not merely a diagram.
 The resulting strong hypothesis is recorded in
 `docs/TRANSPORT_CROSS_DIMENSION_HYPOTHESIS.md`: the sofic phase is the finite
 base, while transport is a graded height-by-carry-color cocycle. Its proposed

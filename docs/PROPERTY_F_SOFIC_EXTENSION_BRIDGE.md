@@ -102,6 +102,10 @@ componentwise as
 for these extra coordinates. The missing explicit object is therefore not a
 new theorem about the base: it is a typed local-fiber wrapper exposing the
 same prefix label and cocycle simultaneously at every prime ideal.
+That wrapper is now `adelic_cocycle_extension.hpp`: its unit specialization
+has an empty local fiber, while its non-unit specialization requires a valid
+prime-ideal descriptor for every local coordinate and verifies that the sofic
+and transport forgetful projections commute.
 
 ## Current evidence sheet
 
