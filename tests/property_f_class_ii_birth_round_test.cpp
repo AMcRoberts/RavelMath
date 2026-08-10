@@ -203,6 +203,7 @@ int main() {
                           << " letter=" << state.letter
                           << " gamma=" << state.gamma_key << "\n";
                 std::size_t next = graph.nodes.size();
+                std::string next_label;
                 for (const auto raw_target : state.successors) {
                     if (raw_target < 0 ||
                         static_cast<std::size_t>(raw_target) >= graph.nodes.size())
@@ -211,10 +212,19 @@ int main() {
                     if (rank.node_height[candidate] + 1 ==
                         rank.node_height[node]) {
                         next = candidate;
+                        const auto edge = std::find(state.successors.begin(),
+                                                    state.successors.end(), raw_target);
+                        const auto edge_index = static_cast<std::size_t>(
+                            edge - state.successors.begin());
+                        if (edge_index < state.edge_digit_coefficients.size())
+                            next_label =
+                                adelic::property_f_birth_round_digit_key(
+                                    state.edge_digit_coefficients[edge_index]);
                         break;
                     }
                 }
                 if (next == graph.nodes.size()) break;
+                std::cout << "rank chain edge label=" << next_label << "\n";
                 node = next;
             }
         }
