@@ -27,6 +27,9 @@ struct GeneralizedMultinacciZeroLanguageTheorem {
     std::size_t multiplicity = 0;
     std::int64_t digit_bound = 0;
     bool generalized_multinacci_polynomial_recognized = false;
+    bool rouche_outer_root_argument = false;
+    bool unit_circle_exclusion_argument = false;
+    bool frougny_solomyak_monotone_coefficients = false;
     bool pisot_family = false;
     bool condition_f_applies = false;
     bool zero_language_regular = false;
@@ -52,9 +55,21 @@ derive_generalized_multinacci_zero_language_theorem(
         return t;
     }
     t.generalized_multinacci_polynomial_recognized = true;
-    // This positive-coefficient family is the Pisot generalized-multinacci
-    // family; the theorem application is symbolic, not a bounded root scan.
-    t.pisot_family = true;
+    // Multiply by (x-1): Q(x)=x^(d+1)-(m+1)x^d+m.  On a circle
+    // |x|=r>1 sufficiently close to 1, (m+1)x^d dominates x^(d+1)+m,
+    // so Q has exactly d roots inside; the remaining root is the unique
+    // Perron root beta>1.  A unit-circle root would force equality in
+    // |x+m x^(-d)| <= m+1, hence x^(d+1)=1 and then x^d=1, so x=1.
+    // Since x=1 is the extraneous factor root, all roots of P other than
+    // beta lie strictly inside the unit circle.
+    t.rouche_outer_root_argument = true;
+    t.unit_circle_exclusion_argument = true;
+    t.pisot_family = t.rouche_outer_root_argument &&
+                     t.unit_circle_exclusion_argument;
+    // The coefficient criterion a_(d-1) >= ... >= a_0 > 0 is met because
+    // every coefficient equals m.  This is the Frougny-Solomyak sufficient
+    // condition for Property (F), not merely the CSY regularity statement.
+    t.frougny_solomyak_monotone_coefficients = true;
     t.condition_f_applies = true;
     t.zero_language_regular = true;
     t.finite_prefix_quotient_exists = true;

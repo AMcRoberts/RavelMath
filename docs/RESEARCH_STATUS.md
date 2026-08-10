@@ -169,6 +169,16 @@ finite carry alphabet and treats terminal transport fibres as permutation
 lifts, preserving path growth. This closes the abstract Condition-F existence
 route; the zero-plateau rank remains the constructive bound explaining the
 finite graph sizes and the resource behavior of direct enumeration.
+The generalized Pisot premise is now justified in the certificate itself:
+after multiplying by `x-1`, Rouché isolates one root outside the unit circle,
+and the equality case on `|x|=1` leaves only the extraneous root `x=1`.
+Thus the CSY theorem application is not resting on an unverified numerical
+root scan.
+The actual Condition-F implication is supplied by the Frougny-Solomyak
+coefficient criterion `a_(d-1) >= ... >= a_0 > 0`: the generalized family has
+the constant coefficient sequence `(m,...,m)`, so it satisfies that criterion
+uniformly. This is stronger than merely observing regularity in a bounded CSY
+automaton.
 Each channel is now compiled to an exact integer affine endpoint map on the
 `d`-coordinate coefficient lattice; all 19 `(4,6)` maps are replay-checked
 against `Q(beta)`, while the 42-point sweep checks the parameterized map shape.
