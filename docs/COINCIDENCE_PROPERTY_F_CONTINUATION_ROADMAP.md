@@ -623,3 +623,11 @@ instance of the lexicographic premise. The universal seam is now precise:
 derive the same SCC-condensation boundary classes and bounded phase tie-break
 from the ordered-prefix grammar, rather than treating this instance's rank
 table as a theorem.
+
+The same condensation operation was enrolled in the nine-row fixed-spectrum
+permutation-family autopsy. Every closed row has a valid finite boundary rank;
+the maximum sink distance ranges from 1 to 59 while the incidence polynomial
+stays fixed. This is evidence that `B` is an ordering/transport invariant
+with family-dependent height, not a spectral quantity. The family artifact
+now records terminal-SCC counts and maximum escape height for later symbolic
+comparison.

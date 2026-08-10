@@ -1226,3 +1226,9 @@ paired rank `16*(B_left+B_right)+R_left+R_right` passes all 302,319 live
 completion edges with zero violations. The remaining theorem is not the rank
 calculation; it is the uniform symbolic derivation of those boundary SCC
 classes and their finite phase tie-break across the family.
+
+The fixed-spectrum nine-member permutation autopsy now records the same rank
+statistics. All rows have valid SCC condensations; maximum sink distance is
+`4,3,1,55,59,3,5,58,58` across the listed orderings, despite identical
+incidence spectra. The boundary potential is therefore sensitive to ordering
+and transport geometry, exactly as the large Property-F lifts suggested.
