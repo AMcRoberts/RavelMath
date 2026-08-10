@@ -24,6 +24,7 @@ struct PropertyFClassIIAkiyamaSpineCertificate {
     std::size_t backward_steps_checked = 0;
     std::size_t identity_mismatches = 0;
     std::size_t residual_mismatches = 0;
+    std::size_t spine_coordinate_mismatches = 0;
     std::size_t forward_mismatches = 0;
     std::size_t backward_mismatches = 0;
     bool parameter_domain = false;
@@ -72,9 +73,13 @@ derive_property_f_class_ii_akiyama_spine(std::size_t a) {
     const auto aa = static_cast<long long>(a);
     const auto unit = property_f_class_ii_akiyama_unit(aa, 1);
     const auto beta = std::array<long long, 3>{0, 1, 0};
+    const auto spine = property_f_class_ii_rank_spine_coefficients(a);
     const auto beta_inverse = property_f_class_ii_beta_inverse(
         std::array<long long, 3>{1, 0, 0}, aa);
-    for (long long k = 1; k <= aa - 1; ++k) {
+    // Akiyama's Lemma 7 ranges through the integer part [beta]=a+1.  The
+    // spine adapter uses only k<=a-1, but the fundamental recurrence itself
+    // is cheap to check over the full published range.
+    for (long long k = 1; k <= aa + 1; ++k) {
         ++out.fundamental_identities_checked;
         const auto ku = property_f_class_ii_akiyama_unit(aa, k);
         const auto rhs = property_f_class_ii_coeff_add(
@@ -89,14 +94,20 @@ derive_property_f_class_ii_akiyama_spine(std::size_t a) {
                     k - 1)));
         if (rhs != ku) ++out.identity_mismatches;
 
-        const auto residual = property_f_class_ii_akiyama_residual(aa, k);
-        const auto expected = property_f_class_ii_coeff_add(
-            ku, property_f_class_ii_coeff_scale(beta, -(k - 1)));
-        if (residual != expected) ++out.residual_mismatches;
-        else ++out.residual_matches;
+        if (k <= aa - 1) {
+            const auto residual = property_f_class_ii_akiyama_residual(aa, k);
+            const auto expected = property_f_class_ii_coeff_add(
+                ku, property_f_class_ii_coeff_scale(beta, -(k - 1)));
+            if (residual != expected) ++out.residual_mismatches;
+            else ++out.residual_matches;
+            const auto spine_index = static_cast<std::size_t>(2 * k);
+            if (spine_index >= spine.size() || spine[spine_index] != residual)
+                ++out.spine_coordinate_mismatches;
+        }
     }
     out.fundamental_recurrence_valid = out.identity_mismatches == 0;
-    out.spine_adapter_valid = out.residual_mismatches == 0;
+    out.spine_adapter_valid = out.residual_mismatches == 0 &&
+        out.spine_coordinate_mismatches == 0;
 
     for (long long k = 1; k <= aa - 2; ++k) {
         const auto negative = property_f_class_ii_akiyama_residual(aa, k);
@@ -104,6 +115,9 @@ derive_property_f_class_ii_akiyama_spine(std::size_t a) {
             k + 1, k * (aa + 1), -k};
         const auto next_negative =
             property_f_class_ii_akiyama_residual(aa, k + 1);
+        const auto positive_index = static_cast<std::size_t>(2 * k + 1);
+        if (positive_index >= spine.size() || spine[positive_index] != positive)
+            ++out.spine_coordinate_mismatches;
         ++out.forward_steps_checked;
         if (property_f_class_ii_affine_tail_step(negative, aa, k) != positive)
             ++out.forward_mismatches;
