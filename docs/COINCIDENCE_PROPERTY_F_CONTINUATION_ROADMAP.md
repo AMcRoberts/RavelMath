@@ -460,3 +460,24 @@ the individual lift checks.
 `ore_padic_factorization` now enforces that certificate before returning, so a
 caller cannot accidentally consume a locally plausible but globally
 non-reconstructing factor list.
+
+## 2026-08-09 — affine textile correction
+
+The non-AR return/contact experiment must be read with the exact affine
+zero-expansion action `gamma' = beta^{-1}(gamma + delta)`. A static review
+found that anchoring an SCC potential at zero can manufacture residuals even
+when a free affine root potential exists. The corrected certificate solves
+those affine consistency equations: the difference cocycle is consistent on
+all four cyclic SCCs, while the left and right prefix transports are each
+inconsistent on the 52- and 401-state components but cancel in their
+difference. The rank-3 numbers retained in the certificate are
+zero-frontier residual ranks, not cohomological ranks.
+
+The stable finding is therefore a correlated, multivalued two-sided textile:
+from 166 zero-contact seeds it reaches 2,871 lift states, with 1,756 states
+ambiguous on each one-sided gamma projection. The exact powered Property-F
+graph still closes at 95 nodes. This is a live synchronization/factorization
+problem for the non-AR route, not a Property-F obstruction or a new
+independent field actor. The next theorem-facing step is to model the finite
+relation over the gamma graph and prove whether its correlated branching is
+harmless.

@@ -238,13 +238,23 @@ int main() {
                     scc.right_coboundary ? 1 : 0);
     expect(contact_holonomy.exact && contact_holonomy.cyclic_sccs > 0,
            "full contact lift has classified Q(beta) recurrent cycles");
-    expect(contact_holonomy.nontrivial_holonomy_sccs == 2 &&
-               contact_holonomy.sccs.front().residual_rank == 3 &&
-               contact_holonomy.sccs.back().residual_rank == 3,
-           "affine holonomy exposes full-rank recurrent actors");
+    bool full_rank_frontier_residual = false;
+    bool all_difference_sccs_consistent = true;
+    for (const auto& scc : contact_holonomy.sccs) {
+        all_difference_sccs_consistent &= scc.coboundary;
+        if ((scc.nodes == 52 || scc.nodes == 401) &&
+            scc.residual_rank == 3 && scc.left_residual_rank == 3 &&
+            scc.right_residual_rank == 3)
+            full_rank_frontier_residual = true;
+    }
+    expect(contact_holonomy.nontrivial_holonomy_sccs == 0 &&
+               all_difference_sccs_consistent && full_rank_frontier_residual,
+           "affine difference holonomy is cohomologically consistent");
     expect(contact_holonomy.zero_seed_count > 0 &&
-               contact_holonomy.zero_seed_reaches_nontrivial_holonomy,
-           "zero-contact frontier reaches the recurrent holonomy candidate");
+               contact_holonomy.zero_seed_reachable_states > 0 &&
+               contact_holonomy.left_frontier_ambiguous_states > 0 &&
+               contact_holonomy.right_frontier_ambiguous_states > 0,
+           "zero-contact frontier reaches multivalued affine transport");
     expect(!contact_holonomy.single_valued_frontier_projection,
            "frontier-to-contact projection is genuinely multivalued");
     const auto digit_cocycle = adelic::derive_property_f_role_digit_cocycle<3>(

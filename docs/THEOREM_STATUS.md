@@ -1106,6 +1106,13 @@ correct invariant, two cyclic components (52 and 401 states) are
 non-coboundary, each with residual rank 3 on the difference, left, and right
 prefix transports. This is evidence for a full degree-three affine actor,
 while the exact 95-node gamma graph remains closed.
+Second correction after static review: affine coboundary must be tested with a
+free root potential, not with the root fixed at zero. The difference cocycle
+is consistent on all four cyclic SCCs; the displayed rank-3 values are
+frontier-relative residual ranks only. The left/right transports are each
+inconsistent on the 52- and 401-state components but cancel in their
+difference. The supported conclusion is a correlated multivalued textile,
+not a new cohomological actor or a Property-F failure.
 The SCC census records 32 zero-contact states inside that 401-node
 non-coboundary component (369 nonzero-contact states). Hence it cannot be
 discarded as wholly detached from the zero-contact slice; the exact

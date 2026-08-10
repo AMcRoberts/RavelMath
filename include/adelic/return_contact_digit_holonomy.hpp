@@ -21,11 +21,15 @@ struct ReturnContactDigitHolonomyScc {
     std::size_t residual_edges = 0;
     std::size_t left_residual_edges = 0;
     std::size_t right_residual_edges = 0;
+    // Rank of residuals obtained with the root anchored at zero.  These are
+    // frontier-relative diagnostics, not the affine cohomology rank.
     std::size_t residual_rank = 0;
     std::size_t left_residual_rank = 0;
     std::size_t right_residual_rank = 0;
     std::size_t zero_contact_nodes = 0;
     std::size_t nonzero_contact_nodes = 0;
+    // True iff a free Q(beta) root potential solves every affine edge
+    // equation in this SCC.  The one-sided flags are checked independently.
     bool coboundary = true;
     bool left_coboundary = true;
     bool right_coboundary = true;
@@ -131,6 +135,44 @@ ReturnContactDigitHolonomyCertificate derive_return_contact_digit_holonomy(
         }
         return basis.size();
     };
+    auto affine_consistent = [&](const std::vector<std::size_t>& component,
+                                 const std::vector<bool>& in,
+                                 const std::vector<mathlib::QElem>& multiplier,
+                                 const std::vector<mathlib::QElem>& constant,
+                                 const auto& selector) {
+        bool candidate_set = false;
+        mathlib::QElem candidate = automaton.ring.zero();
+        const auto zero = automaton.ring.zero();
+        for (const auto u : component) {
+            for (const auto& edge : graph[u]) {
+                if (!in[edge.to]) continue;
+                const auto label = selector(edge);
+                const auto lhs = automaton.ring.sub(
+                    multiplier[edge.to],
+                    automaton.ring.mul(inverse_beta, multiplier[u]));
+                const auto rhs = automaton.ring.sub(
+                    automaton.ring.mul(inverse_beta,
+                        automaton.ring.add(constant[u], label)),
+                    constant[edge.to]);
+                if (qelem_key(lhs) == qelem_key(zero)) {
+                    if (qelem_key(rhs) != qelem_key(zero)) return false;
+                    continue;
+                }
+                const auto inv_lhs = mathlib::invert_in_qbeta(lhs, automaton.ring);
+                if (!inv_lhs.invertible) return false;
+                const auto proposed = automaton.ring.mul(
+                    inv_lhs.inverse,
+                    automaton.ring.sub(zero, rhs));
+                if (!candidate_set) {
+                    candidate = proposed;
+                    candidate_set = true;
+                } else if (qelem_key(candidate) != qelem_key(proposed)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    };
     std::vector<int> index(n, -1), low(n, 0), stack;
     std::vector<int> scc_of(n, -1);
     std::vector<bool> nontrivial_scc;
@@ -164,6 +206,9 @@ ReturnContactDigitHolonomyCertificate derive_return_contact_digit_holonomy(
         std::vector<mathlib::QElem> potential(n, automaton.ring.zero());
         std::vector<mathlib::QElem> left_potential(n, automaton.ring.zero());
         std::vector<mathlib::QElem> right_potential(n, automaton.ring.zero());
+        std::vector<mathlib::QElem> multiplier(n, automaton.ring.zero());
+        std::vector<mathlib::QElem> left_multiplier(n, automaton.ring.zero());
+        std::vector<mathlib::QElem> right_multiplier(n, automaton.ring.zero());
         std::vector<std::size_t> todo{component.front()};
         assigned[component.front()] = true;
         std::size_t residuals = 0;
@@ -173,6 +218,10 @@ ReturnContactDigitHolonomyCertificate derive_return_contact_digit_holonomy(
         std::vector<mathlib::QElem> left_residual_values;
         std::vector<mathlib::QElem> right_residual_values;
         const auto zero = automaton.ring.zero();
+        const auto one = automaton.ring.one();
+        multiplier[component.front()] = one;
+        left_multiplier[component.front()] = one;
+        right_multiplier[component.front()] = one;
         while (!todo.empty()) {
             const auto u = todo.back(); todo.pop_back();
             for (const auto& edge : graph[u]) {
@@ -185,6 +234,12 @@ ReturnContactDigitHolonomyCertificate derive_return_contact_digit_holonomy(
                         left_potential[u], edge.left_label);
                     right_potential[edge.to] = affine_step(
                         right_potential[u], edge.right_label);
+                    multiplier[edge.to] = automaton.ring.mul(
+                        inverse_beta, multiplier[u]);
+                    left_multiplier[edge.to] = automaton.ring.mul(
+                        inverse_beta, left_multiplier[u]);
+                    right_multiplier[edge.to] = automaton.ring.mul(
+                        inverse_beta, right_multiplier[u]);
                     assigned[edge.to] = true;
                     todo.push_back(edge.to);
                     continue;
@@ -219,9 +274,17 @@ ReturnContactDigitHolonomyCertificate derive_return_contact_digit_holonomy(
                 if (coordinate != 0) nonzero = true;
             if (!nonzero) ++zero_contact;
         }
-        const bool coboundary = residuals == 0;
-        const bool left_coboundary = left_residuals == 0;
-        const bool right_coboundary = right_residuals == 0;
+        const bool coboundary = affine_consistent(
+            component, in, multiplier, potential,
+            [&](const Edge& edge) {
+                return automaton.ring.sub(edge.right_label, edge.left_label);
+            });
+        const bool left_coboundary = affine_consistent(
+            component, in, left_multiplier, left_potential,
+            [](const Edge& edge) { return edge.left_label; });
+        const bool right_coboundary = affine_consistent(
+            component, in, right_multiplier, right_potential,
+            [](const Edge& edge) { return edge.right_label; });
         const auto residual_rank = exact_rank(residual_values);
         const auto left_residual_rank = exact_rank(left_residual_values);
         const auto right_residual_rank = exact_rank(right_residual_values);
@@ -236,7 +299,6 @@ ReturnContactDigitHolonomyCertificate derive_return_contact_digit_holonomy(
     };
     for (std::size_t v = 0; v < n; ++v) if (index[v] < 0) visit(v);
     std::vector<bool> reached(n, false);
-    std::vector<bool> left_assigned(n, false), right_assigned(n, false);
     std::vector<bool> left_ambiguous(n, false), right_ambiguous(n, false);
     std::vector<mathlib::QElem> left_frontier_potential(
         n, automaton.ring.zero());
@@ -253,8 +315,6 @@ ReturnContactDigitHolonomyCertificate derive_return_contact_digit_holonomy(
         ++out.zero_seed_count;
         if (!reached[it->second]) {
             reached[it->second] = true;
-            left_assigned[it->second] = true;
-            right_assigned[it->second] = true;
             queue.push_back(it->second);
         }
     }
@@ -273,8 +333,6 @@ ReturnContactDigitHolonomyCertificate derive_return_contact_digit_holonomy(
                 right_frontier_potential[u], edge.right_label);
             if (!reached[edge.to]) {
                 reached[edge.to] = true;
-                left_assigned[edge.to] = true;
-                right_assigned[edge.to] = true;
                 left_frontier_potential[edge.to] = left_next;
                 right_frontier_potential[edge.to] = right_next;
                 queue.push_back(edge.to);

@@ -4189,3 +4189,14 @@ stronger than the earlier rank-one note: the contact lift carries a full
 degree-three affine holonomy actor. The 95-node exact Property-F graph still
 closes, so this is an obstruction to the naive factor map, not yet a
 Property-F failure.
+Second correction after static review: “non-coboundary” must allow a free
+root potential for an affine cocycle. Solving those exact affine consistency
+equations makes the difference cocycle consistent on all four cyclic SCCs
+(`nontrivial_holonomy_sccs = 0`). The rank-3 residuals above are therefore
+zero-anchored frontier diagnostics, not a cohomological rank theorem. The
+left and right cocycles remain individually inconsistent on the 52- and
+401-state components, while their difference is consistent. The robust result
+is a correlated, multivalued two-sided textile over the closed gamma graph:
+1,756 reachable states are ambiguous on each side from the zero frontier.
+This is a synchronization obstruction to a single-valued factor map, not a
+Property-F obstruction.
