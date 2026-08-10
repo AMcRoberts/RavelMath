@@ -121,6 +121,14 @@ criterion, the Perron companion hypothesis, and the determinant split:
 whose prime divisors seed the valuation fibers. The generalized family is the
 ray `(m,...,m,1)` inside this cone.
 
+The current theorem boundary is precise. For every coefficient vector in this
+cone, the beta-numeration Condition-F statement is uniform, including
+non-units (`a_0>1`); the adelic representation has exactly the local fibers
+supplied by the prime ideals above `a_0`. Beyond the cone, the missing theorem
+is not Condition F itself, but proving that an arbitrary substitution's
+contact cocycle is cohomologous to this canonical adelic extension and carries
+no surviving nonzero holonomy.
+
 ## Current evidence sheet
 
 The fixed-spectrum fourth-generator family has nine exact instances. All close
