@@ -132,6 +132,32 @@ int main() {
                     std::cout << heights.first << "->" << heights.second
                               << ":" << count << ",";
                 std::cout << "\n";
+                if (std::getenv("CLASSII_BIRTH_COLLAR_DETAIL_PROBE") != nullptr) {
+                    const auto rank = adelic::derive_property_f_escape_rank(graph);
+                    for (std::size_t node = 0; node < graph.nodes.size(); ++node) {
+                        if (rank.node_height[node] < 4 ||
+                            rank.node_height[node] > 5)
+                            continue;
+                        std::cout << "collar_state node=" << node
+                                  << " h=" << rank.node_height[node]
+                                  << " letter=" << graph.nodes[node].letter
+                                  << " gamma=" << graph.nodes[node].gamma_key
+                                  << " edges=";
+                        for (std::size_t edge = 0;
+                             edge < graph.nodes[node].successors.size(); ++edge) {
+                            const auto target = static_cast<std::size_t>(
+                                graph.nodes[node].successors[edge]);
+                            const auto label = edge <
+                                    graph.nodes[node].edge_digit_coefficients.size()
+                                ? adelic::property_f_birth_round_digit_key(
+                                      graph.nodes[node].edge_digit_coefficients[edge])
+                                : std::string{};
+                            std::cout << rank.node_height[target] << "["
+                                      << label << "],";
+                        }
+                        std::cout << "\n";
+                    }
+                }
             }
             if (a == 4) {
                 auto bad = graph;
