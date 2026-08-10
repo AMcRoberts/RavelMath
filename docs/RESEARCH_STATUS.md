@@ -106,6 +106,23 @@ its work-stack entry was popped. The nine-row family autopsy and the full
 native regression remain green; only unrelated mini-GMP warning diagnostics
 remain.
 
+## Overnight bridge replay (2026-08-10)
+
+The post-repair focused bridge checks remain green: the non-AR bridge
+executable exits 0, the transport certificate passes, and the three fixed
+family orderings pass their contact-to-Property-F checks. The intentional
+`first_100` coarse digit-role miss remains 54/81 and is reported as a bridge
+boundary diagnostic, not a Property-F failure.
+
+The Class-II symbolic precedent was also replayed from its own grammar. The
+round-1 Red candidates have the exact affine coordinate forms
+`0-a`, `0+a`, `1+a`, and `1-a`, so bounded targets are excluded by an explicit
+linear escape argument. The real round-stratified traces for `a=7..10` then
+report one birth round per recurrent block, complete transient escape, zero
+earlier returns, and the expected eight cross-block edges. This strengthens
+the shell-stack template, but it does not derive the analogous birth-round
+grammar for the adelic Property-F lift; that remains the theorem-facing seam.
+
 ## Effective-potential analogy (bounded modeling hypothesis, 2026-08-10)
 
 The observed “large, long-lived, then dispersing” cases invite a useful but
