@@ -169,6 +169,28 @@ struct FiniteEscapeHeightCertificate {
     bool proves_acyclic = false;
 };
 
+// Lexicographic version of the local escape-height contract.  The primary
+// coordinate describes a boundary/SCC layer; the secondary coordinate is a
+// bounded phase or carry residual used only when the primary layer is fixed.
+// A live nonterminal edge must decrease the ordered pair
+// `(primary, secondary)`.  This is the direct finite analogue of a
+// Lyapunov function with a neutral fibre, and avoids encoding an arbitrary
+// weighting constant into a theorem-specific caller.
+struct FiniteEscapeLexicographicHeightCertificate {
+    std::size_t live_vertices = 0;
+    std::size_t live_edges = 0;
+    std::size_t checked_edges = 0;
+    std::size_t primary_decreases = 0;
+    std::size_t secondary_tie_decreases = 0;
+    std::size_t height_violations = 0;
+    std::size_t terminal_outgoing_edges = 0;
+    std::size_t maximum_primary = 0;
+    std::size_t maximum_secondary = 0;
+    bool strictly_decreasing = false;
+    bool terminals_absorbing = false;
+    bool proves_acyclic = false;
+};
+
 // Contract for a shell/birth-round stratification of a finite graph.  The
 // caller supplies the SCC (or recurrent-block) labels, a recurrent flag for
 // each component, and the proposed birth round of each node.  This operation
@@ -310,6 +332,51 @@ inline FiniteEscapeHeightCertificate derive_finite_escape_height_certificate(
             }
             ++out.checked_edges;
             if (height[u] <= height[v]) ++out.height_violations;
+        }
+    }
+    out.strictly_decreasing = out.height_violations == 0;
+    out.terminals_absorbing = out.terminal_outgoing_edges == 0;
+    out.proves_acyclic = out.strictly_decreasing && out.terminals_absorbing;
+    return out;
+}
+
+inline FiniteEscapeLexicographicHeightCertificate
+derive_finite_escape_lexicographic_height_certificate(
+    const std::vector<std::vector<std::size_t>>& adjacency,
+    const std::vector<bool>& live,
+    const std::vector<bool>& terminal,
+    const std::vector<std::size_t>& primary,
+    const std::vector<std::size_t>& secondary) {
+    if (adjacency.size() != live.size() || live.size() != terminal.size() ||
+        terminal.size() != primary.size() || primary.size() != secondary.size())
+        throw std::invalid_argument(
+            "lexicographic escape height: graph/vector size mismatch");
+    const std::size_t n = adjacency.size();
+    FiniteEscapeLexicographicHeightCertificate out;
+    for (std::size_t u = 0; u < n; ++u) {
+        if (!live[u]) continue;
+        ++out.live_vertices;
+        out.maximum_primary = std::max(out.maximum_primary, primary[u]);
+        out.maximum_secondary = std::max(out.maximum_secondary, secondary[u]);
+        for (const auto v : adjacency[u]) {
+            if (v >= n)
+                throw std::invalid_argument(
+                    "lexicographic escape height: edge out of range");
+            if (!live[v]) continue;
+            ++out.live_edges;
+            if (terminal[u]) {
+                ++out.terminal_outgoing_edges;
+                continue;
+            }
+            ++out.checked_edges;
+            if (primary[u] > primary[v]) {
+                ++out.primary_decreases;
+            } else if (primary[u] == primary[v] &&
+                       secondary[u] > secondary[v]) {
+                ++out.secondary_tie_decreases;
+            } else {
+                ++out.height_violations;
+            }
         }
     }
     out.strictly_decreasing = out.height_violations == 0;

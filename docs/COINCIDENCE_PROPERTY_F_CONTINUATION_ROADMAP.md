@@ -625,6 +625,15 @@ derive the same SCC-condensation boundary classes and bounded phase tie-break
 from the ordered-prefix grammar, rather than treating this instance's rank
 table as a theorem.
 
+The local contract is now factored as
+`derive_finite_escape_lexicographic_height_certificate` in
+`ravel/proof/finite_graph_correspondence.hpp`. It accepts primary boundary
+layers and a secondary phase residual directly, counts primary versus tie-case
+decreases, rejects nondecreasing ties, and treats terminal leakage as a
+separate failure. This keeps the family theorem honest: the current scalar
+weight is a finite replay of an ordered pair, while the still-open work is the
+symbolic derivation of those two coordinates from the prefix grammar.
+
 The same condensation operation was enrolled in the nine-row fixed-spectrum
 permutation-family autopsy. Every closed row has a valid finite boundary rank;
 the maximum sink distance ranges from 1 to 59 while the incidence polynomial

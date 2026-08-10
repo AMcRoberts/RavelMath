@@ -458,3 +458,24 @@ multiplication by `beta` contracts the secondary embeddings, while the
 enumerated `beta^(-1)` walk expands there in the forward direction. The finite
 set is therefore created by admissibility and boundary pruning, not by an
 ordinary contracting lattice map.
+
+## Lexicographic escape contract
+
+The finite completion does not need an arbitrary scalar potential. Its natural
+rank is an ordered pair: first the distance of each Property-F gamma node's
+SCC to the accepted terminal shell, then the bounded return-phase residual
+inside that layer. A live nonterminal transition must either lower the SCC
+distance or preserve it and lower the phase residual; terminal shell vertices
+are absorbing. The reusable checker
+`derive_finite_escape_lexicographic_height_certificate` in
+`ravel/proof/finite_graph_correspondence.hpp` records these two cases
+separately and proves acyclicity from strict lexicographic descent. This is
+the finite skew-product form of a Lyapunov function with a neutral fibre.
+
+For the powered non-AR instance, the observed weighted callback is only an
+implementation of this order (the weight is one more than the largest
+possible two-sided phase residual). The family theorem still has to derive
+the SCC-layer and phase coordinates from the ordered-prefix grammar. A
+transition that fails both decreases, or a cycle inside one fixed pair of
+coordinates, is the precise symbolic falsifier; a large transient cloud by
+itself is not.

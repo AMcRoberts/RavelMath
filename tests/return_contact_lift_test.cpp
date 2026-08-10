@@ -227,6 +227,30 @@ int main() {
                !leaking_terminal.proves_acyclic,
            "finite escape height certificate rejects an outgoing terminal shell");
 
+    const auto lexicographic_escape =
+        ravel::proof::derive_finite_escape_lexicographic_height_certificate(
+            {{1, 2}, {2}, {}, {0}}, {true, true, true, false},
+            {false, false, true, false},
+            {2, 1, 0, 99}, {0, 4, 0, 0});
+    expect(lexicographic_escape.strictly_decreasing &&
+               lexicographic_escape.terminals_absorbing &&
+               lexicographic_escape.proves_acyclic &&
+               lexicographic_escape.primary_decreases == 3 &&
+               lexicographic_escape.secondary_tie_decreases == 0,
+           "lexicographic escape certificate accepts primary-layer descent");
+    const auto lexicographic_tie =
+        ravel::proof::derive_finite_escape_lexicographic_height_certificate(
+            {{1}, {},}, {true, true}, {false, true}, {0, 0}, {1, 1});
+    expect(!lexicographic_tie.strictly_decreasing &&
+               lexicographic_tie.height_violations == 1,
+           "lexicographic escape certificate rejects a nondecreasing phase tie");
+    const auto phase_tie_descent =
+        ravel::proof::derive_finite_escape_lexicographic_height_certificate(
+            {{1}, {}}, {true, true}, {false, true}, {0, 0}, {1, 0});
+    expect(phase_tie_descent.strictly_decreasing &&
+               phase_tie_descent.secondary_tie_decreases == 1,
+           "lexicographic escape certificate accepts secondary descent on a fixed layer");
+
     std::printf(
         "  lift: %zu sparse states, %zu edges, %zu/%zu projected nodes\n",
         lift.states.size(), lift.edges.size(),
