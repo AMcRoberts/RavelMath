@@ -47,9 +47,12 @@ int main() {
     const auto boundary = ravel::compute_contact_boundary_dispatch(
         powered, spectral.beta, spectral.b2, d_cont);
     std::printf("sigma02: boundary converged=%d early_stop=%d corona_capped=%d "
-                "nodes=%zu\n", boundary.converged,
+                "nodes=%zu pre_contact=%zu max_a=%zu cap=%zu rounds=%d\n",
+                boundary.converged,
                 boundary.closure_stopped_early, boundary.corona_capped,
-                boundary.boundary_nodes.size());
+                boundary.boundary_nodes.size(), boundary.pre_contact_size,
+                boundary.max_a_size_reached, boundary.limits_used.corona_cap,
+                boundary.limits_used.max_corona_rounds);
     if (!boundary.converged || boundary.closure_stopped_early
         || boundary.corona_capped) {
         std::printf("TERMINATION=boundary_cap_or_nonconvergence\n");
