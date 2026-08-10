@@ -268,6 +268,8 @@ all nonzero bounded deviations land in the collar; the only bounded high-tail
 nonzero edge is same-SCC transport and is retained as harmless recurrence.
 The census records exact digit labels and deviation histograms, so the next
 symbolic proof can target the finite collar cases rather than the full graph.
+The opt-in `CLASSII_AKIYAMA_WINDOW_PROBE=1` output prints those exact
+deviation-to-label sets for autopsy.
 This closes the coordinate-level analogue, but not the beta-expansion
 inequalities or the literal prefix/contact-cocycle intertwiner.
 

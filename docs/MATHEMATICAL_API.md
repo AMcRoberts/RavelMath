@@ -925,7 +925,10 @@ window to a realized graph. It decodes ordinary high-tail labels, records
 the deviation histogram and exact labels of bounded candidates, preserves
 same-SCC recurrence as transport, and treats a nonzero bounded deviation into
 another high SCC as a falsifier. Bounded candidates landing in the collar are
-the finite branch cases still requiring a symbolic absorption proof.
+the finite branch cases still requiring a symbolic absorption proof. Set
+`CLASSII_AKIYAMA_WINDOW_PROBE=1` together with `CLASSII_BIRTH_MAX_A=<a>` on
+`property_f_class_ii_birth_round_test` to print the exact deviation histogram
+and coefficient labels for the final checked row.
 
 For the non-unit branch, `adelic_cocycle_extension.hpp` also exposes
 `derive_adelic_valuation_fibre_lemma`. It checks maximal Dedekind factorization,

@@ -150,6 +150,29 @@ int main() {
                 assert(window_census.malformed_edges == 0);
                 assert(window_census.bounded_high_nonzero_deviations == 0);
                 assert(window_census.bounded_collar_edges > 0);
+                if (std::getenv("CLASSII_AKIYAMA_WINDOW_PROBE") != nullptr &&
+                    a == max_a) {
+                    std::cout << "akiyama_window a=" << a
+                              << " tail=" << window_census.tail_sources
+                              << " bounded=" << window_census.bounded_candidates
+                              << " collar=" << window_census.bounded_collar_edges
+                              << " high=" << window_census.bounded_high_edges
+                              << " internal_high="
+                              << window_census.bounded_internal_high_edges
+                              << " histogram=";
+                    for (const auto& [deviation, count] :
+                         window_census.bounded_deviation_histogram)
+                        std::cout << deviation << ":" << count << ",";
+                    std::cout << " labels=";
+                    for (const auto& [deviation, labels] :
+                         window_census.bounded_labels_by_deviation) {
+                        std::cout << deviation << "[";
+                        for (const auto& label : labels)
+                            std::cout << label << ",";
+                        std::cout << "]";
+                    }
+                    std::cout << "\n";
+                }
             }
             const auto absorption =
                 adelic::derive_property_f_class_ii_phase_absorption(graph, a);
