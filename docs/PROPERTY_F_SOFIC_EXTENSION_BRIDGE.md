@@ -479,3 +479,9 @@ the SCC-layer and phase coordinates from the ordered-prefix grammar. A
 transition that fails both decreases, or a cycle inside one fixed pair of
 coordinates, is the precise symbolic falsifier; a large transient cloud by
 itself is not.
+
+The terminal-aware completion now replays this pair directly as well as the
+legacy scalar encoding: all 302,319 live edges decrease in the primary layer,
+there are no nondecreasing phase ties, and no terminal outgoing edge. The
+direct replay is the authoritative finite-instance check; the scalar weight
+is retained only for compatibility with older callers.

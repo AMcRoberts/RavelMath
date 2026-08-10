@@ -634,6 +634,13 @@ separate failure. This keeps the family theorem honest: the current scalar
 weight is a finite replay of an ordered pair, while the still-open work is the
 symbolic derivation of those two coordinates from the prefix grammar.
 
+The non-AR terminal-aware replay now consumes the pair-valued contract
+directly: 302,319 live edges all lower the primary SCC-layer coordinate, with
+zero fixed-layer tie violations and zero terminal leakage (37/37 focused
+checks). The older scalar callback is therefore a compatibility projection,
+not the evidence for the rank; the remaining theorem work is still the
+family-level derivation of the pair.
+
 The same condensation operation was enrolled in the nine-row fixed-spectrum
 permutation-family autopsy. Every closed row has a valid finite boundary rank;
 the maximum sink distance ranges from 1 to 59 while the incidence polynomial

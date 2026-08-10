@@ -112,6 +112,17 @@ struct ReturnContactGammaRelationCertificate {
     std::size_t completion_max_height = 0;
     bool completion_height_strictly_decreasing = false;
     bool completion_height_terminals_absorbing = false;
+    // Optional direct replay of an ordered pair (boundary layer, phase
+    // residual).  This keeps the lexicographic theorem premise visible in
+    // the relation certificate instead of hiding it behind a caller-chosen
+    // scalar weight.
+    std::size_t completion_lexicographic_checked_edges = 0;
+    std::size_t completion_lexicographic_primary_decreases = 0;
+    std::size_t completion_lexicographic_secondary_tie_decreases = 0;
+    std::size_t completion_lexicographic_violations = 0;
+    std::size_t completion_lexicographic_terminal_outgoing_edges = 0;
+    bool completion_lexicographic_strictly_decreasing = false;
+    bool completion_lexicographic_terminals_absorbing = false;
     bool all_cyclic_lift_states_threaded = false;
     std::size_t thread_pair_vertices = 0;
     std::size_t thread_lift_branching_components = 0;
@@ -142,7 +153,10 @@ ReturnContactGammaRelationCertificate derive_return_contact_gamma_relation(
         bool derive_completion = false,
         bool allow_terminal_escapes = false,
         std::function<std::size_t(const ravel::ReturnContactState<d>&,
-                                   std::size_t, std::size_t)> completion_height = {}) {
+                                   std::size_t, std::size_t)> completion_height = {},
+        std::function<std::pair<std::size_t, std::size_t>(
+            const ravel::ReturnContactState<d>&, std::size_t, std::size_t)>
+            completion_lexicographic_height = {}) {
     struct Product { std::size_t lift; long long left; long long right; };
     ReturnContactGammaRelationCertificate out;
     out.lift_states = lift.states.size();
@@ -719,6 +733,36 @@ ReturnContactGammaRelationCertificate derive_return_contact_gamma_relation(
                     out.completion_height_violations == 0;
                 out.completion_height_terminals_absorbing =
                     out.completion_height_terminal_outgoing_edges == 0;
+            }
+            if (completion_lexicographic_height) {
+                std::vector<std::size_t> primary(candidates.size(), 0);
+                std::vector<std::size_t> secondary(candidates.size(), 0);
+                for (std::size_t product = 0; product < candidates.size();
+                     ++product) {
+                    const auto& candidate = candidates[product];
+                    const auto pair = completion_lexicographic_height(
+                        lift.states[candidate.lift], candidate.left,
+                        candidate.right);
+                    primary[product] = pair.first;
+                    secondary[product] = pair.second;
+                }
+                const auto lexicographic =
+                    ravel::proof::derive_finite_escape_lexicographic_height_certificate(
+                        adjacency, live, terminal_escape, primary, secondary);
+                out.completion_lexicographic_checked_edges =
+                    lexicographic.checked_edges;
+                out.completion_lexicographic_primary_decreases =
+                    lexicographic.primary_decreases;
+                out.completion_lexicographic_secondary_tie_decreases =
+                    lexicographic.secondary_tie_decreases;
+                out.completion_lexicographic_violations =
+                    lexicographic.height_violations;
+                out.completion_lexicographic_terminal_outgoing_edges =
+                    lexicographic.terminal_outgoing_edges;
+                out.completion_lexicographic_strictly_decreasing =
+                    lexicographic.strictly_decreasing;
+                out.completion_lexicographic_terminals_absorbing =
+                    lexicographic.terminals_absorbing;
             }
             for (std::size_t state = 0; state < live_lift.size(); ++state) {
                 if (cyclic_lift_state[state] && live_lift[state])

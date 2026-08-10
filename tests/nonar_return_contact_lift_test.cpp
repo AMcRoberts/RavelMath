@@ -7,6 +7,7 @@
 #include <set>
 #include <string>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 #include "ravel/contact_boundary.hpp"
@@ -270,22 +271,34 @@ int main() {
             maximum_phase_residual,
             phases.induced.words.at(phase.return_word).size() - phase.offset);
     const std::size_t phase_rank_weight = 2 * maximum_phase_residual + 1;
-    const auto gamma_relation = adelic::derive_return_contact_gamma_relation<3>(
-        automaton_images, lift, automaton, property_graph, seeds,
-        2'000'000, run_completion_probe || strict_completion_probe,
-        run_completion_probe && !strict_completion_probe,
+    const auto phase_residual = [&](std::size_t phase) {
+        const auto& p = phases.states.at(phase);
+        return phases.induced.words.at(p.return_word).size() - p.offset;
+    };
+    const auto completion_scalar_height =
         [&](const ReturnContactState<3>& state, std::size_t left,
             std::size_t right) {
-            const auto residual = [&](std::size_t phase) {
-                const auto& p = phases.states.at(phase);
-                return phases.induced.words.at(p.return_word).size() - p.offset;
-            };
             // Derive the lexicographic base from the actual phase system;
             // one gamma-layer drop dominates every possible phase wrap.
             return (gamma_escape_rank.node_height[left] +
                     gamma_escape_rank.node_height[right]) * phase_rank_weight +
-                   residual(state.left_phase) + residual(state.right_phase);
-        });
+                   phase_residual(state.left_phase) +
+                   phase_residual(state.right_phase);
+        };
+    const auto completion_lexicographic_height =
+        [&](const ReturnContactState<3>& state, std::size_t left,
+            std::size_t right) {
+            return std::make_pair(
+                gamma_escape_rank.node_height[left] +
+                    gamma_escape_rank.node_height[right],
+                phase_residual(state.left_phase) +
+                    phase_residual(state.right_phase));
+        };
+    const auto gamma_relation = adelic::derive_return_contact_gamma_relation<3>(
+        automaton_images, lift, automaton, property_graph, seeds,
+        2'000'000, run_completion_probe || strict_completion_probe,
+        run_completion_probe && !strict_completion_probe,
+        completion_scalar_height, completion_lexicographic_height);
     std::printf("gamma relation: products=%zu pairs=%zu max_fibre=%zu "
                 "frontier=%zu misses=%zu gamma_misses=%zu successor_misses=%zu "
                 "exact=%d cap=%d\n",
@@ -390,6 +403,15 @@ int main() {
                         gamma_relation.completion_max_height,
                         gamma_relation.completion_height_strictly_decreasing ? 1 : 0,
                         gamma_relation.completion_height_terminals_absorbing ? 1 : 0);
+            std::printf("  completion pair-rank checked=%zu primary=%zu tie=%zu "
+                        "violations=%zu terminal_outgoing=%zu strict=%d absorbing=%d\n",
+                        gamma_relation.completion_lexicographic_checked_edges,
+                        gamma_relation.completion_lexicographic_primary_decreases,
+                        gamma_relation.completion_lexicographic_secondary_tie_decreases,
+                        gamma_relation.completion_lexicographic_violations,
+                        gamma_relation.completion_lexicographic_terminal_outgoing_edges,
+                        gamma_relation.completion_lexicographic_strictly_decreasing ? 1 : 0,
+                        gamma_relation.completion_lexicographic_terminals_absorbing ? 1 : 0);
             std::printf("  completion boundary witnesses zero/nonzero=%zu "
                         "nonzero/zero=%zu two-sided=%zu\n",
                         gamma_relation.completion_zero_nonzero_terminal_witnesses,
@@ -530,6 +552,12 @@ int main() {
         expect(gamma_relation.completion_height_checked_edges > 0 &&
                    gamma_relation.completion_height_terminal_outgoing_edges == 0,
                "lexicographic gamma-layer/phase rank replay is populated");
+        expect(gamma_relation.completion_lexicographic_checked_edges > 0 &&
+                   gamma_relation.completion_lexicographic_violations == 0 &&
+                   gamma_relation.completion_lexicographic_terminal_outgoing_edges == 0 &&
+                   gamma_relation.completion_lexicographic_strictly_decreasing &&
+                   gamma_relation.completion_lexicographic_terminals_absorbing,
+               "ordered boundary-layer/phase rank replays without scalar weighting");
         expect(gamma_relation.completion_zero_nonzero_terminal_witnesses >=
                    gamma_relation.unthreaded_cyclic_lift_state_indices.size(),
                "the omitted recurrent states are explicitly classified as one-sided boundary escapes");
