@@ -613,6 +613,27 @@ classes, a mismatch between these classes and recurrent holonomy, or a
 quotient retaining offsets that still produces a nonzero Property-F recurrent
 component. The latter is the decisive bridge test.
 
+**H11 control resolution (2026-08-09).** The exact positive-prefix bridge
+already replays every contact edge needed by the trusted `sigma_{0,1}`
+Property-F graph and reports no nonzero recurrent component. Together with
+the finite offset classification above, this rules out an infinite or
+uncontrolled non-AR fibre for the control. It does not yet identify a
+state-by-state quotient map for all 401 contact states; that map is the first
+obligation of the general transport plank. A lifted offset class that maps
+to a nonzero Property-F cycle would reopen H11.
+
+**H12 — Quotient the contact lift before testing Property F.** The new
+offset-fibre quotient forgets the full contact coordinate while retaining
+return-word identities, offsets, and endpoint letters. For `sigma_{0,1}` it
+reduces the 3,306-state lift to 256 fibre states and 1,292 edges, with one
+cyclic SCC of size 248. Thus it preserves recurrent phase transport without
+carrying the entire geometric cloud. Combined with the exact bridge (205
+Property-F nodes and no nonzero recurrent component), this gives the right
+symbolic obviation target: prove the fibre quotient maps into the
+positive-prefix graph with recurrence annihilated. Falsifier: a fibre SCC
+whose image contains a nonzero Property-F cycle, or a family member whose
+fibre quotient is not finite after the marker-power collar.
+
 The first experiment should attack H1 and H2 together: prove the all-length
 predecessor decomposition for `sigma_{0,1}`, build its finite seam grammar,
 and compare its channel rank with the existing contact-boundary generator

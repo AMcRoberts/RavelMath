@@ -10,6 +10,7 @@
 #include "ravel/marker_power_return_core.hpp"
 #include "ravel/return_contact_lift.hpp"
 #include "ravel/return_history_factor.hpp"
+#include "ravel/return_offset_fibre_certificate.hpp"
 #include "ravel/spectral.hpp"
 #include "ravel/substitution.hpp"
 #include "ravel/survey.hpp"
@@ -131,6 +132,12 @@ int main() {
     expect(history.conflicts_are_offset_driven
                && history.offset_sensitive_keys == history.offset_variant_keys,
            "every multi-offset history key has offset-sensitive transport");
+    const auto fibre = derive_return_offset_fibre_certificate(lift, phases);
+    std::printf("offset-fibre states=%zu edges=%zu cyclic_sccs=%zu largest=%zu\n",
+                fibre.states, fibre.edges, fibre.cyclic_sccs,
+                fibre.largest_cyclic_scc);
+    expect(fibre.finite && fibre.cyclic_sccs > 0,
+           "offset fibre is finite and carries recurrent phase transport");
     const std::size_t nonzero_scc = largest_nonzero_recurrent_scc(lift);
     expect(nonzero_scc > 0,
            "non-AR contact lift exposes a recurrent nonzero transport component");

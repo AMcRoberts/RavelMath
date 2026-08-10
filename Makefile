@@ -1200,6 +1200,7 @@ nonar_return_contact_lift_test: $(NONAR_RETURN_CONTACT_LIFT_TEST_BIN)
 $(NONAR_RETURN_CONTACT_LIFT_TEST_BIN): $(TESTDIR)/nonar_return_contact_lift_test.cpp \
 		$(INCDIR)/ravel/return_contact_lift.hpp \
 		$(INCDIR)/ravel/return_history_factor.hpp \
+		$(INCDIR)/ravel/return_offset_fibre_certificate.hpp \
 		$(INCDIR)/ravel/marker_power_return_core.hpp | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
