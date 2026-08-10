@@ -561,7 +561,18 @@ transport core from local-order/valuation bookkeeping before interpreting a
 large cloud as holonomy. A counterexample would be a maximal-order,
 cross-checked candidate whose nonzero recurrent SCC survives after the
 valuation fibres are quotiented; that would be the first genuinely new
-non-unit obstruction target.
+ non-unit obstruction target.
+
+**Return-word probe (2026-08-09).** The existing return-substitution
+constructor works on the minimal non-unit rule `0->001, 1->00`: it finds two
+return words, three phase states, and one recurrent phase SCC. In contrast,
+it rejects `sigma_{0,1}` at marker `0`, because an image of a return word does
+not begin at the marker. Thus the bare marker is not recognizable enough for
+the ordinary derived substitution. This falsifies the cheapest version of
+H1, but points to the repair: collar the marker by phase/offset (or use a
+two-sided return scheme) before quotienting. The non-unit experiment also
+supports keeping valuation fibres separate from this collared seam core: the
+real base closes in three phase states before any p-adic label is attached.
 
 The longer pass deliberately uses a separately enlarged orbit prefix. On the
 525456-symbol prefix, extending the requested length too far produces a first
