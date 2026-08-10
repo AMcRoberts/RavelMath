@@ -661,6 +661,21 @@ This is a reusable gate for the
 third-plank lift: transport or p-adic fibres should be attached only after
 this finite symbolic core certificate succeeds.
 
+**Third-plank contact lift (2026-08-09).** The first actual lift over the
+`sigma_{0,1}^3` return core closes completely: 110 powered contact nodes,
+16 return phases, 3,306 lifted states, and 6,837 lifted edges. It projects
+onto every powered contact node. However, it contains a recurrent nonzero
+contact SCC of size 401. This falsifies the shortcut “all recurrent transport
+already disappears at the contact layer.” It is not yet a Property-F
+obstruction: the independent trusted Property-F automaton for the original
+`sigma_{0,1}` closes at 205 nodes with `zero_nodes_beyond_frontier=0`.
+
+The revised hypothesis is that contact holonomy is killed by the positive
+prefix/zero-language quotient. The falsifier is a map from that 401-state
+contact SCC to a recurrent nonzero Property-F component, or a future failure
+of the zero-frontier certificate. This is now the concrete third-plank
+question rather than a vague search for “more transport.”
+
 The longer pass deliberately uses a separately enlarged orbit prefix. On the
 525456-symbol prefix, extending the requested length too far produces a first
 false loss of one left extension at `n=55406`; the 4-million-symbol prefix
