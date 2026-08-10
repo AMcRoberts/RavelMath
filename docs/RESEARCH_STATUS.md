@@ -220,6 +220,16 @@ is the schedule digit. The certificate now also checks the closed formula
 forcing scan into a two-state quotient calculation. This is the algebraic
 forcing lemma needed before the remaining rank-absorption argument.
 
+The exact local deviation law is now factored into
+`include/adelic/property_f_class_ii_carry_deviation.hpp`. For forced digit
+`j*` and arbitrary digit `j`, writing `d=j-j*` gives `q'=eta` and
+`eta'=1-eta+d`; therefore only zero deviation can remain in the two-state
+phase strip. The focused Class-II regression checks the identity and the
+immediate strip exit for every digit on every symbolic spine state through
+`a=256`. This is a stronger algebraic no-deviation premise, but it is still
+not the Akiyama-to-literal-contact intertwiner or the uniform collar-absorption
+lemma.
+
 The graph-level phase-absorption certificate now closes the finite version of
 that seam. In every checked Class-II graph, every off-strip node above the
 height-5 collar is the single distinguished top zero seed; all other

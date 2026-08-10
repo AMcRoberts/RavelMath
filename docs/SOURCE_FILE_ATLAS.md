@@ -192,6 +192,7 @@ For invocation and operating procedure, read `MATHEMATICAL_API.md` → `Reflecti
 | `include/adelic/property_f_class_ii_prefix_role_grammar.hpp` | Parameter-uniform word-level parent/prefix catalogue for the three-letter `sigma_{a,1}` substitution. |
 | `include/adelic/property_f_class_ii_phase_strip.hpp` | Algebraic phase-strip invariant, the exact two-state quotient `q'=eta`, and the closed unique zero-prefix digit-forcing formula for the affine tail. |
 | `include/adelic/property_f_class_ii_phase_absorption.hpp` | Graph-level check that off-strip high-rank states are absorbed by the fixed collar, except for the distinguished top zero seed; finite premise for the uniform upper-bound lemma. |
+| `include/adelic/property_f_class_ii_carry_deviation.hpp` | Exact affine deviation law: `q'=eta` for every digit, `eta'=1-eta+d` for digit deviation `d`, and every nonzero deviation exits the two-state phase strip in one step. |
 | `include/adelic/property_f_class_ii_symbolic_tail_grammar.hpp` | Parameter-uniform forward/inverse affine role enumeration proving unique spine continuation and predecessor with no alternate spine hit. |
 | `include/adelic/property_f_class_ii_phase_carrier.hpp` | Scalar eta/c0 odometer certificate for the phase strip, its admissible intervals, and the uniform `2a+2` spine-height mechanism. |
 | `include/adelic/adelic_cocycle_extension.hpp` | Shared sofic/transport/adelic cocycle contract plus the non-unit valuation-fibre lemma: maximal local factorization, ideal-lattice agreement, and `sum(e f)=degree` partition checks. |

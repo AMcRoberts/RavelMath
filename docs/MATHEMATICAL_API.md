@@ -883,6 +883,16 @@ to the scalar odometer `(eta,c0)`: two zero-prefix steps move `c0` by one,
 with admissible intervals `[-a+1,0]` and `[2,a+1]`. It supplies the uniform
 `2a+2` spine-height mechanism before the fixed boundary corrections.
 
+`include/adelic/property_f_class_ii_carry_deviation.hpp` exposes the exact
+deviation law behind the no-deviation premise. If `j*` is the forced digit and
+`d=j-j*`, then every affine step satisfies `q'=eta` and
+`eta'=1-eta+d`; hence `d=0` is the only strip-preserving digit, while every
+nonzero deviation exits the strip immediately. The certificate checks this
+identity over the full digit window on the symbolic spine. It does not yet
+identify Akiyama's bounded conjugate correction window with the literal
+prefix/contact coordinates; that intertwiner remains a separate theorem
+obligation.
+
 For the non-unit branch, `adelic_cocycle_extension.hpp` also exposes
 `derive_adelic_valuation_fibre_lemma`. It checks maximal Dedekind factorization,
 the independent ideal-lattice identity, and the local degree partition
