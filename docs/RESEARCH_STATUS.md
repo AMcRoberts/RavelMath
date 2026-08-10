@@ -163,6 +163,12 @@ notation. This proves a concrete height-`2a+2`
 lower-bound path in every checked member; the missing upper bound is to show
 that no other admissible transport branch exceeds this spine.
 
+The recurrence itself is now isolated in
+`include/adelic/property_f_class_ii_affine_tail.hpp`: it independently checks
+the coefficient formulas and digit schedule under the exact integer
+beta-inverse carry map, before the graph replay is consulted. This separates
+the symbolic affine calculation from the finite Property-F enumeration.
+
 The branch census now makes that proof target explicit. In every checked
 `a=4..16` graph, every node above collar height 5 is one of the spine states,
 each high layer contains exactly one node, and the only high-to-high edges are

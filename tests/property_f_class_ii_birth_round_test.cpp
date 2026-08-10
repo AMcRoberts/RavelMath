@@ -14,6 +14,7 @@
 
 #include "adelic/property_f_birth_round_grammar.hpp"
 #include "adelic/property_f_class_ii_collar_grammar.hpp"
+#include "adelic/property_f_class_ii_affine_tail.hpp"
 #include "adelic/property_f_class_ii_branch_census.hpp"
 #include "adelic/property_f_class_ii_rank_spine.hpp"
 #include "adelic/coincidence_and_property_f.hpp"
@@ -99,6 +100,10 @@ int main() {
             assert(spine.labels_replayed);
             assert(adelic::property_f_class_ii_rank_spine_digits(a).size() ==
                    spine.node_ids.size() - 1);
+            const auto affine_tail =
+                adelic::derive_property_f_class_ii_affine_tail_certificate(a);
+            assert(affine_tail.valid);
+            assert(affine_tail.recurrence_steps == spine.node_ids.size() - 1);
             assert(spine.expected_height + 1 == grammar.layer_count);
             const auto census =
                 adelic::derive_property_f_class_ii_branch_census(graph, a);

@@ -816,6 +816,12 @@ separate family proof obligation. The certificate also checks its exact digit
 schedule: in the `[0,j,0]` coefficient notation the labels are
 `1,a,(1,a-1),(2,a-2),...,(a-2,2),a-2,0,a-1,0`.
 
+`include/adelic/property_f_class_ii_affine_tail.hpp` checks the same sequence
+against the closed integer map
+`(c0,c1,c2) -> (c1-(a+1)c0+j, c2-a*c0, c0)`, independently of any finite
+graph. The graph spine certificate then checks that the generated Property-F
+graph realizes this symbolic recurrence.
+
 `include/adelic/property_f_class_ii_branch_census.hpp` mechanically separates
 the deterministic high-rank tail from the finite height-5 collar and checks
 that, after internal SCC transport is removed, all tail-to-tail edges are

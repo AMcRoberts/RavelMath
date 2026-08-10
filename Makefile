@@ -1236,6 +1236,7 @@ property_f_class_ii_birth_round_test: $(PROPERTY_F_CLASS_II_BIRTH_ROUND_TEST_BIN
 $(PROPERTY_F_CLASS_II_BIRTH_ROUND_TEST_BIN): $(TESTDIR)/property_f_class_ii_birth_round_test.cpp \
 		$(INCDIR)/adelic/property_f_birth_round_grammar.hpp \
 		$(INCDIR)/adelic/property_f_class_ii_collar_grammar.hpp \
+		$(INCDIR)/adelic/property_f_class_ii_affine_tail.hpp \
 		$(INCDIR)/adelic/property_f_class_ii_branch_census.hpp \
 		$(INCDIR)/adelic/property_f_class_ii_rank_spine.hpp \
 		$(INCDIR)/adelic/coincidence_and_property_f.hpp \

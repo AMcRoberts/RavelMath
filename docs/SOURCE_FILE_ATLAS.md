@@ -185,6 +185,7 @@ For invocation and operating procedure, read `MATHEMATICAL_API.md` → `Reflecti
 | `include/adelic/property_f_escape_rank.hpp` | Exact SCC-condensation boundary-layer rank for Property-(F) graphs; supplies the primary coordinate for lexicographic transport escape certificates. |
 | `include/adelic/property_f_birth_round_grammar.hpp` | Finite birth-round/transport grammar derived from the exact Property-(F) SCC rank, including terminal layers, transport transitions, and shell-drop counts. |
 | `include/adelic/property_f_class_ii_rank_spine.hpp` | Explicit `sigma_{a,1}` alternating affine rank-spine coefficients and a replay certificate for the observed height `2a+2` when `a>=4`; lower-bound witness only. |
+| `include/adelic/property_f_class_ii_affine_tail.hpp` | Parameterized integer beta-inverse recurrence certificate for the Class-II affine tail and its digit schedule, independent of graph enumeration. |
 | `include/adelic/property_f_class_ii_branch_census.hpp` | Separates the Class-II high-rank deterministic tail from the finite height-5 branching collar and checks the tail spine/edge census. |
 | `include/adelic/property_f_class_ii_collar_grammar.hpp` | Records the finite height-transition language, digit labels, and no-tail-reentry contract for the Class-II collar. |
 | `include/adelic/csy_carry_automaton.hpp` | Exact Pisot powers, CSY-style bounded prefix states, carry exploration, and memory accounting. |
