@@ -191,6 +191,15 @@ counts branching nodes, internal edges, and height-pair multiplicities. This
 is the finite grammar premise for the upper-bound proof; it does not promote
 the observed support to a theorem for all `a`.
 
+The new tail-candidate census sharpens the mechanism. In every checked
+`a=4..14` graph, each letter-0 tail state realizes all zero-prefix labels
+`j=0,...,a-1` as collar alternatives, while the single letter-1 tail state
+has only its forced return edge. No alternate candidate reaches another high
+state. This is the concrete role-level premise for an induction: the affine
+candidate is the only high-tail continuation, and every other digit is
+absorbed by the collar. The symbolic proof that the same role law holds for
+all `a` remains open.
+
 ## Effective-potential analogy (bounded modeling hypothesis, 2026-08-10)
 
 The observed “large, long-lived, then dispersing” cases invite a useful but

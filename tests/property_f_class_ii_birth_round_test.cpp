@@ -16,6 +16,7 @@
 #include "adelic/property_f_class_ii_collar_grammar.hpp"
 #include "adelic/property_f_class_ii_affine_tail.hpp"
 #include "adelic/property_f_class_ii_branch_census.hpp"
+#include "adelic/property_f_class_ii_tail_candidate_census.hpp"
 #include "adelic/property_f_class_ii_rank_spine.hpp"
 #include "adelic/coincidence_and_property_f.hpp"
 #include "adelic/prefix_automaton.hpp"
@@ -122,6 +123,30 @@ int main() {
                    adelic::PropertyFClassIICollarGrammar::collar_height);
             assert(collar.collar_nodes ==
                    graph.nodes.size() - census.tail_nodes);
+            const auto candidates =
+                adelic::derive_property_f_class_ii_tail_candidate_census(graph, a);
+            assert(candidates.valid);
+            assert(candidates.no_alternate_high);
+            assert(candidates.alternate_high_edges == 0);
+            assert(candidates.digit_support_valid);
+            if (std::getenv("CLASSII_BIRTH_TAIL_CANDIDATE_PROBE") != nullptr &&
+                a == max_a) {
+                std::cout << "tail_candidates a=" << a
+                          << " sources=" << candidates.tail_sources
+                          << " expected=" << candidates.expected_edges
+                          << " alternate_collar="
+                          << candidates.alternate_collar_edges
+                          << " alternate_high="
+                          << candidates.alternate_high_edges
+                          << " internal=" << candidates.internal_edges
+                          << "\n";
+                for (const auto& [step, labels] :
+                     candidates.collar_labels_by_step) {
+                    std::cout << "tail_step=" << step << " collar_labels=";
+                    for (const auto& label : labels) std::cout << label << ",";
+                    std::cout << "\n";
+                }
+            }
             if (std::getenv("CLASSII_BIRTH_COLLAR_PROBE") != nullptr &&
                 a == max_a) {
                 std::cout << "collar a=" << a

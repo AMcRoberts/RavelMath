@@ -840,6 +840,12 @@ there are no collar-to-tail edges or same-SCC collar transports. This is the
 finite symbolic grammar to be lifted into a parameterized upper-bound lemma,
 not that lemma itself.
 
+`include/adelic/property_f_class_ii_tail_candidate_census.hpp` classifies all
+outgoing edges from tail states. It checks that letter-0 tail states expose
+the complete zero-prefix digit family `j=0..a-1`, letter 1 has only its forced
+return, and no alternate candidate returns to the high tail. This is the
+finite candidate-role premise for the no-deviation induction.
+
 ### General number fields and the class-field-tower initiative
 
 ```cpp
