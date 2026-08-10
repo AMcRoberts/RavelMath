@@ -5,6 +5,7 @@
 
 #include "adelic/coincidence_and_property_f.hpp"
 #include "adelic/generalized_multinacci_fiber_interaction.hpp"
+#include "adelic/generalized_multinacci_delayed_return.hpp"
 #include "adelic/prefix_automaton.hpp"
 #include "math/linalg_qbeta.hpp"
 #include "ravel/generalized_multinacci.hpp"
@@ -42,6 +43,17 @@ void check_case(std::size_t m) {
 }
 
 int main() {
+    for (std::size_t d = 3; d <= 8; ++d) {
+        for (std::size_t m = 1; m <= 6; ++m) {
+            const auto certificate =
+                adelic::derive_generalized_multinacci_delayed_return(d, m);
+            assert(certificate.proved);
+            assert(certificate.forced_descent_letters.size() == d);
+            assert(certificate.forced_descent_carries.size() == d);
+            assert(certificate.return_linear.size() == d + 1);
+            assert(certificate.return_offset.size() == d + 1);
+        }
+    }
     for (std::size_t d = 3; d <= 8; ++d) {
         for (std::size_t m = 1; m <= 6; ++m) {
             const auto law =

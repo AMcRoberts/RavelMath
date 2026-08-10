@@ -156,6 +156,12 @@ Thus the new letter `d` occurs only in `sigma(d-1)`, and the new image contains
 neither `d` nor `d-1`. The backward prefix-automaton incidence therefore forces
 new -> old-top and forbids both new -> new and old-top -> new before any finite
 Property-F enumeration is run.
+The delayed-return certificate now gives the corresponding normal form for any
+putative cycle through the new fiber: mandatory descent
+`d,d-1,...,1,0`, an inherited return language based at `0`, then the unique
+re-entry `0->d`. Its mandatory affine contribution is exactly
+`A^(d+1) gamma + m*(A + ... + A^d)`. The unresolved theorem is consequently
+the rank/decrease statement for the inherited zero plateau.
 Each channel is now compiled to an exact integer affine endpoint map on the
 `d`-coordinate coefficient lattice; all 19 `(4,6)` maps are replay-checked
 against `Q(beta)`, while the 42-point sweep checks the parameterized map shape.

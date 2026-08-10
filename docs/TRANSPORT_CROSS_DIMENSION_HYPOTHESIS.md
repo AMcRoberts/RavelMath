@@ -64,6 +64,14 @@ certificate checks this incidence argument symbolically for the parameter
 domain; the graph classifier then checks that the exact finite graphs realize
 the same restriction.
 
+The delayed-return certificate sharpens this to a normal form: every excursion
+through the new letter begins with the forced descent `d,d-1,...,1,0`, may then
+traverse only the inherited return language based at `0`, and finally uses the
+unique `0 -> d` re-entry. The mandatory descent and re-entry compose to an
+exact affine map with linear part `A^(d+1)` and offset
+`m*(A + A^2 + ... + A^d)`. Thus the remaining rank lemma is entirely an
+inherited-zero-plateau statement.
+
 ## Evidence
 
 - The symbolic dimension-free suspension certificate passes all 42 points with
