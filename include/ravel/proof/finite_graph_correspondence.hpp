@@ -7,6 +7,7 @@
 #include <map>
 #include <queue>
 #include <set>
+#include <stdexcept>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -148,6 +149,57 @@ struct FiniteEscapeBoundaryCertificate {
     bool acyclic = false;
     bool every_live_vertex_reaches_terminal = false;
 };
+
+// Local certificate for the symbolic height premise of an escape proof.
+// `height` is a nonnegative integer rank supplied by the caller.  Every live
+// edge out of a nonterminal vertex must strictly decrease it, and accepted
+// terminal vertices must have no live outgoing edge.  This is deliberately a
+// separate contract from terminal reachability: strict descent proves that a
+// recurrent obstruction cannot survive, while the boundary certificate above
+// proves that every surviving vertex actually reaches the accepted shell.
+struct FiniteEscapeHeightCertificate {
+    std::size_t live_vertices = 0;
+    std::size_t live_edges = 0;
+    std::size_t checked_edges = 0;
+    std::size_t height_violations = 0;
+    std::size_t terminal_outgoing_edges = 0;
+    std::size_t maximum_live_height = 0;
+    bool strictly_decreasing = false;
+    bool terminals_absorbing = false;
+    bool proves_acyclic = false;
+};
+
+inline FiniteEscapeHeightCertificate derive_finite_escape_height_certificate(
+    const std::vector<std::vector<std::size_t>>& adjacency,
+    const std::vector<bool>& live,
+    const std::vector<bool>& terminal,
+    const std::vector<std::size_t>& height) {
+    if (adjacency.size() != live.size() || live.size() != terminal.size() ||
+        terminal.size() != height.size())
+        throw std::invalid_argument("escape height: graph/vector size mismatch");
+    const std::size_t n = adjacency.size();
+    FiniteEscapeHeightCertificate out;
+    for (std::size_t u = 0; u < n; ++u) {
+        if (!live[u]) continue;
+        ++out.live_vertices;
+        out.maximum_live_height = std::max(out.maximum_live_height, height[u]);
+        for (const auto v : adjacency[u]) {
+            if (v >= n) throw std::invalid_argument("escape height: edge out of range");
+            if (!live[v]) continue;
+            ++out.live_edges;
+            if (terminal[u]) {
+                ++out.terminal_outgoing_edges;
+                continue;
+            }
+            ++out.checked_edges;
+            if (height[u] <= height[v]) ++out.height_violations;
+        }
+    }
+    out.strictly_decreasing = out.height_violations == 0;
+    out.terminals_absorbing = out.terminal_outgoing_edges == 0;
+    out.proves_acyclic = out.strictly_decreasing && out.terminals_absorbing;
+    return out;
+}
 
 inline FiniteEscapeBoundaryCertificate derive_finite_escape_boundary_certificate(
     const std::vector<std::vector<std::size_t>>& adjacency,

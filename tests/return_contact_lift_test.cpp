@@ -203,6 +203,30 @@ int main() {
                cyclic_escape.live_vertices_without_terminal_route == 2,
            "finite escape certificate rejects a recurrent boundary obstruction");
 
+    const auto escape_height =
+        ravel::proof::derive_finite_escape_height_certificate(
+            {{1}, {2}, {}, {0}}, {true, true, true, false},
+            {false, false, true, false}, {2, 1, 0, 99});
+    expect(escape_height.strictly_decreasing &&
+               escape_height.terminals_absorbing &&
+               escape_height.proves_acyclic &&
+               escape_height.checked_edges == 2 &&
+               escape_height.maximum_live_height == 2,
+           "finite escape height certificate proves strict descent into the shell");
+    const auto bad_height =
+        ravel::proof::derive_finite_escape_height_certificate(
+            {{1}, {0}}, {true, true}, {false, false}, {0, 1});
+    expect(!bad_height.strictly_decreasing && !bad_height.proves_acyclic &&
+               bad_height.height_violations > 0,
+           "finite escape height certificate rejects a nondecreasing cycle");
+    const auto leaking_terminal =
+        ravel::proof::derive_finite_escape_height_certificate(
+            {{1}, {}}, {true, true}, {true, false}, {0, 1});
+    expect(!leaking_terminal.terminals_absorbing &&
+               leaking_terminal.terminal_outgoing_edges == 1 &&
+               !leaking_terminal.proves_acyclic,
+           "finite escape height certificate rejects an outgoing terminal shell");
+
     std::printf(
         "  lift: %zu sparse states, %zu edges, %zu/%zu projected nodes\n",
         lift.states.size(), lift.edges.size(),

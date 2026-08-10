@@ -567,6 +567,14 @@ an opposite-orientation witness attacks the ordered boundary claim; and a
 nonzero recurrent image would be a genuine Property-F obstruction rather than
 mere boundary bookkeeping.
 
+The local height premise now has a reusable checker,
+`derive_finite_escape_height_certificate`, in the shared graph-correspondence
+header. It verifies strict decrease on every live edge out of a nonterminal
+state and verifies that terminal shell vertices are absorbing; the existing
+escape certificate separately checks terminal reachability. The remaining
+mathematical work is to derive the proposed return-word/phase rank from the
+ordered-prefix grammar, not to hide that derivation in a probe.
+
 The existing family probe gives a concrete candidate for the height premise:
 for `sigma_{a,1}`, `1<=a<=4`, the recurrent balanced-pair words have unique
 endpoint-plus-length signatures, with maximum word length `a+4` (the `a=1`

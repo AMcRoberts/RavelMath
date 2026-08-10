@@ -594,10 +594,17 @@ auto escape = ravel::proof::derive_finite_escape_boundary_certificate(
     relation_adjacency, live_products, terminal_products);
 // escape.acyclic, escape.every_live_vertex_reaches_terminal,
 // escape.max_terminal_distance, and escape.terminal_distance are exact.
+
+auto height = ravel::proof::derive_finite_escape_height_certificate(
+    relation_adjacency, live_products, terminal_products, symbolic_height);
+// height.proves_acyclic is exact when every nonterminal edge decreases the
+// supplied rank and terminal vertices have no live outgoing edge.
 ```
 
 This is an escape-boundary certificate, not a source-surjective graph-factor
-claim. A total nonterminal factor must still be established separately.
+claim. The height certificate checks a proposed symbolic rank; it does not
+derive that rank. A total nonterminal factor must still be established
+separately.
 
 ## Class-II family
 
