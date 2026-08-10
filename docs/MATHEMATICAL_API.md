@@ -904,6 +904,13 @@ stripped leading terms, making the prefix context explicit.
 It proves the coordinate adapter and recurrence only; beta-expansion inequalities and the literal
 prefix/contact-cocycle intertwiner remain separate obligations.
 
+`include/adelic/property_f_class_ii_prefix_correction.hpp` records the
+literal prefix coefficient seam. All ordinary `0^j` roles contribute the
+integer constant `j`; the sole exceptional `0^a1` prefix has reduced digit
+`beta^2-1 = U+a*beta`, and its inverse-step contribution is
+`a+beta^(-1)U = [a+1,a+1,-1]`. This isolates the only non-integer prefix
+correction before attempting the global bounded-correction argument.
+
 For the non-unit branch, `adelic_cocycle_extension.hpp` also exposes
 `derive_adelic_valuation_fibre_lemma`. It checks maximal Dedekind factorization,
 the independent ideal-lattice identity, and the local degree partition

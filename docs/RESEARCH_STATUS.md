@@ -241,6 +241,15 @@ families and the alternating schedule through `a=256`. The certificate also
 reconstructs both fundamental elements after restoring the stripped leading
 terms, isolating the exact prefix context that a future bounded-correction
 intertwiner must preserve.
+
+The literal prefix seam is now factored into
+`include/adelic/property_f_class_ii_prefix_correction.hpp`. Every ordinary
+`0^j` role contributes the integer `j`, while the sole exceptional `0^a1`
+prefix has reduced label `beta^2-1 = U+a*beta`; after the inverse step its
+contribution is `a+beta^(-1)U = [a+1,a+1,-1]`. Thus the contact grammar adds
+one explicit Akiyama-unit correction and otherwise stays in the integer digit
+window. The remaining theorem is to propagate this finite correction through
+arbitrary branches and prove collar absorption.
 This closes the coordinate-level analogue, but not the beta-expansion
 inequalities or the literal prefix/contact-cocycle intertwiner.
 
