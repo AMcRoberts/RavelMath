@@ -4166,3 +4166,10 @@ potentials. This still does not contradict Property F, because the phase /
 contact lift is a refinement of the 95-node gamma graph; the missing theorem
 is an exact projection or a proof that the refinement's extra holonomy is
 harmless.
+An exact coefficient-space rank test gives residual ranks 1/1/1 for
+(difference, left, right) on the 401-state component. Thus the data do not
+yet exhibit a third independent `Q(β)` direction: the new behavior is a
+rank-one adelic actor present on both prefix sides, synchronized with the
+already observed period-three integer transport. This links the contact
+phenomenon back to the evolving transport core while leaving open whether
+the synchronization itself is the “third plank” at the symbolic level.

@@ -18,6 +18,9 @@ struct ReturnContactDigitHolonomyScc {
     std::size_t residual_edges = 0;
     std::size_t left_residual_edges = 0;
     std::size_t right_residual_edges = 0;
+    std::size_t residual_rank = 0;
+    std::size_t left_residual_rank = 0;
+    std::size_t right_residual_rank = 0;
     std::size_t zero_contact_nodes = 0;
     std::size_t nonzero_contact_nodes = 0;
     bool coboundary = true;
@@ -73,6 +76,45 @@ ReturnContactDigitHolonomyCertificate derive_return_contact_digit_holonomy(
     ReturnContactDigitHolonomyCertificate out;
     out.states = n;
     out.edges = lift.edges.size();
+    auto exact_rank = [](const std::vector<mathlib::QElem>& values) {
+        std::size_t dimension = 0;
+        for (const auto& value : values) dimension = std::max(dimension, value.coeffs_.size());
+        std::vector<std::vector<mathlib::Rat>> basis;
+        for (const auto& value : values) {
+            std::vector<mathlib::Rat> row(dimension, mathlib::Rat(0));
+            for (std::size_t i = 0; i < value.coeffs_.size(); ++i)
+                row[i] = value.coeffs_[i];
+            for (const auto& pivot : basis) {
+                std::size_t p = 0;
+                while (p < dimension && mathlib::is_zero(pivot[p])) ++p;
+                if (p == dimension || mathlib::is_zero(row[p])) continue;
+                mathlib::Rat factor;
+                mathlib::div(factor, row[p], pivot[p]);
+                for (std::size_t i = p; i < dimension; ++i) {
+                    mathlib::Rat product, reduced;
+                    mathlib::mul(product, factor, pivot[i]);
+                    mathlib::sub(reduced, row[i], product);
+                    row[i] = reduced;
+                }
+            }
+            bool nonzero = false;
+            for (const auto& coefficient : row)
+                if (!mathlib::is_zero(coefficient)) { nonzero = true; break; }
+            if (!nonzero) continue;
+            std::size_t pivot_index = 0;
+            while (pivot_index < dimension && mathlib::is_zero(row[pivot_index])) ++pivot_index;
+            if (pivot_index == dimension) continue;
+            mathlib::Rat scale;
+            mathlib::div(scale, mathlib::Rat(1), row[pivot_index]);
+            for (auto& coefficient : row) {
+                mathlib::Rat normalized;
+                mathlib::mul(normalized, coefficient, scale);
+                coefficient = normalized;
+            }
+            basis.push_back(std::move(row));
+        }
+        return basis.size();
+    };
     std::vector<int> index(n, -1), low(n, 0), stack;
     std::vector<int> scc_of(n, -1);
     std::vector<bool> nontrivial_scc;
@@ -111,6 +153,9 @@ ReturnContactDigitHolonomyCertificate derive_return_contact_digit_holonomy(
         std::size_t residuals = 0;
         std::size_t left_residuals = 0;
         std::size_t right_residuals = 0;
+        std::vector<mathlib::QElem> residual_values;
+        std::vector<mathlib::QElem> left_residual_values;
+        std::vector<mathlib::QElem> right_residual_values;
         const auto zero = automaton.ring.zero();
         while (!todo.empty()) {
             const auto u = todo.back(); todo.pop_back();
@@ -132,15 +177,24 @@ ReturnContactDigitHolonomyCertificate derive_return_contact_digit_holonomy(
                     automaton.ring.add(potential[u], automaton.ring.sub(
                         edge.right_label, edge.left_label)),
                     potential[edge.to]);
-                if (qelem_key(residual) != qelem_key(zero)) ++residuals;
+                if (qelem_key(residual) != qelem_key(zero)) {
+                    ++residuals;
+                    residual_values.push_back(residual);
+                }
                 const auto left_residual = automaton.ring.sub(
                     automaton.ring.add(left_potential[u], edge.left_label),
                     left_potential[edge.to]);
                 const auto right_residual = automaton.ring.sub(
                     automaton.ring.add(right_potential[u], edge.right_label),
                     right_potential[edge.to]);
-                if (qelem_key(left_residual) != qelem_key(zero)) ++left_residuals;
-                if (qelem_key(right_residual) != qelem_key(zero)) ++right_residuals;
+                if (qelem_key(left_residual) != qelem_key(zero)) {
+                    ++left_residuals;
+                    left_residual_values.push_back(left_residual);
+                }
+                if (qelem_key(right_residual) != qelem_key(zero)) {
+                    ++right_residuals;
+                    right_residual_values.push_back(right_residual);
+                }
             }
         }
         std::size_t zero_contact = 0;
@@ -153,10 +207,14 @@ ReturnContactDigitHolonomyCertificate derive_return_contact_digit_holonomy(
         const bool coboundary = residuals == 0;
         const bool left_coboundary = left_residuals == 0;
         const bool right_coboundary = right_residuals == 0;
+        const auto residual_rank = exact_rank(residual_values);
+        const auto left_residual_rank = exact_rank(left_residual_values);
+        const auto right_residual_rank = exact_rank(right_residual_values);
         nontrivial_scc.back() = !coboundary;
         for (const auto u : component) scc_of[u] = component_id;
         out.sccs.push_back({component.size(), residuals, left_residuals,
-                            right_residuals, zero_contact,
+                            right_residuals, residual_rank, left_residual_rank,
+                            right_residual_rank, zero_contact,
                             component.size() - zero_contact, coboundary,
                             left_coboundary, right_coboundary});
         if (!coboundary) ++out.nontrivial_holonomy_sccs;

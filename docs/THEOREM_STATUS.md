@@ -1092,6 +1092,10 @@ contact SCC, the left and right prefix cocycles have 450 and 449 residual
 edges respectively, so the non-coboundary behavior is present on both sides,
 not just in their difference. The refinement-to-gamma projection remains the
 open obligation.
+The exact residual-subgroup ranks on that component are 1 for the difference
+cocycle and 1 for each one-sided prefix cocycle. No third independent
+`Q(β)`-linear actor is visible in this sample; the candidate is currently best
+described as a rank-one adelic lift of the period-three transport core.
 The SCC census records 32 zero-contact states inside that 401-node
 non-coboundary component (369 nonzero-contact states). Hence it cannot be
 discarded as wholly detached from the zero-contact slice; the exact

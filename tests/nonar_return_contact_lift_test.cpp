@@ -223,10 +223,12 @@ int main() {
                 contact_holonomy.zero_seed_reaches_nontrivial_holonomy ? 1 : 0);
     for (const auto& scc : contact_holonomy.sccs)
         std::printf("  contact_scc nodes=%zu residual_edges=%zu left=%zu "
-                    "right=%zu zero=%zu nonzero=%zu coboundary=%d "
+                    "right=%zu ranks=%zu/%zu/%zu zero=%zu nonzero=%zu coboundary=%d "
                     "left_cob=%d right_cob=%d\n", scc.nodes,
                     scc.residual_edges, scc.left_residual_edges,
-                    scc.right_residual_edges, scc.zero_contact_nodes,
+                    scc.right_residual_edges, scc.residual_rank,
+                    scc.left_residual_rank, scc.right_residual_rank,
+                    scc.zero_contact_nodes,
                     scc.nonzero_contact_nodes, scc.coboundary ? 1 : 0,
                     scc.left_coboundary ? 1 : 0,
                     scc.right_coboundary ? 1 : 0);
