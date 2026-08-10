@@ -4111,3 +4111,9 @@ yet prove that every non-AR substitution has this form, nor that integer
 holonomy cannot interact with a nonzero Property-F cycle. The next falsifier is
 an explicit cocycle-to-zero-expansion intertwiner; a nonzero recurrent image
 there would be the obstruction we have not found so far.
+The first attempted bridge is now explicitly falsified: applying the existing
+exact letter-role `Q(β)` cocycle checker to the powered non-AR rule reaches only
+15 of 81 zero pairs and misses 66 recurrent pairs, despite the full
+Property-F graph closing. Therefore the integer holonomy cannot be tested
+through a bare letter-role projection; return-word/offset collar data is
+load-bearing. This is a useful negative result, not a Property-F failure.

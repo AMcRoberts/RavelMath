@@ -1058,3 +1058,8 @@ recurrent 248-state SCC whose occurrence-position cycle residues generate
 not a universal theorem and not a Property-F closure proof. The remaining
 non-AR obligation is to construct the exact intertwiner from this cocycle to
 the zero-expansion graph and test whether any nonzero recurrent image survives.
+The first coarse attempt is a certified negative: the existing letter-role
+`Q(β)` cocycle projection misses 66 recurrent zero pairs on the powered non-AR
+rule even though the full Property-F graph closes. Any successful intertwiner
+must retain return-word/offset collar state; the bare role quotient is not a
+valid bridge.

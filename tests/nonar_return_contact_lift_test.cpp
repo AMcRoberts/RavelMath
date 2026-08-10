@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <array>
 #include <cstdio>
 #include <functional>
 #include <set>
@@ -8,6 +9,10 @@
 #include "ravel/contact_boundary.hpp"
 #include "ravel/d_cont_check.hpp"
 #include "ravel/marker_power_return_core.hpp"
+#include "adelic/prefix_automaton.hpp"
+#include "adelic/property_f_role_digit_cocycle.hpp"
+#include "math/charpoly.hpp"
+#include "math/linalg_qbeta.hpp"
 #include "ravel/return_contact_lift.hpp"
 #include "ravel/return_history_factor.hpp"
 #include "ravel/return_offset_fibre_certificate.hpp"
@@ -150,6 +155,43 @@ int main() {
            "finite offset quotient has classified recurrent holonomy");
     expect(holonomy.gcd_one_sccs > 0,
            "non-AR transport has a gcd-one integer cycle residue");
+
+    // The stronger Q(beta) test asks whether that integer transport survives
+    // as a recurrent zero-expansion obstruction.  Build the live automaton
+    // for the same powered rule, rather than reusing a hand-entered label set.
+    std::vector<std::vector<long long>> powered_images(
+        powered.alphabet_size(), std::vector<long long>{});
+    std::vector<std::vector<long long>> powered_incidence(
+        powered.alphabet_size(),
+        std::vector<long long>(powered.alphabet_size(), 0));
+    for (std::size_t source = 0; source < powered.alphabet_size(); ++source) {
+        for (const auto letter : powered.image(source)) {
+            powered_images[source].push_back(letter);
+            ++powered_incidence[static_cast<std::size_t>(letter)][source];
+        }
+    }
+    const auto charpoly = mathlib::charpoly_faddeev_leverrier(powered_incidence);
+    const mathlib::QBetaRing ring(charpoly);
+    const auto eigen = mathlib::left_eigenvector_via_qbeta_reduced_factor(
+        powered_incidence, ring);
+    std::array<std::vector<long long>, 3> automaton_images{};
+    for (std::size_t source = 0; source < 3; ++source)
+        automaton_images[source] = powered_images[source];
+    const auto automaton = adelic::build_prefix_automaton<3>(
+        automaton_images, eigen.v, ring);
+    const auto digit_cocycle = adelic::derive_property_f_role_digit_cocycle<3>(
+        automaton_images, automaton, 16, 1'000'000);
+    std::printf("powered digit cocycle: zero_pairs=%zu missing=%zu "
+                "recurrent_missing=%zu\n",
+                digit_cocycle.zero_kernel_pairs,
+                digit_cocycle.zero_kernel_missing_pairs,
+                digit_cocycle.recurrent_zero_kernel_missing_pairs);
+    // This deliberately fails the naïve bridge hypothesis: the coarse
+    // letter-role cocycle forgets the return collar and misses recurrent zero
+    // witnesses even though the full Property-F graph closes.
+    expect(!digit_cocycle.proved &&
+               digit_cocycle.recurrent_zero_kernel_missing_pairs > 0,
+           "coarse role cocycle is correctly rejected as an incomplete bridge");
     const std::size_t nonzero_scc = largest_nonzero_recurrent_scc(lift);
     expect(nonzero_scc > 0,
            "non-AR contact lift exposes a recurrent nonzero transport component");
