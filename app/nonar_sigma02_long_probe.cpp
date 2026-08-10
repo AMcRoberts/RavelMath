@@ -48,7 +48,7 @@ int main() {
                 limits.closure_cap, limits.corona_cap,
                 limits.max_corona_rounds);
     const auto boundary = ravel::compute_contact_boundary_dispatch(
-        powered, spectral.beta, spectral.b2, d_cont);
+        powered, spectral.beta, spectral.b2, d_cont, limits);
     std::printf("sigma02: boundary converged=%d early_stop=%d corona_capped=%d "
                 "nodes=%zu pre_contact=%zu max_a=%zu cap=%zu rounds=%d\n",
                 boundary.converged,
