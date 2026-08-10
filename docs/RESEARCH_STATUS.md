@@ -210,6 +210,14 @@ that the observed alternatives are precisely the collar exits.
 The same census now checks the reverse induction direction: every high-tail
 state has one affine predecessor, with no collar or alternate-high predecessor.
 
+The coefficient-level phase invariant is now executable in
+`include/adelic/property_f_class_ii_phase_strip.hpp`. Writing
+`eta=c0+c2` and `q=c1+(a+1)c2`, all high-spine states alternate between
+`(0,1)` and `(1,0)`. For each zero-letter tail state, exhaustive symbolic
+digit evaluation finds exactly one `j in [0,a)` preserving that strip, and it
+is the schedule digit. This is the algebraic forcing lemma needed before the
+remaining rank-absorption argument.
+
 ## Effective-potential analogy (bounded modeling hypothesis, 2026-08-10)
 
 The observed “large, long-lived, then dispersing” cases invite a useful but

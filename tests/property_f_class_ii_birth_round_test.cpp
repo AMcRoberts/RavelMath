@@ -18,6 +18,7 @@
 #include "adelic/property_f_class_ii_branch_census.hpp"
 #include "adelic/property_f_class_ii_tail_candidate_census.hpp"
 #include "adelic/property_f_class_ii_prefix_role_grammar.hpp"
+#include "adelic/property_f_class_ii_phase_strip.hpp"
 #include "adelic/property_f_class_ii_rank_spine.hpp"
 #include "adelic/coincidence_and_property_f.hpp"
 #include "adelic/prefix_automaton.hpp"
@@ -311,6 +312,10 @@ int main() {
             adelic::derive_property_f_class_ii_prefix_role_grammar(a);
         assert(roles.valid);
         assert(roles.zero_prefix_count == a);
+        const auto phase =
+            adelic::derive_property_f_class_ii_phase_strip_certificate(a);
+        assert(phase.valid);
+        assert(phase.phase_preserving_digit_mismatches == 0);
     }
     assert(!adelic::derive_property_f_class_ii_affine_tail_certificate(
         adelic::property_f_class_ii_spine_max_safe_a + 1).parameter_domain);

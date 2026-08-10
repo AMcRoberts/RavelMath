@@ -854,6 +854,11 @@ The tail census composes this symbolic catalogue with the realized graph.
 It also checks the reverse direction: each high-tail state has its unique
 affine predecessor, with no collar predecessor or alternate high predecessor.
 
+`include/adelic/property_f_class_ii_phase_strip.hpp` supplies the algebraic
+forcing invariant. With `eta=c0+c2` and `q=c1+(a+1)c2`, the high tail alternates
+between `(eta,q)=(0,1)` and `(1,0)`; among all zero-prefix digits, exactly one
+preserves that strip, and it is the affine schedule digit.
+
 ### General number fields and the class-field-tower initiative
 
 ```cpp
