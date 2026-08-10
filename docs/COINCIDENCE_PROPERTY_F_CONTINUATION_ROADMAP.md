@@ -530,3 +530,34 @@ The escape calculation is now factored through the shared iterative
 explicit: a live relation, a terminal predicate, acyclicity, and finite
 terminal distance for every live vertex. The non-AR data satisfy these finite
 premises; the open theorem is to derive them symbolically for the family.
+
+### Symbolic boundary-composition target
+
+The uniform lemma should be stated for the ordered-prefix family, rather than
+as a graph-factor theorem. For each `sigma_{a,1}` (and separately for the
+non-unit extensions), define the accepted terminal set directly from the
+finite Property-F graph. Then prove four local premises:
+
+1. **Terminal-only failure:** if a lift edge has no synchronized gamma
+   successor, at least one endpoint gamma state is terminal. A nonterminal
+   miss is a direct falsifier of the proposed family lemma.
+2. **Decreasing escape height:** on every retained nonterminal product edge,
+   an exact prefix/phase height decreases. This supplies acyclicity without
+   relying on a bounded search order; the powered `sigma_{0,1}` audit has
+   maximum accepted distance two.
+3. **Boundary orientation:** every shortest accepted escape has the same
+   zero-to-nonzero orientation (up to the family’s ordered-letter symmetry).
+   The opposite orientation or a two-sided terminal witness would require a
+   separate argument.
+4. **Recurrent exclusion:** the recurrent transport textile maps into the
+   live part of the completion, while no recurrent product has nonzero gamma
+   image. The shared finite escape certificate then closes the finite
+   boundary layer without asserting source-surjectivity of a nonterminal
+   graph morphism.
+
+The current `sigma_{0,1}` data satisfy all four premises exactly. The useful
+family falsifiers are therefore sharply separated: a nonterminal miss attacks
+the local composition rule; a live product cycle attacks the height function;
+an opposite-orientation witness attacks the ordered boundary claim; and a
+nonzero recurrent image would be a genuine Property-F obstruction rather than
+mere boundary bookkeeping.

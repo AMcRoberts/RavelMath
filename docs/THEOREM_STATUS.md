@@ -1173,3 +1173,12 @@ the non-AR probe. Its standalone regression proves both a two-step acyclic
 route and rejection of a two-vertex recurrent cycle (19/19 return/contact
 tests pass). This isolates the remaining work to the symbolic premises that
 feed the certificate.
+
+The next theorem is now a symbolic boundary-composition lemma for the ordered
+prefix family. Its required premises are explicit: every failed synchronized
+successor is terminal-only; a prefix/phase height decreases on retained
+nonterminal edges; accepted escapes have one fixed zero-to-nonzero orientation;
+and recurrent products have no nonzero gamma image. Any violation is a named
+falsifier (nonterminal miss, live product cycle, opposite boundary orientation,
+or recurrent nonzero image), so the finite certificate is being used as a
+theorem interface rather than as an empirical stopping rule.
