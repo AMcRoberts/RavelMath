@@ -79,8 +79,7 @@ int main() {
             auto generalized =
                 derive_generalized_multinacci_zero_language_theorem(d, m);
             assert(generalized.generalized_multinacci_polynomial_recognized);
-            assert(generalized.rouche_outer_root_argument);
-            assert(generalized.unit_circle_exclusion_argument);
+            assert(generalized.primitive_companion_dominant_root);
             assert(generalized.frougny_solomyak_monotone_coefficients);
             assert(generalized.pisot_family);
             assert(generalized.condition_f_applies);

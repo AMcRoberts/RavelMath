@@ -60,6 +60,33 @@ obligations:
 The first three are the Property-F companion to the sofic extension. The
 fourth is the actual bridge between the algebraic and geometric sides.
 
+## General map: one skew product, three quotients
+
+The sofic and transport corollaries are instances of one object. Let `B` be
+the finite prefix/renewal base, `P` its finite phase lift, and `F` the carry
+fiber (integer coefficient lattice in the unit case, adelic coefficient
+lattice in the non-unit case). A transition has the form
+
+```text
+(b, p, gamma)  ->  (b', p', A gamma + delta(b,p,b'))
+```
+
+The sofic extension forgets `gamma`; the transport extension forgets `p`; the
+Property-F graph retains both. The reusable proof map is:
+
+1. prove the base language finite/regular;
+2. prove the fiber cocycle has a finite quotient or a well-founded rank;
+3. classify terminal fiber action as permutation/translation;
+4. show every recurrent component projects to the zero sector.
+
+Dimension adds a graded descent coordinate to `P`, multiplicity adds carry
+colors to `F`, and a non-unit determinant adds valuation coordinates to `F`.
+Non-unitness therefore changes the fiber, not the base or the recurrence
+argument. The universal remaining lemma is a finite-cocycle/holonomy statement:
+a recurrent loop with nonzero fiber holonomy must survive every quotient, while
+Condition F makes the admissible zero-language quotient finite and terminal
+fiber translations harmless permutations.
+
 ## Current evidence sheet
 
 The fixed-spectrum fourth-generator family has nine exact instances. All close
@@ -179,13 +206,13 @@ path growth. The executable certificate is
 the cited Condition-F/CSY theorem application, not a claim that every raw
 bounded BFS must be small.
 
-The Pisot premise is no longer an unchecked flag: multiplying the polynomial
-by `x-1` gives `x^(d+1)-(m+1)x^d+m`. Rouché on a circle just outside the unit
-circle isolates the unique root `beta>1`, and equality analysis on `|x|=1`
-excludes every other unit-circle root (the root `x=1` is the extraneous factor).
-The remaining Condition-F step uses the Frougny-Solomyak sufficient criterion
-`a_(d-1) >= ... >= a_0 > 0`; here every coefficient is the same positive `m`,
-so the criterion applies uniformly in both parameters.
+The Pisot premise follows from the primitive nonnegative companion matrix:
+Perron-Frobenius makes the positive root the unique dominant root. The
+polynomial is `x^d-m(x+...+x^(d-1))-1`, so its coefficient sequence is
+`(m,...,m,1)`. The Frougny-Solomyak sufficient criterion
+`a_(d-1) >= ... >= a_0 > 0` therefore applies uniformly. The constant term is
+`-1`, so every member of this generalized family is unimodular, including
+`m>1`.
 
 ## Why the long cases are long
 

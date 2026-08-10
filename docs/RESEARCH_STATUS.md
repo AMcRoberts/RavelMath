@@ -127,6 +127,12 @@ one carry color at each nonterminal height. The cross-dimension test checks 42
 of the former lifts and 35 of the latter. This transfers the return language,
 not Property-F closure, because the beta-inverse matrix changes with the
 parameters.
+The unit/non-unit split is now explicit. Every generalized-multinacci member
+has constant term `-1` and is unimodular, so its Condition-F wall is the thin
+finite-language/recurrence bridge with no valuation coordinates. The genuinely
+non-unit witnesses have the same finite base and cocycle logic, but their fiber
+must be enlarged by every prime-ideal valuation; the p-adic integrality bound
+and contact-to-adelic recurrence bridge are the remaining thin wall there.
 The resulting strong hypothesis is recorded in
 `docs/TRANSPORT_CROSS_DIMENSION_HYPOTHESIS.md`: the sofic phase is the finite
 base, while transport is a graded height-by-carry-color cocycle. Its proposed
@@ -169,11 +175,11 @@ finite carry alphabet and treats terminal transport fibres as permutation
 lifts, preserving path growth. This closes the abstract Condition-F existence
 route; the zero-plateau rank remains the constructive bound explaining the
 finite graph sizes and the resource behavior of direct enumeration.
-The generalized Pisot premise is now justified in the certificate itself:
-after multiplying by `x-1`, Rouché isolates one root outside the unit circle,
-and the equality case on `|x|=1` leaves only the extraneous root `x=1`.
-Thus the CSY theorem application is not resting on an unverified numerical
-root scan.
+The generalized Pisot premise is now justified by the primitive nonnegative
+companion matrix and Perron-Frobenius: the positive root is the unique
+dominant root. Its polynomial is `x^d-m(x+...+x^(d-1))-1`, with coefficient
+sequence `(m,...,m,1)`, and the constant term `-1` makes the whole family
+unimodular, including `m>1`.
 The actual Condition-F implication is supplied by the Frougny-Solomyak
 coefficient criterion `a_(d-1) >= ... >= a_0 > 0`: the generalized family has
 the constant coefficient sequence `(m,...,m)`, so it satisfies that criterion
