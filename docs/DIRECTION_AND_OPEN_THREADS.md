@@ -591,6 +591,15 @@ factor, or a non-cyclotomic recurrent fibre that survives after quotienting
 by return history. If neither appears, the useful target is a finite-rank
 return/cocycle extension theorem, not a new unconstrained expansion class.
 
+**H10 exact check (2026-08-09).** The live return images, rather than a
+hard-coded matrix, now feed an exact Faddeev--LeVerrier certificate. For
+`sigma_{0,1}^3` it recovers five return words and the characteristic polynomial
+`x^5-x^4-3x^3-x^2-1`, equal to
+`(x+1)^2(x^3-3x^2+2x-1)`. The reusable certificate and regression test pass;
+the spectral split is therefore an exact property of the induced system, not
+a numerical eigenvalue fit. This closes the spectral part of H10 while
+leaving the factor-through-history proof as the next non-AR obligation.
+
 The first experiment should attack H1 and H2 together: prove the all-length
 predecessor decomposition for `sigma_{0,1}`, build its finite seam grammar,
 and compare its channel rank with the existing contact-boundary generator
