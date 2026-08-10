@@ -40,6 +40,12 @@ struct PropertyFFamilyObservation {
     long long property_f_sccs = -1;
     long long property_f_terminal_sccs = -1;
     long long property_f_max_escape_height = -1;
+    // Height-profile scalars distinguish a long transient collar from a
+    // genuinely large recurrent component.  They are diagnostics, not a
+    // theorem: rank zero is the accepted terminal shell.
+    long long property_f_transient_nodes = -1;
+    long long property_f_height_mass = -1;
+    long long property_f_max_scc_size = -1;
     long long property_f_nonzero_cycles = -1;
     long long property_f_boundary_edges = -1;
     long long property_f_cyclic_sccs = -1;
@@ -212,6 +218,17 @@ inline PropertyFFamilyObservation analyze_case(
         if (rank.valid) {
             out.property_f_terminal_sccs = static_cast<long long>(rank.terminal_sccs);
             out.property_f_max_escape_height = static_cast<long long>(rank.maximum_height);
+            long long transient_nodes = 0;
+            long long height_mass = 0;
+            for (const auto height : rank.node_height) {
+                if (height > 0) ++transient_nodes;
+                height_mass += static_cast<long long>(height);
+            }
+            out.property_f_transient_nodes = transient_nodes;
+            out.property_f_height_mass = height_mass;
+            for (const auto size : property_graph_exact.scc_sizes)
+                out.property_f_max_scc_size = std::max(
+                    out.property_f_max_scc_size, size);
         }
     }
     out.property_f_nonzero_cycles = propf.nonzero_cycle_components;
@@ -309,7 +326,7 @@ inline std::vector<PropertyFFamilyObservation> run_property_f_family(
 
 // Stable, header-only serialization contract used by the artifact generator.
 inline std::string property_f_family_tsv_header() {
-    return "name\timages\tprefix_states\tdistinct_prefixes\tcoincidence_depth\tcoincidence_unresolved\tproperty_f_nodes\tproperty_f_zero_nodes\tproperty_f_nonzero_nodes\tproperty_f_sccs\tproperty_f_terminal_sccs\tproperty_f_max_escape_height\tproperty_f_nonzero_cycles\tproperty_f_boundary_edges\tproperty_f_cyclic_sccs\tproperty_f_zero_cycle_components\tproperty_f_mixed_cycle_components\tproperty_f_self_loops\treturn_words\treturn_phase_states\treturn_phase_edges\treturn_phase_sccs\treturn_phase_cycle_components\treturn_transport_closed\tcoincidence_holds\tproperty_f_holds\tinconclusive\ttrusted_padic\n";
+    return "name\timages\tprefix_states\tdistinct_prefixes\tcoincidence_depth\tcoincidence_unresolved\tproperty_f_nodes\tproperty_f_zero_nodes\tproperty_f_nonzero_nodes\tproperty_f_sccs\tproperty_f_terminal_sccs\tproperty_f_max_escape_height\tproperty_f_transient_nodes\tproperty_f_height_mass\tproperty_f_max_scc_size\tproperty_f_nonzero_cycles\tproperty_f_boundary_edges\tproperty_f_cyclic_sccs\tproperty_f_zero_cycle_components\tproperty_f_mixed_cycle_components\tproperty_f_self_loops\treturn_words\treturn_phase_states\treturn_phase_edges\treturn_phase_sccs\treturn_phase_cycle_components\treturn_transport_closed\tcoincidence_holds\tproperty_f_holds\tinconclusive\ttrusted_padic\n";
 }
 
 inline std::string property_f_family_tsv_row(const PropertyFFamilyObservation& r) {
@@ -320,6 +337,8 @@ inline std::string property_f_family_tsv_row(const PropertyFFamilyObservation& r
         << r.property_f_zero_nodes << '\t' << r.property_f_nonzero_nodes << '\t'
         << r.property_f_sccs << '\t' << r.property_f_terminal_sccs << '\t'
         << r.property_f_max_escape_height << '\t'
+        << r.property_f_transient_nodes << '\t' << r.property_f_height_mass << '\t'
+        << r.property_f_max_scc_size << '\t'
         << r.property_f_nonzero_cycles << '\t'
         << r.property_f_boundary_edges << '\t' << r.property_f_cyclic_sccs << '\t'
         << r.property_f_zero_cycle_components << '\t'

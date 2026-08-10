@@ -632,3 +632,14 @@ stays fixed. This is evidence that `B` is an ordering/transport invariant
 with family-dependent height, not a spectral quantity. The family artifact
 now records terminal-SCC counts and maximum escape height for later symbolic
 comparison.
+
+The height-profile extension now also records positive-height
+(transient-collar) node count, total height mass, and maximum SCC size. In the
+nine-row sample, representative 4,277-, 5,505-, and 7,966-node cases have
+1,881, 2,425, and 3,506 positive-height nodes, with height masses 9,037,
+11,993, and 17,287/17,365; their largest SCCs have size at most five. The
+short nine-node cases have only five positive-height nodes and height mass 9
+or 15. This supports a metastable-cloud interpretation (large transient
+collar, small recurrent core) and disfavors a hidden large recurrent
+obstruction. These are diagnostics until a symbolic collar decomposition
+proves the same separation.

@@ -1233,3 +1233,11 @@ statistics. All rows have valid SCC condensations; maximum sink distance is
 `4,3,1,55,59,3,5,58,58` across the listed orderings, despite identical
 incidence spectra. The boundary potential is therefore sensitive to ordering
 and transport geometry, exactly as the large Property-F lifts suggested.
+
+The family artifact now also records transient-collar node count, height mass,
+and maximum SCC size. The largest rows are dominated by positive-height
+transient nodes (1,881/2,425/3,506 in representative 4,277/5,505/7,966-node
+cases), while their largest SCCs have size at most five. This supports a
+metastable slow-fast model—contraction into a bounded cloud followed by slow
+transport escape—rather than a hidden large recurrent obstruction. It is a
+falsifiable diagnostic, not part of the theorem statement.
