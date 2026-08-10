@@ -1068,3 +1068,6 @@ Retaining the full 16-state return collar still leaves 52,618 recurrent
 zero-kernel misses in the phase-pair cocycle. The geometric contact coordinate
 is therefore load-bearing as well; the required bridge is a three-way skew
 product, not a letter-role or phase-only quotient.
+The quotient classes themselves have concrete fibre sizes ranging from 3 to
+21, falsifying a uniform permutation-cover model. The contact-aware object
+must therefore be treated as a finite branched relation/textile extension.

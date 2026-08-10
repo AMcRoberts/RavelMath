@@ -140,11 +140,15 @@ int main() {
                && history.offset_sensitive_keys == history.offset_variant_keys,
            "every multi-offset history key has offset-sensitive transport");
     const auto fibre = derive_return_offset_fibre_certificate(lift, phases);
-    std::printf("offset-fibre states=%zu edges=%zu cyclic_sccs=%zu largest=%zu\n",
+    std::printf("offset-fibre states=%zu edges=%zu cyclic_sccs=%zu largest=%zu "
+                "class_sizes=%zu..%zu uniform=%d\n",
                 fibre.states, fibre.edges, fibre.cyclic_sccs,
-                fibre.largest_cyclic_scc);
+                fibre.largest_cyclic_scc, fibre.minimum_class_size,
+                fibre.maximum_class_size, fibre.uniform_class_sizes ? 1 : 0);
     expect(fibre.finite && fibre.cyclic_sccs > 0,
            "offset fibre is finite and carries recurrent phase transport");
+    expect(!fibre.uniform_class_sizes,
+           "offset quotient is a relation, not a uniform permutation cover");
     const auto holonomy = derive_return_offset_fibre_holonomy(lift, phases);
     std::printf("holonomy recurrent_sccs=%zu gcd_one_sccs=%zu",
                 holonomy.recurrent_sccs, holonomy.gcd_one_sccs);

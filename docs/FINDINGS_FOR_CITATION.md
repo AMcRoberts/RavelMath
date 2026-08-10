@@ -4125,3 +4125,6 @@ the phase collar alone is also insufficient: the geometric contact coordinate
 must participate in the intertwiner. The surviving model is a three-way skew
 product (return phase, contact geometry, integer defect), not a one-dimensional
 role or phase extension.
+The 256 quotient classes have nonuniform concrete fibre sizes (3 through 21),
+so even a finite permutation-cover model is false: the correct abstraction is
+a finite branched relation/textile extension with parallel transport channels.

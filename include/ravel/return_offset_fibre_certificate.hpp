@@ -21,6 +21,9 @@ struct ReturnOffsetFibreCertificate {
     std::size_t edges = 0;
     std::size_t cyclic_sccs = 0;
     std::size_t largest_cyclic_scc = 0;
+    std::size_t minimum_class_size = 0;
+    std::size_t maximum_class_size = 0;
+    bool uniform_class_sizes = false;
     bool finite = false;
 };
 
@@ -58,12 +61,30 @@ ReturnOffsetFibreCertificate derive_return_offset_fibre_certificate(
         edge_set.insert({ids.at(source_key), ids.at(target_key)});
     }
     const std::size_t n = ids.size();
+    ReturnOffsetFibreCertificate result;
+    std::vector<std::size_t> class_sizes(n, 0);
+    for (const auto& state : lift.states) {
+        const auto& left = phases.states.at(state.left_phase);
+        const auto& right = phases.states.at(state.right_phase);
+        const auto key = Key{left.return_word, left.offset,
+                             right.return_word, right.offset,
+                             static_cast<std::size_t>(state.contact.i * 8 +
+                                                      state.contact.j)};
+        ++class_sizes.at(ids.at(key));
+    }
+    if (!class_sizes.empty()) {
+        result.minimum_class_size = *std::min_element(
+            class_sizes.begin(), class_sizes.end());
+        result.maximum_class_size = *std::max_element(
+            class_sizes.begin(), class_sizes.end());
+        result.uniform_class_sizes = result.minimum_class_size ==
+                                     result.maximum_class_size;
+    }
     std::vector<std::vector<std::size_t>> graph(n);
     for (const auto& [source, target] : edge_set) graph[source].push_back(target);
     std::vector<int> index(n, -1), low(n, 0), stack;
     std::vector<bool> active(n, false);
     int next = 0;
-    ReturnOffsetFibreCertificate result;
     result.states = n;
     result.edges = edge_set.size();
     std::function<void(std::size_t)> visit = [&](std::size_t v) {
