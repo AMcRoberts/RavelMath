@@ -22,6 +22,7 @@
 #include "adelic/property_f_class_ii_phase_absorption.hpp"
 #include "adelic/property_f_class_ii_phase_carrier.hpp"
 #include "adelic/property_f_class_ii_carry_deviation.hpp"
+#include "adelic/property_f_class_ii_akiyama_spine.hpp"
 #include "adelic/property_f_class_ii_rank_spine.hpp"
 #include "adelic/property_f_class_ii_symbolic_tail_grammar.hpp"
 #include "adelic/coincidence_and_property_f.hpp"
@@ -351,6 +352,13 @@ int main() {
         assert(deviation.unexpected_phase_returns == 0);
         assert(deviation.zero_deviation_preserving > 0);
         assert(deviation.nonzero_deviation_exits > 0);
+        const auto akiyama =
+            adelic::derive_property_f_class_ii_akiyama_spine(a);
+        assert(akiyama.valid);
+        assert(akiyama.identity_mismatches == 0);
+        assert(akiyama.residual_mismatches == 0);
+        assert(akiyama.forward_mismatches == 0);
+        assert(akiyama.backward_mismatches == 0);
     }
     // The quotient identity is state-independent, not an artifact of the
     // observed spine.  Exercise arbitrary small integer coefficient states

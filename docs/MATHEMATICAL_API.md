@@ -893,6 +893,14 @@ identify Akiyama's bounded conjugate correction window with the literal
 prefix/contact coordinates; that intertwiner remains a separate theorem
 obligation.
 
+`include/adelic/property_f_class_ii_akiyama_spine.hpp` makes the published
+analogue concrete in the same coefficient coordinates. It represents
+`U=a+beta^(-1)` as `[-1,-a,1]`, verifies Akiyama's recurrence for
+`kU`, identifies `kU-(k-1)beta` with the negative spine state, and checks the
+successive affine digits `k` and `a-k`. It proves the coordinate adapter and
+recurrence only; beta-expansion inequalities and the literal
+prefix/contact-cocycle intertwiner remain separate obligations.
+
 For the non-unit branch, `adelic_cocycle_extension.hpp` also exposes
 `derive_adelic_valuation_fibre_lemma`. It checks maximal Dedekind factorization,
 the independent ideal-lattice identity, and the local degree partition

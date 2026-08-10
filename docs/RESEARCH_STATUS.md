@@ -230,6 +230,15 @@ immediate strip exit for every digit on every symbolic spine state through
 not the Akiyama-to-literal-contact intertwiner or the uniform collar-absorption
 lemma.
 
+The literature-to-spine coordinate adapter is now executable in
+`include/adelic/property_f_class_ii_akiyama_spine.hpp`. It represents
+`U=a+beta^(-1)` as `[-1,-a,1]`, verifies Akiyama's recursive identity for
+`kU`, and identifies `kU-(k-1)beta` with the negative spine state
+`[-k,-(k(a+1)-1),k]`. The two successive affine steps use digits `k` and
+`a-k`, reproducing the published alternating schedule through `a=256`.
+This closes the coordinate-level analogue, but not the beta-expansion
+inequalities or the literal prefix/contact-cocycle intertwiner.
+
 The graph-level phase-absorption certificate now closes the finite version of
 that seam. In every checked Class-II graph, every off-strip node above the
 height-5 collar is the single distinguished top zero seed; all other
