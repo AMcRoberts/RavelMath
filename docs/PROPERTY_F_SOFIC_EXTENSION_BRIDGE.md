@@ -107,6 +107,14 @@ has an empty local fiber, while its non-unit specialization requires a valid
 prime-ideal descriptor for every local coordinate and verifies that the sofic
 and transport forgetful projections commute.
 
+The first widening trunk is the monotone coefficient cone
+`a_(d-1) >= ... >= a_0 > 0`. The certificate in
+`monotone_coefficient_cone.hpp` simultaneously records the Condition-F
+criterion, the Perron companion hypothesis, and the determinant split:
+`a_0=1` is the empty-local-fiber unit case, while `a_0>1` is the non-unit case
+whose prime divisors seed the valuation fibers. The generalized family is the
+ray `(m,...,m,1)` inside this cone.
+
 ## Current evidence sheet
 
 The fixed-spectrum fourth-generator family has nine exact instances. All close

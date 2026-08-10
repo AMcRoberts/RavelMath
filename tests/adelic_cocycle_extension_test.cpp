@@ -3,8 +3,26 @@
 #include <vector>
 
 #include "adelic/adelic_cocycle_extension.hpp"
+#include "ravel/proof/monotone_coefficient_cone.hpp"
 
 int main() {
+    const auto cone_unit =
+        ravel::proof::derive_monotone_coefficient_cone_certificate({3, 3, 1});
+    assert(cone_unit.condition_f_applies);
+    assert(cone_unit.unimodular);
+    assert(!cone_unit.nonunit);
+
+    const auto cone_nonunit =
+        ravel::proof::derive_monotone_coefficient_cone_certificate({4, 3, 2});
+    assert(cone_nonunit.condition_f_applies);
+    assert(!cone_nonunit.unimodular);
+    assert(cone_nonunit.nonunit);
+    assert(cone_nonunit.determinant == 2);
+
+    const auto cone_bad =
+        ravel::proof::derive_monotone_coefficient_cone_certificate({2, 4, 1});
+    assert(!cone_bad.condition_f_applies);
+
     const auto unit = adelic::derive_adelic_cocycle_extension(-1, {});
     assert(unit.proved);
     assert(unit.unit_specialization);

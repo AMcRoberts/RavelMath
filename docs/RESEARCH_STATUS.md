@@ -144,6 +144,12 @@ case specializes to an empty local fiber, while the non-unit case requires
 prime-ideal descriptors and preserves the shared-prefix cocycle across all
 forgetful projections. This is the first concrete version of the expected
 third extension, not merely a diagram.
+The first forest-level widening is now executable: the monotone coefficient
+cone certificate accepts arbitrary positive nonincreasing coefficient vectors,
+applies the Condition-F criterion, and identifies `a_0` as the determinant
+that decides whether valuation fibers are present. The generalized family is
+the unit ray `(m,...,m,1)`; vectors with `a_0>1` are the first controlled
+non-unit targets.
 The resulting strong hypothesis is recorded in
 `docs/TRANSPORT_CROSS_DIMENSION_HYPOTHESIS.md`: the sofic phase is the finite
 base, while transport is a graded height-by-carry-color cocycle. Its proposed
