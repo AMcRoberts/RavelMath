@@ -359,6 +359,7 @@ int main() {
         assert(akiyama.residual_mismatches == 0);
         assert(akiyama.spine_coordinate_mismatches == 0);
         assert(akiyama.companion_mismatches == 0);
+        assert(akiyama.reconstruction_mismatches == 0);
         assert(akiyama.forward_mismatches == 0);
         assert(akiyama.backward_mismatches == 0);
     }

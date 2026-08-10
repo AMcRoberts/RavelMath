@@ -26,6 +26,7 @@ struct PropertyFClassIIAkiyamaSpineCertificate {
     std::size_t residual_mismatches = 0;
     std::size_t spine_coordinate_mismatches = 0;
     std::size_t companion_mismatches = 0;
+    std::size_t reconstruction_mismatches = 0;
     std::size_t forward_mismatches = 0;
     std::size_t backward_mismatches = 0;
     bool parameter_domain = false;
@@ -56,6 +57,12 @@ inline std::array<long long, 3> property_f_class_ii_akiyama_unit(
 inline std::array<long long, 3> property_f_class_ii_akiyama_residual(
         long long a, long long k) {
     return {-k, -(k * (a + 1) - 1), k};
+}
+
+// beta^2-(k+1)U after removing its leading (a-k)beta term.
+inline std::array<long long, 3> property_f_class_ii_akiyama_companion_residual(
+        long long a, long long k) {
+    return {k + 1, k * (a + 1), -k};
 }
 
 inline std::array<long long, 3> property_f_class_ii_beta_inverse(
@@ -109,12 +116,13 @@ derive_property_f_class_ii_akiyama_spine(std::size_t a) {
     out.fundamental_recurrence_valid = out.identity_mismatches == 0;
     out.spine_adapter_valid = out.residual_mismatches == 0 &&
         out.spine_coordinate_mismatches == 0 &&
-        out.companion_mismatches == 0;
+        out.companion_mismatches == 0 &&
+        out.reconstruction_mismatches == 0;
 
     for (long long k = 1; k <= aa - 2; ++k) {
         const auto negative = property_f_class_ii_akiyama_residual(aa, k);
-        const auto positive = std::array<long long, 3>{
-            k + 1, k * (aa + 1), -k};
+        const auto positive =
+            property_f_class_ii_akiyama_companion_residual(aa, k);
         const auto next_negative =
             property_f_class_ii_akiyama_residual(aa, k + 1);
         const auto beta_squared = std::array<long long, 3>{0, 0, 1};
@@ -125,6 +133,18 @@ derive_property_f_class_ii_akiyama_spine(std::size_t a) {
                     property_f_class_ii_akiyama_unit(aa, k + 1), -1)),
             property_f_class_ii_coeff_scale(beta, -(aa - k)));
         if (companion != positive) ++out.companion_mismatches;
+        const auto negative_reconstruction = property_f_class_ii_coeff_add(
+            negative, property_f_class_ii_coeff_scale(beta, k - 1));
+        if (negative_reconstruction !=
+            property_f_class_ii_akiyama_unit(aa, k))
+            ++out.reconstruction_mismatches;
+        const auto positive_reconstruction = property_f_class_ii_coeff_add(
+            positive, property_f_class_ii_coeff_scale(beta, aa - k));
+        if (positive_reconstruction != property_f_class_ii_coeff_add(
+                beta_squared,
+                property_f_class_ii_coeff_scale(
+                    property_f_class_ii_akiyama_unit(aa, k + 1), -1)))
+            ++out.reconstruction_mismatches;
         const auto positive_index = static_cast<std::size_t>(2 * k + 1);
         if (positive_index >= spine.size() || spine[positive_index] != positive)
             ++out.spine_coordinate_mismatches;
@@ -140,7 +160,8 @@ derive_property_f_class_ii_akiyama_spine(std::size_t a) {
         out.backward_mismatches == 0;
     out.spine_adapter_valid = out.residual_mismatches == 0 &&
         out.spine_coordinate_mismatches == 0 &&
-        out.companion_mismatches == 0;
+        out.companion_mismatches == 0 &&
+        out.reconstruction_mismatches == 0;
     out.valid = out.parameter_domain && out.fundamental_recurrence_valid &&
         out.spine_adapter_valid && out.alternating_recurrence_valid;
     return out;

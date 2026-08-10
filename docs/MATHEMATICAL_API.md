@@ -899,6 +899,8 @@ analogue concrete in the same coefficient coordinates. It represents
 `kU`, identifies `kU-(k-1)beta` with the negative spine state, and checks the
 successive affine digits `k` and `a-k`. It also identifies the positive spine
 state as the residual of `beta^2-(k+1)U` after its leading `(a-k)beta` term.
+The adapter also reconstructs both fundamental elements by restoring those
+stripped leading terms, making the prefix context explicit.
 It proves the coordinate adapter and recurrence only; beta-expansion inequalities and the literal
 prefix/contact-cocycle intertwiner remain separate obligations.
 

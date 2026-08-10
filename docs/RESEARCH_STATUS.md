@@ -237,7 +237,10 @@ The literature-to-spine coordinate adapter is now executable in
 `[-k,-(k(a+1)-1),k]`. The two successive affine steps use digits `k` and
 `a-k`, while the positive state is the corresponding residual of
 `beta^2-(k+1)U` after `(a-k)beta`; this reproduces both published expansion
-families and the alternating schedule through `a=256`.
+families and the alternating schedule through `a=256`. The certificate also
+reconstructs both fundamental elements after restoring the stripped leading
+terms, isolating the exact prefix context that a future bounded-correction
+intertwiner must preserve.
 This closes the coordinate-level analogue, but not the beta-expansion
 inequalities or the literal prefix/contact-cocycle intertwiner.
 
