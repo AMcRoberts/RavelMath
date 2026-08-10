@@ -243,6 +243,13 @@ exact paired displacement labels. The same transition check now passes across
 the first witness's radius-0/1/2 adjacent-ordering neighborhood: 1,215,
 1,322, and 1,348 contact edges respectively, with 5, 7, and 9 paired labels.
 
+The helper's `recurrence_preserved` flag must be read at this same conditional
+strength: it combines exact label/transition replay with closure of the supplied
+Property-F graph and absence of a nonzero recurrent SCC. It is not yet a proof
+that every contact recurrent cycle has a full state-level image. That stronger
+claim is precisely the state-simulation obligation in implementation step 3,
+and remains a premise of the future parameterized composition lemma.
+
 The parent-role side is no longer canonical-only: the generic factory
 `derive_parent_role_catalogue_from_substitution` builds the same labelled
 forest directly from an arbitrary substitution. Its finite zero-kernel plus
