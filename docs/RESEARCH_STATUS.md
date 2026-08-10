@@ -1000,6 +1000,15 @@ localized: derive the phase-absorption premise and the Akiyama-to-literal
 prefix/contact coordinate transport from the ordered-prefix grammar for all
 parameters, rather than replaying them on closed graphs.
 
+The published finite-case endpoint is now also executable in
+`property_f_class_ii_akiyama_correction_cases.hpp`: six exact Section-4
+algebraic reductions for the bounded `(kappa_1,kappa_2)` window are checked in
+the Class-II coefficient lattice. The family regression checks all six at
+`a>=15`, including the `beta^{-2}` reductions to the fundamental `U`/spine
+terms. This removes the last algebraic bookkeeping from the transfer plan;
+what remains is the analytic/greedy-expansion admissibility and the literal
+prefix/contact coordinate intertwiner.
+
 ## Validation commands
 
 ```sh

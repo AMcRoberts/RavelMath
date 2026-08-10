@@ -27,6 +27,7 @@
 #include "adelic/property_f_class_ii_akiyama_window.hpp"
 #include "adelic/property_f_class_ii_akiyama_window_census.hpp"
 #include "adelic/property_f_class_ii_correction_absorption.hpp"
+#include "adelic/property_f_class_ii_akiyama_correction_cases.hpp"
 #include "adelic/property_f_class_ii_rank_spine.hpp"
 #include "adelic/property_f_class_ii_symbolic_tail_grammar.hpp"
 #include "adelic/coincidence_and_property_f.hpp"
@@ -206,6 +207,13 @@ int main() {
                     }
                     std::cout << "\n";
                 }
+            }
+            if (a >= 15) {
+                const auto correction_cases =
+                    adelic::derive_property_f_class_ii_akiyama_correction_cases(a);
+                assert(correction_cases.valid);
+                assert(correction_cases.identities_checked == 6);
+                assert(correction_cases.mismatches == 0);
             }
             const auto absorption =
                 adelic::derive_property_f_class_ii_phase_absorption(graph, a);

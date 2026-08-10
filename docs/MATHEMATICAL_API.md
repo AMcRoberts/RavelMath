@@ -940,6 +940,15 @@ a new escape branch. This is a finite graph-level bridge: it does not claim
 the missing uniform theorem that the phase-absorption premise and the
 Akiyama-to-prefix/contact coordinate transport hold for every parameter.
 
+`include/adelic/property_f_class_ii_akiyama_correction_cases.hpp` checks the
+six exact algebraic reductions used in Akiyama's final bounded-correction
+case split, including the `beta^{-2}` reductions for the `a`, `a+1`, and
+negative boundary terms. It runs at the paper's sharp final threshold
+`a>=15` and through the safe symbolic range. These identities connect the
+finite correction window to the existing `U`/spine coordinate adapter; they
+do not by themselves prove that each reduced expression satisfies the greedy
+beta-expansion inequalities.
+
 For the non-unit branch, `adelic_cocycle_extension.hpp` also exposes
 `derive_adelic_valuation_fibre_lemma`. It checks maximal Dedekind factorization,
 the independent ideal-lattice identity, and the local degree partition

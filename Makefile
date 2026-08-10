@@ -1249,6 +1249,7 @@ $(PROPERTY_F_CLASS_II_BIRTH_ROUND_TEST_BIN): $(TESTDIR)/property_f_class_ii_birt
 		$(INCDIR)/adelic/property_f_class_ii_akiyama_window.hpp \
 		$(INCDIR)/adelic/property_f_class_ii_akiyama_window_census.hpp \
 		$(INCDIR)/adelic/property_f_class_ii_correction_absorption.hpp \
+		$(INCDIR)/adelic/property_f_class_ii_akiyama_correction_cases.hpp \
 		$(INCDIR)/adelic/property_f_class_ii_symbolic_tail_grammar.hpp \
 		$(INCDIR)/adelic/property_f_class_ii_rank_spine.hpp \
 		$(INCDIR)/adelic/coincidence_and_property_f.hpp \
