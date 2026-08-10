@@ -99,7 +99,7 @@ TRANSITION_FILES := $(addprefix $(TRANSITIONS_DIR)/spectre_transitions_,$(addsuf
 .PHONY: csy_finite_carry_automaton_test
 .PHONY: lean_class_ii_catalogue_cross_check_test
 .PHONY: supergolden_qrs_audit
-.PHONY: theta5_contact_boundary_probe property_f_family_autopsy property_f_family_artifact property_f_transport_certificate_test property_f_contact_transport_bridge_test canonical_nonunit_property_f_test nonunit_property_f_theorem_test marker_power_return_core_test nonar_return_contact_lift_test nonar_property_f_bridge_test nonunit_property_f_bridge_test generalized_multinacci_property_f_transport_test generalized_multinacci_property_f_transport_extended_test generalized_multinacci_growth_profile_test generalized_multinacci_block_affine_test generalized_multinacci_structural_sweep_test generalized_multinacci_cross_dimension_test generalized_multinacci_cross_dimension_property_f_test generalized_multinacci_fiber_interaction_test adelic_cocycle_extension_test
+.PHONY: theta5_contact_boundary_probe property_f_family_autopsy property_f_family_artifact property_f_transport_certificate_test property_f_contact_transport_bridge_test canonical_nonunit_property_f_test nonunit_property_f_theorem_test marker_power_return_core_test nonar_return_contact_lift_test nonar_property_f_bridge_test nonunit_property_f_bridge_test rnd13_property_f_bridge_test generalized_multinacci_property_f_transport_test generalized_multinacci_property_f_transport_extended_test generalized_multinacci_growth_profile_test generalized_multinacci_block_affine_test generalized_multinacci_structural_sweep_test generalized_multinacci_cross_dimension_test generalized_multinacci_cross_dimension_property_f_test generalized_multinacci_fiber_interaction_test adelic_cocycle_extension_test
 
 all: build data apps tests
 build: $(LIB)
@@ -842,6 +842,7 @@ TESTS_DEFAULT := \
 	nonar_return_contact_lift_test \
 	nonar_property_f_bridge_test \
 	nonunit_property_f_bridge_test \
+	rnd13_property_f_bridge_test \
 	return_contact_lift_test \
 	class_ii_boundary_family_test \
 	substitution_neighborhood_test \
@@ -1202,6 +1203,13 @@ $(NONAR_PROPERTY_F_BRIDGE_TEST_BIN): $(TESTDIR)/nonar_property_f_bridge_test.cpp
 NONUNIT_PROPERTY_F_BRIDGE_TEST_BIN := $(BUILDDIR)/nonunit_property_f_bridge_test
 nonunit_property_f_bridge_test: $(NONUNIT_PROPERTY_F_BRIDGE_TEST_BIN)
 $(NONUNIT_PROPERTY_F_BRIDGE_TEST_BIN): $(TESTDIR)/nonunit_property_f_bridge_test.cpp \
+		$(INCDIR)/adelic/property_f_contact_transport_bridge.hpp \
+		$(INCDIR)/adelic/prefix_automaton.hpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+RND13_PROPERTY_F_BRIDGE_TEST_BIN := $(BUILDDIR)/rnd13_property_f_bridge_test
+rnd13_property_f_bridge_test: $(RND13_PROPERTY_F_BRIDGE_TEST_BIN)
+$(RND13_PROPERTY_F_BRIDGE_TEST_BIN): $(TESTDIR)/rnd13_property_f_bridge_test.cpp \
 		$(INCDIR)/adelic/property_f_contact_transport_bridge.hpp \
 		$(INCDIR)/adelic/prefix_automaton.hpp | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@

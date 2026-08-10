@@ -704,6 +704,14 @@ transient-fibre hypothesis beyond the quadratic example; the remaining
 falsifier is a trusted determinant-2 (or higher) row with a nonzero recurrent
 Property-F cycle.
 
+**Large non-unit falsifier (2026-08-09).** The determinant-2 quartic `rnd13`
+stress test is also clean: 24,029 exact contact edges replay, with 81
+difference labels; the trusted Property-F closure has 33,185 nodes,
+`zero_nodes_beyond_frontier=0`, and no recurrence obstruction. This is large
+enough to rule out the explanation that only tiny p-adic fibres behave well.
+The non-unit quotient hypothesis has now survived the minimal quadratic,
+determinant-2 quintics, and the 33k-node quartic.
+
 The longer pass deliberately uses a separately enlarged orbit prefix. On the
 525456-symbol prefix, extending the requested length too far produces a first
 false loss of one left extension at `n=55406`; the 4-million-symbol prefix
