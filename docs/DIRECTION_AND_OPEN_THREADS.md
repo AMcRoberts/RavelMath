@@ -611,6 +611,30 @@ nontrivial transient obstruction. The remaining proof task is to replace the
 prefix-dependent radius list by a symbolic recognizability bound and to show
 that the SCC is independent of the orbit margin.
 
+**Margin and bound probe (2026-08-09).** Repeating the full two-sided test at
+orbit prefixes of 100k, 200k, and 500k symbols gives identical conflict
+profiles for `b=1,2,3`; the zero-conflict radii `5,9,9` are therefore not a
+boundary artifact at this scale. Extending to `b=6,7,8` finds zero conflicts
+at radii `17,19,21`, respectively. This supports the provisional uniform
+bound `R_b <= 2*b + 5` for the full collared phase map (not a theorem yet).
+It is the sort of bound expected from decoding the `1^b2` block on both sides
+of a cut. A counterexample with `R_b > 2*b+5`, or a margin-dependent
+zero-conflict radius, would force a different recognizability mechanism and
+keep the non-AR plank open.
+
+**Marker-power hypothesis (2026-08-09).** For every tested `sigma_{0,b}`, the
+third power is marker-proper at `0`: `sigma_{0,b}^3(0)` begins with `0`. The
+ordinary return-substitution construction therefore applies to the power and
+produces a single recurrent phase SCC. The observed induced systems have
+`(return words, phase states) = (5,16)` for `b=1`, then `(6,35),(6,54),
+(6,77),(6,104)` for `b=2,...,5`. This gives a symbolic finite core behind
+the larger two-sided collars: the latter should be a recognizability
+refinement of the return system for `sigma^3`, not an independent dynamical
+object. A falsifier would be a collared recurrent component not represented
+in the marker-power phase system, or a member of the family requiring a
+different power. If neither occurs, this is the natural closure mechanism
+for the non-AR run-length family.
+
 The longer pass deliberately uses a separately enlarged orbit prefix. On the
 525456-symbol prefix, extending the requested length too far produces a first
 false loss of one left extension at `n=55406`; the 4-million-symbol prefix

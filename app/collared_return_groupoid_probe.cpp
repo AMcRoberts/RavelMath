@@ -88,6 +88,44 @@ std::vector<std::size_t> scc_sizes(
     return sizes;
 }
 
+ravel::SubstitutionRule power_rule(const ravel::SubstitutionRule& rule,
+                                   std::size_t power) {
+    std::vector<std::vector<std::int8_t>> images(rule.alphabet_size());
+    for (std::size_t i = 0; i < images.size(); ++i) images[i] = {static_cast<std::int8_t>(i)};
+    for (std::size_t k = 0; k < power; ++k) {
+        for (std::size_t i = 0; i < images.size(); ++i)
+            images[i] = rule.apply_once(images[i]);
+    }
+    return ravel::SubstitutionRule(images);
+}
+
+void report_marker_power(const char* name,
+                         const ravel::SubstitutionRule& rule) {
+    try {
+        const auto induced = ravel::build_return_substitution(
+            power_rule(rule, 3), 0, 1 << 18);
+        const auto phase = ravel::build_return_phase_system(
+            power_rule(rule, 3), 0, 1 << 18);
+        std::map<std::string, std::set<std::string>> graph;
+        for (std::size_t i = 0; i < phase.phase_images.size(); ++i) {
+            const std::string source = std::to_string(i);
+            for (std::size_t j : phase.phase_images[i])
+                graph[source].insert(std::to_string(j));
+        }
+        for (const auto& [source, edges] : graph)
+            for (const auto& edge : edges) graph.try_emplace(edge);
+        const auto components = scc_sizes(graph);
+        std::size_t largest = 0;
+        for (std::size_t size : components) largest = std::max(largest, size);
+        std::printf("  marker_power=3 return_words=%zu phase_states=%zu\n",
+                    induced.words.size(), phase.states.size());
+        std::printf("    return_phase_SCCs=%zu largest=%zu\n",
+                    components.size(), largest);
+    } catch (const std::exception& e) {
+        std::printf("  marker_power=3 rejected: %s\n", e.what());
+    }
+}
+
 void report(const char* name, const ravel::SubstitutionRule& rule,
             std::size_t max_collar = 2) {
     const Word source = orbit_prefix(rule, 200000);
@@ -127,8 +165,11 @@ void report(const char* name, const ravel::SubstitutionRule& rule,
                 image_phase[ia + off] = std::to_string(it->second) + ":" +
                     std::to_string(off) + ":" + left + ":" + right;
         }
-        // Ignore a few boundary intervals: their image context is incomplete.
-        for (std::size_t k = 4; k + 4 < source_intervals.size(); ++k) {
+        // Ignore a collar-dependent boundary margin: both source and image
+        // contexts must be complete before a graph edge is trusted.
+        const std::size_t margin = std::max<std::size_t>(4, collar + 2);
+        for (std::size_t k = margin;
+             k + margin < source_intervals.size(); ++k) {
             const auto [a, b] = source_intervals[k];
             Word rw(source.begin() + static_cast<std::ptrdiff_t>(a),
                     source.begin() + static_cast<std::ptrdiff_t>(b));
@@ -188,8 +229,9 @@ int main() {
         sigma[1] = {2};
         sigma[2] = {0};
         const std::string name = "sigma_{0," + std::to_string(b) + "}";
-        report(name.c_str(), ravel::SubstitutionRule(sigma),
-               static_cast<std::size_t>(2 * b + 5));
+        const auto rule = ravel::SubstitutionRule(sigma);
+        report(name.c_str(), rule, static_cast<std::size_t>(2 * b + 5));
+        report_marker_power(name.c_str(), rule);
     }
     for (int a = 1; a <= 5; ++a) {
         std::vector<std::vector<std::int8_t>> sigma(3);
