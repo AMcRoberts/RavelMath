@@ -643,3 +643,15 @@ or 15. This supports a metastable-cloud interpretation (large transient
 collar, small recurrent core) and disfavors a hidden large recurrent
 obstruction. These are diagnostics until a symbolic collar decomposition
 proves the same separation.
+
+There is now an exact model for the proposed collar rank in the existing
+Class-II neighbor-2 grammar. The round-stratified transient check assigns each
+state its first birth round in the corona trace. For `a=7,8,9,10`, every
+recurrent block has a single birth round, no recurrent edge returns to an
+earlier transient stratum, and every transient round-group has an escape
+(`ITEM4` violations `0`, with all `ITEM3` groups escaping). The resulting
+birth-round coordinate is therefore a genuine symbolic-rank template: a
+linear stack of transient shells feeding a small recurrent core, followed by
+the terminal correction. The open Property-F step is to identify the analogous
+birth-round grammar for the adelic boundary lift, not to search for an
+unstructured global potential.

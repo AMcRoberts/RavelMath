@@ -1241,3 +1241,12 @@ cases), while their largest SCCs have size at most five. This supports a
 metastable slow-fast model—contraction into a bounded cloud followed by slow
 transport escape—rather than a hidden large recurrent obstruction. It is a
 falsifiable diagnostic, not part of the theorem statement.
+
+The existing Class-II neighbor-2 proof machinery supplies a concrete symbolic
+template for that diagnostic. Its round-stratified transient check gives every
+state a first birth round; for `a=7..10`, all recurrent blocks have a unique
+birth round, recurrent-to-earlier-stratum violations are zero, and every
+transient group has an escape. Thus the long collar can be modeled as a finite
+stack of birth-round shells over a small recurrent core. The analogous
+birth-round/transport grammar for the adelic Property-F lift is the next
+symbolic derivation target.
