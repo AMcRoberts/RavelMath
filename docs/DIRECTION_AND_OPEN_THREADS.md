@@ -543,6 +543,26 @@ and compare its channel rank with the existing contact-boundary generator
 intertwiner. This is small enough to fail quickly and informative enough that
 each failure selects the next representation layer.
 
+**Initial break-it pass (2026-08-09).** A finite predecessor scan already
+breaks the naive nested-branch model: for the stable `sigma_{0,1}` window,
+none of the left-special factors at lengths 8, 16, 32, or 64 has a one-letter
+left extension which is left-special at the next length. The five branches
+therefore have to be organised by return words (or an induced/sofic tower),
+not by five independent suffix chains. This is a useful failure of H1's
+cheapest implementation, not evidence against a finite recurrent core.
+
+The first small non-unit sweep gives a parallel warning. Among nine genuine
+quartic non-unit candidates, five reached a validated Property-F closure and
+four exhausted the deliberately tiny node budget. The latter four all had a
+non-maximal local order or an untrusted order cross-check; their status is
+therefore arithmetic certification failure, not a detected geometric
+obstruction. This supports a refinement of H3/H4: separate the finite real
+transport core from local-order/valuation bookkeeping before interpreting a
+large cloud as holonomy. A counterexample would be a maximal-order,
+cross-checked candidate whose nonzero recurrent SCC survives after the
+valuation fibres are quotiented; that would be the first genuinely new
+non-unit obstruction target.
+
 The longer pass deliberately uses a separately enlarged orbit prefix. On the
 525456-symbol prefix, extending the requested length too far produces a first
 false loss of one left extension at `n=55406`; the 4-million-symbol prefix
