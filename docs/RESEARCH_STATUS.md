@@ -261,6 +261,13 @@ values at every high step. The certificate enumerates and classifies those
 five values through `a=256`. This is the finite candidate window to feed into
 the bounded-correction case split, not yet a proof of the coordinate
 identification.
+The realized-graph companion
+`include/adelic/property_f_class_ii_akiyama_window_census.hpp` now applies
+that window to actual high-tail edges. Across the checked `a=7..13` rows,
+all nonzero bounded deviations land in the collar; the only bounded high-tail
+nonzero edge is same-SCC transport and is retained as harmless recurrence.
+The census records exact digit labels and deviation histograms, so the next
+symbolic proof can target the finite collar cases rather than the full graph.
 This closes the coordinate-level analogue, but not the beta-expansion
 inequalities or the literal prefix/contact-cocycle intertwiner.
 

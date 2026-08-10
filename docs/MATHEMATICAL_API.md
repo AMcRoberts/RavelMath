@@ -920,6 +920,13 @@ five deviations `d` satisfying `|eta'|<=2`. The certificate enumerates this
 finite window exactly through the symbolic spine; it does not assert that the
 published coordinate bound has already been transported to the literal graph.
 
+`include/adelic/property_f_class_ii_akiyama_window_census.hpp` applies the
+window to a realized graph. It decodes ordinary high-tail labels, records
+the deviation histogram and exact labels of bounded candidates, preserves
+same-SCC recurrence as transport, and treats a nonzero bounded deviation into
+another high SCC as a falsifier. Bounded candidates landing in the collar are
+the finite branch cases still requiring a symbolic absorption proof.
+
 For the non-unit branch, `adelic_cocycle_extension.hpp` also exposes
 `derive_adelic_valuation_fibre_lemma`. It checks maximal Dedekind factorization,
 the independent ideal-lattice identity, and the local degree partition
