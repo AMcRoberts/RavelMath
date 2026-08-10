@@ -96,6 +96,16 @@ nodes are about 44% of each graph and have mean positive height about 4.8--5.0,
 despite maximum heights 55--59. The transient collar is broad and repeated,
 which is the structural feature the symbolic proof must capture.
 
+## Static integrity audit (2026-08-10)
+
+The Property-F SCC rank certificate now independently replays the finite graph
+partition and rejects merged labels even when their quotient is acyclic. The
+same audit found and fixed a dangling reference in the iterative Tarjan
+implementation used by the exact classifier: a frame value was copied before
+its work-stack entry was popped. The nine-row family autopsy and the full
+native regression remain green; only unrelated mini-GMP warning diagnostics
+remain.
+
 ## Effective-potential analogy (bounded modeling hypothesis, 2026-08-10)
 
 The observed “large, long-lived, then dispersing” cases invite a useful but

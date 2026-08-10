@@ -1114,13 +1114,19 @@ PropertyFResult check_property_f(
                                                                      index[static_cast<std::size_t>(w)]);
                 }
             } else {
-                if (lowlink[static_cast<std::size_t>(v)] == index[static_cast<std::size_t>(v)]) {
+                // `v` names a field inside work.back(); copy it before
+                // popping that frame.  Using the structured-binding
+                // reference after pop_back() is a dangling-reference bug,
+                // not merely a compiler-warning nuisance.
+                const long long finished = v;
+                if (lowlink[static_cast<std::size_t>(finished)] ==
+                    index[static_cast<std::size_t>(finished)]) {
                     for (;;) {
                         long long w = stack.back();
                         stack.pop_back();
                         on_stack[static_cast<std::size_t>(w)] = false;
                         scc_of[static_cast<std::size_t>(w)] = scc_count;
-                        if (w == v) break;
+                        if (w == finished) break;
                     }
                     ++scc_count;
                 }
@@ -1128,7 +1134,8 @@ PropertyFResult check_property_f(
                 if (!work.empty()) {
                     long long parent = work.back().first;
                     lowlink[static_cast<std::size_t>(parent)] =
-                        std::min(lowlink[static_cast<std::size_t>(parent)], lowlink[static_cast<std::size_t>(v)]);
+                        std::min(lowlink[static_cast<std::size_t>(parent)],
+                                 lowlink[static_cast<std::size_t>(finished)]);
                 }
             }
         }
