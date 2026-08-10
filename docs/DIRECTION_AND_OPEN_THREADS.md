@@ -600,6 +600,17 @@ the spectral split is therefore an exact property of the induced system, not
 a numerical eigenvalue fit. This closes the spectral part of H10 while
 leaving the factor-through-history proof as the next non-AR obligation.
 
+**H11 — The remaining contact holonomy is an offset cocycle.** The first
+factor-through-history probe forgets phase offsets but retains the two return
+word identities. On the powered `sigma_{0,1}` contact lift it finds 1,183
+history keys and 401 conflicting keys, exactly matching the largest
+recurrent nonzero contact component. Thus the cheap quotient is false:
+return words alone do not determine contact transport. The surviving
+information is plausibly a finite offset cocycle over the cyclotomic phase
+fibres. Falsifiers are a mismatch between conflict classes and recurrent
+holonomy, or a quotient retaining offsets that still produces a nonzero
+Property-F recurrent component. The latter is the decisive bridge test.
+
 The first experiment should attack H1 and H2 together: prove the all-length
 predecessor decomposition for `sigma_{0,1}`, build its finite seam grammar,
 and compare its channel rank with the existing contact-boundary generator

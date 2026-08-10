@@ -9,6 +9,7 @@
 #include "ravel/d_cont_check.hpp"
 #include "ravel/marker_power_return_core.hpp"
 #include "ravel/return_contact_lift.hpp"
+#include "ravel/return_history_factor.hpp"
 #include "ravel/spectral.hpp"
 #include "ravel/substitution.hpp"
 #include "ravel/survey.hpp"
@@ -122,6 +123,9 @@ int main() {
     expect(lift.projected_node_count == bare.size(),
            "lift projects onto every powered contact node");
     expect(!lift.edges.empty(), "non-AR return/contact lift has transport edges");
+    const auto history = probe_return_history_factor(lift, phases);
+    std::printf("return-history keys=%zu conflicts=%zu\n",
+                history.history_keys, history.conflicting_keys);
     const std::size_t nonzero_scc = largest_nonzero_recurrent_scc(lift);
     expect(nonzero_scc > 0,
            "non-AR contact lift exposes a recurrent nonzero transport component");
