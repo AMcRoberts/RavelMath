@@ -73,6 +73,24 @@ The proposed parameterized bridge contract is recorded in
 `docs/PROPERTY_F_SOFIC_EXTENSION_BRIDGE.md`; it is the route for extending
 the companion transport solution through the full `(n,m)` parameter sheet.
 
+## Symbolic boundary-collar model (2026-08-10)
+
+The fixed-spectrum family autopsy now records exact SCC-condensation height
+profiles. The large 4,277/5,505/7,966-node cases contain 1,881/2,425/3,506
+positive-height transient nodes, while their largest SCCs have size at most
+five. This supports a metastable shell-stack interpretation: the graph grows
+through transient transport, not a new recurrent obstruction.
+
+The existing Class-II neighbor-2 grammar supplies a concrete symbolic model
+for that stack. For `a=7..10`, round-stratified birth analysis gives one birth
+round per recurrent block, zero returns from recurrence to an earlier transient
+stratum, and an escape from every transient group. The boundary size is
+`20*a+38`, transient count `16*a+3`, and the recurrent catalogue has `a+1`
+blocks with eight cross-block edges. The remaining Property-F task is to
+derive an analogous birth-round/transport grammar for the adelic lift and
+compose it with the exact SCC rank, rather than treating the finite rank table
+as a universal theorem.
+
 ## Generalized-multinacci bridge rectangle (2026-08-09)
 
 The common sofic/adelic certificate has now been run on all 18 points
