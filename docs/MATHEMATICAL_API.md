@@ -811,6 +811,12 @@ explicit alternating affine carry spine that realizes height `2*a+2`. It is
 a verified lower-bound path and rank witness; bounding every other state is a
 separate family proof obligation.
 
+`include/adelic/property_f_class_ii_branch_census.hpp` mechanically separates
+the deterministic high-rank tail from the finite height-5 collar and checks
+that, after internal SCC transport is removed, all tail-to-tail edges are
+consecutive spine links. Its `valid` flag is an instance-level census
+contract, not the uniform upper-bound theorem.
+
 ### General number fields and the class-field-tower initiative
 
 ```cpp

@@ -8,10 +8,12 @@
 #include <cassert>
 #include <cstdlib>
 #include <iostream>
+#include <limits>
 #include <map>
 #include <vector>
 
 #include "adelic/property_f_birth_round_grammar.hpp"
+#include "adelic/property_f_class_ii_branch_census.hpp"
 #include "adelic/property_f_class_ii_rank_spine.hpp"
 #include "adelic/coincidence_and_property_f.hpp"
 #include "adelic/prefix_automaton.hpp"
@@ -87,10 +89,19 @@ int main() {
         if (a >= 4 && node_budget >= 300'000)
             assert(grammar.layer_count == 2 * a + 3);
         if (a >= 4) {
+            for (std::size_t height = 6;
+                 height < grammar.layer_count; ++height)
+                assert(grammar.layer_sizes.at(height) == 1);
             const auto spine =
                 adelic::derive_property_f_class_ii_rank_spine(graph, a);
             assert(spine.valid);
             assert(spine.expected_height + 1 == grammar.layer_count);
+            const auto census =
+                adelic::derive_property_f_class_ii_branch_census(graph, a);
+            assert(census.valid);
+            assert(census.tail_non_spine_nodes == 0);
+            assert(census.tail_nonchain_edges == 0);
+            assert(census.tail_nodes == grammar.layer_count - 1 - 5);
             if (a == 4) {
                 auto bad = graph;
                 bad.nodes[spine.node_ids.front()].successors.clear();
@@ -147,6 +158,40 @@ int main() {
                 }
                 if (next == graph.nodes.size()) break;
                 node = next;
+            }
+        }
+        if (std::getenv("CLASSII_BIRTH_FEATURE_PROBE") != nullptr &&
+            a == max_a) {
+            const auto rank = adelic::derive_property_f_escape_rank(graph);
+            for (std::size_t height = 0; height <= rank.maximum_height;
+                 ++height) {
+                std::array<long long, 3> lo{
+                    std::numeric_limits<long long>::max(),
+                    std::numeric_limits<long long>::max(),
+                    std::numeric_limits<long long>::max()};
+                std::array<long long, 3> hi{
+                    std::numeric_limits<long long>::min(),
+                    std::numeric_limits<long long>::min(),
+                    std::numeric_limits<long long>::min()};
+                std::size_t count = 0;
+                for (std::size_t node = 0; node < graph.nodes.size(); ++node) {
+                    if (rank.node_height[node] != height) continue;
+                    ++count;
+                    for (std::size_t coordinate = 0; coordinate < 3;
+                         ++coordinate) {
+                        // The classifier stores exact integer coefficient
+                        // strings for this unimodular family.
+                        const auto& coefficient =
+                            graph.nodes[node].gamma_coefficients[coordinate].first;
+                        const auto value = std::stoll(coefficient);
+                        lo[coordinate] = std::min(lo[coordinate], value);
+                        hi[coordinate] = std::max(hi[coordinate], value);
+                    }
+                }
+                std::cout << "features h=" << height << " count=" << count
+                          << " x=" << lo[0] << ":" << hi[0]
+                          << " y=" << lo[1] << ":" << hi[1]
+                          << " z=" << lo[2] << ":" << hi[2] << "\n";
             }
         }
     }

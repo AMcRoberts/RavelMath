@@ -161,6 +161,16 @@ node keys, edges, and SCC heights. This proves a concrete height-`2a+2`
 lower-bound path in every checked member; the missing upper bound is to show
 that no other admissible transport branch exceeds this spine.
 
+The branch census now makes that proof target explicit. In every checked
+`a=4..16` graph, every node above collar height 5 is one of the spine states,
+each high layer contains exactly one node, and the only high-to-high edges are
+the consecutive spine links after internal SCC transport is factored out (the
+allowed zero-only recurrence is retained separately). All remaining branching
+exits enter the finite height-`<=5` collar. Thus the uniform upper-bound lemma
+can be organized as a finite collar grammar plus a deterministic tail
+recurrence, rather than as a cardinality estimate over the full expanding
+graph.
+
 ## Effective-potential analogy (bounded modeling hypothesis, 2026-08-10)
 
 The observed “large, long-lived, then dispersing” cases invite a useful but
