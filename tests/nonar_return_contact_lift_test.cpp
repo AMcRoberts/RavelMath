@@ -153,8 +153,9 @@ int main() {
     std::printf("\n");
     expect(holonomy.finite && holonomy.recurrent_sccs > 0,
            "finite offset quotient has classified recurrent holonomy");
-    expect(holonomy.gcd_one_sccs > 0,
-           "non-AR transport has a gcd-one integer cycle residue");
+    expect(holonomy.recurrent_sccs == 1 && holonomy.sccs.front().gcd_cycle_residue == 3 &&
+               !holonomy.sccs.front().coboundary,
+           "non-AR transport has a genuine period-three twist");
 
     // The stronger Q(beta) test asks whether that integer transport survives
     // as a recurrent zero-expansion obstruction.  Build the live automaton

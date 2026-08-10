@@ -1053,8 +1053,9 @@ of the surrounding dominance theorem is unchanged.
 
 The complete `sigma_{0,1}^3` return/contact lift now has an exact SCC-local
 edge-defect holonomy certificate. Its 256-state offset quotient has one
-recurrent 248-state SCC whose occurrence-position cycle residues generate
-`Z` (gcd 1). This is evidence for a finite-base/integer-cocycle normal form,
+recurrent 248-state SCC whose normalized occurrence-position cycle residues
+generate `3Z` (gcd 3). This is evidence for a finite-base/period-three
+integer-cocycle normal form,
 not a universal theorem and not a Property-F closure proof. The remaining
 non-AR obligation is to construct the exact intertwiner from this cocycle to
 the zero-expansion graph and test whether any nonzero recurrent image survives.

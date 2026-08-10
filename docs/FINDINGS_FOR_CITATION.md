@@ -4100,13 +4100,15 @@ identities, offsets, and endpoint letters gives a finite quotient with 256
 states, 1,292 edges, and one recurrent SCC of 248 states. The exact
 `return_offset_fibre_holonomy` certificate labels each quotient edge by the
 left/right occurrence-position defect and computes SCC-local cycle residues.
-The recurrent SCC has gcd of cycle residues **1** (maximum spanning-tree
-residual 13). Thus the recurrence is not merely a finite cyclotomic phase
-permutation: it supports a genuine integer transport direction over a finite
-base.
+After normalizing away spanning-tree edges, the recurrent SCC has cycle
+residue subgroup **3ℤ** (maximum cycle residual 12). Thus the recurrence is
+not merely a finite cyclotomic phase permutation: it carries a genuine
+period-three twist over a finite base. The earlier provisional gcd-one reading
+was a tree-edge artifact and has been corrected here.
 
 This supports the working normal form “finite return/offset base × integer
-transport cocycle,” and explains why forgetting offsets was lossy. It does not
+transport cocycle,” with the first concrete twist scale equal to the marker
+power three, and explains why forgetting offsets was lossy. It does not
 yet prove that every non-AR substitution has this form, nor that integer
 holonomy cannot interact with a nonzero Property-F cycle. The next falsifier is
 an explicit cocycle-to-zero-expansion intertwiner; a nonzero recurrent image

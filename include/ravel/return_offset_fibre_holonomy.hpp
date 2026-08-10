@@ -23,7 +23,7 @@ struct ReturnOffsetFibreHolonomyScc {
     std::size_t nodes = 0;
     long long gcd_cycle_residue = 0;
     long long max_abs_cycle_residue = 0;
-    bool consistent = true;
+    bool coboundary = true;
 };
 
 struct ReturnOffsetFibreHolonomyCertificate {
@@ -99,22 +99,22 @@ ReturnOffsetFibreHolonomyCertificate derive_return_offset_fibre_holonomy(
         std::vector<std::size_t> todo{component.front()};
         assigned[component.front()] = true;
         long long gcd = 0, max_abs = 0;
-        bool consistent = true;
         while (!todo.empty()) {
             const auto u = todo.back(); todo.pop_back();
             for (const auto edge : graph[u]) {
                 if (!in[edge.to]) continue;
+                if (!assigned[edge.to]) {
+                    potential[edge.to] = potential[u] + edge.weight;
+                    assigned[edge.to] = true; todo.push_back(edge.to);
+                    continue;
+                }
                 const long long residual = potential[u] + edge.weight -
                                             potential[edge.to];
                 gcd = std::gcd(gcd, std::llabs(residual));
                 max_abs = std::max(max_abs, std::llabs(residual));
-                if (!assigned[edge.to]) {
-                    potential[edge.to] = potential[u] + edge.weight;
-                    assigned[edge.to] = true; todo.push_back(edge.to);
-                }
             }
         }
-        out.sccs.push_back({component.size(), gcd, max_abs, consistent});
+        out.sccs.push_back({component.size(), gcd, max_abs, gcd == 0});
         ++out.recurrent_sccs;
         if (gcd == 1) ++out.gcd_one_sccs;
     };
