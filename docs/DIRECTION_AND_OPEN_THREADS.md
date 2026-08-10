@@ -495,6 +495,54 @@ five infinite left-special branches: some may belong to recursively
 growing finite maximal-special families. The next proof must establish
 the actual predecessor/branch decomposition for this substitution.
 
+#### A4 hypothesis sheet: guesses worth trying to break
+
+These are deliberately conjectural. Each has a cheap falsifier and a useful
+interpretation if it fails.
+
+**H1 — Persistent seams form the missing base automaton.** The infinite
+extension graph of a non-AR language should have a finite recurrent seam core;
+the contact-boundary transport should be a skew product over that core, with
+prefix/abelian labels as the fibre. A falsifier is an all-length predecessor
+decomposition of `sigma_{0,1}` that produces an unbounded number of genuinely
+new seam types. Then the missing base is a sofic/induced-substitution tower,
+not a larger contact BFS.
+
+**H2 — Complexity slope counts transport channels.** The increment
+`p(n+1)-p(n)` is total right-branch excess, and after recurrent quotienting it
+should equal the number of independent seam channels in the contact grammar.
+This predicts five channels for `sigma_{0,1}` (slope `5`) and two aggregate
+channels for the AR-complexity controls (slope `2`), even when left/right
+orientation differs. Falsify it by constructing the exact seam grammar and
+finding a different channel rank. Then geometric labels need return-word
+displacement or eigenvector height, not extension valence alone.
+
+**H3 — Large non-AR clouds are transient skew-product growth.** Once the seam
+core is fixed, nonzero Property-F states should be transient fibres over it;
+their size should be governed by contraction margins and fibre-word length,
+while recurrent SCCs are controlled by the seam core. A nonzero recurrent SCC,
+or a persistent growth mode absent from the seam core, would identify genuine
+holonomy rather than harmless transport inflation.
+
+**H4 — Predecessor depth supplies the rank proof.** The predecessor
+decomposition of special factors should provide a well-founded height that
+strictly decreases on every nonzero fibre return, except terminal permutation
+channels. A cycle preserving every candidate height while Property F closes
+would show that the rank must be signed or valuation-weighted, pointing
+directly to the adelic holonomy potential needed for the non-unit theorem.
+
+**H5 — Coincidence depth is seam diameter plus a bounded correction.** The
+depth-13 resolution of `sigma_{0,1}` may be the diameter of its seam core plus
+a short transport correction, rather than an unrelated word-search accident.
+An unbounded discrepancy across a family would force separate structural
+proofs for strong coincidence and Property-F recurrence.
+
+The first experiment should attack H1 and H2 together: prove the all-length
+predecessor decomposition for `sigma_{0,1}`, build its finite seam grammar,
+and compare its channel rank with the existing contact-boundary generator
+intertwiner. This is small enough to fail quickly and informative enough that
+each failure selects the next representation layer.
+
 The longer pass deliberately uses a separately enlarged orbit prefix. On the
 525456-symbol prefix, extending the requested length too far produces a first
 false loss of one left extension at `n=55406`; the 4-million-symbol prefix
