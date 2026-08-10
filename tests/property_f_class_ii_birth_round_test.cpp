@@ -277,6 +277,8 @@ int main() {
     // exercise its parameter formula beyond the resource-bounded graph sweep.
     for (std::size_t a = 4; a <= 256; ++a)
         assert(adelic::derive_property_f_class_ii_affine_tail_certificate(a).valid);
+    assert(!adelic::derive_property_f_class_ii_affine_tail_certificate(
+        adelic::property_f_class_ii_spine_max_safe_a + 1).parameter_domain);
     std::cout << "property_f_class_ii_birth_round: PASS family_size="
               << strict << " max_layers=" << maximum_layers << "\n";
 }

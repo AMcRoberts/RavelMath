@@ -6,7 +6,6 @@
 
 #include <array>
 #include <cstddef>
-#include <limits>
 #include <vector>
 
 #include "adelic/property_f_class_ii_rank_spine.hpp"
@@ -41,7 +40,7 @@ derive_property_f_class_ii_affine_tail_certificate(std::size_t a) {
     PropertyFClassIIAffineTailCertificate out;
     out.parameter_a = a;
     out.parameter_domain = a >= 4 &&
-        a <= static_cast<std::size_t>(std::numeric_limits<long long>::max());
+        a <= property_f_class_ii_spine_max_safe_a;
     if (!out.parameter_domain) return out;
     out.states = property_f_class_ii_rank_spine_coefficients(a);
     out.digits = property_f_class_ii_rank_spine_digits(a);

@@ -33,6 +33,11 @@ struct PropertyFClassIIRankSpineCertificate {
     bool valid = false;
 };
 
+// The largest coefficient is a^3-1.  Keep the closed integer replay inside
+// signed 64-bit arithmetic; callers needing larger parameters must promote
+// the coefficient representation rather than allowing silent wraparound.
+inline constexpr std::size_t property_f_class_ii_spine_max_safe_a = 2'000'000;
+
 inline std::string property_f_class_ii_spine_key(
         const std::array<long long, 3>& coefficients) {
     return std::to_string(coefficients[0]) + ";" +
@@ -69,7 +74,7 @@ inline std::string property_f_class_ii_spine_digit_key(long long digit) {
 // the alternating affine carry pattern.
 inline std::vector<std::array<long long, 3>>
 property_f_class_ii_rank_spine_coefficients(std::size_t a) {
-    if (a < 4) return {};
+    if (a < 4 || a > property_f_class_ii_spine_max_safe_a) return {};
     std::vector<std::array<long long, 3>> out;
     out.push_back({0, 0, 0});
     out.push_back({1, 0, 0});

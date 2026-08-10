@@ -169,6 +169,8 @@ the coefficient formulas and digit schedule under the exact integer
 beta-inverse carry map, before the graph replay is consulted. This separates
 the symbolic affine calculation from the finite Property-F enumeration. The
 cheap recurrence sweep reaches `a=256`; graph closure remains capped separately.
+The certificate rejects parameters above its explicit signed-64-bit safety
+bound `a=2,000,000` instead of allowing arithmetic wraparound.
 
 The branch census now makes that proof target explicit. In every checked
 `a=4..16` graph, every node above collar height 5 is one of the spine states,
