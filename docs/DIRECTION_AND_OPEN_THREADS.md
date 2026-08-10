@@ -574,6 +574,16 @@ two-sided return scheme) before quotienting. The non-unit experiment also
 supports keeping valuation fibres separate from this collared seam core: the
 real base closes in three phase states before any p-adic label is attached.
 
+The expanded probe gives a concrete growth pattern. `sigma_{0,1}` needs collar
+radius 2 and has 45 observed collared phase states (16 uncollared states,
+with 6 transition conflicts). The left-proper controls `sigma_{a,1}` for
+`1<=a<=5` are already single-valued at radius 0, with 6 phase states; their
+radius-1 counts are 7. This suggests that the exceptional non-AR layer is a
+finite recognizability-defect collar, not an intrinsically larger alphabet.
+The next falsifier is a family whose minimal conflict-free collar radius is
+unbounded; that would require a genuine sofic/S-adic tower rather than a
+finite collared groupoid.
+
 The longer pass deliberately uses a separately enlarged orbit prefix. On the
 525456-symbol prefix, extending the requested length too far produces a first
 false loss of one left extension at `n=55406`; the 4-million-symbol prefix
