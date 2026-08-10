@@ -426,6 +426,8 @@ radius.
 There is a second reason no one-dimensional “contraction rank” is visible in
 the coefficient coordinates: the constant term of the defining polynomial is
 `-1`, so `beta` is a unit and every endpoint linear part is unimodular. The
-maps preserve lattice volume; only the secondary embeddings contract in the
-forward direction. The finite set is therefore created by admissibility and
-boundary pruning, not by an ordinary contracting lattice map.
+maps preserve lattice volume. In the return-to-zero inequality, the reverse
+multiplication by `beta` contracts the secondary embeddings, while the
+enumerated `beta^(-1)` walk expands there in the forward direction. The finite
+set is therefore created by admissibility and boundary pruning, not by an
+ordinary contracting lattice map.
