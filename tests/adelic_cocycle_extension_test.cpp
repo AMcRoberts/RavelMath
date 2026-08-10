@@ -36,6 +36,7 @@ int main() {
     assert(nonunit.nonunit_local_fibers);
     assert(nonunit.local_fibers_are_prime_ideal_indexed);
     assert(nonunit.local_fiber_count == 2);
+    assert(nonunit.rational_prime_support == std::vector<long long>({2, 3}));
     assert(nonunit.projections_commute);
     std::cout << "adelic cocycle extension PASS\n";
 }

@@ -4,6 +4,7 @@
 #pragma once
 
 #include <cstddef>
+#include <cstdlib>
 #include <string>
 #include <vector>
 
@@ -26,6 +27,7 @@ struct AdelicCocycleExtensionCertificate {
     bool projections_commute = false;
     bool proved = false;
     std::size_t local_fiber_count = 0;
+    std::vector<long long> rational_prime_support;
     std::string obstruction;
 };
 
@@ -39,6 +41,13 @@ derive_adelic_cocycle_extension(long long determinant,
     AdelicCocycleExtensionCertificate out;
     out.determinant = determinant;
     out.local_fiber_count = local_fibers.size();
+    long long remaining = std::llabs(determinant);
+    for (long long p = 2; p <= remaining / p; ++p) {
+        if (remaining % p != 0) continue;
+        out.rational_prime_support.push_back(p);
+        while (remaining % p == 0) remaining /= p;
+    }
+    if (remaining > 1) out.rational_prime_support.push_back(remaining);
     out.shared_prefix_cocycle = prefix_labels_shared;
     out.sofic_projection = true;
     out.transport_projection = true;
@@ -53,6 +62,14 @@ derive_adelic_cocycle_extension(long long determinant,
         if (fiber.rational_prime < 2 || fiber.ramification_index < 1 ||
             fiber.residue_degree < 1) {
             out.local_fibers_are_prime_ideal_indexed = false;
+        }
+    }
+    if (out.nonunit_local_fibers) {
+        for (const long long p : out.rational_prime_support) {
+            bool covered = false;
+            for (const auto& fiber : local_fibers)
+                if (fiber.rational_prime == p) covered = true;
+            if (!covered) out.local_fibers_are_prime_ideal_indexed = false;
         }
     }
     out.projections_commute = out.shared_prefix_cocycle &&

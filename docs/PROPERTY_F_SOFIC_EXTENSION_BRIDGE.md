@@ -106,6 +106,8 @@ That wrapper is now `adelic_cocycle_extension.hpp`: its unit specialization
 has an empty local fiber, while its non-unit specialization requires a valid
 prime-ideal descriptor for every local coordinate and verifies that the sofic
 and transport forgetful projections commute.
+It also factors the determinant and requires local coverage over every
+rational prime in its support before accepting the non-unit specialization.
 
 The first widening trunk is the monotone coefficient cone
 `a_(d-1) >= ... >= a_0 > 0`. The certificate in
