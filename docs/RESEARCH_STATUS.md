@@ -96,6 +96,26 @@ nodes are about 44% of each graph and have mean positive height about 4.8--5.0,
 despite maximum heights 55--59. The transient collar is broad and repeated,
 which is the structural feature the symbolic proof must capture.
 
+## Effective-potential analogy (bounded modeling hypothesis, 2026-08-10)
+
+The observed “large, long-lived, then dispersing” cases invite a useful but
+strictly provisional analogy with a metastable gravitational cluster.  The
+analogy is mathematical rather than physical: SCC-condensation escape height
+acts as an effective potential, transition multiplicity creates funneling into
+low-height regions, and the transport/phase cocycle acts like an
+angular-momentum or holonomy coordinate.  A broad transient collar is then a
+bound-looking cloud with a small escape conductance, while a recurrent
+nonzero SCC would be the genuinely bound obstruction.
+
+This suggests a testable slow--fast model for future work: assign each finite
+state a height potential and each transport fibre a phase, then measure basin
+mass and boundary conductance before exploring the exact graph.  The model
+predicts that “large but harmless” instances have large basin mass and long
+residence time but no recurrent nonzero phase component; a mixed/nonzero SCC,
+or a family whose escape conductance tends to zero while recurrence appears,
+would falsify the harmless-metastable interpretation.  It is a diagnostic
+organizing principle only, not an additional Property-F argument.
+
 ## Generalized-multinacci bridge rectangle (2026-08-09)
 
 The common sofic/adelic certificate has now been run on all 18 points
