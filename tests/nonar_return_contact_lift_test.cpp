@@ -262,7 +262,14 @@ int main() {
     const auto gamma_relation = adelic::derive_return_contact_gamma_relation<3>(
         automaton_images, lift, automaton, property_graph, seeds,
         2'000'000, run_completion_probe || strict_completion_probe,
-        run_completion_probe && !strict_completion_probe);
+        run_completion_probe && !strict_completion_probe,
+        [&](const ReturnContactState<3>& state, std::size_t, std::size_t) {
+            const auto residual = [&](std::size_t phase) {
+                const auto& p = phases.states.at(phase);
+                return phases.induced.words.at(p.return_word).size() - p.offset;
+            };
+            return residual(state.left_phase) + residual(state.right_phase);
+        });
     std::printf("gamma relation: products=%zu pairs=%zu max_fibre=%zu "
                 "frontier=%zu misses=%zu gamma_misses=%zu successor_misses=%zu "
                 "exact=%d cap=%d\n",
@@ -359,6 +366,14 @@ int main() {
                         gamma_relation.completion_live_products_without_terminal_route);
             std::printf("  completion finite_escape=%d\n",
                         gamma_relation.completion_finite_escape ? 1 : 0);
+            std::printf("  completion height residual checked=%zu violations=%zu "
+                        "terminal_outgoing=%zu max=%zu strict=%d absorbing=%d\n",
+                        gamma_relation.completion_height_checked_edges,
+                        gamma_relation.completion_height_violations,
+                        gamma_relation.completion_height_terminal_outgoing_edges,
+                        gamma_relation.completion_max_height,
+                        gamma_relation.completion_height_strictly_decreasing ? 1 : 0,
+                        gamma_relation.completion_height_terminals_absorbing ? 1 : 0);
             std::printf("  completion boundary witnesses zero/nonzero=%zu "
                         "nonzero/zero=%zu two-sided=%zu\n",
                         gamma_relation.completion_zero_nonzero_terminal_witnesses,
@@ -496,6 +511,11 @@ int main() {
                    gamma_relation.completion_live_products_without_terminal_route == 0 &&
                    gamma_relation.completion_finite_escape,
                "permissive terminal completion reaches every recurrent lift state without a recurrent gamma cycle");
+        expect(gamma_relation.completion_height_checked_edges == 302319 &&
+                   gamma_relation.completion_height_violations == 153089 &&
+                   gamma_relation.completion_height_terminal_outgoing_edges == 0 &&
+                   !gamma_relation.completion_height_strictly_decreasing,
+               "two-sided return-phase residual is falsified as the escape rank");
         expect(gamma_relation.completion_zero_nonzero_terminal_witnesses >=
                    gamma_relation.unthreaded_cyclic_lift_state_indices.size(),
                "the omitted recurrent states are explicitly classified as one-sided boundary escapes");

@@ -1202,3 +1202,13 @@ eight-state transition grammar and its symmetric quotient characteristic
 polynomials through `a=64`; the only transient noncoincidence pair observed is
 `(01|10)`. This supports, but does not prove, a finite transient-collar
 decomposition of the non-AR boundary layer over the fixed recurrent grammar.
+
+## 2026-08-10 — phase-only escape rank falsified
+
+The reusable completion-height replay tested the natural two-sided return-phase
+residual `(|word_L|-offset_L)+(|word_R|-offset_R)` on the powered non-AR
+terminal-aware relation. Of 302,319 live product edges, 153,089 did not
+strictly decrease. The accepted terminal products had no outgoing-edge
+violations, so the failure is specifically in the proposed phase coordinate,
+not in terminal absorption or the finite escape certificate. A uniform rank
+must add boundary/gamma data or a transition-dependent correction.

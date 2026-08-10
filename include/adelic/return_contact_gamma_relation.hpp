@@ -103,6 +103,15 @@ struct ReturnContactGammaRelationCertificate {
     bool completion_product_acyclic = false;
     bool completion_finite_escape = false;
     bool completion_cap_hit = false;
+    // Optional replay of a caller-supplied symbolic height on the live
+    // completion relation.  The callback receives the lift state and the
+    // two gamma-node ids; it does not derive a height or alter pruning.
+    std::size_t completion_height_checked_edges = 0;
+    std::size_t completion_height_violations = 0;
+    std::size_t completion_height_terminal_outgoing_edges = 0;
+    std::size_t completion_max_height = 0;
+    bool completion_height_strictly_decreasing = false;
+    bool completion_height_terminals_absorbing = false;
     bool all_cyclic_lift_states_threaded = false;
     std::size_t thread_pair_vertices = 0;
     std::size_t thread_lift_branching_components = 0;
@@ -131,7 +140,9 @@ ReturnContactGammaRelationCertificate derive_return_contact_gamma_relation(
         const std::vector<ravel::ReturnContactState<d>>& seeds,
         std::size_t product_cap = 2'000'000,
         bool derive_completion = false,
-        bool allow_terminal_escapes = false) {
+        bool allow_terminal_escapes = false,
+        std::function<std::size_t(const ravel::ReturnContactState<d>&,
+                                   std::size_t, std::size_t)> completion_height = {}) {
     struct Product { std::size_t lift; long long left; long long right; };
     ReturnContactGammaRelationCertificate out;
     out.lift_states = lift.states.size();
@@ -681,6 +692,34 @@ ReturnContactGammaRelationCertificate derive_return_contact_gamma_relation(
             out.completion_source_surjective =
                 out.completion_live_lift_states == lift.states.size();
             out.completion_cyclic_lift_states = out.cyclic_lift_states;
+            if (completion_height) {
+                std::vector<std::size_t> heights(candidates.size(), 0);
+                for (std::size_t product = 0; product < candidates.size(); ++product) {
+                    const auto& candidate = candidates[product];
+                    heights[product] = completion_height(
+                        lift.states[candidate.lift], candidate.left, candidate.right);
+                    if (live[product])
+                        out.completion_max_height = std::max(
+                            out.completion_max_height, heights[product]);
+                }
+                for (std::size_t source = 0; source < live.size(); ++source) {
+                    if (!live[source]) continue;
+                    for (const auto target : adjacency[source]) {
+                        if (!live[target]) continue;
+                        if (terminal_escape[source]) {
+                            ++out.completion_height_terminal_outgoing_edges;
+                            continue;
+                        }
+                        ++out.completion_height_checked_edges;
+                        if (heights[source] <= heights[target])
+                            ++out.completion_height_violations;
+                    }
+                }
+                out.completion_height_strictly_decreasing =
+                    out.completion_height_violations == 0;
+                out.completion_height_terminals_absorbing =
+                    out.completion_height_terminal_outgoing_edges == 0;
+            }
             for (std::size_t state = 0; state < live_lift.size(); ++state) {
                 if (cyclic_lift_state[state] && live_lift[state])
                     ++out.completion_live_cyclic_lift_states;

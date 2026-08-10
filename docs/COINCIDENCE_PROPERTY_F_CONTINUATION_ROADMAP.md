@@ -592,3 +592,13 @@ with return-phase residual position supplying the collar height. A new
 recurrent balanced-pair state, a quotient-polynomial mismatch, or a second
 transient family would falsify this reduction before any Property-F claim is
 made.
+
+The first direct replay of that candidate is now negative in the powered
+non-AR completion. The optional height callback in
+`return_contact_gamma_relation.hpp` tested the two-sided residual
+`(|word_L|-offset_L)+(|word_R|-offset_R)` on all live terminal-aware products:
+302,319 edges were checked and 153,089 failed strict decrease. Terminal
+absorption itself had no outgoing violations. Thus the phase collar is a real
+coordinate but not, by itself, the escape rank; the missing term must include
+boundary/gamma data or a transition-dependent correction. This is a useful
+falsifier, not an obstruction to the finite escape certificate.
