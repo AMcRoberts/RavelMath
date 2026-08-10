@@ -40,6 +40,15 @@ The scalar node count is diagnostic only. The theorem-facing invariant is:
 ```text
 finite transport closure
 and every recurrent component is zero-only.
+
+For the arbitrary-substitution bridge, “contact transport preserves
+recurrence” is now read with the variable-fibre qualification: the concrete
+contact boundary need not be a regular cover of the role graph.  The
+universal role projection must instead admit the exact positive grammar
+majorant recorded by `ContactBoundaryGeneratorIntertwinerCertificate`, and
+the supplied adelic graph must itself report `holds` with no nonzero recurrent
+component.  This excludes the invalid equal-fibre/permutation shortcut while
+retaining a finite, checkable quotient condition.
 ```
 
 ## Parameter extension obligations

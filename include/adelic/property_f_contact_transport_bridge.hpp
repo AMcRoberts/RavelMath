@@ -42,9 +42,11 @@ struct PropertyFContactTransportBridgeCertificate {
 // surviving holonomy obstruction.
 struct PropertyFContactRecurrenceCertificate {
     bool graph_closed = false;
+    bool property_f_holds = false;
     bool no_nonzero_recurrent_component = false;
     bool recurrence_preserved = false;
     bool universal_intertwiner_verified = false;
+    bool variable_fibre_grammar_verified = false;
     long long graph_nodes = 0;
     long long nonzero_recurrent_components = 0;
     std::string obstruction;
@@ -59,6 +61,7 @@ derive_property_f_contact_recurrence_certificate(
     out.graph_nodes = static_cast<long long>(graph.nodes.size());
     out.nonzero_recurrent_components = result.nonzero_cycle_components;
     out.graph_closed = !result.inconclusive && result.closure_reached;
+    out.property_f_holds = result.holds;
     for (const auto& node : graph.nodes) {
         for (const long long successor : node.successors) {
             if (successor < 0 || successor >= out.graph_nodes) {
@@ -73,7 +76,8 @@ derive_property_f_contact_recurrence_certificate(
     out.recurrence_preserved =
         bridge.boundary_complete && bridge.contact_prefixes_in_adelic_alphabet &&
         bridge.exact_digit_labels_replay && bridge.transition_labels_commute &&
-        out.graph_closed && out.no_nonzero_recurrent_component;
+        out.graph_closed && out.property_f_holds &&
+        out.no_nonzero_recurrent_component;
     if (!bridge.boundary_complete)
         out.obstruction = "contact boundary is not complete";
     else if (!bridge.contact_prefixes_in_adelic_alphabet ||
@@ -82,6 +86,8 @@ derive_property_f_contact_recurrence_certificate(
         out.obstruction = "contact cocycle does not replay exactly";
     else if (!out.graph_closed)
         out.obstruction = "Property-F graph is not closed";
+    else if (!out.property_f_holds)
+        out.obstruction = "Property-F graph retains a forbidden recurrent cycle";
     else if (!out.no_nonzero_recurrent_component)
         out.obstruction = "non-zero recurrent holonomy remains";
     return out;
@@ -98,7 +104,10 @@ derive_property_f_contact_recurrence_certificate(
     auto out = derive_property_f_contact_recurrence_certificate(
         bridge, result, graph);
     out.universal_intertwiner_verified = intertwiner.proved;
-    out.recurrence_preserved = out.recurrence_preserved && intertwiner.proved;
+    out.variable_fibre_grammar_verified =
+        intertwiner.finite_positive_grammar_ready;
+    out.recurrence_preserved = out.recurrence_preserved &&
+        intertwiner.proved && out.variable_fibre_grammar_verified;
     if (!intertwiner.proved && out.obstruction.empty())
         out.obstruction = "universal contact-role intertwiner is incomplete";
     return out;

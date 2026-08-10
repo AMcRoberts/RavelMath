@@ -130,7 +130,9 @@ void run_case(const std::array<std::vector<long long>, d>& images,
         const auto paired_recurrence =
             adelic::derive_property_f_contact_recurrence_certificate(
                 bridge, propf, graph, intertwiner);
+        assert(paired_recurrence.property_f_holds);
         assert(paired_recurrence.universal_intertwiner_verified);
+        assert(paired_recurrence.variable_fibre_grammar_verified);
         assert(paired_recurrence.recurrence_preserved);
         std::cout << name << ": recurrence PASS graph_nodes="
                   << recurrence.graph_nodes << "\n";
