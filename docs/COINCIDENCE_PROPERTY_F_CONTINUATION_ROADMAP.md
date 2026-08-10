@@ -662,3 +662,11 @@ stratum has size `48*r - 8`, while the two higher fixed rank strata have sizes
 the non-growing part is a bounded correction grammar. This is the shape to
 look for in the Property-F lift: parameter-dependent collar multiplicity with
 parameter-independent transport types.
+
+The companion recurrent-exhaustion check makes the separation explicit: for
+`a=7,8,9,10`, total boundary sizes are `178,198,218,238`, transient counts
+are `115,131,147,163` (the affine law `16*a+3`), and the recurrent catalogue
+has exactly `a+1` matched blocks. Only eight cross-block recurrent edges remain
+in each case. This is a concrete forest-level explanation for “large but
+harmless”: repeated shell transport grows, while recurrent connectivity stays
+finite and sparsely coupled.

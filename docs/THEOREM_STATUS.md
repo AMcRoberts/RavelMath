@@ -1255,3 +1255,8 @@ Quantitatively, the precedent has an affine collar: its rank-one interior
 stratum has `48*r - 8` states, while the two higher fixed strata have 19 and 9.
 The likely Property-F analogue is therefore repeated parameterized shell cells
 plus a bounded correction grammar, not an expanding recurrent component.
+
+The recurrent-exhaustion data sharpen this: the neighbor-2 boundary sizes are
+`178,198,218,238` at `a=7..10`, transient counts follow `16*a+3`, and exactly
+`a+1` recurrent blocks are matched with eight cross-block edges. This is the
+reference decomposition to seek in the adelic Property-F lift.
