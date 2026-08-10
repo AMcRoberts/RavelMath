@@ -264,6 +264,12 @@ int main() {
         adelic::derive_property_f_escape_rank(property_graph);
     expect(gamma_escape_rank.valid && gamma_escape_rank.terminal_sccs > 0,
            "Property-F SCC condensation yields a finite boundary rank");
+    std::size_t maximum_phase_residual = 0;
+    for (const auto& phase : phases.states)
+        maximum_phase_residual = std::max(
+            maximum_phase_residual,
+            phases.induced.words.at(phase.return_word).size() - phase.offset);
+    const std::size_t phase_rank_weight = 2 * maximum_phase_residual + 1;
     const auto gamma_relation = adelic::derive_return_contact_gamma_relation<3>(
         automaton_images, lift, automaton, property_graph, seeds,
         2'000'000, run_completion_probe || strict_completion_probe,
@@ -274,10 +280,10 @@ int main() {
                 const auto& p = phases.states.at(phase);
                 return phases.induced.words.at(p.return_word).size() - p.offset;
             };
-            // The phase residual is at most 12 in this system; leave a wide
-            // gap so one gamma-layer drop dominates any phase wrap.
+            // Derive the lexicographic base from the actual phase system;
+            // one gamma-layer drop dominates every possible phase wrap.
             return (gamma_escape_rank.node_height[left] +
-                    gamma_escape_rank.node_height[right]) * 16 +
+                    gamma_escape_rank.node_height[right]) * phase_rank_weight +
                    residual(state.left_phase) + residual(state.right_phase);
         });
     std::printf("gamma relation: products=%zu pairs=%zu max_fibre=%zu "

@@ -1222,8 +1222,9 @@ a Lyapunov function on a skew product, not yet a theorem.
 
 The instance-level candidate is now exact: `property_f_escape_rank.hpp`
 derives the longest sink distance in the Property-F SCC condensation, and the
-paired rank `16*(B_left+B_right)+R_left+R_right` passes all 302,319 live
-completion edges with zero violations. The remaining theorem is not the rank
+paired rank `w*(B_left+B_right)+R_left+R_right`, with `w` derived from the
+phase system, passes all 302,319 live completion edges with zero violations
+(maximum rank 153). The remaining theorem is not the rank
 calculation; it is the uniform symbolic derivation of those boundary SCC
 classes and their finite phase tie-break across the family.
 
