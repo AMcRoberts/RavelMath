@@ -99,7 +99,7 @@ TRANSITION_FILES := $(addprefix $(TRANSITIONS_DIR)/spectre_transitions_,$(addsuf
 .PHONY: csy_finite_carry_automaton_test
 .PHONY: lean_class_ii_catalogue_cross_check_test
 .PHONY: supergolden_qrs_audit
-.PHONY: theta5_contact_boundary_probe property_f_family_autopsy property_f_family_artifact property_f_transport_certificate_test property_f_contact_transport_bridge_test canonical_nonunit_property_f_test nonunit_property_f_theorem_test generalized_multinacci_property_f_transport_test generalized_multinacci_property_f_transport_extended_test generalized_multinacci_growth_profile_test generalized_multinacci_block_affine_test generalized_multinacci_structural_sweep_test generalized_multinacci_cross_dimension_test generalized_multinacci_cross_dimension_property_f_test generalized_multinacci_fiber_interaction_test adelic_cocycle_extension_test
+.PHONY: theta5_contact_boundary_probe property_f_family_autopsy property_f_family_artifact property_f_transport_certificate_test property_f_contact_transport_bridge_test canonical_nonunit_property_f_test nonunit_property_f_theorem_test marker_power_return_core_test generalized_multinacci_property_f_transport_test generalized_multinacci_property_f_transport_extended_test generalized_multinacci_growth_profile_test generalized_multinacci_block_affine_test generalized_multinacci_structural_sweep_test generalized_multinacci_cross_dimension_test generalized_multinacci_cross_dimension_property_f_test generalized_multinacci_fiber_interaction_test adelic_cocycle_extension_test
 
 all: build data apps tests
 build: $(LIB)
@@ -838,6 +838,7 @@ TESTS_DEFAULT := \
 	fibonacci_finite_test \
 	packed_binary_dynamics_test \
 	return_substitution_test \
+	marker_power_return_core_test \
 	return_contact_lift_test \
 	class_ii_boundary_family_test \
 	substitution_neighborhood_test \
@@ -1172,6 +1173,13 @@ return_substitution_test: $(RETURN_SUBSTITUTION_TEST_BIN)
 $(RETURN_SUBSTITUTION_TEST_BIN): $(TESTDIR)/return_substitution_test.cpp \
 		$(INCDIR)/ravel/return_substitution.hpp \
 		$(INCDIR)/ravel/substitution.hpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+
+MARKER_POWER_RETURN_CORE_TEST_BIN := $(BUILDDIR)/marker_power_return_core_test
+marker_power_return_core_test: $(MARKER_POWER_RETURN_CORE_TEST_BIN)
+$(MARKER_POWER_RETURN_CORE_TEST_BIN): $(TESTDIR)/marker_power_return_core_test.cpp \
+		$(INCDIR)/ravel/marker_power_return_core.hpp \
+		$(INCDIR)/ravel/return_substitution.hpp | $(BUILDDIR) $(MATH_LIB)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 
 RETURN_CONTACT_LIFT_TEST_BIN := $(BUILDDIR)/return_contact_lift_test

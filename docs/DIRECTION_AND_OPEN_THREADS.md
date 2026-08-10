@@ -652,6 +652,14 @@ the marker-power return system rather than a parallel coincidence. The
 remaining falsifier is a collared edge whose three-step projection disagrees
 with the return phase map at larger `b` or after increasing the orbit margin.
 
+The marker-power mechanism is now packaged as
+`marker_power_return_core.hpp` with a regression test. It checks the first
+marker-proper power, return-word count, phase-state count, and single-SCC
+condition for `sigma_{0,1}`, `sigma_{0,2}`, a left-proper control, and the
+minimal non-unit rule. All seven checks pass. This is a reusable gate for the
+third-plank lift: transport or p-adic fibres should be attached only after
+this finite symbolic core certificate succeeds.
+
 The longer pass deliberately uses a separately enlarged orbit prefix. On the
 525456-symbol prefix, extending the requested length too far produces a first
 false loss of one left extension at `n=55406`; the 4-million-symbol prefix
