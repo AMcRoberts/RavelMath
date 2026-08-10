@@ -57,13 +57,14 @@ derive_property_f_class_ii_akiyama_window(std::size_t a) {
     const auto states = property_f_class_ii_rank_spine_coefficients(a);
     const auto aa = static_cast<long long>(a);
     const auto tail_count = 2 * a + 2 - 5;
+    bool window_shape_valid = true;
     for (std::size_t step = 2; step < tail_count; ++step) {
         ++out.checked_states;
         const auto& state = states[step];
         const auto eta = state[0] + state[2];
         const auto allowed =
             property_f_class_ii_akiyama_allowed_deviations(eta);
-        if (allowed.size() != 5) out.five_value_window = false;
+        if (allowed.size() != 5) window_shape_valid = false;
         for (long long digit = 0; digit < aa; ++digit) {
             ++out.checked_digits;
             const auto deviation =
@@ -80,7 +81,7 @@ derive_property_f_class_ii_akiyama_window(std::size_t a) {
             if (bounded != listed) ++out.window_mismatches;
         }
     }
-    out.five_value_window =
+    out.five_value_window = window_shape_valid &&
         property_f_class_ii_akiyama_allowed_deviations(0).size() == 5 &&
         property_f_class_ii_akiyama_allowed_deviations(1).size() == 5;
     out.candidate_classification_valid = out.window_mismatches == 0;
