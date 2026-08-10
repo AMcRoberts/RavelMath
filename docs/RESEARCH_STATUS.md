@@ -200,6 +200,14 @@ candidate is the only high-tail continuation, and every other digit is
 absorbed by the collar. The symbolic proof that the same role law holds for
 all `a` remains open.
 
+The word-level half is now parameter-uniform in
+`include/adelic/property_f_class_ii_prefix_role_grammar.hpp`. Direct image
+enumeration proves the exact channels: target 0 comes from parents 0 and 1 at
+prefix lengths `0..a-1` and parent 2 at length 0; target 1 has only parent 0
+at length `a`; target 2 has parent 0 at `a+1` and parent 1 at `a`. The graph
+candidate census composes this role grammar with the affine tail and checks
+that the observed alternatives are precisely the collar exits.
+
 ## Effective-potential analogy (bounded modeling hypothesis, 2026-08-10)
 
 The observed “large, long-lived, then dispersing” cases invite a useful but

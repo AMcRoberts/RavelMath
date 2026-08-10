@@ -17,6 +17,7 @@
 #include "adelic/property_f_class_ii_affine_tail.hpp"
 #include "adelic/property_f_class_ii_branch_census.hpp"
 #include "adelic/property_f_class_ii_tail_candidate_census.hpp"
+#include "adelic/property_f_class_ii_prefix_role_grammar.hpp"
 #include "adelic/property_f_class_ii_rank_spine.hpp"
 #include "adelic/coincidence_and_property_f.hpp"
 #include "adelic/prefix_automaton.hpp"
@@ -302,6 +303,12 @@ int main() {
     // exercise its parameter formula beyond the resource-bounded graph sweep.
     for (std::size_t a = 4; a <= 256; ++a)
         assert(adelic::derive_property_f_class_ii_affine_tail_certificate(a).valid);
+    for (std::size_t a = 4; a <= 256; ++a) {
+        const auto roles =
+            adelic::derive_property_f_class_ii_prefix_role_grammar(a);
+        assert(roles.valid);
+        assert(roles.zero_prefix_count == a);
+    }
     assert(!adelic::derive_property_f_class_ii_affine_tail_certificate(
         adelic::property_f_class_ii_spine_max_safe_a + 1).parameter_domain);
     std::cout << "property_f_class_ii_birth_round: PASS family_size="

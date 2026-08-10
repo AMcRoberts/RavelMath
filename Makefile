@@ -1239,6 +1239,7 @@ $(PROPERTY_F_CLASS_II_BIRTH_ROUND_TEST_BIN): $(TESTDIR)/property_f_class_ii_birt
 		$(INCDIR)/adelic/property_f_class_ii_affine_tail.hpp \
 		$(INCDIR)/adelic/property_f_class_ii_branch_census.hpp \
 		$(INCDIR)/adelic/property_f_class_ii_tail_candidate_census.hpp \
+		$(INCDIR)/adelic/property_f_class_ii_prefix_role_grammar.hpp \
 		$(INCDIR)/adelic/property_f_class_ii_rank_spine.hpp \
 		$(INCDIR)/adelic/coincidence_and_property_f.hpp \
 		$(INCDIR)/adelic/prefix_automaton.hpp | $(BUILDDIR) $(MATH_LIB)

@@ -11,6 +11,7 @@
 #include <string>
 
 #include "adelic/property_f_class_ii_rank_spine.hpp"
+#include "adelic/property_f_class_ii_prefix_role_grammar.hpp"
 
 namespace adelic {
 
@@ -30,6 +31,7 @@ struct PropertyFClassIITailCandidateCensus {
     bool expected_successor_unique = false;
     bool no_alternate_high = false;
     bool digit_support_valid = false;
+    bool role_grammar_valid = false;
     bool valid = false;
 };
 
@@ -38,6 +40,8 @@ derive_property_f_class_ii_tail_candidate_census(
         const PropertyFGraph& graph, std::size_t a) {
     PropertyFClassIITailCandidateCensus out;
     out.parameter_a = a;
+    out.role_grammar_valid =
+        derive_property_f_class_ii_prefix_role_grammar(a).valid;
     const auto rank = derive_property_f_escape_rank(graph);
     if (!rank.valid) return out;
     const auto spine = derive_property_f_class_ii_rank_spine(graph, a);
@@ -119,7 +123,7 @@ derive_property_f_class_ii_tail_candidate_census(
     }
     out.valid = out.spine_valid && out.malformed_edges == 0 &&
                 out.expected_successor_unique && out.no_alternate_high &&
-                out.digit_support_valid;
+                out.digit_support_valid && out.role_grammar_valid;
     return out;
 }
 

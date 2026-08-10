@@ -846,6 +846,12 @@ the complete zero-prefix digit family `j=0..a-1`, letter 1 has only its forced
 return, and no alternate candidate returns to the high tail. This is the
 finite candidate-role premise for the no-deviation induction.
 
+`include/adelic/property_f_class_ii_prefix_role_grammar.hpp` supplies the
+parameter-uniform word-level role catalogue for `sigma_{a,1}`: zero has the
+three parent channels with `0^j` prefixes, letter 1 has the single `0^a`
+channel, and letter 2 has the two channels at prefix lengths `a+1` and `a`.
+The tail census composes this symbolic catalogue with the realized graph.
+
 ### General number fields and the class-field-tower initiative
 
 ```cpp
