@@ -537,6 +537,27 @@ a short transport correction, rather than an unrelated word-search accident.
 An unbounded discrepancy across a family would force separate structural
 proofs for strong coincidence and Property-F recurrence.
 
+**H6 — Return-core states are the infinite branch types.** The five return
+words of `sigma_{0,1}^3` should refine to five recurrent left-special branch
+types, while the three right-special types arise from their terminal-letter
+quotient. Falsifier: a predecessor decomposition of the actual language
+merges or splits these types indefinitely. Then the return core is only a
+coincidence device, and a separate branch groupoid is required.
+
+**H7 — The all-n branch map is a finite transducer.** Once a factor is long
+enough to expose its marker-power collar, its left/right-special predecessor
+map should be recognized by a finite transducer over the return-phase core.
+Falsifier: the transducer needs unbounded memory even after the `sigma^3`
+collar is included. That would be the precise point where non-AR ceases to be
+finite-type and the third plank must begin with an S-adic extension.
+
+**H8 — Contact junction labels factor through branch types.** The local
+stepped-hyperplane junction type attached to a special factor should depend
+only on its return-core branch state, with transport labels as a fibre. A
+single pair of factors with the same branch state but inequivalent junction
+labels would falsify this and explain why the current contact graph has extra
+recurrent holonomy.
+
 The first experiment should attack H1 and H2 together: prove the all-length
 predecessor decomposition for `sigma_{0,1}`, build its finite seam grammar,
 and compare its channel rank with the existing contact-boundary generator
