@@ -265,6 +265,47 @@ int main() {
         adelic::derive_property_f_escape_rank(property_graph);
     expect(gamma_escape_rank.valid && gamma_escape_rank.terminal_sccs > 0,
            "Property-F SCC condensation yields a finite boundary rank");
+    std::map<std::pair<long long, bool>, std::size_t> height_classes;
+    std::map<std::size_t, std::size_t> edge_drop_histogram;
+    std::size_t internal_edges = 0;
+    std::size_t nondecreasing_cross_scc_edges = 0;
+    for (std::size_t node = 0; node < property_graph.nodes.size(); ++node) {
+        ++height_classes[{property_graph.nodes[node].letter,
+                          property_graph.nodes[node].zero}];
+        for (const auto raw_target : property_graph.nodes[node].successors) {
+            const auto target = static_cast<std::size_t>(raw_target);
+            const auto source_height = gamma_escape_rank.node_height[node];
+            const auto target_height = gamma_escape_rank.node_height[target];
+            if (source_height < target_height) {
+                ++nondecreasing_cross_scc_edges;
+            } else if (source_height == target_height) {
+                if (property_graph.scc_labels[node] ==
+                    property_graph.scc_labels[target])
+                    ++internal_edges;
+                else
+                    ++nondecreasing_cross_scc_edges;
+            } else {
+                ++edge_drop_histogram[source_height - target_height];
+            }
+        }
+    }
+    expect(nondecreasing_cross_scc_edges == 0,
+           "finite Property-F graph rank strictly decreases across SCC edges");
+    if (std::getenv("NONAR_RANK_SHAPE_PROBE")) {
+        std::printf("rank-shape heights=%zu terminal_sccs=%zu max=%zu "
+                    "internal_edges=%zu nondecreasing_cross_scc=%zu classes:",
+                    gamma_escape_rank.node_height.size(),
+                    gamma_escape_rank.terminal_sccs,
+                    gamma_escape_rank.maximum_height,
+                    internal_edges, nondecreasing_cross_scc_edges);
+        for (const auto& [key, count] : height_classes)
+            std::printf(" letter%lld/%d=%zu", key.first, key.second ? 1 : 0,
+                        count);
+        std::printf(" drops:");
+        for (const auto& [drop, count] : edge_drop_histogram)
+            std::printf(" %zu:%zu", drop, count);
+        std::printf("\n");
+    }
     std::size_t maximum_phase_residual = 0;
     for (const auto& phase : phases.states)
         maximum_phase_residual = std::max(

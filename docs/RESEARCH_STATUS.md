@@ -123,6 +123,15 @@ earlier returns, and the expected eight cross-block edges. This strengthens
 the shell-stack template, but it does not derive the analogous birth-round
 grammar for the adelic Property-F lift; that remains the theorem-facing seam.
 
+The powered non-AR graph now has a focused rank-shape regression: all 95
+Property-F edges either remain inside an SCC or strictly lower the SCC
+sink-distance, with zero cross-SCC nondecreasing edges. The observed drops
+are 64 of size 1, 21 of size 2, 5 of size 3, and 2 of size 4; only three
+edges are internal SCC edges. This is stronger than merely observing an
+acyclic condensation and explains why the finite rank behaves as a genuine
+boundary potential on this control. It is still an instance-level fact until
+the ordered-prefix grammar supplies the corresponding family argument.
+
 ## Effective-potential analogy (bounded modeling hypothesis, 2026-08-10)
 
 The observed “large, long-lived, then dispersing” cases invite a useful but
