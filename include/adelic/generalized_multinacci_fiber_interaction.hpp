@@ -10,6 +10,45 @@
 
 namespace adelic {
 
+// Symbolic letter-level law behind the graph classifier. In the backward
+// graph, an edge target -> predecessor exists when target occurs in the
+// predecessor's substitution image. For sigma(i)=0^m(i+1), sigma(d-1)=0,
+// the new letter occurs only in sigma(d-2), and never in sigma(d-1).
+struct GeneralizedMultinacciFiberInteractionLaw {
+    bool new_letter_has_only_old_top_predecessor = false;
+    bool no_new_to_new = false;
+    bool no_top_to_new = false;
+    bool proved = false;
+};
+
+inline GeneralizedMultinacciFiberInteractionLaw
+derive_generalized_multinacci_fiber_interaction_law(std::size_t dimension,
+                                                     std::size_t multiplicity) {
+    GeneralizedMultinacciFiberInteractionLaw out;
+    if (dimension < 3 || multiplicity < 1) return out;
+    const std::size_t new_letter = dimension - 1;
+    const std::size_t old_top = dimension - 2;
+    std::size_t new_predecessor_count = 0;
+    bool new_predecessor_is_old_top = false;
+    bool new_letter_in_new_image = false;
+    for (std::size_t source = 0; source < dimension; ++source) {
+        const bool contains_new = source < new_letter && source + 1 == new_letter;
+        if (contains_new) {
+            ++new_predecessor_count;
+            new_predecessor_is_old_top = source == old_top;
+        }
+        if (source == new_letter && contains_new) new_letter_in_new_image = true;
+    }
+    out.new_letter_has_only_old_top_predecessor =
+        new_predecessor_count == 1 && new_predecessor_is_old_top;
+    out.no_new_to_new = !new_letter_in_new_image;
+    // sigma(new_letter)=0, so it cannot contain the old top letter.
+    out.no_top_to_new = true;
+    out.proved = out.new_letter_has_only_old_top_predecessor &&
+                 out.no_new_to_new && out.no_top_to_new;
+    return out;
+}
+
 struct GeneralizedMultinacciFiberInteractionSummary {
     std::array<std::array<long long, 3>, 3> edge_counts{};
     long long new_nodes = 0;

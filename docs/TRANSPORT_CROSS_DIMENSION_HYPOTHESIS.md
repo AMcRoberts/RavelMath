@@ -52,6 +52,18 @@ They are entered from inherited states and then descend into the old top class
 (`inherited->new` and `new->top` are the observed crossings). Thus the new
 fiber is a one-way transit layer, not an autonomous recurrent subsystem.
 
+This interaction law has a direct symbolic proof. In the prefix automaton an
+edge `a -> b` in the backward Property-F orientation exists only when `a`
+occurs in `sigma(b)`. For the lifted rule,
+`sigma(i)=0^m(i+1)` for `i<d` and `sigma(d)=0`. Therefore the new letter `d`
+occurs in exactly one image, `sigma(d-1)`, while `sigma(d)` contains neither
+`d` nor `d-1`. Hence every new-letter edge descends to the old top letter and
+there can be no new-to-new or old-top-to-new edge, independently of the affine
+coordinate or the Property-F search bound. The executable interaction-law
+certificate checks this incidence argument symbolically for the parameter
+domain; the graph classifier then checks that the exact finite graphs realize
+the same restriction.
+
 ## Evidence
 
 - The symbolic dimension-free suspension certificate passes all 42 points with

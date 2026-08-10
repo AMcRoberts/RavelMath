@@ -42,6 +42,16 @@ void check_case(std::size_t m) {
 }
 
 int main() {
+    for (std::size_t d = 3; d <= 8; ++d) {
+        for (std::size_t m = 1; m <= 6; ++m) {
+            const auto law =
+                adelic::derive_generalized_multinacci_fiber_interaction_law(d, m);
+            assert(law.proved);
+            assert(law.new_letter_has_only_old_top_predecessor);
+            assert(law.no_new_to_new);
+            assert(law.no_top_to_new);
+        }
+    }
     for (std::size_t m = 1; m <= 6; ++m) check_case<3>(m);
     for (std::size_t m = 1; m <= 3; ++m) check_case<4>(m);
     check_case<5>(1);

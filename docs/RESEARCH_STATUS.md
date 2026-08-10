@@ -150,6 +150,12 @@ in every tested lifted graph, `new->new=0` and `top->new=0` in the backward
 orientation, while inherited states enter the new terminal class and new
 states descend to the old top class. The new fiber is therefore a one-way
 transit layer in the tested exact graphs, not an autonomous recurrent block.
+There is now a symbolic reason for this, independent of the affine coordinates:
+the lifted substitution has `sigma(i)=0^m(i+1)` for `i<d` and `sigma(d)=0`.
+Thus the new letter `d` occurs only in `sigma(d-1)`, and the new image contains
+neither `d` nor `d-1`. The backward prefix-automaton incidence therefore forces
+new -> old-top and forbids both new -> new and old-top -> new before any finite
+Property-F enumeration is run.
 Each channel is now compiled to an exact integer affine endpoint map on the
 `d`-coordinate coefficient lattice; all 19 `(4,6)` maps are replay-checked
 against `Q(beta)`, while the 42-point sweep checks the parameterized map shape.
