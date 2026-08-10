@@ -87,6 +87,22 @@ a recurrent loop with nonzero fiber holonomy must survive every quotient, while
 Condition F makes the admissible zero-language quotient finite and terminal
 fiber translations harmless permutations.
 
+The implementation pairing is now clear as well. `check_property_f` already
+has the exact step `gamma' = beta^(-1)(gamma + delta(prefix))`; in the unit case
+`gamma` is the complete fiber. In the non-unit case the same step must be read
+componentwise as
+
+```text
+(gamma_infty, (gamma_p)_p) ->
+(A_infty gamma_infty + delta_infty,
+ (A_p gamma_p + delta_p)_p),   p | (beta).
+```
+
+`make_combined_padic_bound` supplies the product-of-local-integrality predicate
+for these extra coordinates. The missing explicit object is therefore not a
+new theorem about the base: it is a typed local-fiber wrapper exposing the
+same prefix label and cocycle simultaneously at every prime ideal.
+
 ## Current evidence sheet
 
 The fixed-spectrum fourth-generator family has nine exact instances. All close

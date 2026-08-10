@@ -133,6 +133,12 @@ finite-language/recurrence bridge with no valuation coordinates. The genuinely
 non-unit witnesses have the same finite base and cocycle logic, but their fiber
 must be enlarged by every prime-ideal valuation; the p-adic integrality bound
 and contact-to-adelic recurrence bridge are the remaining thin wall there.
+The expected paired extension is now explicit: the same prefix cocycle acts
+on the archimedean coefficient coordinate and, in the non-unit case, on one
+local coordinate for each prime ideal above a divisor of `(beta)`. The current
+`make_combined_padic_bound` implements the product integrality predicate; the
+next implementation seam is a typed local-fiber wrapper that exposes those
+coordinates and their holonomy to the same recurrence classifier.
 The resulting strong hypothesis is recorded in
 `docs/TRANSPORT_CROSS_DIMENSION_HYPOTHESIS.md`: the sofic phase is the finite
 base, while transport is a graded height-by-carry-color cocycle. Its proposed
