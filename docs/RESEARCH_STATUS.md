@@ -228,6 +228,13 @@ affine carry ray with a finite absorbing collar, rather than a second family
 of high-rank branches. The uniform theorem still needs the symbolic step that
 derives this absorption directly from the parameter-uniform prefix roles.
 
+The algebraic no-deviation premise is now factored into
+`property_f_class_ii_symbolic_tail_grammar.hpp`. Forward and inverse affine
+role enumeration both give exactly one spine continuation/predecessor and zero
+alternate spine hits through `a=256`. This removes graph enumeration from the
+spine-uniqueness half of the argument; the remaining uniform seam is strictly
+off-spine collar absorption.
+
 The non-unit side now has its explicit local-fibre premise as well. The
 valuation-fibre certificate checks, for every prime dividing the determinant,
 that the maximal Dedekind factors and independent ideal-lattice product agree

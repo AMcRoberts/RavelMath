@@ -1242,6 +1242,7 @@ $(PROPERTY_F_CLASS_II_BIRTH_ROUND_TEST_BIN): $(TESTDIR)/property_f_class_ii_birt
 		$(INCDIR)/adelic/property_f_class_ii_prefix_role_grammar.hpp \
 		$(INCDIR)/adelic/property_f_class_ii_phase_strip.hpp \
 		$(INCDIR)/adelic/property_f_class_ii_phase_absorption.hpp \
+		$(INCDIR)/adelic/property_f_class_ii_symbolic_tail_grammar.hpp \
 		$(INCDIR)/adelic/property_f_class_ii_rank_spine.hpp \
 		$(INCDIR)/adelic/coincidence_and_property_f.hpp \
 		$(INCDIR)/adelic/prefix_automaton.hpp | $(BUILDDIR) $(MATH_LIB)

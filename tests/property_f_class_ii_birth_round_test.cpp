@@ -21,6 +21,7 @@
 #include "adelic/property_f_class_ii_phase_strip.hpp"
 #include "adelic/property_f_class_ii_phase_absorption.hpp"
 #include "adelic/property_f_class_ii_rank_spine.hpp"
+#include "adelic/property_f_class_ii_symbolic_tail_grammar.hpp"
 #include "adelic/coincidence_and_property_f.hpp"
 #include "adelic/prefix_automaton.hpp"
 #include "math/charpoly.hpp"
@@ -325,6 +326,16 @@ int main() {
         assert(phase.quotient_identity_mismatches == 0);
         assert(phase.forced_digit_formula_mismatches == 0);
         assert(phase.forced_digit_range_mismatches == 0);
+        const auto symbolic_tail =
+            adelic::derive_property_f_class_ii_symbolic_tail_grammar(a);
+        assert(symbolic_tail.valid);
+        assert(symbolic_tail.forward_expected_hits ==
+               symbolic_tail.spine_states - 1);
+        assert(symbolic_tail.reverse_expected_hits ==
+               symbolic_tail.spine_states - 1);
+        assert(symbolic_tail.reverse_missing_targets == 0);
+        assert(symbolic_tail.forward_alternate_spine_hits == 0);
+        assert(symbolic_tail.reverse_alternate_spine_hits == 0);
     }
     // The quotient identity is state-independent, not an artifact of the
     // observed spine.  Exercise arbitrary small integer coefficient states

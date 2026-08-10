@@ -870,6 +870,12 @@ This is the finite absorption premise for the uniform upper-bound lemma, not
 yet that lemma: the remaining work is to derive the same absorption from the
 ordered-prefix grammar for every parameter.
 
+`include/adelic/property_f_class_ii_symbolic_tail_grammar.hpp` composes the
+prefix-role catalogue with the affine map in both directions. It checks that
+the explicit spine has exactly one expected continuation and predecessor and
+no alternate spine hit. This is the symbolic no-deviation premise; it still
+needs the separate argument that every off-spine branch is collar-absorbed.
+
 For the non-unit branch, `adelic_cocycle_extension.hpp` also exposes
 `derive_adelic_valuation_fibre_lemma`. It checks maximal Dedekind factorization,
 the independent ideal-lattice identity, and the local degree partition
