@@ -1268,3 +1268,8 @@ rejects inconsistent component rounds, recurrent returns to earlier strata,
 and transient groups without escape; enrollment in `make tests` leaves the
 full native gate green. This is a proof interface, not a claim that the
 adelic birth rounds have already been derived.
+
+The Class-II round-trace driver also invokes the certificate on its actual
+corona layers; `a=7..10` and a standalone `a=20` run report valid stratification,
+complete transient escape, and zero earlier returns. This validates the
+contract-to-data wiring while leaving the adelic derivation open.

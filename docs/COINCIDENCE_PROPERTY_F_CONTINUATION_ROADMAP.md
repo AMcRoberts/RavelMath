@@ -671,6 +671,12 @@ consistency, recurrent earlier-stratum returns, and transient-group escape.
 The Class-II trace remains responsible for deriving its labels and rounds; the
 future adelic proof must supply an equally explicit symbolic derivation.
 
+The existing round-trace driver now replays its real `a=7..10` layers (and a
+standalone `a=20` run) through this certificate: every run reports
+`valid=1`, all transient groups escaped, and zero earlier returns. The helper
+is therefore connected to the actual shell data source, not only a synthetic
+unit test.
+
 The companion recurrent-exhaustion check makes the separation explicit: for
 `a=7..20`, the total boundary sizes continue the affine law `20*a+38`
 and transient counts continue `16*a+3`; every run has exactly `a+1` matched

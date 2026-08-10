@@ -41,6 +41,7 @@
 #include "ravel/substitution.hpp"
 #include "ravel/substitution_neighborhood.hpp"
 #include "ravel/survey.hpp"
+#include "ravel/proof/finite_graph_correspondence.hpp"
 
 using namespace ravel;
 
@@ -166,6 +167,52 @@ void run(long long a) {
 
     // Real edges among final_nodes, from the trusted trace.
     const auto& edges = trace.layers.back().edges;
+
+    // Replay the same trusted trace through the reusable stratification
+    // contract. Recurrent blocks get their catalogue index; each transient
+    // state is its own nonrecurrent component, since the contract checks the
+    // birth-round/escape premises rather than deriving SCCs a second time.
+    const std::vector<SNode<3>> final_order(
+        final_nodes.begin(), final_nodes.end());
+    std::map<SNode<3>, std::size_t> state_index;
+    for (std::size_t i = 0; i < final_order.size(); ++i)
+        state_index.emplace(final_order[i], i);
+    std::map<SNode<3>, std::size_t> recurrent_block;
+    for (std::size_t rank = 0; rank < recurrent_sets.size(); ++rank)
+        for (const auto& state : recurrent_sets[rank])
+            recurrent_block[state] = rank;
+    std::vector<long long> component(final_order.size(), -1);
+    std::size_t next_component = recurrent_sets.size();
+    std::vector<bool> recurrent_component(next_component, true);
+    std::vector<std::size_t> birth_round_vector(final_order.size());
+    for (std::size_t i = 0; i < final_order.size(); ++i) {
+        const auto& state = final_order[i];
+        birth_round_vector[i] = static_cast<std::size_t>(birth_round.at(state));
+        const auto recurrent_it = recurrent_block.find(state);
+        if (recurrent_it != recurrent_block.end()) {
+            component[i] = static_cast<long long>(recurrent_it->second);
+        } else {
+            component[i] = static_cast<long long>(next_component++);
+            recurrent_component.push_back(false);
+        }
+    }
+    std::vector<std::vector<std::size_t>> adjacency(final_order.size());
+    for (const auto& [source, destination, lp, lq] : edges) {
+        (void)lp; (void)lq;
+        const auto source_it = state_index.find(source);
+        const auto destination_it = state_index.find(destination);
+        if (source_it != state_index.end() && destination_it != state_index.end())
+            adjacency[source_it->second].push_back(destination_it->second);
+    }
+    const auto stratified =
+        proof::derive_stratified_escape_certificate(
+            adjacency, component, recurrent_component, birth_round_vector);
+    std::printf(
+        "  CONTRACT,a=%lld,valid=%d,groups=%zu,escaped=%zu,"
+        "earlier_returns=%zu\n",
+        a, stratified.valid ? 1 : 0, stratified.transient_groups,
+        stratified.transient_groups_with_escape,
+        stratified.recurrent_to_earlier_transient_edges);
 
     long long item4_violations = 0, item4_checked = 0;
     for (const auto& [source, dest, lp, lq] : edges) {
