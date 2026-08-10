@@ -51,7 +51,8 @@ struct PairHash {
     }
 };
 
-void report(const char* name, const ravel::SubstitutionRule& rule) {
+void report(const char* name, const ravel::SubstitutionRule& rule,
+            std::size_t max_collar = 2) {
     const Word source = orbit_prefix(rule, 200000);
     const Word image = rule.apply_once(source);
     const auto source_intervals = marker_intervals(source, 0);
@@ -76,7 +77,7 @@ void report(const char* name, const ravel::SubstitutionRule& rule) {
             rule.image(static_cast<std::size_t>(source[i])).size();
     std::printf("%s: orbit=%zu return_words=%zu\n", name, source.size(),
                 word_index.size());
-    for (std::size_t collar = 0; collar <= 2; ++collar) {
+    for (std::size_t collar = 0; collar <= max_collar; ++collar) {
         std::map<std::string, std::set<std::string>> transitions;
         // Ignore a few boundary intervals: their image context is incomplete.
         for (std::size_t k = 4; k + 4 < source_intervals.size(); ++k) {
@@ -121,7 +122,15 @@ void report(const char* name, const ravel::SubstitutionRule& rule) {
 }  // namespace
 
 int main() {
-    report("sigma_{0,1}", ravel::SubstitutionRule({{1, 2}, {2}, {0}}));
+    for (int b = 1; b <= 5; ++b) {
+        std::vector<std::vector<std::int8_t>> sigma(3);
+        for (int i = 0; i < b; ++i) sigma[0].push_back(1);
+        sigma[0].push_back(2);
+        sigma[1] = {2};
+        sigma[2] = {0};
+        const std::string name = "sigma_{0," + std::to_string(b) + "}";
+        report(name.c_str(), ravel::SubstitutionRule(sigma), b);
+    }
     for (int a = 1; a <= 5; ++a) {
         std::vector<std::vector<std::int8_t>> sigma(3);
         for (int i = 0; i < a; ++i) sigma[0].push_back(0);

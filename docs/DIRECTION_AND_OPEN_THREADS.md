@@ -584,6 +584,24 @@ The next falsifier is a family whose minimal conflict-free collar radius is
 unbounded; that would require a genuine sofic/S-adic tower rather than a
 finite collared groupoid.
 
+**Run-length hypothesis (2026-08-09).** Extending the same probe through the
+non-left-proper family `sigma_{0,b}` gives minimal conflict-free collar
+radii `1,2,3,4,5` for `b=1,...,5`. The left-proper family remains radius 0.
+The natural explanation is recognizability: `sigma_{0,b}(0)=1^b2` hides the
+preimage marker behind a run of `b` identical letters, so `b` symbols of
+collar are needed to recover the cut. This is a concrete candidate theorem,
+not just a numerical pattern. Its falsifier is a value of `b` whose minimal
+radius is not `b`, or a different family with the same run-length defect but
+unbounded extra collars. The latter would indicate a genuinely new transport
+mechanism rather than ordinary recognizability growth.
+
+The conflict-free state counts for `b=1,...,5` are `45,89,143,209,288`.
+They grow much more slowly than the sampled orbit and are consistent with a
+quadratic collar expansion over a fixed return-channel set. A superquadratic
+growth law, or a nonzero recurrent component appearing only after collaring,
+would falsify the harmless-collar interpretation and reopen H3 as a genuine
+holonomy problem.
+
 The longer pass deliberately uses a separately enlarged orbit prefix. On the
 525456-symbol prefix, extending the requested length too far produces a first
 false loss of one left extension at `n=55406`; the 4-million-symbol prefix
