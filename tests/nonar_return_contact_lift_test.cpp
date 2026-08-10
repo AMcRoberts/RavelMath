@@ -11,6 +11,7 @@
 #include "ravel/marker_power_return_core.hpp"
 #include "adelic/prefix_automaton.hpp"
 #include "adelic/property_f_role_digit_cocycle.hpp"
+#include "adelic/return_phase_digit_cocycle.hpp"
 #include "math/charpoly.hpp"
 #include "math/linalg_qbeta.hpp"
 #include "ravel/return_contact_lift.hpp"
@@ -193,6 +194,18 @@ int main() {
     expect(!digit_cocycle.proved &&
                digit_cocycle.recurrent_zero_kernel_missing_pairs > 0,
            "coarse role cocycle is correctly rejected as an incomplete bridge");
+    const auto collar_cocycle = adelic::derive_return_phase_digit_cocycle<3>(
+        automaton_images, phases, automaton, 16, 1'000'000);
+    std::printf("return-collar cocycle: phase_states=%zu edges=%zu "
+                "zero_pairs=%zu missing=%zu recurrent_missing=%zu\n",
+                collar_cocycle.phase_states, collar_cocycle.edge_count,
+                collar_cocycle.zero_kernel_pairs,
+                collar_cocycle.zero_kernel_missing_pairs,
+                collar_cocycle.recurrent_zero_kernel_missing_pairs);
+    expect(collar_cocycle.cocycle_edges_exact &&
+               !collar_cocycle.recurrent_zero_kernel_complete &&
+               collar_cocycle.recurrent_zero_kernel_missing_pairs > 0,
+           "phase collar alone is correctly rejected as an incomplete bridge");
     const std::size_t nonzero_scc = largest_nonzero_recurrent_scc(lift);
     expect(nonzero_scc > 0,
            "non-AR contact lift exposes a recurrent nonzero transport component");

@@ -4119,3 +4119,9 @@ exact letter-role `Q(β)` cocycle checker to the powered non-AR rule reaches onl
 Property-F graph closing. Therefore the integer holonomy cannot be tested
 through a bare letter-role projection; return-word/offset collar data is
 load-bearing. This is a useful negative result, not a Property-F failure.
+The next refinement retained all 16 return-phase states and rebuilt the exact
+phase-pair cocycle, but still missed 52,618 recurrent zero-kernel pairs. Thus
+the phase collar alone is also insufficient: the geometric contact coordinate
+must participate in the intertwiner. The surviving model is a three-way skew
+product (return phase, contact geometry, integer defect), not a one-dimensional
+role or phase extension.

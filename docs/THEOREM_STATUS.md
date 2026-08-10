@@ -1064,3 +1064,7 @@ The first coarse attempt is a certified negative: the existing letter-role
 rule even though the full Property-F graph closes. Any successful intertwiner
 must retain return-word/offset collar state; the bare role quotient is not a
 valid bridge.
+Retaining the full 16-state return collar still leaves 52,618 recurrent
+zero-kernel misses in the phase-pair cocycle. The geometric contact coordinate
+is therefore load-bearing as well; the required bridge is a three-way skew
+product, not a letter-role or phase-only quotient.
