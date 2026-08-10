@@ -142,6 +142,21 @@ no surviving nonzero holonomy.
 
 ### The theorem now discharged by the executable certificate
 
+At the number-system level the final non-unit statement is uniform: if
+`beta` is the dominant root of
+`x^d-b_1 x^(d-1)-...-b_d`, with
+`b_1 >= ... >= b_d > 0` and `b_d > 1`, then the Frougny--Solomyak theorem
+gives Property F.  The reusable certificate
+`derive_nonunit_property_f_theorem` records exactly these hypotheses and
+separates the determinant `b_d` (the source of the non-unit valuation fibres)
+from the finiteness conclusion.  Its test covers the non-unit vector
+`(4,3,2)`, the unimodular boundary `(3,3,1)`, and a nonmonotone rejection.
+
+The remaining executable obligations below are for realizing that number
+system as the canonical substitution and its non-unit adelic/contact model;
+they are not additional hypotheses of the Frougny--Solomyak number-system
+theorem.
+
 Let `f(x)=x^d-a_(d-1)x^(d-1)-...-a_0` have a dominant Pisot root `beta`,
 with a terminating greedy expansion of `1` of length `d`,
 `a_(d-1) >= ... >= a_0 > 0`, and `a_0 > 1`.  Form the canonical Parry
