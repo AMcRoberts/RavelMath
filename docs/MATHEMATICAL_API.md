@@ -801,6 +801,16 @@ auto grammar = adelic::derive_property_f_birth_round_grammar(property_graph);
 transport from strictly descending cross-SCC steps. This is a finite witness
 extractor; a non-unit theorem still needs explicit valuation fibres.
 
+`tests/property_f_class_ii_birth_round_test.cpp` replays the extractor over
+the three-letter Class-II `sigma_{a,1}` family. Its default exact range is
+`a=0..13` (including the non-AR control); larger resource-bounded probes are
+opt-in and report their caps explicitly.
+
+For `a>=4`, `include/adelic/property_f_class_ii_rank_spine.hpp` replays the
+explicit alternating affine carry spine that realizes height `2*a+2`. It is
+a verified lower-bound path and rank witness; bounding every other state is a
+separate family proof obligation.
+
 ### General number fields and the class-field-tower initiative
 
 ```cpp

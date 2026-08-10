@@ -142,6 +142,25 @@ birth-round/transport grammar for a closed graph, not yet a uniform theorem
 for all ordered prefixes; the genuinely non-unit extension must add its
 valuation fibres explicitly rather than being inferred from this unit control.
 
+The same grammar is now replayed across the Class-II
+`sigma_{a,1}` family, including the non-AR member `a=0`. Exact finite closure
+holds for `a=0..16`; for every `a=4..16` the rank has exactly `2*a+3` layers.
+The largest checked point, `a=16`, closes at 613,048 states and 613,048
+recorded edges in about 40 seconds at about 0.96 GB RSS. The default regression
+stops at `a=13` under a 300,000-node cap; larger points are opt-in probes via
+`CLASSII_BIRTH_MAX_A` and `CLASSII_BIRTH_NODE_BUDGET`. This is strong finite
+evidence for a linear height law and a useful target for symbolic derivation,
+not a proof that all `a` close or that the law is universal.
+
+The height law has an explicit replayable spine, not just a scalar fit. For
+`a>=4`, the graph contains an alternating coefficient sequence in the power
+basis: the interior pairs are
+`(-k, -(k(a+1)-1), k)` and `(k+1, k(a+1), -k)`, followed by three boundary
+states. `include/adelic/property_f_class_ii_rank_spine.hpp` checks their exact
+node keys, edges, and SCC heights. This proves a concrete height-`2a+2`
+lower-bound path in every checked member; the missing upper bound is to show
+that no other admissible transport branch exceeds this spine.
+
 ## Effective-potential analogy (bounded modeling hypothesis, 2026-08-10)
 
 The observed “large, long-lived, then dispersing” cases invite a useful but

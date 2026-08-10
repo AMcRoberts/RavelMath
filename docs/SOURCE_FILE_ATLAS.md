@@ -184,6 +184,7 @@ For invocation and operating procedure, read `MATHEMATICAL_API.md` → `Reflecti
 | `include/adelic/prefix_automaton.hpp` | Prefix-labelled substitution automaton and its finite digit alphabet. |
 | `include/adelic/property_f_escape_rank.hpp` | Exact SCC-condensation boundary-layer rank for Property-(F) graphs; supplies the primary coordinate for lexicographic transport escape certificates. |
 | `include/adelic/property_f_birth_round_grammar.hpp` | Finite birth-round/transport grammar derived from the exact Property-(F) SCC rank, including terminal layers, transport transitions, and shell-drop counts. |
+| `include/adelic/property_f_class_ii_rank_spine.hpp` | Explicit `sigma_{a,1}` alternating affine rank-spine coefficients and a replay certificate for the observed height `2a+2` when `a>=4`; lower-bound witness only. |
 | `include/adelic/csy_carry_automaton.hpp` | Exact Pisot powers, CSY-style bounded prefix states, carry exploration, and memory accounting. |
 | `include/adelic/coincidence_and_property_f.hpp` | Strong coincidence and geometric property-(F) checks, including archimedean and non-archimedean bounds. |
 | `include/adelic/classify_adelic.hpp` | Composed tiling classifier and explicit verdict/report type. |
