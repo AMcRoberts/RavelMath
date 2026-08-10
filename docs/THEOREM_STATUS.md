@@ -1185,3 +1185,9 @@ theorem interface rather than as an empirical stopping rule.
 The public completion verdict also requires a nonempty live relation, so the
 strict empty greatest subrelation is not accidentally reported as a positive
 escape completion merely by vacuity.
+
+The first candidate coordinate for the decreasing height is the existing
+return-word position: the exact `sigma_{a,1}` family probe has unique
+endpoint-plus-length signatures and maximum recurrent word length `a+4` for
+`1<=a<=4` (six states at `a=1`, eight for `a>=2`). This is a hypothesis for
+the symbolic proof, not a universal claim yet.

@@ -561,3 +561,11 @@ the local composition rule; a live product cycle attacks the height function;
 an opposite-orientation witness attacks the ordered boundary claim; and a
 nonzero recurrent image would be a genuine Property-F obstruction rather than
 mere boundary bookkeeping.
+
+The existing family probe gives a concrete candidate for the height premise:
+for `sigma_{a,1}`, `1<=a<=4`, the recurrent balanced-pair words have unique
+endpoint-plus-length signatures, with maximum word length `a+4` (the `a=1`
+case has the expected six-state degeneracy; `a>=2` has eight states). This
+does not prove that return-word length decreases along every escape, but it
+identifies a finite symbolic coordinate to test before introducing a larger
+state space.
