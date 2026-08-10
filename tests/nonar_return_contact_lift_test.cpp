@@ -197,10 +197,16 @@ int main() {
     const auto automaton = adelic::build_prefix_automaton<3>(
         automaton_images, eigen.v, ring);
     const auto contact_holonomy = adelic::derive_return_contact_digit_holonomy<3>(
-        automaton_images, lift, automaton);
+        automaton_images, lift, automaton, seeds);
     std::printf("contact Q(beta) holonomy: cyclic_sccs=%zu nontrivial=%zu\n",
                 contact_holonomy.cyclic_sccs,
                 contact_holonomy.nontrivial_holonomy_sccs);
+    std::printf("  zero_seed_count=%zu zero_seed_reachable=%zu "
+                "nontrivial_reachable=%zu reaches_nontrivial=%d\n",
+                contact_holonomy.zero_seed_count,
+                contact_holonomy.zero_seed_reachable_states,
+                contact_holonomy.zero_seed_reachable_nontrivial_nodes,
+                contact_holonomy.zero_seed_reaches_nontrivial_holonomy ? 1 : 0);
     for (const auto& scc : contact_holonomy.sccs)
         std::printf("  contact_scc nodes=%zu residual_edges=%zu zero=%zu "
                     "nonzero=%zu coboundary=%d\n", scc.nodes,
@@ -208,6 +214,9 @@ int main() {
                     scc.nonzero_contact_nodes, scc.coboundary ? 1 : 0);
     expect(contact_holonomy.exact && contact_holonomy.cyclic_sccs > 0,
            "full contact lift has classified Q(beta) recurrent cycles");
+    expect(contact_holonomy.zero_seed_count > 0 &&
+               contact_holonomy.zero_seed_reaches_nontrivial_holonomy,
+           "zero-contact frontier reaches the recurrent holonomy candidate");
     const auto digit_cocycle = adelic::derive_property_f_role_digit_cocycle<3>(
         automaton_images, automaton, 16, 1'000'000);
     std::printf("powered digit cocycle: zero_pairs=%zu missing=%zu "

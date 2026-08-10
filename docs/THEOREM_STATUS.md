@@ -1080,6 +1080,12 @@ carrying non-coboundary exact `Q(β)` holonomy. This is the first concrete
 recurrent obstruction candidate in the non-AR transport layer. It is not yet
 a Property-F failure, because reachability from the zero frontier in the
 zero-expansion orientation has not been established.
+Using the actual zero-contact lift seeds gives 166 frontier seeds and reaches
+2,871 lifted states, including the complete 401-state non-coboundary SCC.
+The transport obstruction is therefore contact-frontier reachable. The
+remaining gap is exact: contact coordinate zero must be related to gamma = 0
+in the Property-F graph by a verified intertwiner before this becomes a
+Property-F failure theorem.
 The SCC census records 32 zero-contact states inside that 401-node
 non-coboundary component (369 nonzero-contact states). Hence it cannot be
 discarded as wholly detached from the zero-contact slice; the exact

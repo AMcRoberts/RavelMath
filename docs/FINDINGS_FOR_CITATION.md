@@ -4148,3 +4148,11 @@ This means the candidate is not a purely detached nonzero-contact artifact;
 it intersects the zero-contact slice, although zero-contact is only a proxy
 for the exact zero-expansion frontier and does not by itself prove an
 obstruction.
+The first reachability test is now positive on the contact side: 166
+zero-contact lift seeds reach 2,871 of the 3,306 lifted states, including all
+401 states of the non-coboundary SCC. Thus the candidate holonomy is not only
+recurrent and not only intersecting the zero-contact slice; it is reachable
+from the contact zero frontier. This is the strongest non-AR obstruction
+signal so far. It still falls short of a Property-F counterexample until the
+contact transport is shown to intertwine with the exact gamma-zero frontier
+of the adelic zero-expansion graph.
