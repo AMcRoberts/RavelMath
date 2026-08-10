@@ -24,6 +24,7 @@
 #include "adelic/property_f_class_ii_carry_deviation.hpp"
 #include "adelic/property_f_class_ii_akiyama_spine.hpp"
 #include "adelic/property_f_class_ii_prefix_correction.hpp"
+#include "adelic/property_f_class_ii_akiyama_window.hpp"
 #include "adelic/property_f_class_ii_rank_spine.hpp"
 #include "adelic/property_f_class_ii_symbolic_tail_grammar.hpp"
 #include "adelic/coincidence_and_property_f.hpp"
@@ -371,6 +372,14 @@ int main() {
         assert(prefix_correction.exceptional_contribution_mismatches == 0);
         assert(prefix_correction.unit_decomposition_mismatches == 0);
         assert(prefix_correction.exceptional_high_tail_hits == 0);
+        if (a >= 7) {
+            const auto window =
+                adelic::derive_property_f_class_ii_akiyama_window(a);
+            assert(window.valid);
+            assert(window.window_mismatches == 0);
+            assert(window.eta0_candidates > 0);
+            assert(window.eta1_candidates > 0);
+        }
     }
     // The quotient identity is state-independent, not an artifact of the
     // observed spine.  Exercise arbitrary small integer coefficient states

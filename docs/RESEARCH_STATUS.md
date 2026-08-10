@@ -252,6 +252,15 @@ window. The remaining theorem is to propagate this finite correction through
 arbitrary branches and prove collar absorption. The symbolic role grammar also
 shows that the exceptional role cannot occur on the high letter-0 tail, so
 that induction genuinely has only the ordinary integer deviation cases.
+
+The next finite reduction is exposed by
+`include/adelic/property_f_class_ii_akiyama_window.hpp`. Akiyama's Lemma 4
+states `|x_0+x_2|<=2` for `a>=7`; under the pending identification of that
+coordinate with `eta`, the deviation law leaves exactly five possible `d`
+values at every high step. The certificate enumerates and classifies those
+five values through `a=256`. This is the finite candidate window to feed into
+the bounded-correction case split, not yet a proof of the coordinate
+identification.
 This closes the coordinate-level analogue, but not the beta-expansion
 inequalities or the literal prefix/contact-cocycle intertwiner.
 

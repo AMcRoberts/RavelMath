@@ -913,6 +913,13 @@ correction before attempting the global bounded-correction argument. The
 certificate also verifies that this exceptional role cannot occur on the
 high tail, whose current letter is uniformly 0 after the seed/return.
 
+`include/adelic/property_f_class_ii_akiyama_window.hpp` turns Akiyama's
+published `|x_0+x_2|<=2` estimate into an explicit hypothesis interface. If
+that coordinate is identified with `eta`, then `eta'=1-eta+d` leaves only the
+five deviations `d` satisfying `|eta'|<=2`. The certificate enumerates this
+finite window exactly through the symbolic spine; it does not assert that the
+published coordinate bound has already been transported to the literal graph.
+
 For the non-unit branch, `adelic_cocycle_extension.hpp` also exposes
 `derive_adelic_valuation_fibre_lemma`. It checks maximal Dedekind factorization,
 the independent ideal-lattice identity, and the local degree partition
