@@ -904,6 +904,25 @@ Parallel directions include:
   Lean, to bring the whole base seam up from "one tier below
   Lean-formalized" to fully formalized.
 
+## 2026-08-10 — Exact published analogue for the Class-II tail
+
+The online literature search found an exact match rather than only a
+structural analogy: Akiyama's Section 4 proof of Property (F) for
+`x^3-a*x^2-(a+1)*x-1` (bibliography key
+`Akiyama2000CubicPisotFiniteBeta`). Its Lemma 7 gives the same alternating
+`k, a-k` finite-expansion schedule as the observed Class-II affine rank spine.
+The paper's proof bounds the conjugate-coordinate critical set, proves a
+small integral correction bound for equal leading coordinate (Lemmas 4--6),
+and then resolves the finite correction cases by explicit expansions.
+
+This suggests a concrete acceleration path for the non-AR seam: identify our
+phase carrier with Akiyama's leading coefficient, transport the conjugate
+window bound to the Property-F coefficient lattice, and prove that every
+non-carrier prefix branch is one of the finite correction cases. That would
+replace a graph-level collar observation with a symbolic bounded-correction
+lemma. The source is archived under `refs/FullText/`; the substitution
+contact/prefix intertwiner remains separate and is not claimed closed.
+
 ## Validation commands
 
 ```sh

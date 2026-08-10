@@ -13,6 +13,38 @@ with incidence polynomial `x^3-a x^2-(a+1)x-1`. A shared incidence
 polynomial does not imply a shared language, balanced-pair automaton,
 Rauzy fractal, or contact graph.
 
+## Exact affine-tail analogue: Akiyama's cubic proof
+
+The closest published calculation is S. Akiyama, *Cubic Pisot Units with
+Finite Beta Expansions*, pp. 11--26 (2000), especially Section 4,
+`refs/references.bib` key `Akiyama2000CubicPisotFiniteBeta`. It treats the
+literal family
+
+```text
+f_a(x) = x^3 - a x^2 - (a+1)x - 1
+```
+
+and proves Property (F) by a bounded critical-set argument. Its Lemma 7 gives
+alternating finite expansions for the fundamental solutions
+`k(a + beta^(-1))`; the coefficient walk is the same `k, a-k` carry schedule
+seen in the Class-II rank spine. In our coordinates this is the scalar
+carrier's two-step `x -> x-1` / `x -> x+1` odometer.
+
+The useful proof transfer is not merely the classification theorem. Akiyama
+first bounds the conjugate coordinates of every critical element, then shows
+that two critical solutions with the same leading coefficient differ by a
+small integral correction (his Lemmas 4--6), and finally discharges the finite
+correction cases using the explicit expansions of Lemma 7. That is a direct
+candidate for replacing our graph-level “off-spine reaches the collar” premise:
+the collar should be the finite correction set after the leading coefficient
+is fixed. The paper is archived locally in `refs/FullText/` and its digest is
+in `refs/FULLTEXT_MANIFEST.tsv`.
+
+This source is an exact analogue, not evidence that the arbitrary
+non-AR substitution bridge is already proved: Akiyama works with the canonical
+beta-number system, while our remaining seam is the contact/prefix cocycle
+intertwiner for the literal substitution.
+
 ## Closest sources
 
 ### Balanced pairs
