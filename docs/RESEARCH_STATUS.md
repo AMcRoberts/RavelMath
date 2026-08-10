@@ -118,9 +118,10 @@ organizing principle only, not an additional Property-F argument.
 
 There is also a necessary caveat: the endpoint maps are unimodular on the
 coefficient lattice, so this is not literal volume-contracting gradient flow.
-The apparent attraction comes from contraction in the secondary embeddings,
-finite admissibility, and many-to-one graph incidence; the SCC height is a
-combinatorial potential layered over that arithmetic mechanism.
+The apparent attraction comes from contraction in the reverse `beta`
+direction, finite admissibility, and many-to-one graph incidence; the forward
+`beta^(-1)` walk expands toward escape. SCC height is a combinatorial potential
+layered over that arithmetic mechanism.
 
 ## Generalized-multinacci bridge rectangle (2026-08-09)
 
@@ -259,9 +260,12 @@ reachable coefficient vectors under this finite affine family, rather than
 enumerating the raw zero-expansion graph.
 Because the defining polynomial has constant term `-1`, `beta` is a unit and
 the endpoint linear maps are unimodular: coefficient-lattice volume is
-preserved. Only the secondary embeddings contract forward, so finiteness comes
-from the admissible return language and boundary pruning rather than a scalar
-lattice contraction. This explains why a one-dimensional rank has not emerged.
+preserved. In the return-to-zero inequality, multiplication by `beta` contracts
+secondary embeddings; the enumerated `beta^(-1)` endpoint walk expands in
+those coordinates and escapes the admissible frontier. Finiteness therefore
+comes from the admissible return language and boundary pruning rather than a
+scalar lattice contraction. This explains why a one-dimensional rank has not
+emerged.
 The growth profile also pushes the embedding-radius proxy through the inverse
 Vandermonde matrix to estimate a coefficient box. The resulting log10 box
 sizes are 6.82 at `(4,6)`, 9.59 at `(6,2)`, and 10.94 at `(6,3)`. Exact
