@@ -481,3 +481,15 @@ problem for the non-AR route, not a Property-F obstruction or a new
 independent field actor. The next theorem-facing step is to model the finite
 relation over the gamma graph and prove whether its correlated branching is
 harmless.
+
+## 2026-08-09 — finite gamma relation and boundary diagnosis
+
+`include/adelic/return_contact_gamma_relation.hpp` now implements the first
+exact relation-valued bridge. It reaches 8,304 product states and relation
+pairs from 166 zero-contact seeds, with maximum fibre 7. Prefix labels agree
+everywhere, and every nonterminal Property-F successor is present. The 9,537
+remaining gamma lookups leave retained terminal boundary sinks of the bounded
+zero-expansion graph; they are not recurrent misses. The certificate separates
+terminal-sink misses, genuine nonterminal misses, and explicit product-cap
+termination. The next proof target is consequently the harmlessness of this
+finite correlated frontier relation.

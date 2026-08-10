@@ -4200,3 +4200,13 @@ is a correlated, multivalued two-sided textile over the closed gamma graph:
 1,756 reachable states are ambiguous on each side from the zero frontier.
 This is a synchronization obstruction to a single-valued factor map, not a
 Property-F obstruction.
+
+The finite relation probe closes the nonterminal part of that bridge. From 166
+zero-contact seeds it explores 8,304 product states and records 8,304 relation
+pairs, with maximum fibre 7. Every contact label is a prefix-automaton edge,
+and there are no nonterminal successor misses. The 9,537 apparent gamma
+lookups beyond the graph are exclusively walks out of intentionally retained
+terminal boundary sinks, which the bounded Property-F checker does not expand.
+Thus the surviving branching is a finite frontier relation, not a recurrent
+Property-F obstruction. The probe has explicit product-cap and terminal-sink
+diagnostics.

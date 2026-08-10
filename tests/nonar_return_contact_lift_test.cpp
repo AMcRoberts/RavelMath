@@ -14,6 +14,7 @@
 #include "adelic/property_f_role_digit_cocycle.hpp"
 #include "adelic/return_phase_digit_cocycle.hpp"
 #include "adelic/return_contact_digit_holonomy.hpp"
+#include "adelic/return_contact_gamma_relation.hpp"
 #include "math/charpoly.hpp"
 #include "math/linalg_qbeta.hpp"
 #include "ravel/return_contact_lift.hpp"
@@ -210,6 +211,39 @@ int main() {
     expect(property_f.holds && property_f.closure_reached &&
                zero_beyond_frontier == 0,
            "powered non-AR exact zero-expansion graph closes");
+    const auto gamma_relation = adelic::derive_return_contact_gamma_relation<3>(
+        automaton_images, lift, automaton, property_graph, seeds);
+    std::printf("gamma relation: products=%zu pairs=%zu max_fibre=%zu "
+                "frontier=%zu misses=%zu gamma_misses=%zu successor_misses=%zu "
+                "exact=%d cap=%d\n",
+                gamma_relation.product_states, gamma_relation.relation_pairs,
+                gamma_relation.max_relation_fibre, gamma_relation.frontier_seeds,
+                gamma_relation.transition_misses,
+                gamma_relation.gamma_lookup_misses,
+                gamma_relation.successor_misses, gamma_relation.exact ? 1 : 0,
+                gamma_relation.cap_hit ? 1 : 0);
+    std::printf("  prefix_edge_misses=%zu\n", gamma_relation.prefix_edge_misses);
+    std::printf("  terminal_sink_misses=%zu nonterminal_misses=%zu\n",
+                gamma_relation.terminal_sink_misses,
+                gamma_relation.nonterminal_misses);
+    if (!gamma_relation.first_missing_left.empty()) {
+        std::printf("  first_missing_left=%s right=%s\n",
+                    gamma_relation.first_missing_left.c_str(),
+                    gamma_relation.first_missing_right.c_str());
+        std::printf("  alternate_letters left=%s right=%s\n",
+                    gamma_relation.first_left_alternate_letters.c_str(),
+                    gamma_relation.first_right_alternate_letters.c_str());
+        std::printf("  source_right=%s digit=%s\n",
+                    gamma_relation.first_source_right.c_str(),
+                    gamma_relation.first_right_digit.c_str());
+    }
+    expect(gamma_relation.exact && gamma_relation.frontier_seeds > 0 &&
+               gamma_relation.max_relation_fibre > 1,
+           "contact lift factors through a finite relation over gamma graph");
+    const auto capped_relation = adelic::derive_return_contact_gamma_relation<3>(
+        automaton_images, lift, automaton, property_graph, seeds, 1);
+    expect(capped_relation.cap_hit && !capped_relation.exact,
+           "relation certificate distinguishes an explicit product cap");
     const auto contact_holonomy = adelic::derive_return_contact_digit_holonomy<3>(
         automaton_images, lift, automaton, seeds);
     std::printf("contact Q(beta) holonomy: cyclic_sccs=%zu nontrivial=%zu\n",

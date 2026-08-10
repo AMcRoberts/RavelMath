@@ -1092,6 +1092,13 @@ contact SCC, the left and right prefix cocycles have 450 and 449 residual
 edges respectively, so the non-coboundary behavior is present on both sides,
 not just in their difference. The refinement-to-gamma projection remains the
 open obligation.
+The finite relation certificate resolves its nonterminal portion: 8,304
+product states from 166 seeds, maximum relation fibre 7, zero prefix-edge
+misses, and zero nonterminal successor misses. Its 9,537 gamma lookup misses
+all originate at retained terminal Property-F boundary sinks. The contact lift
+therefore factors through a finite relation on every recurrent/nonterminal
+component; terminal-frontier branching is bookkeeping, not a Property-F
+failure. Product-cap termination is reported separately.
 The exact residual-subgroup ranks on that component are 1 for the difference
 cocycle and 1 for each one-sided prefix cocycle. No third independent
 `Q(β)`-linear actor is visible in this sample; the candidate is currently best
