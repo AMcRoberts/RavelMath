@@ -250,6 +250,17 @@ that every contact recurrent cycle has a full state-level image. That stronger
 claim is precisely the state-simulation obligation in implementation step 3,
 and remains a premise of the future parameterized composition lemma.
 
+The exact return/contact implementation shows why that premise cannot simply
+be filled by choosing a scalar coordinate. For a contact state `[i,x,j]`, the
+canonical quantity `v*x` transports the left/right **difference** correctly,
+but splitting it into absolute left and right gamma states requires a gauge
+section. The explored relation in `return_contact_gamma_relation.hpp` is
+therefore the honest replacement: it is finite and exact on its nonterminal
+domain, but not source-surjective onto the full lift and can be multivalued.
+The future composition lemma must quantify over this textile relation (or prove
+a section exists in a restricted family), rather than silently treating it as
+an ordinary graph morphism.
+
 The parent-role side is no longer canonical-only: the generic factory
 `derive_parent_role_catalogue_from_substitution` builds the same labelled
 forest directly from an arbitrary substitution. Its finite zero-kernel plus
