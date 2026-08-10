@@ -129,6 +129,27 @@ is not Condition F itself, but proving that an arbitrary substitution's
 contact cocycle is cohomologous to this canonical adelic extension and carries
 no surviving nonzero holonomy.
 
+## Canonical non-unit theorem route
+
+The canonical part of that boundary is now executable in
+`ravel/proof/canonical_nonunit_property_f.hpp`. For a terminating greedy
+expansion whose digit vector is positive and nonincreasing, it checks:
+
+1. the Frougny--Solomyak monotone Condition-F premise;
+2. construction of the canonical Parry substitution and exact incidence
+   characteristic polynomial identity;
+3. Dedekind maximal-order factorization at every prime in the determinant;
+4. the combined adelic bound and finite zero-expansion graph; and
+5. absence of nonzero recurrent components.
+
+This is the finite-expansion form of the paper's Proposition 9.4: the exact
+graph closure is the unique-finite-expansion check in the non-unit
+representation space. The quadratic canonical family `x^2-qx-q`, tested at
+`q=2,3`, closes with 9 and 13 graph nodes respectively. The route is a
+theorem for this canonical monotone class; it deliberately does not promote
+an arbitrary substitution with the same spectrum until the contact cocycle
+cohomology/holonomy bridge is proved.
+
 ## Current evidence sheet
 
 The fixed-spectrum fourth-generator family has nine exact instances. All close

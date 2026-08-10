@@ -99,7 +99,7 @@ TRANSITION_FILES := $(addprefix $(TRANSITIONS_DIR)/spectre_transitions_,$(addsuf
 .PHONY: csy_finite_carry_automaton_test
 .PHONY: lean_class_ii_catalogue_cross_check_test
 .PHONY: supergolden_qrs_audit
-.PHONY: theta5_contact_boundary_probe property_f_family_autopsy property_f_family_artifact property_f_transport_certificate_test property_f_contact_transport_bridge_test generalized_multinacci_property_f_transport_test generalized_multinacci_property_f_transport_extended_test generalized_multinacci_growth_profile_test generalized_multinacci_block_affine_test generalized_multinacci_structural_sweep_test generalized_multinacci_cross_dimension_test generalized_multinacci_cross_dimension_property_f_test generalized_multinacci_fiber_interaction_test adelic_cocycle_extension_test
+.PHONY: theta5_contact_boundary_probe property_f_family_autopsy property_f_family_artifact property_f_transport_certificate_test property_f_contact_transport_bridge_test canonical_nonunit_property_f_test generalized_multinacci_property_f_transport_test generalized_multinacci_property_f_transport_extended_test generalized_multinacci_growth_profile_test generalized_multinacci_block_affine_test generalized_multinacci_structural_sweep_test generalized_multinacci_cross_dimension_test generalized_multinacci_cross_dimension_property_f_test generalized_multinacci_fiber_interaction_test adelic_cocycle_extension_test
 
 all: build data apps tests
 build: $(LIB)
@@ -817,6 +817,7 @@ TESTS_DEFAULT := \
 	property_f_family_autopsy \
 	property_f_transport_certificate_test \
 	property_f_contact_transport_bridge_test \
+	canonical_nonunit_property_f_test \
 	generalized_multinacci_property_f_transport_test \
 	local_field_test \
 	graph_divisor_test \
@@ -2310,6 +2311,13 @@ $(TEST_BIN_PROPERTY_F_CONTACT_TRANSPORT_BRIDGE): $(TESTDIR)/property_f_contact_t
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
 property_f_contact_transport_bridge_test: $(TEST_BIN_PROPERTY_F_CONTACT_TRANSPORT_BRIDGE)
 	./$(TEST_BIN_PROPERTY_F_CONTACT_TRANSPORT_BRIDGE)
+
+TEST_BIN_CANONICAL_NONUNIT_PROPERTY_F := $(BUILDDIR)/canonical_nonunit_property_f_test
+$(TEST_BIN_CANONICAL_NONUNIT_PROPERTY_F): $(TESTDIR)/canonical_nonunit_property_f_test.cpp \
+		$(INCDIR)/ravel/proof/canonical_nonunit_property_f.hpp | $(BUILDDIR) $(MATH_LIB)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< $(MATH_LIB) -o $@
+canonical_nonunit_property_f_test: $(TEST_BIN_CANONICAL_NONUNIT_PROPERTY_F)
+	./$(TEST_BIN_CANONICAL_NONUNIT_PROPERTY_F)
 
 TEST_BIN_GENERALIZED_MULTINACCI_PROPERTY_F_TRANSPORT := $(BUILDDIR)/generalized_multinacci_property_f_transport_test
 $(TEST_BIN_GENERALIZED_MULTINACCI_PROPERTY_F_TRANSPORT): $(TESTDIR)/generalized_multinacci_property_f_transport_test.cpp \
