@@ -505,3 +505,21 @@ components, all zero-image and with no terminal escape. Therefore the next
 structural step is not to declare harmlessness globally: isolate the six
 phase-only recurrent states and prove (or refute) a completion theorem for
 the correlated partial textile.
+
+## 2026-08-10 — finite escape certificate and refined third-plank target
+
+The strict completion hypothesis is false for the powered non-AR control: no
+synchronized product survives if every lift edge must remain inside the
+nonterminal Property-F graph. This is an interface obstruction, not a
+Property-F obstruction. The terminal-aware greatest subrelation is the useful
+replacement: it covers all 457 cyclic lift states, has no cyclic product SCC,
+and every one of its 1,444,738 live products reaches an accepted terminal
+boundary in at most two steps. The six omitted cyclic states use the same
+one-sided terminal-zero/terminal-nonzero witness.
+
+The next theorem should therefore be stated as a boundary-composition lemma:
+the recurrent textile admits a finite escape completion, with a uniformly
+bounded terminal route and no recurrent nonzero image. A total graph-factor
+statement is the wrong target. The current experiment is determinant-1, so
+there is no p-adic place in this control; a future non-unit theorem must add
+the finite-place contraction hypothesis separately rather than infer it here.

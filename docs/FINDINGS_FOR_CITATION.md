@@ -4226,3 +4226,21 @@ not yet a full-lift entropy or Property-F theorem. The synchronized product
 cycles remain harmless in this family: all eight cyclic product SCCs have
 zero gamma image and no terminal escape. The six unthreaded recurrent states
 and the correlated recurrent ambiguity are the remaining structural bridge.
+
+Completion falsifier (2026-08-10): an exhaustive greatest-subrelation pass over
+3,651,050 compatible lift/gamma candidates falsifies the strict full-lift
+completion hypothesis—no product survives the requirement that every lift edge
+have a nonterminal Property-F successor. A terminal-aware negative control does
+cover all 457 cyclic lift states with an acyclic synchronized product and no
+recurrent nonzero image, but it does so by accepting retained boundary sinks.
+The six previously omitted cyclic states all have the same distance-0
+one-sided witness: terminal zero gamma on the left and terminal nonzero gamma
+on the right. Since this powered family is unimodular (determinant 1), there
+is no finite-place p-adic contraction to appeal to. The evidence narrows the
+open bridge to a finite Archimedean escape-boundary composition lemma; it does
+not establish a full factor theorem or a Property-F failure.
+
+The completion certificate was strengthened after this observation: all
+1,444,738 live terminal-aware products have a finite route to an accepted
+terminal boundary, with maximum route length 2. This closes the finite-family
+escape audit while leaving the symbolic, uniform-in-family boundary lemma open.

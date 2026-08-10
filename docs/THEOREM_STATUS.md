@@ -1136,3 +1136,33 @@ The SCC census records 32 zero-contact states inside that 401-node
 non-coboundary component (369 nonzero-contact states). Hence it cannot be
 discarded as wholly detached from the zero-contact slice; the exact
 zero-expansion reachability/intertwiner test is still required.
+
+## 2026-08-10 — completion falsifier and boundary-layer classification
+
+The full-lift completion experiment is now split into two explicit
+hypotheses. The strict hypothesis—one synchronized Property-F successor for
+every lift edge—has no live products at all, so a source-surjective graph
+factor does not exist for this family. This falsifies the naive completion
+theorem, not Property F itself.
+
+The permissive control allows a missing successor only when the current gamma
+node is a retained terminal boundary node. Its greatest live subrelation has
+1,516 lift states and covers all 457 cyclic lift states; its product graph is
+acyclic, has no recurrent nonzero SCC, and has maximum terminal distance 2.
+That result is deliberately not called a factor theorem: all six omitted
+cyclic states are covered at distance zero by the same one-sided witness,
+left terminal zero `0;0;0;` and right terminal nonzero `-6;5;-1;`.
+
+The powered control has determinant 1, so there are no ramified finite places
+in this experiment. The existing combined p-adic predicate therefore cannot
+explain these witnesses; the observed completion is an Archimedean/finite-
+graph boundary phenomenon. The surviving third-plank hypothesis is a finite
+escape-boundary layer attached to the transport textile, not a new independent
+p-adic actor. It remains conjectural until a symbolic boundary-composition
+lemma replaces the permissive control.
+
+The finite certificate has now been strengthened: among the 1,444,738 live
+terminal-aware products, none lacks a finite terminal route. Thus the current
+family has a verified bounded escape certificate (maximum route length 2),
+although the acceptance rule still depends on the retained terminal boundary
+and is not yet a universal symbolic lemma.

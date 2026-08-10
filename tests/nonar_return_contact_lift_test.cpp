@@ -1,8 +1,11 @@
 #include <algorithm>
 #include <array>
 #include <cstdio>
+#include <cstdlib>
 #include <functional>
+#include <limits>
 #include <set>
+#include <string>
 #include <tuple>
 #include <vector>
 
@@ -82,6 +85,32 @@ std::size_t largest_nonzero_recurrent_scc(const ReturnContactLift<3>& lift) {
     for (std::size_t v = 0; v < n; ++v)
         if (index[v] < 0) visit(v);
     return largest;
+}
+
+mathlib::QElem parse_property_gamma(const adelic::PropertyFGraphNode& node) {
+    mathlib::QElem gamma(node.gamma_coefficients.size());
+    for (std::size_t i = 0; i < node.gamma_coefficients.size(); ++i) {
+        mathlib::Rat value;
+        const auto& [numerator, denominator] = node.gamma_coefficients[i];
+        const std::string encoded = numerator + "/" + denominator;
+        if (mpq_set_str(value.get(), encoded.c_str(), 10) != 0)
+            throw std::invalid_argument("non-AR test: invalid Property-F rational");
+        mpq_canonicalize(value.get());
+        gamma.coeff(i) = value;
+    }
+    return gamma;
+}
+
+std::vector<long long> prime_support(long long value) {
+    std::vector<long long> out;
+    long long remaining = std::llabs(value);
+    for (long long p = 2; p <= remaining / p; ++p) {
+        if (remaining % p != 0) continue;
+        out.push_back(p);
+        while (remaining % p == 0) remaining /= p;
+    }
+    if (remaining > 1) out.push_back(remaining);
+    return out;
 }
 }
 
@@ -211,8 +240,13 @@ int main() {
     expect(property_f.holds && property_f.closure_reached &&
                zero_beyond_frontier == 0,
            "powered non-AR exact zero-expansion graph closes");
+    const bool run_completion_probe = std::getenv("NONAR_COMPLETION_PROBE") != nullptr;
+    const bool strict_completion_probe =
+        std::getenv("NONAR_STRICT_COMPLETION_PROBE") != nullptr;
     const auto gamma_relation = adelic::derive_return_contact_gamma_relation<3>(
-        automaton_images, lift, automaton, property_graph, seeds);
+        automaton_images, lift, automaton, property_graph, seeds,
+        2'000'000, run_completion_probe || strict_completion_probe,
+        run_completion_probe && !strict_completion_probe);
     std::printf("gamma relation: products=%zu pairs=%zu max_fibre=%zu "
                 "frontier=%zu misses=%zu gamma_misses=%zu successor_misses=%zu "
                 "exact=%d cap=%d\n",
@@ -286,6 +320,90 @@ int main() {
                     s.contact.x[2], s.contact.j, s.left_phase, s.right_phase);
     }
     std::printf("\n");
+    if (run_completion_probe || strict_completion_probe) {
+        std::printf("  completion mode=%s\n",
+                    strict_completion_probe ? "strict" : "terminal-aware");
+        std::printf("  completion candidates=%zu locally_valid=%zu/%zu "
+                    "live_products=%zu live_lift=%zu source_surjective=%d "
+                    "cyclic_live=%zu/%zu cap=%d\n",
+                    gamma_relation.completion_candidate_states,
+                    gamma_relation.completion_locally_valid_products,
+                    gamma_relation.completion_locally_valid_lift_states,
+                    gamma_relation.completion_live_product_states,
+                    gamma_relation.completion_live_lift_states,
+                    gamma_relation.completion_source_surjective ? 1 : 0,
+                    gamma_relation.completion_live_cyclic_lift_states,
+                    gamma_relation.completion_cyclic_lift_states,
+                    gamma_relation.completion_cap_hit ? 1 : 0);
+            std::printf("  completion product cycles=%zu nonzero=%zu terminal_escape=%zu\n",
+                        gamma_relation.completion_cyclic_product_sccs,
+                        gamma_relation.completion_cyclic_product_nonzero_sccs,
+                        gamma_relation.completion_cyclic_product_terminal_escape_sccs);
+            std::printf("  completion live products without terminal route=%zu\n",
+                        gamma_relation.completion_live_products_without_terminal_route);
+            std::printf("  completion boundary witnesses zero/nonzero=%zu "
+                        "nonzero/zero=%zu two-sided=%zu\n",
+                        gamma_relation.completion_zero_nonzero_terminal_witnesses,
+                        gamma_relation.completion_nonzero_zero_terminal_witnesses,
+                        gamma_relation.completion_two_sided_terminal_witnesses);
+        std::printf("  completion product_acyclic=%d max_terminal_distance=%zu "
+                    "cyclic-state distances:",
+                    gamma_relation.completion_product_acyclic ? 1 : 0,
+                    gamma_relation.completion_max_terminal_distance);
+        for (const auto state : gamma_relation.unthreaded_cyclic_lift_state_indices) {
+            const auto distance = gamma_relation.completion_min_terminal_distance_by_lift[state];
+            if (distance == std::numeric_limits<std::size_t>::max())
+                std::printf(" %zu:inf", state);
+            else {
+                const auto witness =
+                    gamma_relation.completion_min_terminal_witness_by_lift[state];
+                const auto& left = property_graph.nodes[witness.first];
+                const auto& right = property_graph.nodes[witness.second];
+                std::printf(" %zu:%zu(%s|%s;z=%d/%d)", state, distance,
+                            left.gamma_key.c_str(), right.gamma_key.c_str(),
+                            left.zero ? 1 : 0, right.zero ? 1 : 0);
+            }
+        }
+        std::printf("\n");
+        if (!strict_completion_probe &&
+            !gamma_relation.unthreaded_cyclic_lift_state_indices.empty()) {
+            const long long determinant =
+                powered_incidence[0][0] *
+                    (powered_incidence[1][1] * powered_incidence[2][2] -
+                     powered_incidence[1][2] * powered_incidence[2][1]) -
+                powered_incidence[0][1] *
+                    (powered_incidence[1][0] * powered_incidence[2][2] -
+                     powered_incidence[1][2] * powered_incidence[2][0]) +
+                powered_incidence[0][2] *
+                    (powered_incidence[1][0] * powered_incidence[2][1] -
+                     powered_incidence[1][1] * powered_incidence[2][0]);
+            const auto primes = prime_support(determinant);
+            const auto [combined_padic_bound, trusted_padic] =
+                adelic::make_combined_padic_bound(primes, charpoly);
+            std::printf("  terminal witness p-adic support det=%lld:", determinant);
+            for (const auto state : gamma_relation.unthreaded_cyclic_lift_state_indices) {
+                const auto witness =
+                    gamma_relation.completion_min_terminal_witness_by_lift[state];
+                const auto& left = property_graph.nodes[witness.first];
+                const auto& right = property_graph.nodes[witness.second];
+                std::printf(" %zu:%d/%d", state,
+                            combined_padic_bound(parse_property_gamma(left)) ? 1 : 0,
+                            combined_padic_bound(parse_property_gamma(right)) ? 1 : 0);
+            }
+            std::printf(" trusted=%d primes=", trusted_padic ? 1 : 0);
+            for (const auto p : primes) std::printf(" %lld", p);
+            std::printf("\n");
+        }
+        std::printf("  completion-unthreaded-count=%zu",
+                    gamma_relation.completion_unthreaded_lift_state_indices.size());
+        if (gamma_relation.completion_unthreaded_lift_state_indices.size() <= 20) {
+            std::printf(" states:");
+            for (const auto state : gamma_relation.completion_unthreaded_lift_state_indices)
+                std::printf(" %zu", state);
+        }
+        std::printf("\n");
+    }
+    std::printf("\n");
     if (!gamma_relation.first_missing_left.empty()) {
         std::printf("  first_missing_left=%s right=%s\n",
                     gamma_relation.first_missing_left.c_str(),
@@ -318,6 +436,39 @@ int main() {
                gamma_relation.relation_ambiguous_lift_states &&
                gamma_relation.relation_left_right_fibre_mismatch_states == 0,
            "left/right ambiguity is synchronized rather than an asymmetric leak");
+    if (run_completion_probe || strict_completion_probe) {
+        if (strict_completion_probe) {
+            expect(gamma_relation.completion_live_lift_states == 0 &&
+                       gamma_relation.completion_cyclic_product_sccs == 0,
+                   "strict completion falsifies a full source-surjective factor");
+        } else {
+        // This branch is intentionally permissive: reaching a retained
+        // terminal node is a boundary diagnostic, not a proof that the
+        // original nonterminal relation extends to a full factor.
+        expect(gamma_relation.completion_candidate_states > 0 &&
+                   !gamma_relation.completion_cap_hit,
+               "all compatible lift/gamma candidates fit the completion cap");
+        bool recurrent_completion =
+            gamma_relation.completion_live_cyclic_lift_states ==
+            gamma_relation.completion_cyclic_lift_states;
+        bool omitted_cyclic_have_terminal_route = true;
+        for (const auto state : gamma_relation.unthreaded_cyclic_lift_state_indices)
+            omitted_cyclic_have_terminal_route = omitted_cyclic_have_terminal_route &&
+                gamma_relation.completion_min_terminal_distance_by_lift[state] !=
+                    std::numeric_limits<std::size_t>::max();
+        expect(recurrent_completion && omitted_cyclic_have_terminal_route &&
+                   gamma_relation.completion_product_acyclic &&
+                   gamma_relation.completion_cyclic_product_nonzero_sccs == 0 &&
+                   gamma_relation.completion_live_products_without_terminal_route == 0,
+               "permissive terminal completion reaches every recurrent lift state without a recurrent gamma cycle");
+        expect(gamma_relation.completion_zero_nonzero_terminal_witnesses >=
+                   gamma_relation.unthreaded_cyclic_lift_state_indices.size(),
+               "the omitted recurrent states are explicitly classified as one-sided terminal boundary witnesses");
+        expect(gamma_relation.completion_nonzero_zero_terminal_witnesses == 0 &&
+                   gamma_relation.completion_two_sided_terminal_witnesses == 0,
+               "the finite boundary escape has a single zero-to-nonzero orientation");
+        }
+    }
     const auto capped_relation = adelic::derive_return_contact_gamma_relation<3>(
         automaton_images, lift, automaton, property_graph, seeds, 1);
     expect(capped_relation.cap_hit && !capped_relation.exact,
