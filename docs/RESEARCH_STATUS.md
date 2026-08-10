@@ -157,7 +157,9 @@ The height law has an explicit replayable spine, not just a scalar fit. For
 basis: the interior pairs are
 `(-k, -(k(a+1)-1), k)` and `(k+1, k(a+1), -k)`, followed by three boundary
 states. `include/adelic/property_f_class_ii_rank_spine.hpp` checks their exact
-node keys, edges, and SCC heights. This proves a concrete height-`2a+2`
+node keys, edges, SCC heights, and digit labels. Its checked schedule is
+`1,a,(1,a-1),(2,a-2),...,(a-2,2),a-2,0,a-1,0` in the `[0,j,0]` coefficient
+notation. This proves a concrete height-`2a+2`
 lower-bound path in every checked member; the missing upper bound is to show
 that no other admissible transport branch exceeds this spine.
 

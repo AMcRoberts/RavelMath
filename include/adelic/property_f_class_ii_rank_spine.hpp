@@ -11,7 +11,7 @@
 #include <utility>
 #include <vector>
 
-#include "adelic/property_f_escape_rank.hpp"
+#include "adelic/property_f_birth_round_grammar.hpp"
 
 namespace adelic {
 
@@ -21,12 +21,14 @@ struct PropertyFClassIIRankSpineCertificate {
     std::size_t matched_nodes = 0;
     std::size_t missing_states = 0;
     std::size_t missing_edges = 0;
+    std::size_t missing_labels = 0;
     std::size_t rank_mismatches = 0;
     std::vector<std::size_t> node_ids;
     bool parameter_domain = false;
     bool rank_valid = false;
     bool states_present = false;
     bool edges_replayed = false;
+    bool labels_replayed = false;
     bool rank_replayed = false;
     bool valid = false;
 };
@@ -36,6 +38,29 @@ inline std::string property_f_class_ii_spine_key(
     return std::to_string(coefficients[0]) + ";" +
            std::to_string(coefficients[1]) + ";" +
            std::to_string(coefficients[2]) + ";";
+}
+
+// The second coordinate of each spine digit is the carry amount in the
+// prefix delta [0,j,0].  The first two steps are the seed and the unique
+// letter-1 return; the middle alternates k and a-k, and the final four steps
+// are the fixed boundary correction.
+inline std::vector<long long> property_f_class_ii_rank_spine_digits(
+        std::size_t a) {
+    if (a < 4) return {};
+    std::vector<long long> out{1, static_cast<long long>(a)};
+    for (std::size_t k = 1; k + 1 < a; ++k) {
+        out.push_back(static_cast<long long>(k));
+        out.push_back(static_cast<long long>(a - k));
+    }
+    out.push_back(static_cast<long long>(a - 2));
+    out.push_back(0);
+    out.push_back(static_cast<long long>(a - 1));
+    out.push_back(0);
+    return out;
+}
+
+inline std::string property_f_class_ii_spine_digit_key(long long digit) {
+    return "0/1;" + std::to_string(digit) + "/1;0/1;";
 }
 
 // States on the observed maximal-height chain, in forward graph order.  For
@@ -105,27 +130,53 @@ derive_property_f_class_ii_rank_spine(
     out.rank_replayed = out.rank_mismatches == 0;
 
     out.edges_replayed = true;
+    out.labels_replayed = true;
+    bool label_data_present = false;
+    bool label_data_complete = true;
+    for (const auto& node : graph.nodes) {
+        if (!node.edge_digit_coefficients.empty()) label_data_present = true;
+        if (node.edge_digit_coefficients.size() != node.successors.size())
+            label_data_complete = false;
+    }
     if (out.states_present && out.node_ids.size() == coefficients.size()) {
+        const auto digits = property_f_class_ii_rank_spine_digits(a);
         for (std::size_t step = 0; step + 1 < out.node_ids.size(); ++step) {
             const auto source = out.node_ids[step];
             const auto target = out.node_ids[step + 1];
             bool found = false;
-            for (const auto raw_target : graph.nodes[source].successors)
+            bool found_label = false;
+            const auto expected_label = step < digits.size()
+                ? property_f_class_ii_spine_digit_key(digits[step])
+                : std::string{};
+            for (std::size_t edge = 0;
+                 edge < graph.nodes[source].successors.size(); ++edge) {
+                const auto raw_target = graph.nodes[source].successors[edge];
                 if (raw_target == static_cast<long long>(target)) {
                     found = true;
-                    break;
+                    if (edge < graph.nodes[source].edge_digit_coefficients.size() &&
+                        property_f_birth_round_digit_key(
+                            graph.nodes[source].edge_digit_coefficients[edge]) ==
+                            expected_label)
+                        found_label = true;
                 }
+            }
             if (!found) {
                 out.edges_replayed = false;
                 ++out.missing_edges;
             }
+            if (label_data_present && label_data_complete && !found_label) {
+                out.labels_replayed = false;
+                ++out.missing_labels;
+            }
         }
     } else {
         out.edges_replayed = false;
+        out.labels_replayed = false;
     }
+    if (!label_data_present) out.labels_replayed = true;
     out.valid = out.parameter_domain && out.rank_valid &&
                 out.states_present && out.edges_replayed &&
-                out.rank_replayed;
+                out.rank_replayed && out.labels_replayed;
     return out;
 }
 

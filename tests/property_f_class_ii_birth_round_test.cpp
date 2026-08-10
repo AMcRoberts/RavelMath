@@ -96,6 +96,9 @@ int main() {
             const auto spine =
                 adelic::derive_property_f_class_ii_rank_spine(graph, a);
             assert(spine.valid);
+            assert(spine.labels_replayed);
+            assert(adelic::property_f_class_ii_rank_spine_digits(a).size() ==
+                   spine.node_ids.size() - 1);
             assert(spine.expected_height + 1 == grammar.layer_count);
             const auto census =
                 adelic::derive_property_f_class_ii_branch_census(graph, a);

@@ -812,7 +812,9 @@ opt-in and report their caps explicitly.
 For `a>=4`, `include/adelic/property_f_class_ii_rank_spine.hpp` replays the
 explicit alternating affine carry spine that realizes height `2*a+2`. It is
 a verified lower-bound path and rank witness; bounding every other state is a
-separate family proof obligation.
+separate family proof obligation. The certificate also checks its exact digit
+schedule: in the `[0,j,0]` coefficient notation the labels are
+`1,a,(1,a-1),(2,a-2),...,(a-2,2),a-2,0,a-1,0`.
 
 `include/adelic/property_f_class_ii_branch_census.hpp` mechanically separates
 the deterministic high-rank tail from the finite height-5 collar and checks
