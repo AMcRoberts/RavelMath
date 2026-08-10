@@ -1182,3 +1182,6 @@ and recurrent products have no nonzero gamma image. Any violation is a named
 falsifier (nonterminal miss, live product cycle, opposite boundary orientation,
 or recurrent nonzero image), so the finite certificate is being used as a
 theorem interface rather than as an empirical stopping rule.
+The public completion verdict also requires a nonempty live relation, so the
+strict empty greatest subrelation is not accidentally reported as a positive
+escape completion merely by vacuity.

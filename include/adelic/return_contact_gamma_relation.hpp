@@ -724,7 +724,8 @@ ReturnContactGammaRelationCertificate derive_return_contact_gamma_relation(
                 escape.live_vertices_without_terminal_route;
             out.completion_max_terminal_distance = escape.max_terminal_distance;
             out.completion_finite_escape =
-                escape.acyclic && escape.every_live_vertex_reaches_terminal;
+                escape.live_vertices > 0 && escape.acyclic &&
+                escape.every_live_vertex_reaches_terminal;
             out.completion_min_terminal_distance_by_lift.assign(
                 lift.states.size(), no_distance);
             out.completion_min_terminal_witness_by_lift.assign(

@@ -443,6 +443,8 @@ int main() {
             expect(gamma_relation.completion_live_lift_states == 0 &&
                        gamma_relation.completion_cyclic_product_sccs == 0,
                    "strict completion falsifies a full source-surjective factor");
+            expect(!gamma_relation.completion_finite_escape,
+                   "empty strict completion is not reported as a finite escape verdict");
         } else {
         // This branch is intentionally permissive: reaching a retained
         // terminal node is a boundary diagnostic, not a proof that the
