@@ -124,8 +124,13 @@ int main() {
            "lift projects onto every powered contact node");
     expect(!lift.edges.empty(), "non-AR return/contact lift has transport edges");
     const auto history = probe_return_history_factor(lift, phases);
-    std::printf("return-history keys=%zu conflicts=%zu\n",
-                history.history_keys, history.conflicting_keys);
+    std::printf("return-history keys=%zu conflicts=%zu offset_variants=%zu offset_sensitive=%zu max_variants=%zu\n",
+                history.history_keys, history.conflicting_keys,
+                history.offset_variant_keys, history.offset_sensitive_keys,
+                history.maximum_offset_variants);
+    expect(history.conflicts_are_offset_driven
+               && history.offset_sensitive_keys == history.offset_variant_keys,
+           "every multi-offset history key has offset-sensitive transport");
     const std::size_t nonzero_scc = largest_nonzero_recurrent_scc(lift);
     expect(nonzero_scc > 0,
            "non-AR contact lift exposes a recurrent nonzero transport component");

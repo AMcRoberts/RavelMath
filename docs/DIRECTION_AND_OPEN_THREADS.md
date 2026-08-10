@@ -604,12 +604,14 @@ leaving the factor-through-history proof as the next non-AR obligation.
 factor-through-history probe forgets phase offsets but retains the two return
 word identities. On the powered `sigma_{0,1}` contact lift it finds 1,183
 history keys and 401 conflicting keys, exactly matching the largest
-recurrent nonzero contact component. Thus the cheap quotient is false:
-return words alone do not determine contact transport. The surviving
-information is plausibly a finite offset cocycle over the cyclotomic phase
-fibres. Falsifiers are a mismatch between conflict classes and recurrent
-holonomy, or a quotient retaining offsets that still produces a nonzero
-Property-F recurrent component. The latter is the decisive bridge test.
+recurrent nonzero contact component. Of those keys, 264 have multiple phase
+offset pairs and every one is offset-sensitive; the remaining conflicts are
+ordinary branching at a single offset pair. Thus the cheap quotient is false,
+but the excess data is still finite: an offset cocycle plus finite branching
+over the cyclotomic phase fibres. Falsifiers are unbounded offset-sensitive
+classes, a mismatch between these classes and recurrent holonomy, or a
+quotient retaining offsets that still produces a nonzero Property-F recurrent
+component. The latter is the decisive bridge test.
 
 The first experiment should attack H1 and H2 together: prove the all-length
 predecessor decomposition for `sigma_{0,1}`, build its finite seam grammar,
